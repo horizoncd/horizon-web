@@ -5,8 +5,9 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import { stringify } from 'querystring';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -113,7 +114,13 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       const { location } = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
+        // 将当前URL作为查询参数
+        history.push({
+          pathname: loginPath,
+          search: stringify({
+            redirect: location.pathname,
+          }),
+        });
       }
     },
     links: isDev

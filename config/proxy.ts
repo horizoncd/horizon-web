@@ -9,7 +9,7 @@
 export default {
   dev: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
+      target: 'http://cms.qa.igame.163.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
