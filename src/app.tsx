@@ -6,7 +6,7 @@ import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import { LinkOutlined } from '@ant-design/icons';
 import { stringify } from 'querystring';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -106,9 +106,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
-    waterMarkProps: {
-      content: initialState?.currentUser?.name,
-    },
+    waterMarkProps: {},
     footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
@@ -128,10 +126,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
           <Link to="/umi/plugin/openapi" target="_blank">
             <LinkOutlined />
             <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
           </Link>,
         ]
       : [],
