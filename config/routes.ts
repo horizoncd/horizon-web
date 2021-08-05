@@ -16,30 +16,6 @@ export default [
     ],
   },
   {
-    path: '/teams',
-    name: 'Teams',
-    icon: 'smile',
-    component: './Teams',
-  },
-  {
-    name: 'Group overview',
-    icon: 'bank',
-    routes: [
-      {
-        path: '/group/*',
-        name: 'Details',
-        icon: 'smile',
-        component: './group/Details',
-      },
-      {
-        path: '/groups/*/-/activity',
-        name: 'Activity',
-        icon: 'smile',
-        component: './group/Activity',
-      },
-    ],
-  },
-  {
     path: '/members',
     name: 'Members',
     icon: 'contacts',
@@ -53,7 +29,9 @@ export default [
   },
   {
     path: '/',
-    redirect: '/teams',
+    menuRender: false,
+    component: './Teams',
+    name: 'Teams'
   },
   {
     component: './404',
