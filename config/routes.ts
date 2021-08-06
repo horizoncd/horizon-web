@@ -16,8 +16,15 @@
     ],
   },
   {
+    path: '/:team',
+    icon: 'smile',
+    name: 'team',
+    key: 'title',
+  },
+  {
     name: 'Group overview',
     icon: 'bank',
+    path: '/:team',
     routes: [
       {
         path: '/:team',
@@ -32,13 +39,13 @@
     ],
   },
   {
-    path: '/members',
+    path: '/team/:team/-/members',
     name: 'Members',
     icon: 'contacts',
     component: './group/Members',
   },
   {
-    path: '/settings',
+    path: '/team/:team/-/settings',
     name: 'Settings',
     icon: 'setting',
     component: './group/Settings',
@@ -49,7 +56,7 @@
     component: './Teams',
     name: 'Teams',
     hideInMenu: true,
-    layout: 'top'
+    layout: 'top',
   },
   {
     component: './404',

@@ -198,17 +198,18 @@ function formatTeamMenu(team: string) {
       ],
     },
     {
-      path: team,
-      name: team,
+      path: `/${team}`,
       icon: 'smile',
+      name: team,
       key: 'title',
     },
     {
       name: 'Group overview',
       icon: 'bank',
+      path: `/${team}`,
       children: [
         {
-          path: team,
+          path: `/${team}`,
           name: 'Details',
         },
         {
