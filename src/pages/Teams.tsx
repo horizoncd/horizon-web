@@ -1,10 +1,14 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-// import TableDynamicSettings from './TableDynamicSettings';
+import TableDynamicSettings from './TableDynamicSettings';
 
-export default (): React.ReactNode => {
+const teams = (): React.ReactNode => {
+  console.log('kkk');
   return (
     <PageContainer>
+      <TableDynamicSettings />
     </PageContainer>
   );
 };
+
+export default teams;

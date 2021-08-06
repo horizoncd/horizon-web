@@ -1,4 +1,4 @@
-import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
@@ -8,7 +8,12 @@ import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 import { LinkOutlined } from '@ant-design/icons';
 import { stringify } from 'querystring';
-import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined} from "@ant-design/icons/lib";
+import {
+  BankOutlined,
+  ContactsOutlined,
+  SettingOutlined,
+  SmileOutlined,
+} from '@ant-design/icons/lib';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -17,7 +22,7 @@ const IconMap = {
   smile: <SmileOutlined />,
   contacts: <ContactsOutlined />,
   setting: <SettingOutlined />,
-  bank: <BankOutlined />
+  bank: <BankOutlined />,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -29,7 +34,7 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
-  loading: <PageLoading/>,
+  loading: <PageLoading />,
 };
 
 /**
@@ -57,7 +62,7 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       settings: {},
-      location: history.location
+      location: history.location,
     };
   }
   return {
@@ -121,10 +126,10 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
-    rightContentRender: () => <RightContent/>,
+    rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {},
-    footerRender: () => <Footer/>,
+    footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
@@ -140,16 +145,16 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },
     links: isDev
       ? [
-        <Link to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined/>
-          <span>OpenAPI 文档</span>
-        </Link>,
-      ]
+          <Link to="/umi/plugin/openapi" target="_blank">
+            <LinkOutlined />
+            <span>OpenAPI 文档</span>
+          </Link>,
+        ]
       : [],
     menuHeaderRender: undefined,
     menu: {
       params: {
-        location: initialState?.location
+        location: initialState?.location,
       },
       request: async (params, defaultMenuData) => {
         const { pathname } = params.location;
@@ -157,13 +162,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         const { length } = pathnameSplit;
         // 根路径用默认菜单
         if (length === 0) {
+          console.log(defaultMenuData);
           return defaultMenuData;
         }
         // team详情页
         if (length === 1 || pathnameSplit[0] === 'team') {
-          console.log(loopMenuItem(formatTeamMenu(pathnameSplit[0])))
           return loopMenuItem(formatTeamMenu(pathnameSplit[0]));
         }
+        console.log(defaultMenuData);
         return defaultMenuData;
       },
     },
@@ -195,7 +201,7 @@ function formatTeamMenu(team: string) {
       path: team,
       name: team,
       icon: 'smile',
-      key: 'title'
+      key: 'title',
     },
     {
       name: 'Group overview',
@@ -227,11 +233,10 @@ function formatTeamMenu(team: string) {
       component: './Teams',
       name: 'Teams',
       hideInMenu: true,
-      layout: 'top'
+      layout: 'top',
     },
     {
       component: './404',
     },
   ];
 }
-
