@@ -169,7 +169,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         if (length === 1 || pathnameSplit[0] === 'team') {
           return loopMenuItem(formatTeamMenu(pathnameSplit[0]));
         }
-        console.log(defaultMenuData);
         return defaultMenuData;
       },
     },
@@ -199,14 +198,14 @@ function formatTeamMenu(team: string) {
     },
     {
       path: `/${team}`,
-      icon: 'smile',
       name: team,
-      key: 'title',
+      icon: 'smile',
+      key: 'Group name',
     },
     {
       name: 'Group overview',
       icon: 'bank',
-      path: `/${team}`,
+      key: 'Group overview',
       children: [
         {
           path: `/${team}`,
@@ -231,13 +230,9 @@ function formatTeamMenu(team: string) {
     {
       path: '/',
       menuRender: false,
-      component: './Teams',
       name: 'Teams',
       hideInMenu: true,
       layout: 'top',
-    },
-    {
-      component: './404',
     },
   ];
 }

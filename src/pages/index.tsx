@@ -2,8 +2,7 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import TableDynamicSettings from './TableDynamicSettings';
 
-const teams = (): React.ReactNode => {
-  console.log('kkk');
+const index = (): React.ReactNode => {
   return (
     <PageContainer>
       <TableDynamicSettings />
@@ -11,4 +10,4 @@ const teams = (): React.ReactNode => {
   );
 };
 
-export default teams;
+export default index;
