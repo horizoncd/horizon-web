@@ -1,4 +1,4 @@
-export default [
+﻿export default [
   {
     path: '/user',
     layout: false,
@@ -12,6 +12,22 @@ export default [
             component: './user/Login',
           },
         ],
+      },
+    ],
+  },
+  {
+    name: 'Group overview',
+    icon: 'bank',
+    routes: [
+      {
+        path: '/:team',
+        name: 'Details',
+        component: './group/Details',
+      },
+      {
+        path: '/team/:team/-/activity',
+        name: 'Activity',
+        component: './group/Activity',
       },
     ],
   },
@@ -31,7 +47,9 @@ export default [
     path: '/',
     menuRender: false,
     component: './Teams',
-    name: 'Teams'
+    name: 'Teams',
+    hideInMenu: true,
+    layout: 'top'
   },
   {
     component: './404',

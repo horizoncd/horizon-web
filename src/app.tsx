@@ -1,4 +1,4 @@
-import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
+import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
@@ -8,9 +8,24 @@ import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 import { LinkOutlined } from '@ant-design/icons';
 import { stringify } from 'querystring';
+import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined} from "@ant-design/icons/lib";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+
+const IconMap = {
+  smile: <SmileOutlined />,
+  contacts: <ContactsOutlined />,
+  setting: <SettingOutlined />,
+  bank: <BankOutlined />
+};
+
+const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
+  menus.map(({ icon, children, ...item }) => ({
+    ...item,
+    icon: icon && IconMap[icon as string],
+    children: children && loopMenuItem(children),
+  }));
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -138,9 +153,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       },
       request: async (params, defaultMenuData) => {
         const { pathname } = params.location;
-        const pathnameSplit = pathname.split('/');
-        console.log(pathnameSplit)
-        console.log(defaultMenuData)
+        const pathnameSplit = pathname.split('/').filter((item: string) => item !== '');
+        const { length } = pathnameSplit;
+        // 根路径用默认菜单
+        if (length === 0) {
+          return defaultMenuData;
+        }
+        // team详情页
+        if (length === 1 || pathnameSplit[0] === 'team') {
+          console.log(loopMenuItem(formatTeamMenu(pathnameSplit[0])))
+          return loopMenuItem(formatTeamMenu(pathnameSplit[0]));
+        }
         return defaultMenuData;
       },
     },
@@ -149,3 +172,66 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     ...initialState?.settings,
   };
 };
+
+function formatTeamMenu(team: string) {
+  return [
+    {
+      path: '/user',
+      layout: false,
+      children: [
+        {
+          path: '/user',
+          children: [
+            {
+              name: '登录',
+              path: '/user/login',
+              component: './user/Login',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: team,
+      name: team,
+      icon: 'smile',
+      key: 'title'
+    },
+    {
+      name: 'Group overview',
+      icon: 'bank',
+      children: [
+        {
+          path: team,
+          name: 'Details',
+        },
+        {
+          path: `/team/${team}/-/activity`,
+          name: 'Activity',
+        },
+      ],
+    },
+    {
+      path: `/team/${team}/-/members`,
+      name: 'Members',
+      icon: 'contacts',
+    },
+    {
+      path: `/team/${team}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+    },
+    {
+      path: '/',
+      menuRender: false,
+      component: './Teams',
+      name: 'Teams',
+      hideInMenu: true,
+      layout: 'top'
+    },
+    {
+      component: './404',
+    },
+  ];
+}
+
