@@ -165,11 +165,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
           console.log(defaultMenuData);
           return defaultMenuData;
         }
-        // team详情页
-        if (length === 1 || pathnameSplit[0] === 'team') {
-          return loopMenuItem(formatTeamMenu(pathnameSplit[0]));
-        }
-        return defaultMenuData;
+        console.log('kkk');
+        return loopMenuItem(formatTeamMenu(pathnameSplit[pathnameSplit.length - 1]));
       },
     },
     // 自定义 403 页面
@@ -180,22 +177,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 
 function formatTeamMenu(team: string) {
   return [
-    {
-      path: '/user',
-      layout: false,
-      children: [
-        {
-          path: '/user',
-          children: [
-            {
-              name: '登录',
-              path: '/user/login',
-              component: './user/Login',
-            },
-          ],
-        },
-      ],
-    },
     {
       path: `/${team}`,
       name: team,
@@ -212,27 +193,20 @@ function formatTeamMenu(team: string) {
           name: 'Details',
         },
         {
-          path: `/team/${team}/-/activity`,
+          path: `/group/${team}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/team/${team}/-/members`,
+      path: `/group/${team}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/team/${team}/-/settings`,
+      path: `/group/${team}/-/settings`,
       name: 'Settings',
       icon: 'setting',
-    },
-    {
-      path: '/',
-      menuRender: false,
-      name: 'Teams',
-      hideInMenu: true,
-      layout: 'top',
     },
   ];
 }

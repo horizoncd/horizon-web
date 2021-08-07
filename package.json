@@ -1,8 +1,8 @@
 {
-  "name": "ant-design-pro",
-  "version": "5.0.0",
+  "name": "horizon",
+  "version": "0.0.0",
   "private": true,
-  "description": "An out-of-box UI solution for enterprise applications",
+  "description": "horizon",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",
@@ -22,7 +22,7 @@
     "precommit": "lint-staged",
     "prettier": "prettier -c --write \"src/**/*\"",
     "start": "cross-env UMI_ENV=dev umi dev",
-    "start:dev": "cross-env REACT_APP_ENV=dev MOCK=none UMI_ENV=dev umi dev",
+    "start:dev": "cross-env REACT_APP_ENV=dev MOCK=true UMI_ENV=dev umi dev",
     "start:no-mock": "cross-env MOCK=none UMI_ENV=dev umi dev",
     "start:no-ui": "cross-env UMI_UI=none UMI_ENV=dev umi dev",
     "start:pre": "cross-env REACT_APP_ENV=pre UMI_ENV=dev umi dev",
