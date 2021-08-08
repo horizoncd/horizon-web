@@ -180,16 +180,16 @@ function formatGroupMenu(team: string) {
       path: `/${team}`,
       name: team,
       icon: 'smile',
-      key: 'Group name',
+      key: 'title'
     },
     {
       name: 'Group overview',
       icon: 'bank',
-      key: 'Group overview',
       children: [
         {
           path: `/${team}`,
           name: 'Details',
+          key: 'detail'
         },
         {
           path: `/group/${team}/-/activity`,

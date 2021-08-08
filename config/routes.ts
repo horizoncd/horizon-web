@@ -30,28 +30,6 @@
     hideInMenu: true,
   },
   {
-    name: 'group',
-    icon: 'smile',
-    key: 'Group name',
-  },
-  {
-    name: 'Group overview',
-    icon: 'bank',
-    key: 'Group overview',
-    routes: [
-      {
-        path: '/*',
-        name: 'Details',
-        component: './group/Details',
-      },
-      {
-        path: '/group/*/-/activity',
-        name: 'Activity',
-        component: './group/Activity',
-      },
-    ],
-  },
-  {
     path: '/group/*/-/members',
     name: 'Members',
     icon: 'contacts',
@@ -62,6 +40,22 @@
     name: 'Settings',
     icon: 'setting',
     component: './group/Settings',
+  },
+  {
+    name: 'Group overview',
+    icon: 'bank',
+    routes: [
+      {
+        path: '/group/*/-/activity',
+        name: 'Activity',
+        component: './group/Activity',
+      },
+      {
+        path: '/*',
+        name: 'Details',
+        component: './group/Details',
+      },
+    ],
   },
   {
     component: './404',
