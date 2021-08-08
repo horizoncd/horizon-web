@@ -1,66 +1,55 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Col, Divider, Input, Row, Tree } from 'antd';
+import {Col, Divider, Input, Row, Tree} from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { queryGroups } from '@/services/dashboard/groups';
-import { Link } from 'umi';
+import { Link, useModel } from 'umi';
+import { history } from '@@/core/history';
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
 
-const queryData = async () => {
-  const { data } = await queryGroups();
-  console.log(data);
-  return data;
-};
+export default (): React.ReactNode => {
+  // @ts-ignore
+  const { groups, queryGroup } = useModel('groups', model => ({ groups: model.groups, queryGroup: model.queryGroup }));
+  queryGroup();
 
-class Groups extends React.Component {
-  state = {
-    treeData: [],
+  const { setInitialState } = useModel('@@initialState');
+  const onSelect = () => {
+    setInitialState((s) => ({ ...s, location: history.location }));
+
   };
 
-  titleRender = (nodeData: any): React.ReactNode => {
+  const titleRender = (nodeData: any): React.ReactNode => {
     const { title } = nodeData;
+
     return (
-      <Link to={`/${title}`} style={{ color: 'black' }} onClick={(item) => console.log(item)}>
+      <Link to={`/${title}`} style={{ color: 'black' }}>
         {title}
       </Link>
     );
   };
 
-  componentDidMount() {
-    queryData().then((data) => {
-      this.setState({
-        treeData: data,
-      });
-    });
-  }
+  return (
+    <div>
+      <Row>
+        <Col span={4} />
+        <Col span={16}>
+          <PageContainer>
+            <Divider />
+            <Search style={{ marginBottom: 8 }} placeholder="Search" />
 
-  render() {
-    console.log('lll');
-    return (
-      <div>
-        <Row>
-          <Col span={4} />
-          <Col span={16}>
-            <PageContainer>
-              <Divider />
-              <Search style={{ marginBottom: 8 }} placeholder="Search" />
+            <DirectoryTree
+              showLine
+              switcherIcon={<DownOutlined />}
+              treeData={groups}
+              titleRender={titleRender}
+              onSelect={onSelect}
+            />
+          </PageContainer>
+        </Col>
 
-              <DirectoryTree
-                showLine
-                switcherIcon={<DownOutlined />}
-                treeData={this.state.treeData}
-                titleRender={this.titleRender}
-              />
-            </PageContainer>
-          </Col>
-
-          <Col span={4} />
-        </Row>
-      </div>
-    );
-  }
-}
-
-export default Groups;
+        <Col span={4} />
+      </Row>
+    </div>
+  );
+};

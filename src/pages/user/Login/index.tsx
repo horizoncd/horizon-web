@@ -1,18 +1,19 @@
 import React from 'react';
 import ProForm from '@ant-design/pro-form';
-import { history, Link } from 'umi';
+import {history, Link} from 'umi';
 import Footer from '@/components/Footer';
-import { pmsLogin } from '@/services/ant-design-pro/login';
+import {pmsLogin} from '@/services/ant-design-pro/login';
 import styles from './index.less';
+import {Col,Row} from "antd";
 
 const Login: React.FC = () => {
   const handleSubmit = async () => {
     // 登录
-    const { query } = history.location;
-    const { redirect } = query as {
+    const {query} = history.location;
+    const {redirect} = query as {
       redirect: string;
     };
-    const { data } = await pmsLogin({
+    const {data} = await pmsLogin({
       redirectUrl: redirect || '/',
       fromHost: window.location.host,
     });
@@ -22,38 +23,49 @@ const Login: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.top}>
-          <div className={styles.header}>
-            <Link to="/">
-              <h1 className={styles.title}>HORIZON</h1>
-            </Link>
-          </div>
-        </div>
+        <Row>
+          <Col span={10}>
+            <div className={styles.top}>
+              <div className={styles.header}>
+                <Link to="/">
+                  <h1 className={styles.title}>HORIZON</h1>
+                </Link>
+              </div>
+            </div>
 
-        <div className={styles.main}>
-          <ProForm
-            initialValues={{
-              autoLogin: true,
-            }}
-            submitter={{
-              searchConfig: {
-                submitText: 'OpenID 登录',
-              },
-              render: (_, dom) => dom.pop(),
-              submitButtonProps: {
-                size: 'large',
-                style: {
-                  width: '100%',
-                },
-              },
-            }}
-            onFinish={async () => {
-              handleSubmit();
-            }}
-          />
-        </div>
+            <div className={styles.main}>
+              <ProForm
+                initialValues={{
+                  autoLogin: true,
+                }}
+                submitter={{
+                  searchConfig: {
+                    submitText: 'OpenID 登录',
+                  },
+                  render: (_, dom) => dom.pop(),
+                  submitButtonProps: {
+                    size: 'large',
+                    style: {
+                      width: '100%',
+                    },
+                  },
+                }}
+                onFinish={async () => {
+                  handleSubmit();
+                }}
+              />
+            </div>
+          </Col>
+          <Col span={14}>
+            <img width={800}
+                 src="/f1011482851d87df78c503700a06198c.jpeg"
+            />
+          </Col>
+        </Row>
       </div>
-      <Footer />
+      <div style={{ backgroundColor: 'transparent' }}>
+        <Footer className='ant-layout-footer-login' />
+      </div>
     </div>
   );
 };

@@ -30,7 +30,6 @@
     hideInMenu: true,
   },
   {
-    path: '/*',
     name: 'group',
     icon: 'smile',
     key: 'Group name',
@@ -39,7 +38,6 @@
     name: 'Group overview',
     icon: 'bank',
     key: 'Group overview',
-    path: '/*',
     routes: [
       {
         path: '/*',

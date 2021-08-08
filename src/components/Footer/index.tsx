@@ -1,9 +1,9 @@
-import { DefaultFooter } from '@ant-design/pro-layout';
+import {DefaultFooter, FooterProps} from '@ant-design/pro-layout';
 
-export default () => {
+export default (props: FooterProps) => {
   const defaultMessage = '2021 HORIZON @2021~2025 Horizon CloudNative Group';
   return (
-    <DefaultFooter
+    <DefaultFooter className={props.className}
       copyright={`${defaultMessage}`}
       links={
         [

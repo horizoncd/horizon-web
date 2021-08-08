@@ -157,16 +157,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         location: initialState?.location,
       },
       request: async (params, defaultMenuData) => {
+        console.log(location)
         const { pathname } = params.location;
         const pathnameSplit = pathname.split('/').filter((item: string) => item !== '');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
         if (length === 0) {
-          console.log(defaultMenuData);
           return defaultMenuData;
         }
-        console.log('kkk');
-        return loopMenuItem(formatTeamMenu(pathnameSplit[pathnameSplit.length - 1]));
+        return loopMenuItem(formatGroupMenu(pathnameSplit[pathnameSplit.length - 1]));
       },
     },
     // 自定义 403 页面
@@ -175,7 +174,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   };
 };
 
-function formatTeamMenu(team: string) {
+function formatGroupMenu(team: string) {
   return [
     {
       path: `/${team}`,
