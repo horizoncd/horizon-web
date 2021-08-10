@@ -44,7 +44,7 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  location?: any;
+  pathname?: string;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -62,7 +62,7 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       settings: {},
-      location: history.location,
+      pathname: history.location.pathname,
     };
   }
   return {
@@ -124,6 +124,7 @@ export const request: RequestConfig = {
 };
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
+// @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent />,
@@ -154,11 +155,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     menuHeaderRender: undefined,
     menu: {
       params: {
-        location: initialState?.location,
+        pathname: initialState?.pathname,
       },
-      request: async (params, defaultMenuData) => {
-        console.log(location)
-        const { pathname } = params.location;
+      request: async (params: Record<string, any>, defaultMenuData: MenuDataItem[]) => {
+        const { pathname } = params;
         const pathnameSplit = pathname.split('/').filter((item: string) => item !== '');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
@@ -180,7 +180,7 @@ function formatGroupMenu(team: string) {
       path: `/${team}`,
       name: team,
       icon: 'smile',
-      key: 'title'
+      key: 'title',
     },
     {
       name: 'Group overview',
@@ -189,7 +189,7 @@ function formatGroupMenu(team: string) {
         {
           path: `/${team}`,
           name: 'Details',
-          key: 'detail'
+          key: 'detail',
         },
         {
           path: `/group/${team}/-/activity`,
@@ -206,6 +206,12 @@ function formatGroupMenu(team: string) {
       path: `/group/${team}/-/settings`,
       name: 'Settings',
       icon: 'setting',
+    },
+    {
+      path: '/',
+      menuRender: false,
+      name: 'Groups',
+      hideInMenu: true,
     },
   ];
 }

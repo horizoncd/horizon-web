@@ -1,22 +1,23 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import {Col, Divider, Input, Row, Tree} from 'antd';
+import { Col, Divider, Input, Row, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { Link, useModel } from 'umi';
-import { history } from '@@/core/history';
+import { Link, useModel, history } from 'umi';
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
 
 export default (): React.ReactNode => {
   // @ts-ignore
-  const { groups, queryGroup } = useModel('groups', model => ({ groups: model.groups, queryGroup: model.queryGroup }));
+  const { groups, queryGroup } = useModel('groups', (model) => ({
+    groups: model.groups,
+    queryGroup: model.queryGroup,
+  }));
   queryGroup();
 
   const { setInitialState } = useModel('@@initialState');
   const onSelect = () => {
-    setInitialState((s) => ({ ...s, location: history.location }));
-
+    setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
   };
 
   const titleRender = (nodeData: any): React.ReactNode => {

@@ -1,19 +1,19 @@
 import React from 'react';
 import ProForm from '@ant-design/pro-form';
-import {history, Link} from 'umi';
+import { history, Link } from 'umi';
 import Footer from '@/components/Footer';
-import {pmsLogin} from '@/services/ant-design-pro/login';
+import { pmsLogin } from '@/services/ant-design-pro/login';
 import styles from './index.less';
-import {Col,Row} from "antd";
+import { Col, Row } from 'antd';
 
 const Login: React.FC = () => {
   const handleSubmit = async () => {
     // 登录
-    const {query} = history.location;
-    const {redirect} = query as {
+    const { query } = history.location;
+    const { redirect } = query as {
       redirect: string;
     };
-    const {data} = await pmsLogin({
+    const { data } = await pmsLogin({
       redirectUrl: redirect || '/',
       fromHost: window.location.host,
     });
@@ -56,15 +56,13 @@ const Login: React.FC = () => {
               />
             </div>
           </Col>
-          <Col span={14}>
-            <img width={800}
-                 src="/f1011482851d87df78c503700a06198c.jpeg"
-            />
+          <Col span={13}>
+            <img width="100%" src="/f1011482851d87df78c503700a06198c.jpeg" />
           </Col>
         </Row>
       </div>
       <div style={{ backgroundColor: 'transparent' }}>
-        <Footer className='ant-layout-footer-login' />
+        <Footer className="ant-layout-footer-login" />
       </div>
     </div>
   );
