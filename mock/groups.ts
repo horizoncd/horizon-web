@@ -30,6 +30,18 @@ const getGroups = (req: Request, res: Response) => {
       {
         title: 'music-pe',
         key: 'music-pe',
+        children: [
+          {
+            title: 'app-deploy',
+            key: 'app-deploy1',
+            children: [
+              {
+                title: 'dev',
+                key: 'dev1',
+              },
+            ],
+          },
+        ],
       },
       {
         title: 'cloudsre',
