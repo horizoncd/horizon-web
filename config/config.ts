@@ -50,8 +50,10 @@ export default defineConfig({
     },
     {
       requestLibPath: "import { request } from 'umi'",
-      schemaPath: 'https://gw.alipayobjects.com/os/antfincdn/CA1dOm%2631B/openapi.json',
-      projectName: 'swagger',
+      // 或者使用在线的版本
+      schemaPath:
+        'https://g.hz.netease.com/music-cloud-native/horizon/horizon/-/raw/feature/group/openapi/group.yaml',
+      mock: false,
     },
   ],
   nodeModulesTransform: {

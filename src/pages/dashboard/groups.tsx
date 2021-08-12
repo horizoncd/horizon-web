@@ -2,7 +2,8 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Col, Divider, Input, Row, Tabs, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { history, Link, useModel } from 'umi';
+import { history, useModel } from 'umi';
+import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -17,19 +18,21 @@ export default (): React.ReactNode => {
   queryGroup();
 
   const { setInitialState } = useModel('@@initialState');
-  const onSelect = (item) => {
-    console.log(item);
+  const onSelect = (
+    selectedKeys: Key[],
+    info: {
+      event: 'select';
+      selected: boolean;
+      node: EventDataNode;
+      selectedNodes: DataNode[];
+      nativeEvent: MouseEvent;
+    },
+  ) => {
+    history.push(`/${info.node.title}`);
     setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
   };
 
-  const titleRender = (nodeData: any): React.ReactNode => {
-    const { title } = nodeData;
-    return (
-      <Link to={`/${title}`} style={{ color: 'black' }}>
-        {title}
-      </Link>
-    );
-  };
+  const query = <Search placeholder="Search" />;
 
   return (
     <div>
@@ -37,9 +40,8 @@ export default (): React.ReactNode => {
         <Col span={4} />
         <Col span={16}>
           <PageContainer>
-            <Divider />
-            <Search style={{ marginBottom: 15 }} placeholder="Search" />
-            <Tabs defaultActiveKey="1">
+            <Divider style={{ margin: '0 0 5px 0' }} />
+            <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
               <TabPane tab="Your groups" key="1">
                 {groups.map((item: { title: string; key: string; children?: [] }) => {
                   const hasChildren = item.children && item.children.length > 0;
@@ -49,7 +51,6 @@ export default (): React.ReactNode => {
                         showLine={hasChildren ? { showLeafIcon: false } : false}
                         switcherIcon={<DownOutlined />}
                         treeData={[item]}
-                        titleRender={titleRender}
                         onSelect={onSelect}
                       />
                       <Divider style={{ margin: '0' }} />
@@ -60,7 +61,6 @@ export default (): React.ReactNode => {
             </Tabs>
           </PageContainer>
         </Col>
-
         <Col span={4} />
       </Row>
     </div>
