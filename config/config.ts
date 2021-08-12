@@ -48,13 +48,6 @@ export default defineConfig({
       schemaPath: join(__dirname, 'oneapi.json'),
       mock: false,
     },
-    {
-      requestLibPath: "import { request } from 'umi'",
-      // 或者使用在线的版本
-      schemaPath:
-        'https://g.hz.netease.com/music-cloud-native/horizon/horizon/-/raw/feature/group/openapi/group.yaml',
-      mock: false,
-    },
   ],
   nodeModulesTransform: {
     type: 'none',
