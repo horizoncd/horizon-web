@@ -1,0 +1,31 @@
+stages:
+  - imagebuild
+
+before_script:
+  - export APP_REVISION="${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME##*/}-r$CI_PIPELINE_ID}"
+
+imagebuild:
+  stage: imagebuild
+  script:
+    - |
+      # build
+      npm install
+      npm run build
+
+      # docker build
+      IMAGES="$(jq -r '. | map("-t " + .server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
+      echo $IMAGES
+      eval docker build --network=host "$IMAGES" . || exit 1
+
+      # docker push
+      export DOCKER_CONFIG_JSON="$(jq 'reduce .[].auth.auths as $item ({}; . + $item) | {auths: .}'<<<"$REGISTRIES")"
+      echo $DOCKER_CONFIG_JSON
+      while read IMAGE; do
+        docker push "$IMAGE" || exit 1
+      done < <(jq -r '.[] | .server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION'<<<"$REGISTRIES")
+
+      # docker rmi
+      docker images | grep "$APP_REVISION" | grep "$CI_PROJECT_NAME" | awk '{print $3}' | head -n 1 | xargs -t docker rmi -f
+  only:
+    - develop
+    - tags
