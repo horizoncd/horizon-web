@@ -23,7 +23,7 @@ export async function getFakeCaptcha(
 export async function pmsLogin(params: { redirectUrl: string; fromHost: string }) {
   return request<{
     data: string;
-  }>('/api/pms/login', {
+  }>('/api/v1/login', {
     method: 'GET',
     params: {
       ...params,
@@ -32,13 +32,13 @@ export async function pmsLogin(params: { redirectUrl: string; fromHost: string }
 }
 
 export async function outLogin() {
-  return request('/api/pms/logout', {
+  return request('/api/v1/logout', {
     method: 'GET',
   });
 }
 
 export async function currentUser() {
-  return request('/api/pms/login/status', {
+  return request('/api/v1/status', {
     method: 'GET',
   });
 }
