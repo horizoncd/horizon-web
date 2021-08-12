@@ -1,37 +1,20 @@
-import { useIntl } from 'umi';
-import { GithubOutlined } from '@ant-design/icons';
-import { DefaultFooter } from '@ant-design/pro-layout';
+import {DefaultFooter, FooterProps} from '@ant-design/pro-layout';
 
-export default () => {
-  const intl = useIntl();
-  const defaultMessage = intl.formatMessage({
-    id: 'app.copyright.produced',
-    defaultMessage: '蚂蚁集团体验技术部出品',
-  });
-
+export default (props: FooterProps) => {
+  const defaultMessage = '2021 HORIZON @2021~2025 Horizon CloudNative Group';
   return (
-    <DefaultFooter
-      copyright={`2020 ${defaultMessage}`}
-      links={[
-        {
-          key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
-          blankTarget: true,
-        },
-        {
-          key: 'github',
-          title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
-          blankTarget: true,
-        },
-        {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
-          blankTarget: true,
-        },
-      ]}
+    <DefaultFooter className={props.className}
+      copyright={`${defaultMessage}`}
+      links={
+        [
+          // {
+          //   key: 'Ant Design Pro',
+          //   title: 'Ant Design Pro',
+          //   href: 'https://pro.ant.design',
+          //   blankTarget: true,
+          // },
+        ]
+      }
     />
   );
 };

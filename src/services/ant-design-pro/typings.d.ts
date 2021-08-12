@@ -4,6 +4,7 @@
 declare namespace API {
   type CurrentUser = {
     name?: string;
+    nickName?: string;
     avatar?: string;
     userid?: string;
     email?: string;
@@ -98,4 +99,10 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  type TeamAppCluster = {
+    team?: string;
+    app?: string;
+    cluster?: string;
+  }
 }

@@ -7,7 +7,7 @@
         path: '/user',
         routes: [
           {
-            name: 'login',
+            name: '登录',
             path: '/user/login',
             component: './user/Login',
           },
@@ -16,35 +16,46 @@
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
+    path: '/',
+    menuRender: false,
+    component: './dashboard/groups',
+    name: 'Groups',
+    hideInMenu: true,
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
+    path: '/dashboard/groups',
+    menuRender: false,
+    component: './dashboard/groups',
+    name: 'Groups',
+    hideInMenu: true,
+  },
+  {
+    path: '/group/*/-/members',
+    name: 'Members',
+    icon: 'contacts',
+    component: './group/Members',
+  },
+  {
+    path: '/group/*/-/settings',
+    name: 'Settings',
+    icon: 'setting',
+    component: './group/Settings',
+  },
+  {
+    name: 'Group overview',
+    icon: 'bank',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
+        path: '/group/*/-/activity',
+        name: 'Activity',
+        component: './group/Activity',
+      },
+      {
+        path: '/*',
+        name: 'Details',
+        component: './group/Details',
       },
     ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
-  {
-    path: '/',
-    redirect: '/welcome',
   },
   {
     component: './404',
