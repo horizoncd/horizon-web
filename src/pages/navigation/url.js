@@ -21,11 +21,18 @@ env.set(onlineEks, '线上海外');
 
 const data = [
   {
-    name: 'harbor',
+    name: 'Harbor',
 
     sites: {
       devControl: 'harbor.musiconline-dev',
       devCompute1: 'harbor.yf-dev1',
+      testControl: 'harbor.yf-onlinetest',
+      testCompute1: 'harbor.yf-onlinetest1',
+      testEks: 'harbor.yf-onlinetest2',
+      onlineControl: 'harbor.yf-online',
+      onlineyq1: 'harbor.yf-online1',
+      onlinedg1: 'harbor.yf-online-dg1',
+      onlineEks: 'harbor.yf-meetyonline',
     },
   },
 ];
