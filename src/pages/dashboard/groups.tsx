@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Col, Divider, Input, Row, Tabs, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { history, Link, useModel } from 'umi';
+import { history, useModel, Link } from 'umi';
+import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import './groups.less';
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -16,20 +18,107 @@ export default (): React.ReactNode => {
   }));
   queryGroup();
 
-  const { setInitialState } = useModel('@@initialState');
-  const onSelect = (item) => {
-    console.log(item);
-    setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
+  const [searchValue, setSearchValue] = useState('');
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
+  const defaultExpandedKeys: (string | number)[] = [];
+  const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
+
+  const getParentKey = (key: string, tree: any[]): string => {
+    let parentKey;
+    for (let i = 0; i < tree.length; i += 1) {
+      const node = tree[i];
+      if (node.children) {
+        if (node.children.some((item: { key: any }) => item.key === key)) {
+          parentKey = node.key;
+        } else if (getParentKey(key, node.children)) {
+          parentKey = getParentKey(key, node.children);
+        }
+      }
+    }
+    return parentKey;
+  };
+
+  const dataList: { key: string; title: string }[] = [];
+  const generateList = (data: { title: string; key: string; children?: [] }[]) => {
+    for (let i = 0; i < data.length; i += 1) {
+      const node = data[i];
+      const { key } = node;
+      dataList.push({ key, title: key });
+      if (node.children) {
+        generateList(node.children);
+      }
+    }
+  };
+  generateList(groups);
+
+  const onExpand = (expandedKey: any) => {
+    setExpandedKeys(expandedKey);
+    setAutoExpandParent(false);
   };
 
   const titleRender = (nodeData: any): React.ReactNode => {
     const { title } = nodeData;
-    return (
-      <Link to={`/${title}`} style={{ color: 'black' }}>
-        {title}
-      </Link>
-    );
+    const index = title.indexOf(searchValue);
+    const beforeStr = title.substr(0, index);
+    const afterStr = title.substr(index + searchValue.length);
+    const tmp =
+      searchValue && index > -1 ? (
+        <span className="group-title">
+          {beforeStr}
+          <span className="site-tree-search-value">{searchValue}</span>
+          {afterStr}
+        </span>
+      ) : (
+        <span className="group-title">{title}</span>
+      );
+
+    return <Link to={`/${title}`}>{tmp}</Link>;
   };
+
+  // 搜索框输入值监听
+  const onChange = (e: any) => {
+    const { value } = e.target;
+    const tmpExpandedKeys = dataList
+      .map((item: any) => {
+        if (value && item.title.indexOf(value) > -1) {
+          return getParentKey(item.key, groups);
+        }
+        return '';
+      })
+      .filter((item, i, self) => item && self.indexOf(item) === i);
+
+    setSearchValue(value);
+    setExpandedKeys(tmpExpandedKeys);
+  };
+
+  const { setInitialState } = useModel('@@initialState');
+
+  // 选择一行
+  const onSelect = (
+    selectedKeys: Key[],
+    info: {
+      event: 'select';
+      selected: boolean;
+      node: EventDataNode;
+      selectedNodes: DataNode[];
+      nativeEvent: MouseEvent;
+    },
+  ) => {
+    const { node } = info;
+    setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
+    // 如果存在子节点，则展开/折叠该group，不然直接跳转
+    const { children, key, expanded } = node;
+    if (!children?.length) {
+      // title变为了element对象，需要注意下
+      history.push(`/${info.node.title}`);
+    } else if (!expanded) {
+      setExpandedKeys([...expandedKeys, key]);
+    } else {
+      setExpandedKeys(expandedKeys.filter((item) => item !== key));
+    }
+  };
+
+  const query = <Search placeholder="Search" onChange={onChange} />;
 
   return (
     <div>
@@ -37,20 +126,22 @@ export default (): React.ReactNode => {
         <Col span={4} />
         <Col span={16}>
           <PageContainer>
-            <Divider />
-            <Search style={{ marginBottom: 15 }} placeholder="Search" />
-            <Tabs defaultActiveKey="1">
+            <Divider style={{ margin: '0 0 5px 0' }} />
+            <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
               <TabPane tab="Your groups" key="1">
                 {groups.map((item: { title: string; key: string; children?: [] }) => {
                   const hasChildren = item.children && item.children.length > 0;
                   return (
                     <div key={item.title}>
                       <DirectoryTree
+                        onExpand={onExpand}
                         showLine={hasChildren ? { showLeafIcon: false } : false}
                         switcherIcon={<DownOutlined />}
                         treeData={[item]}
                         titleRender={titleRender}
                         onSelect={onSelect}
+                        autoExpandParent={autoExpandParent}
+                        expandedKeys={expandedKeys}
                       />
                       <Divider style={{ margin: '0' }} />
                     </div>
@@ -60,7 +151,6 @@ export default (): React.ReactNode => {
             </Tabs>
           </PageContainer>
         </Col>
-
         <Col span={4} />
       </Row>
     </div>

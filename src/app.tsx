@@ -5,7 +5,7 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
+import { currentUser as queryCurrentUser } from './services/login';
 import { LinkOutlined } from '@ant-design/icons';
 import { stringify } from 'querystring';
 import {

@@ -48,13 +48,12 @@ const defaultGroups = [
 ];
 
 export default function useAuthModel() {
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState(defaultGroups);
 
   const queryGroup = useCallback(() => {
     // queryGroups().then(({data}) => {
     //   setGroups(data);
     // });
-    setGroups(defaultGroups);
   }, []);
 
   return {
