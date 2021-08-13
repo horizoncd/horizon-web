@@ -165,6 +165,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         if (length === 0) {
           return defaultMenuData;
         }
+        // 导航页
+        if (pathname === '/-/navigation') {
+          return defaultMenuData;
+        }
         return loopMenuItem(formatGroupMenu(pathnameSplit[pathnameSplit.length - 1]));
       },
     },
