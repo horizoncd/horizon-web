@@ -2,18 +2,17 @@ import React from 'react';
 import ProForm from '@ant-design/pro-form';
 import { history, Link } from 'umi';
 import Footer from '@/components/Footer';
-import { pmsLogin } from '@/services/ant-design-pro/login';
+import { login } from '@/services/login';
 import styles from './index.less';
 import { Col, Row } from 'antd';
 
 const Login: React.FC = () => {
   const handleSubmit = async () => {
-    // 登录
     const { query } = history.location;
     const { redirect } = query as {
       redirect: string;
     };
-    const { data } = await pmsLogin({
+    const { data } = await login({
       redirectUrl: redirect || '/',
       fromHost: window.location.host,
     });

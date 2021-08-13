@@ -64,7 +64,7 @@
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.0.4",
     "react-highlight-words": "latest",
-    "umi": "^3.5.0",
+    "umi": "^3.5.17",
     "umi-serve": "^1.9.10"
   },
   "devDependencies": {

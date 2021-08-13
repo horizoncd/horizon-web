@@ -1,17 +1,18 @@
-import React, {useState} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
-import {Col, Divider, Input, Row, Tabs, Tree} from 'antd';
-import {DownOutlined} from '@ant-design/icons';
-import {history, useModel} from 'umi';
-import {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
+import React, { useState } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
+import { Col, Divider, Input, Row, Tabs, Tree } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { history, useModel, Link } from 'umi';
+import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import './groups.less';
 
-const {DirectoryTree} = Tree;
-const {Search} = Input;
-const {TabPane} = Tabs;
+const { DirectoryTree } = Tree;
+const { Search } = Input;
+const { TabPane } = Tabs;
 
 export default (): React.ReactNode => {
   // @ts-ignore
-  const {groups, queryGroup} = useModel('groups', (model) => ({
+  const { groups, queryGroup } = useModel('groups', (model) => ({
     groups: model.groups,
     queryGroup: model.queryGroup,
   }));
@@ -19,14 +20,15 @@ export default (): React.ReactNode => {
 
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  const defaultExpandedKeys: string[] = ['music-pe']
+  const defaultExpandedKeys: (string | number)[] = [];
   const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
+
   const getParentKey = (key: string, tree: any[]): string => {
     let parentKey;
     for (let i = 0; i < tree.length; i += 1) {
       const node = tree[i];
       if (node.children) {
-        if (node.children.some((item: { key: any; }) => item.key === key)) {
+        if (node.children.some((item: { key: any }) => item.key === key)) {
           parentKey = node.key;
         } else if (getParentKey(key, node.children)) {
           parentKey = getParentKey(key, node.children);
@@ -36,51 +38,62 @@ export default (): React.ReactNode => {
     return parentKey;
   };
 
+  const dataList: { key: string; title: string }[] = [];
+  const generateList = (data: { title: string; key: string; children?: [] }[]) => {
+    for (let i = 0; i < data.length; i += 1) {
+      const node = data[i];
+      const { key } = node;
+      dataList.push({ key, title: key });
+      if (node.children) {
+        generateList(node.children);
+      }
+    }
+  };
+  generateList(groups);
+
   const onExpand = (expandedKey: any) => {
-    setExpandedKeys(expandedKey)
-    setAutoExpandParent(false)
+    setExpandedKeys(expandedKey);
+    setAutoExpandParent(false);
   };
 
-  const loop = (data: { title: string; key: string; children?: [] }[]): any =>
-    data.map((item: { title: string, key: string, children?: [] }) => {
-      const index = item.title.indexOf(searchValue);
-      const beforeStr = item.title.substr(0, index);
-      const afterStr = item.title.substr(index + searchValue.length);
-      const title =
-        index > -1 ? (
-          <span>
-              {beforeStr}
-            <span className="site-tree-search-value">{searchValue}</span>
-            {afterStr}
-            </span>
-        ) : (
-          <span>{item.title}</span>
-        );
-      if (item.children) {
-        return {title, key: item.key, children: loop(item.children)};
-      }
+  const titleRender = (nodeData: any): React.ReactNode => {
+    const { title } = nodeData;
+    const index = title.indexOf(searchValue);
+    const beforeStr = title.substr(0, index);
+    const afterStr = title.substr(index + searchValue.length);
+    const tmp =
+      searchValue && index > -1 ? (
+        <span className="group-title">
+          {beforeStr}
+          <span className="site-tree-search-value">{searchValue}</span>
+          {afterStr}
+        </span>
+      ) : (
+        <span className="group-title">{title}</span>
+      );
 
-      return {
-        title,
-        key: item.key,
-      };
-    });
+    return <Link to={`/${title}`}>{tmp}</Link>;
+  };
+
+  // 搜索框输入值监听
   const onChange = (e: any) => {
-    const {value} = e.target;
-    const tmpExpandedKeys = groups
+    const { value } = e.target;
+    const tmpExpandedKeys = dataList
       .map((item: any) => {
-        if (item.title.indexOf(value) > -1) {
+        if (value && item.title.indexOf(value) > -1) {
           return getParentKey(item.key, groups);
         }
         return '';
       })
       .filter((item, i, self) => item && self.indexOf(item) === i);
 
-    setSearchValue(value)
-    setExpandedKeys(tmpExpandedKeys)
-  }
+    setSearchValue(value);
+    setExpandedKeys(tmpExpandedKeys);
+  };
 
-  const {setInitialState} = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
+
+  // 选择一行
   const onSelect = (
     selectedKeys: Key[],
     info: {
@@ -91,19 +104,29 @@ export default (): React.ReactNode => {
       nativeEvent: MouseEvent;
     },
   ) => {
-    history.push(`/${info.node.title}`);
-    setInitialState((s) => ({...s, pathname: history.location.pathname}));
+    const { node } = info;
+    setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
+    // 如果存在子节点，则展开/折叠该group，不然直接跳转
+    const { children, key, expanded } = node;
+    if (!children?.length) {
+      // title变为了element对象，需要注意下
+      history.push(`/${info.node.title}`);
+    } else if (!expanded) {
+      setExpandedKeys([...expandedKeys, key]);
+    } else {
+      setExpandedKeys(expandedKeys.filter((item) => item !== key));
+    }
   };
 
-  const query = <Search placeholder="Search" onChange={onChange}/>;
+  const query = <Search placeholder="Search" onChange={onChange} />;
 
   return (
     <div>
       <Row>
-        <Col span={4}/>
+        <Col span={4} />
         <Col span={16}>
           <PageContainer>
-            <Divider style={{margin: '0 0 5px 0'}}/>
+            <Divider style={{ margin: '0 0 5px 0' }} />
             <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
               <TabPane tab="Your groups" key="1">
                 {groups.map((item: { title: string; key: string; children?: [] }) => {
@@ -112,14 +135,15 @@ export default (): React.ReactNode => {
                     <div key={item.title}>
                       <DirectoryTree
                         onExpand={onExpand}
-                        showLine={hasChildren ? {showLeafIcon: false} : false}
-                        switcherIcon={<DownOutlined/>}
-                        treeData={loop([item])}
+                        showLine={hasChildren ? { showLeafIcon: false } : false}
+                        switcherIcon={<DownOutlined />}
+                        treeData={[item]}
+                        titleRender={titleRender}
                         onSelect={onSelect}
-                        autoExpandParent
+                        autoExpandParent={autoExpandParent}
                         expandedKeys={expandedKeys}
                       />
-                      <Divider style={{margin: '0'}}/>
+                      <Divider style={{ margin: '0' }} />
                     </div>
                   );
                 })}
@@ -127,7 +151,7 @@ export default (): React.ReactNode => {
             </Tabs>
           </PageContainer>
         </Col>
-        <Col span={4}/>
+        <Col span={4} />
       </Row>
     </div>
   );
