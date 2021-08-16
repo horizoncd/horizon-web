@@ -13,6 +13,7 @@ import {
   SettingOutlined,
   SmileOutlined,
 } from '@ant-design/icons/lib';
+import {Route} from "antd/lib/breadcrumb/Breadcrumb";
 
 const loginPath = '/user/login';
 
@@ -124,25 +125,40 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+  const { location } = history;
+  const { pathname: curPathname } = location;
+  console.log('RunTimeLayoutConfig')
+
   return {
     headerContentRender: () => <ProBreadcrumb />,
-    breadcrumbRender: (routers = []) => [
-      {
-        path: '/',
-        breadcrumbName: '主页',
-      },
-      {
-        path: '/',
-        breadcrumbName: '测试页',
-      },
-      ...routers,
-    ],
+    breadcrumbRender: () => {
+      const routes: Route[] = [];
+
+      let currentLink = '';
+      curPathname.split('/')
+        .filter(item => item !== '' && item !== '-' && item !== 'app' && item !== 'group')
+        .forEach(item => {
+          currentLink += `/${item}`;
+          routes.push({
+            path: currentLink,
+            breadcrumbName: item,
+          })
+        });
+      console.log(routes)
+      return [
+        ...routes,
+      ]
+    },
+    breadcrumbProps: {
+      itemRender: (route: Route) => {
+        return <a href={route.path}>{route.breadcrumbName}</a>
+      }
+    },
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {},
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const { location } = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         // 将当前URL作为查询参数
@@ -172,9 +188,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         for (let i = 1; i < pathnameSplit.length; i += 1) {
           const v = pathnameSplit[i];
           if (v === '-') {
-            title = pathnameSplit[i - 1];
             break
           }
+          title = pathnameSplit[i];
           path = `${path}/${v}`
         }
 
@@ -189,6 +205,21 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     ...initialState?.settings,
   };
 };
+
+// 由路径构造出数组（横杠之前）
+function formatDetailPath(pathname: string): string[] {
+  const arr = pathname.split('/').filter((item: string) => item !== '' && item !== 'group' && item !== 'app');
+  const chain = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    const v = arr[i];
+    if (v === '-') {
+      break;
+    }
+    chain.push(v);
+  }
+
+  return chain;
+}
 
 function formatGroupMenu(title: string, path: string) {
   return [

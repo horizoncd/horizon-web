@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Col, Divider, Input, Row, Tabs, Tree } from 'antd';
+import { Col, Divider, Input, Row, Tabs, Tree, Button } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { history, useModel, Link } from 'umi';
 import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
@@ -124,11 +124,15 @@ export default (): React.ReactNode => {
 
   const query = <Search placeholder="Search" onChange={onChange} />;
 
+  const header = () => {
+    return (<Button type="primary" style={{backgroundColor: '#1f75cb'}}>New group</Button>)
+  }
+
   return (
-    <Row>
+    <Row id="groups">
       <Col span={4} />
       <Col span={16}>
-        <PageContainer breadcrumbRender={false} title={'Groups'}>
+        <PageContainer header={{title: 'Groups', extra: header()}} breadcrumbRender={false}>
           <Divider className={'group-divider'} />
           <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
             <TabPane tab="Your groups" key="1">
