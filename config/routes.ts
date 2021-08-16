@@ -23,12 +23,6 @@
     hideInMenu: true,
   },
   {
-    path: '/-/navigation',
-    menuRender: false,
-    component: './navigation',
-    hideInMenu: true,
-  },
-  {
     path: '/dashboard/groups',
     menuRender: false,
     component: './dashboard/groups',

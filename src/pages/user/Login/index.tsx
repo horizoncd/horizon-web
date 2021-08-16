@@ -2,7 +2,7 @@ import React from 'react';
 import ProForm from '@ant-design/pro-form';
 import { history, Link } from 'umi';
 import Footer from '@/components/Footer';
-import { login } from '@/services/login';
+import { login } from '@/services/ant-design-pro/login';
 import styles from './index.less';
 import { Col, Row } from 'antd';
 

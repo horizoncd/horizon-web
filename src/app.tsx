@@ -1,12 +1,11 @@
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading } from '@ant-design/pro-layout';
+import { PageLoading, ProBreadcrumb } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history, Link } from 'umi';
+import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/login';
-import { LinkOutlined } from '@ant-design/icons';
+import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 import { stringify } from 'querystring';
 import {
   BankOutlined,
@@ -15,7 +14,6 @@ import {
   SmileOutlined,
 } from '@ant-design/icons/lib';
 
-const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 const IconMap = {
@@ -127,6 +125,18 @@ export const request: RequestConfig = {
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
+    headerContentRender: () => <ProBreadcrumb />,
+    breadcrumbRender: (routers = []) => [
+      {
+        path: '/',
+        breadcrumbName: '主页',
+      },
+      {
+        path: '/',
+        breadcrumbName: '测试页',
+      },
+      ...routers,
+    ],
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {},
@@ -144,14 +154,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         });
       }
     },
-    links: isDev
-      ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-        ]
-      : [],
     menuHeaderRender: undefined,
     menu: {
       params: {
@@ -165,10 +167,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         if (length === 0) {
           return defaultMenuData;
         }
-        // 导航页
-        if (pathname === '/-/navigation') {
-          return defaultMenuData;
-        }
+
         return loopMenuItem(formatGroupMenu(pathnameSplit[pathnameSplit.length - 1]));
       },
     },

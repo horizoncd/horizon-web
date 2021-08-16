@@ -9,8 +9,8 @@
 export default {
   dev: {
     '/api/': {
-      target: 'http://cms.qa.igame.163.com',
-      // target: 'http://horizon.yf-dev.netease.com',
+      // target: 'http://cms.qa.igame.163.com',
+      target: 'http://horizon.yf-dev.netease.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

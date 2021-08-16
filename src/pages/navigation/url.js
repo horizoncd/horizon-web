@@ -9,33 +9,31 @@ const onlinedg1 = 'onlinedg1';
 const onlineEks = 'onlineEks';
 
 const env = new Map();
-env.set(devControl, '开发管控');
-env.set(devCompute1, '开发计算');
-env.set(testControl, '测试管控');
-env.set(testCompute1, '测试计算');
-env.set(testEks, '测试海外');
-env.set(onlineControl, '线上管控');
-env.set(onlineyq1, '线上义桥');
-env.set(onlinedg1, '线上东冠');
-env.set(onlineEks, '线上海外');
+env.set(devControl, {name: '开发管控', flag: 'yf-dev'});
+env.set(devCompute1, {name: '开发计算', flag: 'yf-dev1'});
+env.set(testControl, {name: '测试管控', flag: 'yf-onlinetest'});
+env.set(testCompute1, {name: '测试计算', flag: 'yf-onlinetest1'});
+env.set(testEks, {name: '测试海外', flag: 'yf-onlinetest2'});
+env.set(onlineControl, {name: '线上管控', flag: 'yf-online'});
+env.set(onlineyq1, {name: '线上义桥', flag: 'yf-online1'});
+env.set(onlinedg1, {name: '线上东冠', flag: 'yf-online-dg1'});
+env.set(onlineEks, {name: '线上海外', flag: 'yf-meetyonline'});
 
-const data = [
-  {
-    name: 'Harbor',
+const harbor = {
+  moduleName: 'harbor',
 
-    sites: {
-      devControl: 'harbor.musiconline-dev',
-      devCompute1: 'harbor.yf-dev1',
-      testControl: 'harbor.yf-onlinetest',
-      testCompute1: 'harbor.yf-onlinetest1',
-      testEks: 'harbor.yf-onlinetest2',
-      onlineControl: 'harbor.yf-online',
-      onlineyq1: 'harbor.yf-online1',
-      onlinedg1: 'harbor.yf-online-dg1',
-      onlineEks: 'harbor.yf-meetyonline',
-    },
+  serviceSites: [devControl, devCompute1, testControl, testEks, onlineControl, onlinedg1, onlineEks],
+
+  overwrite: {
+    devControl: 'musiconline-dev',
+    testControl: 'musiconline-test',
   },
-];
+};
+
+const data = [{
+  title: '发布构建部署',
+  modules: [harbor, harbor, harbor, harbor, harbor, harbor, ],
+}]
 
 export default {
   env,
