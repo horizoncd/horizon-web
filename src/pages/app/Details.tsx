@@ -2,11 +2,12 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card } from 'antd';
 
-export default (): React.ReactNode => {
+export default (props: any): React.ReactNode => {
+  console.log(props)
   return (
     <PageContainer>
       <Card>
-        <div>group Activity</div>
+        <div>app Details</div>
       </Card>
     </PageContainer>
   );

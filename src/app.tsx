@@ -167,8 +167,21 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         if (length === 0) {
           return defaultMenuData;
         }
+        let title = pathnameSplit[0];
+        let path = pathnameSplit[0];
+        for (let i = 1; i < pathnameSplit.length; i += 1) {
+          const v = pathnameSplit[i];
+          if (v === '-') {
+            title = pathnameSplit[i - 1];
+            break
+          }
+          path = `${path}/${v}`
+        }
 
-        return loopMenuItem(formatGroupMenu(pathnameSplit[pathnameSplit.length - 1]));
+        if (length === 1) {
+          return loopMenuItem(formatGroupMenu(title, path));
+        }
+        return loopMenuItem(formatAppMenu(title, path));
       },
     },
     // 自定义 403 页面
@@ -177,11 +190,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   };
 };
 
-function formatGroupMenu(team: string) {
+function formatGroupMenu(title: string, path: string) {
   return [
     {
-      path: `/${team}`,
-      name: team,
+      path: `/${path}`,
+      name: title,
       icon: 'smile',
       key: 'title',
     },
@@ -190,23 +203,65 @@ function formatGroupMenu(team: string) {
       icon: 'bank',
       children: [
         {
-          path: `/${team}`,
+          path: `/${path}`,
           name: 'Details',
           key: 'detail',
         },
         {
-          path: `/group/${team}/-/activity`,
+          path: `/group/${path}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/group/${team}/-/members`,
+      path: `/group/${path}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/group/${team}/-/settings`,
+      path: `/group/${path}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+    },
+    {
+      path: '/',
+      menuRender: false,
+      name: 'Groups',
+      hideInMenu: true,
+    },
+  ];
+}
+
+function formatAppMenu(title: string, path: string) {
+  return [
+    {
+      path: `/${path}`,
+      name: title,
+      icon: 'smile',
+      key: 'title',
+    },
+    {
+      name: 'App overview',
+      icon: 'bank',
+      children: [
+        {
+          path: `/${path}`,
+          name: 'Details',
+          key: 'detail',
+        },
+        {
+          path: `/app/${path}/-/activity`,
+          name: 'Activity',
+        },
+      ],
+    },
+    {
+      path: `/app/${path}/-/members`,
+      name: 'Members',
+      icon: 'contacts',
+    },
+    {
+      path: `/app/${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
     },

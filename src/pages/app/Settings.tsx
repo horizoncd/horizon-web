@@ -6,7 +6,7 @@ export default (): React.ReactNode => {
   return (
     <PageContainer>
       <Card>
-        <div>group Activity</div>
+        <div>app Settings</div>
       </Card>
     </PageContainer>
   );

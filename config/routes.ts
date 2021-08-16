@@ -19,43 +19,36 @@
     path: '/',
     menuRender: false,
     component: './dashboard/groups',
-    name: 'Groups',
-    hideInMenu: true,
   },
-  {
-    path: '/dashboard/groups',
-    menuRender: false,
-    component: './dashboard/groups',
-    name: 'Groups',
-    hideInMenu: true,
-  },
+  // group route
   {
     path: '/group/*/-/members',
-    name: 'Members',
-    icon: 'contacts',
     component: './group/Members',
   },
   {
     path: '/group/*/-/settings',
-    name: 'Settings',
-    icon: 'setting',
     component: './group/Settings',
   },
   {
-    name: 'Group overview',
-    icon: 'bank',
-    routes: [
-      {
-        path: '/group/*/-/activity',
-        name: 'Activity',
-        component: './group/Activity',
-      },
-      {
-        path: '/*',
-        name: 'Details',
-        component: './group/Details',
-      },
-    ],
+    path: '/group/*/-/activity',
+    component: './group/Activity',
+  },
+  // app route
+  {
+    path: '/app/*/-/members',
+    component: './app/Members',
+  },
+  {
+    path: '/app/*/-/settings',
+    component: './app/Settings',
+  },
+  {
+    path: '/app/*/-/activity',
+    component: './app/Activity',
+  },
+  {
+    path: '/*',
+    component: './Details',
   },
   {
     component: './404',

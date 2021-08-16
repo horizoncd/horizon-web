@@ -7,7 +7,7 @@ export default (props: any): React.ReactNode => {
   return (
     <PageContainer>
       <Card>
-        <div>Details</div>
+        <div>group Details</div>
       </Card>
     </PageContainer>
   );

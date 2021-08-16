@@ -105,4 +105,10 @@ declare namespace API {
     app?: string;
     cluster?: string;
   }
+
+  type Group = {
+    title: string;
+    key: string;
+    children?: Group[]
+  }
 }

@@ -39,7 +39,7 @@ export default (): React.ReactNode => {
   };
 
   const dataList: { key: string; title: string }[] = [];
-  const generateList = (data: { title: string; key: string; children?: [] }[]) => {
+  const generateList = (data: API.Group[]) => {
     for (let i = 0; i < data.length; i += 1) {
       const node = data[i];
       const { key } = node;
@@ -132,7 +132,7 @@ export default (): React.ReactNode => {
           <Divider className={'group-divider'} />
           <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
             <TabPane tab="Your groups" key="1">
-              {groups.map((item: { title: string; key: string; children?: [] }) => {
+              {groups.map((item: API.Group) => {
                 const hasChildren = item.children && item.children.length > 0;
                 return (
                   <div key={item.title}>
