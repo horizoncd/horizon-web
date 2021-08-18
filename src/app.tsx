@@ -1,5 +1,6 @@
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading, ProBreadcrumb } from '@ant-design/pro-layout';
+import { PageLoading } from '@ant-design/pro-layout';
+import  { ProBreadcrumb } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
