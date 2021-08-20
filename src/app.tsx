@@ -1,12 +1,12 @@
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
+import  { ProBreadcrumb } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history, Link } from 'umi';
+import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/login';
-import { LinkOutlined } from '@ant-design/icons';
+import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 import { stringify } from 'querystring';
 import {
   BankOutlined,
@@ -14,8 +14,8 @@ import {
   SettingOutlined,
   SmileOutlined,
 } from '@ant-design/icons/lib';
+import {Route} from "antd/lib/breadcrumb/Breadcrumb";
 
-const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 const IconMap = {
@@ -126,13 +126,40 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+  const { location } = history;
+  const { pathname: curPathname } = location;
+  console.log('RunTimeLayoutConfig')
+
   return {
+    headerContentRender: () => <ProBreadcrumb />,
+    breadcrumbRender: () => {
+      const routes: Route[] = [];
+
+      let currentLink = '';
+      curPathname.split('/')
+        .filter(item => item !== '' && item !== '-' && item !== 'app' && item !== 'group')
+        .forEach(item => {
+          currentLink += `/${item}`;
+          routes.push({
+            path: currentLink,
+            breadcrumbName: item,
+          })
+        });
+      console.log(routes)
+      return [
+        ...routes,
+      ]
+    },
+    breadcrumbProps: {
+      itemRender: (route: Route) => {
+        return <a href={route.path}>{route.breadcrumbName}</a>
+      }
+    },
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {},
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const { location } = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         // 将当前URL作为查询参数
@@ -144,14 +171,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         });
       }
     },
-    links: isDev
-      ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-        ]
-      : [],
     menuHeaderRender: undefined,
     menu: {
       params: {
@@ -165,7 +184,21 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         if (length === 0) {
           return defaultMenuData;
         }
-        return loopMenuItem(formatGroupMenu(pathnameSplit[pathnameSplit.length - 1]));
+        let title = pathnameSplit[0];
+        let path = pathnameSplit[0];
+        for (let i = 1; i < pathnameSplit.length; i += 1) {
+          const v = pathnameSplit[i];
+          if (v === '-') {
+            break
+          }
+          title = pathnameSplit[i];
+          path = `${path}/${v}`
+        }
+
+        if (length === 1) {
+          return loopMenuItem(formatGroupMenu(title, path));
+        }
+        return loopMenuItem(formatAppMenu(title, path));
       },
     },
     // 自定义 403 页面
@@ -174,11 +207,26 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   };
 };
 
-function formatGroupMenu(team: string) {
+// 由路径构造出数组（横杠之前）
+function formatDetailPath(pathname: string): string[] {
+  const arr = pathname.split('/').filter((item: string) => item !== '' && item !== 'group' && item !== 'app');
+  const chain = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    const v = arr[i];
+    if (v === '-') {
+      break;
+    }
+    chain.push(v);
+  }
+
+  return chain;
+}
+
+function formatGroupMenu(title: string, path: string) {
   return [
     {
-      path: `/${team}`,
-      name: team,
+      path: `/${path}`,
+      name: title,
       icon: 'smile',
       key: 'title',
     },
@@ -187,23 +235,65 @@ function formatGroupMenu(team: string) {
       icon: 'bank',
       children: [
         {
-          path: `/${team}`,
+          path: `/${path}`,
           name: 'Details',
           key: 'detail',
         },
         {
-          path: `/group/${team}/-/activity`,
+          path: `/group/${path}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/group/${team}/-/members`,
+      path: `/group/${path}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/group/${team}/-/settings`,
+      path: `/group/${path}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+    },
+    {
+      path: '/',
+      menuRender: false,
+      name: 'Groups',
+      hideInMenu: true,
+    },
+  ];
+}
+
+function formatAppMenu(title: string, path: string) {
+  return [
+    {
+      path: `/${path}`,
+      name: title,
+      icon: 'smile',
+      key: 'title',
+    },
+    {
+      name: 'App overview',
+      icon: 'bank',
+      children: [
+        {
+          path: `/${path}`,
+          name: 'Details',
+          key: 'detail',
+        },
+        {
+          path: `/app/${path}/-/activity`,
+          name: 'Activity',
+        },
+      ],
+    },
+    {
+      path: `/app/${path}/-/members`,
+      name: 'Members',
+      icon: 'contacts',
+    },
+    {
+      path: `/app/${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
     },

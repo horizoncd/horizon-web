@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Col, Divider, Input, Row, Tabs, Tree } from 'antd';
+import { Col, Divider, Input, Row, Tabs, Tree, Button } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { history, useModel, Link } from 'umi';
 import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
@@ -39,7 +39,7 @@ export default (): React.ReactNode => {
   };
 
   const dataList: { key: string; title: string }[] = [];
-  const generateList = (data: { title: string; key: string; children?: [] }[]) => {
+  const generateList = (data: API.Group[]) => {
     for (let i = 0; i < data.length; i += 1) {
       const node = data[i];
       const { key } = node;
@@ -54,6 +54,11 @@ export default (): React.ReactNode => {
   const onExpand = (expandedKey: any) => {
     setExpandedKeys(expandedKey);
     setAutoExpandParent(false);
+  };
+
+  const getTotalPath = (title: any): string => {
+    const parentKey: string = getParentKey(title, groups);
+    return parentKey ? `${getTotalPath(parentKey)}/${title}` : title;
   };
 
   const titleRender = (nodeData: any): React.ReactNode => {
@@ -71,8 +76,7 @@ export default (): React.ReactNode => {
       ) : (
         <span className="group-title">{title}</span>
       );
-
-    return <Link to={`/${title}`}>{tmp}</Link>;
+    return <Link to={`/${getTotalPath(title)}`}>{tmp}</Link>;
   };
 
   // 搜索框输入值监听
@@ -110,7 +114,7 @@ export default (): React.ReactNode => {
     const { children, key, expanded } = node;
     if (!children?.length) {
       // title变为了element对象，需要注意下
-      history.push(`/${info.node.title}`);
+      history.push(`/${getTotalPath(info.node.title)}`);
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {
@@ -120,39 +124,41 @@ export default (): React.ReactNode => {
 
   const query = <Search placeholder="Search" onChange={onChange} />;
 
+  const header = () => {
+    return (<Button type="primary" style={{backgroundColor: '#1f75cb'}}>New group</Button>)
+  }
+
   return (
-    <div>
-      <Row>
-        <Col span={4} />
-        <Col span={16}>
-          <PageContainer>
-            <Divider style={{ margin: '0 0 5px 0' }} />
-            <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
-              <TabPane tab="Your groups" key="1">
-                {groups.map((item: { title: string; key: string; children?: [] }) => {
-                  const hasChildren = item.children && item.children.length > 0;
-                  return (
-                    <div key={item.title}>
-                      <DirectoryTree
-                        onExpand={onExpand}
-                        showLine={hasChildren ? { showLeafIcon: false } : false}
-                        switcherIcon={<DownOutlined />}
-                        treeData={[item]}
-                        titleRender={titleRender}
-                        onSelect={onSelect}
-                        autoExpandParent={autoExpandParent}
-                        expandedKeys={expandedKeys}
-                      />
-                      <Divider style={{ margin: '0' }} />
-                    </div>
-                  );
-                })}
-              </TabPane>
-            </Tabs>
-          </PageContainer>
-        </Col>
-        <Col span={4} />
-      </Row>
-    </div>
+    <Row id="groups">
+      <Col span={4} />
+      <Col span={16}>
+        <PageContainer header={{title: 'Groups', extra: header()}} breadcrumbRender={false}>
+          <Divider className={'group-divider'} />
+          <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
+            <TabPane tab="Your groups" key="1">
+              {groups.map((item: API.Group) => {
+                const hasChildren = item.children && item.children.length > 0;
+                return (
+                  <div key={item.title}>
+                    <DirectoryTree
+                      onExpand={onExpand}
+                      showLine={hasChildren ? { showLeafIcon: false } : false}
+                      switcherIcon={<DownOutlined />}
+                      treeData={[item]}
+                      titleRender={titleRender}
+                      onSelect={onSelect}
+                      autoExpandParent={autoExpandParent}
+                      expandedKeys={expandedKeys}
+                    />
+                    <Divider style={{ margin: '0' }} />
+                  </div>
+                );
+              })}
+            </TabPane>
+          </Tabs>
+        </PageContainer>
+      </Col>
+      <Col span={4} />
+    </Row>
   );
 };

@@ -30,11 +30,11 @@ const defaultGroups = [
     key: 'music-pe',
     children: [
       {
-        title: 'app-deploy',
+        title: 'app-deploy1',
         key: 'app-deploy1',
         children: [
           {
-            title: 'dev',
+            title: 'dev1',
             key: 'dev1',
           },
         ],

@@ -6,7 +6,7 @@ export default (): React.ReactNode => {
   return (
     <PageContainer>
       <Card>
-        <div>Settings</div>
+        <div>group Settings</div>
       </Card>
     </PageContainer>
   );
