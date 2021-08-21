@@ -1,6 +1,5 @@
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import  { ProBreadcrumb } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
@@ -127,29 +126,8 @@ export const request: RequestConfig = {
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   const { location } = history;
-  const { pathname: curPathname } = location;
-  console.log('RunTimeLayoutConfig')
 
   return {
-    headerContentRender: () => <ProBreadcrumb />,
-    breadcrumbRender: () => {
-      const routes: Route[] = [];
-
-      let currentLink = '';
-      curPathname.split('/')
-        .filter(item => item !== '' && item !== '-' && item !== 'app' && item !== 'group')
-        .forEach(item => {
-          currentLink += `/${item}`;
-          routes.push({
-            path: currentLink,
-            breadcrumbName: item,
-          })
-        });
-      console.log(routes)
-      return [
-        ...routes,
-      ]
-    },
     breadcrumbProps: {
       itemRender: (route: Route) => {
         return <a href={route.path}>{route.breadcrumbName}</a>
@@ -178,7 +156,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       },
       request: async (params: Record<string, any>, defaultMenuData: MenuDataItem[]) => {
         const { pathname } = params;
-        const pathnameSplit = pathname.split('/').filter((item: string) => item !== '');
+        const pathnameSplit = pathname.split('/').filter((item: string) => item !== '' && item !== 'group');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
         if (length === 0) {
@@ -194,11 +172,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
           title = pathnameSplit[i];
           path = `${path}/${v}`
         }
-
-        if (length === 1) {
-          return loopMenuItem(formatGroupMenu(title, path));
-        }
-        return loopMenuItem(formatAppMenu(title, path));
+        return loopMenuItem(formatGroupMenu(title, path));
       },
     },
     // 自定义 403 页面
@@ -206,21 +180,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     ...initialState?.settings,
   };
 };
-
-// 由路径构造出数组（横杠之前）
-function formatDetailPath(pathname: string): string[] {
-  const arr = pathname.split('/').filter((item: string) => item !== '' && item !== 'group' && item !== 'app');
-  const chain = [];
-  for (let i = 0; i < arr.length; i += 1) {
-    const v = arr[i];
-    if (v === '-') {
-      break;
-    }
-    chain.push(v);
-  }
-
-  return chain;
-}
 
 function formatGroupMenu(title: string, path: string) {
   return [
@@ -252,48 +211,6 @@ function formatGroupMenu(title: string, path: string) {
     },
     {
       path: `/group/${path}/-/settings`,
-      name: 'Settings',
-      icon: 'setting',
-    },
-    {
-      path: '/',
-      menuRender: false,
-      name: 'Groups',
-      hideInMenu: true,
-    },
-  ];
-}
-
-function formatAppMenu(title: string, path: string) {
-  return [
-    {
-      path: `/${path}`,
-      name: title,
-      icon: 'smile',
-      key: 'title',
-    },
-    {
-      name: 'App overview',
-      icon: 'bank',
-      children: [
-        {
-          path: `/${path}`,
-          name: 'Details',
-          key: 'detail',
-        },
-        {
-          path: `/app/${path}/-/activity`,
-          name: 'Activity',
-        },
-      ],
-    },
-    {
-      path: `/app/${path}/-/members`,
-      name: 'Members',
-      icon: 'contacts',
-    },
-    {
-      path: `/app/${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
     },

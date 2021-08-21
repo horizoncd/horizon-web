@@ -6,6 +6,8 @@ before_script:
 
 imagebuild:
   stage: imagebuild
+  variables:
+    KUBECONFIG_YAML: $KUBECONFIG_DEV
   script:
     - |
       # build
@@ -29,6 +31,10 @@ imagebuild:
 
       # docker rmi
       docker images | grep "$APP_REVISION" | grep "$CI_PROJECT_NAME" | awk '{print $3}' | head -n 1 | xargs -t docker rmi -f
+
+      # patch image in dev cluster
+      KKK='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'${IMAGES}'"}]'
+      kubectl patch deploy horizon-web -n horizon --type='json' -p="$KKK"
   only:
     - develop
     - tags
