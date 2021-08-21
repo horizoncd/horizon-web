@@ -19,10 +19,8 @@ imagebuild:
 
       # docker build
       IMAGES="$(jq -r '. | map(.server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
-#      IMAGES="$(jq -r '. | map("-t " + .server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
       echo $IMAGES
       eval docker build --network=host -t "$IMAGES" . || exit 1
-#      eval docker build --network=host "$IMAGES" . || exit 1
 
       # docker push
       export DOCKER_CONFIG_JSON="$(jq 'reduce .[].auth.auths as $item ({}; . + $item) | {auths: .}'<<<"$REGISTRIES")"
