@@ -18,9 +18,11 @@ imagebuild:
       TERM=xterm npm run build
 
       # docker build
-      IMAGES="$(jq -r '. | map("-t " + .server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
+      IMAGES="$(jq -r '. | map(.server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
+#      IMAGES="$(jq -r '. | map("-t " + .server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
       echo $IMAGES
-      eval docker build --network=host "$IMAGES" . || exit 1
+      eval docker build --network=host -t "$IMAGES" . || exit 1
+#      eval docker build --network=host "$IMAGES" . || exit 1
 
       # docker push
       export DOCKER_CONFIG_JSON="$(jq 'reduce .[].auth.auths as $item ({}; . + $item) | {auths: .}'<<<"$REGISTRIES")"
@@ -33,6 +35,7 @@ imagebuild:
       docker images | grep "$APP_REVISION" | grep "$CI_PROJECT_NAME" | awk '{print $3}' | head -n 1 | xargs -t docker rmi -f
 
       # patch image in dev cluster
+      # harbor.musiconline-dev.service.163.org/cloudnative/library/horizon-web:develop-r889445
       KKK='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'${IMAGES}'"}]'
       kubectl patch deploy horizon-web -n horizon --type='json' -p="$KKK"
   only:
