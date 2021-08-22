@@ -1,17 +1,13 @@
 import React from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
 import {Card} from 'antd';
-import utils from '../Utils'
-import { history } from 'umi';
+import Detail from '@/components/Detail'
 
-export default (props: any): React.ReactNode => {
+export default (): React.ReactNode => {
   return (
-    <PageContainer header={{
-      breadcrumb: {routes: utils.getBreadcrumb(history.location.pathname)}
-    }}>
+    <Detail>
       <Card>
         <div>group Activity</div>
       </Card>
-    </PageContainer>
+    </Detail>
   );
 };

@@ -2,7 +2,7 @@ import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-l
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history } from 'umi';
+import { history} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
@@ -13,7 +13,6 @@ import {
   SettingOutlined,
   SmileOutlined,
 } from '@ant-design/icons/lib';
-import {Route} from "antd/lib/breadcrumb/Breadcrumb";
 
 const loginPath = '/user/login';
 
@@ -126,13 +125,7 @@ export const request: RequestConfig = {
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   const { location } = history;
-
   return {
-    breadcrumbProps: {
-      itemRender: (route: Route) => {
-        return <a href={route.path}>{route.breadcrumbName}</a>
-      }
-    },
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {},

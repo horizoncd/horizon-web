@@ -48,7 +48,7 @@
   },
   {
     path: '/*',
-    component: './Details',
+    component: './detail/Details',
   },
   {
     component: './404',

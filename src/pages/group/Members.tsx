@@ -1,13 +1,13 @@
 import React from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
 import { Card } from 'antd';
+import Detail from '@/components/Detail'
 
 export default (): React.ReactNode => {
   return (
-    <PageContainer>
+    <Detail>
       <Card>
         <div>group Members</div>
       </Card>
-    </PageContainer>
+    </Detail>
   );
 };

@@ -25,15 +25,22 @@ const getResourceName = (pathname: string) => {
 };
 
 const getBreadcrumb = (pathname: string) => {
+  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'group' && item !== "-")
   let currentLink = '';
-  return getResourcePath(pathname).split('/')
-    .map(item => {
-      currentLink += `/${item}`;
-      return {
-        path: currentLink,
-        breadcrumbName: item
-      }
+  const result = [];
+  for (let i = 0; i < filteredPath.length - 1; i += 1) {
+    const item = filteredPath[i];
+    currentLink += `/${item}`;
+    result.push({
+      path: currentLink,
+      breadcrumbName: item
     });
+  }
+  result.push({
+    path: pathname,
+    breadcrumbName: filteredPath[filteredPath.length - 1]
+  })
+  return result;
 };
 
 export default {
