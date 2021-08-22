@@ -109,6 +109,7 @@ declare namespace API {
   type Group = {
     title: string;
     key: string;
+    path?: string
     children?: Group[]
   }
 }
