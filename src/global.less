@@ -32,15 +32,23 @@ body,
 }
 
 .ant-tree-node-selected {
-  background-color: grey !important;
+  background-color: transparent !important;
 }
 
 .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
-  background: grey !important;
+  background: transparent !important;
+}
+
+.ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
+  color: black !important;
+}
+
+.ant-tree.ant-tree-directory .ant-tree-treenode .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  color: black !important;
 }
 
 .ant-tree-switcher {
-  color: black;
+  color: black !important;;
 }
 
 .ant-tree .ant-tree-treenode {

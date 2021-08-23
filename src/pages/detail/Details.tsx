@@ -1,23 +1,11 @@
-import React from 'react';
-import {Button, Divider, Input, Tabs, Tree} from 'antd';
+import {Button, Divider} from 'antd';
 import utils from '../../utils'
-import {history, Link} from 'umi';
+import {history} from 'umi';
 import Detail from '@/components/Detail'
 import './index.less'
-import {DownOutlined} from "@ant-design/icons";
-import {useModel} from "@@/plugin-model/useModel";
+import GroupTree from '@/components/GroupTree'
 
-const { DirectoryTree } = Tree;
-const { Search } = Input;
-const { TabPane } = Tabs;
-
-export default (): React.ReactNode => {
-  const { groups, queryGroup } = useModel('groups', (model) => ({
-    groups: model.groups,
-    queryGroup: model.queryGroup,
-  }));
-  queryGroup();
-
+export default () => {
   const { pathname } = history.location;
 
   const resourceName = utils.getResourceName(pathname)
@@ -29,18 +17,16 @@ export default (): React.ReactNode => {
       </div>
     )
   }
-  const onChange = () => {
+  const getAvatarColorIndex = (title: string) => {
+    let count = 0;
+    for (let i = 0; i < title.length; i += 1) {
+      const t = title[i];
+      const n = t.charCodeAt(0);
+      count += n;
+    }
 
+    return count % 7 + 1;
   }
-  const onExpand = () => {
-
-  }
-  const titleRender = (nodeData: any): React.ReactNode => {
-    const { title, path } = nodeData;
-
-    return <Link to={path}><span className={'group-title'}>{title}</span></Link>;
-  };
-  const query = <Search placeholder="Search" onChange={onChange} />;
 
   const firstLetter = resourceName.substring(0, 1).toUpperCase()
 
@@ -49,7 +35,7 @@ export default (): React.ReactNode => {
       <div className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3">
         <div className="home-panel-title-row gl-display-flex">
           <div className="avatar-container rect-avatar s64 home-panel-avatar gl-flex-shrink-0 gl-w-11 gl-h-11 gl-mr-3! float-none">
-            <span className="avatar avatar-tile s64 identicon bg2">{firstLetter}</span>
+            <span className={`avatar avatar-tile s64 identicon bg${getAvatarColorIndex(resourceName)}`}>{firstLetter}</span>
           </div>
           <div className="d-flex flex-column flex-wrap align-items-baseline">
             <div className="d-inline-flex align-items-baseline">
@@ -63,25 +49,7 @@ export default (): React.ReactNode => {
         {header()}
       </div>
       <Divider className={'group-divider'} />
-      <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
-        <TabPane tab="Subgroups and applications" key="1">
-          {groups.map((item: API.Group) => {
-            const hasChildren = item.children && item.children.length > 0;
-            return (
-              <div key={item.title}>
-                <DirectoryTree
-                  onExpand={onExpand}
-                  showLine={hasChildren ? { showLeafIcon: false } : false}
-                  switcherIcon={<DownOutlined />}
-                  treeData={[item]}
-                  titleRender={titleRender}
-                />
-                <Divider style={{ margin: '0' }} />
-              </div>
-            );
-          })}
-        </TabPane>
-      </Tabs>
+      <GroupTree tabPane={'Subgroups and applications'}/>
     </Detail>
   );
 };
