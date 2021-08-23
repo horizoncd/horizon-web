@@ -3,6 +3,7 @@ import { Divider, Input, Tabs, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { history, useModel, Link } from 'umi';
 import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import Utils from '@/utils'
 import './index.less';
 
 const { DirectoryTree } = Tree;
@@ -75,8 +76,14 @@ export default (props: any) => {
       ) : (
         <span className="group-title">{title}</span>
       );
-    console.log(getTotalPath(title))
-    return <Link to={`/${getTotalPath(title)}`}>{tmp}</Link>;
+    const firstLetter = title.substring(0, 1).toUpperCase()
+
+    return <span>
+      <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+        {firstLetter}
+      </span>
+      <Link style={{marginLeft: 48}} to={`/${getTotalPath(title)}`}>{tmp}</Link>
+    </span>;
   };
 
   // 搜索框输入值监听
@@ -142,7 +149,7 @@ export default (props: any) => {
                   autoExpandParent={autoExpandParent}
                   expandedKeys={expandedKeys}
                 />
-                <Divider style={{ margin: '0' }} />
+                <Divider style={{ margin: '0 0 0 0' }} />
               </div>
             );
           })}

@@ -17,25 +17,15 @@ export default () => {
       </div>
     )
   }
-  const getAvatarColorIndex = (title: string) => {
-    let count = 0;
-    for (let i = 0; i < title.length; i += 1) {
-      const t = title[i];
-      const n = t.charCodeAt(0);
-      count += n;
-    }
-
-    return count % 7 + 1;
-  }
 
   const firstLetter = resourceName.substring(0, 1).toUpperCase()
 
   return (
     <Detail>
-      <div className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3">
-        <div className="home-panel-title-row gl-display-flex">
+      <div className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3 align-items-center">
+        <div className="home-panel-title-row gl-display-flex align-items-center">
           <div className="avatar-container rect-avatar s64 home-panel-avatar gl-flex-shrink-0 gl-w-11 gl-h-11 gl-mr-3! float-none">
-            <span className={`avatar avatar-tile s64 identicon bg${getAvatarColorIndex(resourceName)}`}>{firstLetter}</span>
+            <span className={`avatar avatar-tile s64 identicon bg${utils.getAvatarColorIndex(resourceName)}`}>{firstLetter}</span>
           </div>
           <div className="d-flex flex-column flex-wrap align-items-baseline">
             <div className="d-inline-flex align-items-baseline">

@@ -2,7 +2,7 @@ import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-l
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history} from 'umi';
+import {history, Link} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
@@ -13,6 +13,7 @@ import {
   SettingOutlined,
   SmileOutlined,
 } from '@ant-design/icons/lib';
+import Utils from "@/utils";
 
 const loginPath = '/user/login';
 
@@ -125,6 +126,7 @@ export const request: RequestConfig = {
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   const { location } = history;
+  const { pathname } = location;
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -142,14 +144,22 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         });
       }
     },
-    menuHeaderRender: undefined,
+    menuHeaderRender: () => {
+      const title = Utils.getResourceName(pathname);
+      const firstLetter = title.substring(0, 1).toUpperCase()
+      return <span style={{alignItems: 'center', lineHeight: '40px'}}>
+      <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+        {firstLetter}
+      </span>
+      <Link style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}} to={pathname}>{title}</Link>
+    </span>;
+    },
     menu: {
       params: {
         pathname: initialState?.pathname,
       },
       request: async (params: Record<string, any>, defaultMenuData: MenuDataItem[]) => {
-        const { pathname } = params;
-        const pathnameSplit = pathname.split('/').filter((item: string) => item !== '' && item !== 'group');
+        const pathnameSplit = params.pathname.split('/').filter((item: string) => item !== '' && item !== 'group');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
         if (length === 0) {
@@ -176,12 +186,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 
 function formatGroupMenu(title: string, path: string) {
   return [
-    {
-      path: `/${path}`,
-      name: title,
-      icon: 'smile',
-      key: 'title',
-    },
     {
       name: 'Group overview',
       icon: 'bank',
