@@ -33,6 +33,11 @@
     path: '/group/*/-/activity',
     component: './group/Activity',
   },
+  {
+    path: '/group/new',
+    menuRender: false,
+    component: './group/New',
+  },
   // app route
   {
     path: '/app/*/-/members',

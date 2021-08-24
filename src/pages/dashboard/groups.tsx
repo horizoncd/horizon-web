@@ -1,11 +1,12 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import { Col, Divider, Row, Button } from 'antd';
 import GroupTree from '@/components/GroupTree'
+import {history} from 'umi';
 import './groups.less';
 
 export default () => {
   const header = () => {
-    return (<Button type="primary" style={{backgroundColor: '#1f75cb'}}>New group</Button>)
+    return (<Button type="primary" onClick={() => history.push('/group/new')} style={{backgroundColor: '#1f75cb'}}>New group</Button>)
   }
 
   return (

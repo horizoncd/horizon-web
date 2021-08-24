@@ -162,7 +162,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         const pathnameSplit = params.pathname.split('/').filter((item: string) => item !== '' && item !== 'group');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
-        if (length === 0) {
+        if (length === 0 || pathnameSplit[0] === 'new') {
           return defaultMenuData;
         }
         let title = pathnameSplit[0];
