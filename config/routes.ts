@@ -1,4 +1,4 @@
-﻿export default [
+﻿const routes = [
   {
     path: '/user',
     layout: false,
@@ -9,7 +9,7 @@
           {
             name: '登录',
             path: '/user/login',
-            component: './user/Login',
+            component: 'user/Login',
           },
         ],
       },
@@ -18,41 +18,40 @@
   {
     path: '/',
     menuRender: false,
-    component: './dashboard/groups',
-  },
-  // group route
-  {
-    path: '/groups/*/-/members',
-    component: './group/Members',
-  },
-  {
-    path: '/groups/*/-/settings',
-    component: './group/Settings',
-  },
-  {
-    path: '/groups/*/-/activity',
-    component: './group/Activity',
+    component: 'dashboard/groups',
   },
   {
     path: '/groups/new',
     menuRender: false,
-    component: './group/New',
-  },
-  // app route
+    component: 'group/New',
+  }
+];
+
+const groupRoutes = [
   {
-    path: '/app/*/-/members',
-    component: './app/Members',
-  },
-  {
-    path: '/app/*/-/settings',
-    component: './app/Settings',
+    path: '/groups/*/-/members',
+    component: 'group/Members',
   },
   {
-    path: '/app/*/-/activity',
-    component: './app/Activity',
+    path: '/groups/*/-/settings',
+    component: 'group/Settings',
   },
   {
-    path: '/*',
-    component: './detail/Details',
+    path: '/groups/*/-/edit',
+    component: 'group/Edit',
+  },
+  {
+    path: '/groups/*/-/activity',
+    component: 'group/Activity',
   },
 ];
+
+// @ts-ignore
+routes.push(...groupRoutes)
+// @ts-ignore
+routes.push({
+  path: '/*',
+  component: 'detail/Details'
+});
+
+export default routes;

@@ -12,6 +12,10 @@ const Login: React.FC = () => {
     const { redirect } = query as {
       redirect: string;
     };
+    await login({
+      redirectUrl: redirect || '/',
+      fromHost: window.location.host,
+    }).then(item => console.log(item))
     const { data } = await login({
       redirectUrl: redirect || '/',
       fromHost: window.location.host,

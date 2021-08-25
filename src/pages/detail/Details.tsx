@@ -4,15 +4,22 @@ import {history} from 'umi';
 import Detail from '@/components/Detail'
 import './index.less'
 import GroupTree from '@/components/GroupTree'
+import {stringify} from "querystring";
 
 export default () => {
   const { pathname } = history.location;
+  const newGroup = '/groups/new';
 
   const resourceName = utils.getResourceName(pathname)
   const header = () => {
     return (
       <div>
-        <Button style={{marginRight: 15}}>New group</Button>
+        <Button style={{marginRight: 15}} onClick={() => history.push({
+          pathname: newGroup,
+          search: stringify({
+            parent_id: 123,
+          }),
+        })}>New subgroup</Button>
         <Button type="primary" style={{backgroundColor: '#1f75cb'}}>New application</Button>
       </div>
     )

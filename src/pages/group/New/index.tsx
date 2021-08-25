@@ -59,8 +59,8 @@ export default (props: any) => {
 
   return (
     <Row>
-      <Col span={4} />
-      <Col span={16}>
+      <Col span={3} />
+      <Col span={18}>
         <h1>New group</h1>
         <Divider />
         <Row>
@@ -113,7 +113,7 @@ export default (props: any) => {
           </Col>
         </Row>
       </Col>
-      <Col span={4} />
+      <Col span={3} />
     </Row>
   );
 };

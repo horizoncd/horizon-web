@@ -1,5 +1,5 @@
 const getResourcePath = (pathname: string) => {
-  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'group')
+  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'groups')
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -25,7 +25,7 @@ const getResourceName = (pathname: string) => {
 };
 
 const getBreadcrumb = (pathname: string) => {
-  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'group' && item !== "-")
+  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'groups' && item !== "-")
   let currentLink = '';
   const result = [];
   for (let i = 0; i < filteredPath.length - 1; i += 1) {
@@ -54,9 +54,41 @@ const getAvatarColorIndex = (title: string) => {
   return count % 7 + 1;
 }
 
+const getStaticRoutes = () => {
+  return [
+    {
+      path: '/user',
+      layout: false,
+      routes: [
+        {
+          path: '/user',
+          routes: [
+            {
+              name: '登录',
+              path: '/user/login',
+              component: 'user/Login',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '/',
+      menuRender: false,
+      component: 'dashboard/groups',
+    },
+    {
+      path: '/groups/new',
+      menuRender: false,
+      component: 'group/New',
+    }
+  ]
+}
+
 export default {
   getResourcePath,
   getResourceName,
   getBreadcrumb,
-  getAvatarColorIndex
+  getAvatarColorIndex,
+  getStaticRoutes
 }

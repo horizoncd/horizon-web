@@ -114,13 +114,33 @@ export async function getInitialState(): Promise<{
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 export const request: RequestConfig = {
+  errorConfig: {
+    adaptor: (resData) => {
+      return {
+        ...resData,
+        success: resData.code === 200,
+        errorCode: resData.code,
+        errorMessage: resData.message,
+      };
+    },
+  },
   errorHandler: (error: any) => {
-    const { response } = error;
-
+    const { response, data, name } = error;
     if (!response) {
       notification.error({
         description: '您的网络发生异常，无法连接服务器',
         message: '网络异常',
+      });
+    }
+    if (name === 'BizError') {
+      notification.error({
+        description: data.message,
+        message:  data.code,
+      });
+    } else {
+      notification.error({
+        description: response.statusText,
+        message: response.status
       });
     }
     throw error;
@@ -130,8 +150,6 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
-  const { location } = history;
-  const { pathname } = location;
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -139,7 +157,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     footerRender: () => <Footer />,
     onPageChange: () => {
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (!initialState?.currentUser && history.location.pathname !== loginPath) {
         // 将当前URL作为查询参数
         history.push({
           pathname: loginPath,
@@ -150,13 +168,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
     },
     menuHeaderRender: () => {
-      const title = Utils.getResourceName(pathname);
+      const title = Utils.getResourceName(history.location.pathname);
+      const path = Utils.getResourcePath(history.location.pathname);
       const firstLetter = title.substring(0, 1).toUpperCase()
       return <span style={{alignItems: 'center', lineHeight: '40px'}}>
       <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
       </span>
-      <Link style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}} to={pathname}>{title}</Link>
+      <Link style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}} to={path}>{title}</Link>
     </span>;
     },
     menu: {
@@ -164,23 +183,21 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         pathname: initialState?.pathname,
       },
       request: async (params: Record<string, any>, defaultMenuData: MenuDataItem[]) => {
-        const pathnameSplit = params.pathname.split('/').filter((item: string) => item !== '' && item !== 'group');
+        const pathnameSplit = params.pathname.split('/').filter((item: string) => item !== '' && item !== 'groups');
         const { length } = pathnameSplit;
         // 根路径用默认菜单
         if (length === 0 || pathnameSplit[0] === 'new') {
           return defaultMenuData;
         }
-        let title = pathnameSplit[0];
         let path = pathnameSplit[0];
         for (let i = 1; i < pathnameSplit.length; i += 1) {
           const v = pathnameSplit[i];
           if (v === '-') {
             break
           }
-          title = pathnameSplit[i];
           path = `${path}/${v}`
         }
-        return loopMenuItem(formatGroupMenu(title, path));
+        return loopMenuItem(formatGroupMenu(path));
       },
     },
     // 自定义 403 页面
@@ -189,8 +206,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   };
 };
 
-function formatGroupMenu(title: string, path: string) {
+function formatGroupMenu(path: string) {
   return [
+    ...Utils.getStaticRoutes(),
     {
       name: 'Group overview',
       icon: 'bank',
@@ -198,7 +216,6 @@ function formatGroupMenu(title: string, path: string) {
         {
           path: `/${path}`,
           name: 'Details',
-          key: 'detail',
         },
         {
           path: `/groups/${path}/-/activity`,
@@ -215,14 +232,12 @@ function formatGroupMenu(title: string, path: string) {
       path: `/groups/${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
-    },
-    {
-      path: '/',
-      menuRender: false,
-    },
-    {
-      path: '/groups/new',
-      menuRender: false,
+      children: [
+        {
+          path: `/groups/${path}/-/edit`,
+          name: 'General',
+        }
+      ]
     },
   ];
 }
