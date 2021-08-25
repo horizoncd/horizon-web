@@ -1,13 +1,14 @@
 import { Col, Divider, Row, Form, Button, Input, Space, Radio } from 'antd';
 import { history } from 'umi';
-import './index.less'
 import { Rule } from 'rc-field-form/lib/interface'
+import './index.less'
 
 const { TextArea } = Input;
 
-export default () => {
-
+export default (props: any) => {
   const [form] = Form.useForm();
+
+  const parentId = props.location.query.parent_id;
 
   const formatLabel = (labelName: string) => (
     <strong>
@@ -20,7 +21,8 @@ export default () => {
   const groupDescLabel = formatLabel("Group description (optional)");
   const groupVisibility = formatLabel("Visibility level");
 
-  const getURLPrefix = () => "http://horizon.netease.com/"
+  const getURLPrefix = () => window.location.origin
+
   const getGroupNameLabelStyle = () => {
     return {
       width: '30%'
@@ -41,6 +43,7 @@ export default () => {
 
   const onFinish = (values) => {
     console.log(values)
+    console.log(parentId)
   }
 
   const nameRules: Rule[] = [{
@@ -73,6 +76,9 @@ export default () => {
               form={form}
               onFinish={onFinish}
               requiredMark={false}
+              initialValues={{
+                groupVisibility: 0
+              }}
             >
               <Form.Item label={groupNameLabel} name={'groupName'} rules={nameRules}>
                 <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
@@ -84,7 +90,7 @@ export default () => {
                 <TextArea style={getGroupPathAndDescStyle()} allowClear/>
               </Form.Item>
               <Form.Item label={groupVisibility} name={'groupVisibility'}>
-                <Radio.Group defaultValue={0}>
+                <Radio.Group>
                   <Space direction="vertical">
                     <Radio value={0}>
                       <div>Public</div>

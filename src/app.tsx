@@ -50,7 +50,12 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      history.push({
+        pathname: loginPath,
+        search: stringify({
+          redirect: history.location.pathname + history.location.search,
+        }),
+      });
     }
     return undefined;
   };
@@ -139,7 +144,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push({
           pathname: loginPath,
           search: stringify({
-            redirect: location.pathname,
+            redirect: history.location.pathname + history.location.search,
           }),
         });
       }
@@ -196,26 +201,28 @@ function formatGroupMenu(title: string, path: string) {
           key: 'detail',
         },
         {
-          path: `/group/${path}/-/activity`,
+          path: `/groups/${path}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/group/${path}/-/members`,
+      path: `/groups/${path}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/group/${path}/-/settings`,
+      path: `/groups/${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
     },
     {
       path: '/',
       menuRender: false,
-      name: 'Groups',
-      hideInMenu: true,
+    },
+    {
+      path: '/groups/new',
+      menuRender: false,
     },
   ];
 }

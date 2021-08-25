@@ -22,19 +22,19 @@
   },
   // group route
   {
-    path: '/group/*/-/members',
+    path: '/groups/*/-/members',
     component: './group/Members',
   },
   {
-    path: '/group/*/-/settings',
+    path: '/groups/*/-/settings',
     component: './group/Settings',
   },
   {
-    path: '/group/*/-/activity',
+    path: '/groups/*/-/activity',
     component: './group/Activity',
   },
   {
-    path: '/group/new',
+    path: '/groups/new',
     menuRender: false,
     component: './group/New',
   },
@@ -54,8 +54,5 @@
   {
     path: '/*',
     component: './detail/Details',
-  },
-  {
-    component: './404',
   },
 ];
