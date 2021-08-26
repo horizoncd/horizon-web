@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-export async function login(params: { redirectUrl: string; fromHost: string }) {
+export async function login(params: { redirectUrl: string, fromHost: string }) {
   return request<{
     data: string;
   }>('/api/v1/login', {

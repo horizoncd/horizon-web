@@ -1,12 +1,13 @@
 import {Button, Divider} from 'antd';
-import utils from '../../utils'
+import utils from '../../../utils'
 import {history} from 'umi';
 import Detail from '@/components/Detail'
 import './index.less'
 import GroupTree from '@/components/GroupTree'
 import {stringify} from "querystring";
 
-export default () => {
+export default (props: any) => {
+  const { id } = props;
   const { pathname } = history.location;
   const newGroup = '/groups/new';
 
@@ -17,7 +18,7 @@ export default () => {
         <Button style={{marginRight: 15}} onClick={() => history.push({
           pathname: newGroup,
           search: stringify({
-            parent_id: 123,
+            parent_id: id,
           }),
         })}>New subgroup</Button>
         <Button type="primary" style={{backgroundColor: '#1f75cb'}}>New application</Button>
@@ -46,7 +47,7 @@ export default () => {
         {header()}
       </div>
       <Divider className={'group-divider'} />
-      <GroupTree tabPane={'Subgroups and applications'}/>
+      <GroupTree parentId={id} tabPane={'Subgroups and applications'}/>
     </Detail>
   );
 };

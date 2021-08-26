@@ -16,33 +16,43 @@
     ],
   },
   {
+    path: '/404',
+    menuRender: false,
+    component: '404',
+  },
+  {
     path: '/',
+    menuRender: false,
+    redirect: '/dashboard/groups',
+  },
+  {
+    path: '/dashboard/groups',
     menuRender: false,
     component: 'dashboard/groups',
   },
   {
     path: '/groups/new',
     menuRender: false,
-    component: 'group/New',
+    component: 'groups/New',
   }
 ];
 
 const groupRoutes = [
   {
     path: '/groups/*/-/members',
-    component: 'group/Members',
+    component: 'groups/Members',
   },
   {
     path: '/groups/*/-/settings',
-    component: 'group/Settings',
+    component: 'groups/Settings',
   },
   {
     path: '/groups/*/-/edit',
-    component: 'group/Edit',
+    component: 'groups/Edit',
   },
   {
     path: '/groups/*/-/activity',
-    component: 'group/Activity',
+    component: 'groups/Activity',
   },
 ];
 
@@ -51,7 +61,7 @@ routes.push(...groupRoutes)
 // @ts-ignore
 routes.push({
   path: '/*',
-  component: 'detail/Details'
+  component: 'detail'
 });
 
 export default routes;

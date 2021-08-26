@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 import { Divider, Input, Tabs, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { history, useModel, Link } from 'umi';
+import { history, Link, useModel } from 'umi';
 import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
+import { useRequest } from "@@/plugin-request/request";
+import { queryGroupChildren } from "@/services/groups/groups";
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
 const { TabPane } = Tabs;
 
 export default (props: any) => {
+  const { parentId } = props;
+  // parentId为null，说明是Groups界面，否则为某个Group的详情页
+  // Groups界面，只搜索subGroup；Group详情页的情况下，同时搜索subGroup和application
+  // const { data } = useRequest(() => {
+  //   return queryGroupChildren(parentId);
+  // });
+
   // @ts-ignore
   const { groups, queryGroup } = useModel('groups', (model) => ({
     groups: model.groups,
@@ -18,10 +27,10 @@ export default (props: any) => {
   }));
   queryGroup();
 
-  const [searchValue, setSearchValue] = useState('');
-  const [autoExpandParent, setAutoExpandParent] = useState(true);
+  const [ searchValue, setSearchValue ] = useState('');
+  const [ autoExpandParent, setAutoExpandParent ] = useState(true);
   const defaultExpandedKeys: (string | number)[] = [];
-  const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
+  const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
 
   const getParentKey = (key: string, tree: any[]): string => {
     let parentKey;
@@ -82,7 +91,7 @@ export default (props: any) => {
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
       </span>
-      <Link style={{marginLeft: 48}} to={`/${getTotalPath(title)}`}>{tmp}</Link>
+      <Link style={{ marginLeft: 48 }} to={`/${getTotalPath(title)}`}>{tmp}</Link>
     </span>;
   };
 
@@ -123,13 +132,13 @@ export default (props: any) => {
       // title变为了element对象，需要注意下
       history.push(`/${getTotalPath(info.node.title)}`);
     } else if (!expanded) {
-      setExpandedKeys([...expandedKeys, key]);
+      setExpandedKeys([ ...expandedKeys, key ]);
     } else {
       setExpandedKeys(expandedKeys.filter((item) => item !== key));
     }
   };
 
-  const query = <Search placeholder="Search" onChange={onChange} />;
+  const query = <Search placeholder="Search" onChange={onChange}/>;
 
   return (
     <div>
@@ -142,14 +151,14 @@ export default (props: any) => {
                 <DirectoryTree
                   onExpand={onExpand}
                   showLine={hasChildren ? { showLeafIcon: false } : false}
-                  switcherIcon={<DownOutlined />}
-                  treeData={[item]}
+                  switcherIcon={<DownOutlined/>}
+                  treeData={[ item ]}
                   titleRender={titleRender}
                   onSelect={onSelect}
                   autoExpandParent={autoExpandParent}
                   expandedKeys={expandedKeys}
                 />
-                <Divider style={{ margin: '0 0 0 0' }} />
+                <Divider style={{ margin: '0 0 0 0' }}/>
               </div>
             );
           })}

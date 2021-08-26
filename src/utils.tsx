@@ -73,7 +73,17 @@ const getStaticRoutes = () => {
       ],
     },
     {
+      path: '/404',
+      menuRender: false,
+      component: '404',
+    },
+    {
       path: '/',
+      menuRender: false,
+      redirect: '/dashboard/groups',
+    },
+    {
+      path: '/dashboard/groups',
       menuRender: false,
       component: 'dashboard/groups',
     },
