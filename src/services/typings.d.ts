@@ -5,12 +5,28 @@ declare namespace API {
     name: string;
   }
 
-  type Group = {
-    title: string;
-    key: string;
-    path?: string
-    children?: Group[]
+  type Resource = {
+    id?: number;
+    name?: string;
+    type?: string;
+    path?: string;
   }
+
+  type NewGroup = {
+    name: groupName;
+    path: groupPath;
+    description?: groupDescription;
+    visibilityLevel: visibilityLevel;
+    parentId?: groupId;
+  };
+
+  type Group = {
+    id: string;
+    name: string;
+    path: string;
+    description?: string;
+    visibilityLevel: number;
+  };
 
   type GroupChild = {
     id: string,
@@ -18,8 +34,11 @@ declare namespace API {
     description: string,
     path: string,
     type: string,
+    childrenCount: number,
     subGroupCount: number,
     applicationCount: number,
+    children: GroupChild[],
+    parentId: number,
     createTime: Date,
     modifyTime: Date,
   }
@@ -27,8 +46,8 @@ declare namespace API {
   type GroupFilterParam = {
     parentId?: string,
     filter?: string,
-    pageIndex: number,
-    pageSize: number,
+    pageIndex?: number,
+    pageSize?: number,
   }
 
 }

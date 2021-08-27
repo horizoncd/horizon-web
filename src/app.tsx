@@ -9,7 +9,7 @@ import { currentUser as queryCurrentUser } from './services/login/login';
 import { stringify } from 'querystring';
 import { BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined, } from '@ant-design/icons/lib';
 import Utils from "@/utils";
-import { queryResourceType } from "@/services/core";
+import { queryResource } from "@/services/core";
 
 const loginPath = '/user/login';
 
@@ -21,7 +21,7 @@ const IconMap = {
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({icon, children, ...item}) => ({
+  menus.map(({ icon, children, ...item }) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
@@ -39,8 +39,10 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  pathname?: string;
+  resource?: API.Resource
 }> {
+  const settings: Partial<LayoutSettings> = {};
+  const resource: API.Resource = {};
   const fetchUserInfo = async () => {
     try {
       const msg = await queryCurrentUser();
@@ -57,17 +59,31 @@ export async function getInitialState(): Promise<{
   };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
+    // 资源类型的URL
+    if (!pathnameInStaticRoutes(history.location.pathname)) {
+      resource.path = Utils.getResourcePath(history.location.pathname);
+      resource.name = Utils.getResourceName(history.location.pathname);
+      try {
+        const { data } = await queryResource(resource.path);
+        const { resourceType, resourceId } = data;
+        resource.id = resourceId;
+        resource.type = resourceType;
+      } catch (e) {
+        settings.menuRender = false;
+      }
+    }
+
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
       currentUser,
-      settings: {},
-      pathname: history.location.pathname,
+      settings,
+      resource
     };
   }
   return {
     fetchUserInfo,
-    settings: {},
+    settings,
   };
 }
 
@@ -119,7 +135,7 @@ export const request: RequestConfig = {
     },
   },
   errorHandler: (error: any) => {
-    const {response, data} = error;
+    const { response, data } = error;
     if (!response) {
       notification.error({
         description: '您的网络发生异常，无法连接服务器',
@@ -143,7 +159,7 @@ export const request: RequestConfig = {
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({initialState}) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
@@ -162,53 +178,31 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
       }
     },
     menuHeaderRender: () => {
-      const title = Utils.getResourceName(history.location.pathname);
-      const path = Utils.getResourcePath(history.location.pathname);
-      const firstLetter = title.substring(0, 1).toUpperCase()
-      return <span style={{alignItems: 'center', lineHeight: '40px'}}>
-      <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
-        {firstLetter}
-      </span>
-      <Link style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}
-            to={path}>{title}</Link>
-    </span>;
+      const { name: title, path } = initialState?.resource || {};
+      if (!title || !path) {
+        return false;
+      }
+      const firstLetter = title.substring(0, 1).toUpperCase();
+      return <span style={{ alignItems: 'center', lineHeight: '40px' }}>
+        <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+          {firstLetter}
+        </span>
+        <Link style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}
+              to={path}>{title}</Link>
+      </span>;
     },
-    menu: {
-      params: {
-        pathname: initialState?.pathname,
-      },
-      request: async (params: Record<string, any>, defaultMenuData: MenuDataItem[]) => {
-        const {pathname} = params;
-        if (pathnameInStaticRoutes(pathname)) {
-          return defaultMenuData;
-        }
-
-        const pathnameSplit = pathname.split('/').filter((item: string) => item !== '' && item !== 'groups');
-        let path = pathnameSplit[0];
-        for (let i = 1; i < pathnameSplit.length; i += 1) {
-          const v = pathnameSplit[i];
-          if (v === '-') {
-            break
-          }
-          path = `${path}/${v}`
-        }
-        // 查询是否是合法的资源
-        let resourceType = 'group';
-        // try {
-        //   const {data} = await queryResourceType(path);
-        //   resourceType = data.resourceType;
-        // } catch (error) {
-        //   history.push({
-        //     pathname: '/404',
-        //   });
-        // }
-
-        if (resourceType === 'group') {
-          return loopMenuItem(formatGroupMenu(path));
-        }
-
+    menuDataRender: (menuData: MenuDataItem[]): MenuDataItem[] => {
+      const { pathname } = history.location;
+      if (pathnameInStaticRoutes(pathname)) {
+        return menuData;
+      }
+      // 根据ResourceType决定菜单
+      const { type, path } = initialState?.resource || {};
+      if (path && type === 'group') {
         return loopMenuItem(formatGroupMenu(path));
-      },
+      }
+
+      return menuData;
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

@@ -1,56 +1,61 @@
 import { Request, Response } from 'express';
 
-const getGroups = (req: Request, res: Response) => {
+const queryGroups = (req: Request, res: Response) => {
   res.json({
     data: [
       {
-        title: 'music-cloud-native',
-        key: 'music-cloud-native',
+        id: 1,
+        name: 'music-cloud-native',
+        childrenCount: 2,
         children: [
           {
-            title: 'app-deploy',
-            key: 'app-deploy',
+            id: 2,
+            name: 'app-deploy',
+            childrenCount: 1,
             children: [
               {
-                title: 'dev',
-                key: 'dev',
+                id: 3,
+                name: 'dev',
+                type: 'application'
               },
             ],
           },
           {
-            title: 'tomtest',
-            key: 'tomtest',
+            id: 4,
+            name: 'tomtest',
           },
         ],
       },
       {
-        title: 'common-code-block',
-        key: 'common-code-block',
+        id: 5,
+        name: 'common-code-block',
       },
       {
-        title: 'music-pe',
-        key: 'music-pe',
+        id: 6,
+        name: 'music-pe',
+        childrenCount: 1,
         children: [
           {
-            title: 'app-deploy',
-            key: 'app-deploy1',
+            id: 7,
+            name: 'app-deploy',
+            childrenCount: 1,
             children: [
               {
-                title: 'dev',
-                key: 'dev1',
+                id: 8,
+                name: 'dev',
               },
             ],
           },
         ],
       },
       {
-        title: 'cloudsre',
-        key: 'cloudsre',
+        id: 9,
+        name: 'cloudsre',
       },
     ],
   });
 };
 
 export default {
-  'GET /api/groups': getGroups,
+  'GET /api/v1/groups/search': queryGroups,
 };

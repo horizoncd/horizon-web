@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Divider, Input, Tabs, Tree } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, FileOutlined } from '@ant-design/icons';
 import { history, Link, useModel } from 'umi';
-import { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import { DataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
-import { useRequest } from "@@/plugin-request/request";
-import { queryGroupChildren } from "@/services/groups/groups";
+import { queryGroups } from "@/services/groups/groups";
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -14,64 +13,45 @@ const { TabPane } = Tabs;
 
 export default (props: any) => {
   const { parentId } = props;
-  // parentId为null，说明是Groups界面，否则为某个Group的详情页
-  // Groups界面，只搜索subGroup；Group详情页的情况下，同时搜索subGroup和application
-  // const { data } = useRequest(() => {
-  //   return queryGroupChildren(parentId);
-  // });
 
   // @ts-ignore
-  const { groups, queryGroup } = useModel('groups', (model) => ({
-    groups: model.groups,
-    queryGroup: model.queryGroup,
-  }));
-  queryGroup();
-
+  const { setInitialState } = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
-  const [ autoExpandParent, setAutoExpandParent ] = useState(true);
+  const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
+  // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
   const defaultExpandedKeys: (string | number)[] = [];
   const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
 
-  const getParentKey = (key: string, tree: any[]): string => {
-    let parentKey;
-    for (let i = 0; i < tree.length; i += 1) {
-      const node = tree[i];
-      if (node.children) {
-        if (node.children.some((item: { key: any }) => item.key === key)) {
-          parentKey = node.key;
-        } else if (getParentKey(key, node.children)) {
-          parentKey = getParentKey(key, node.children);
-        }
-      }
-    }
-    return parentKey;
-  };
-
-  const dataList: { key: string; title: string }[] = [];
-  const generateList = (data: API.Group[]) => {
-    for (let i = 0; i < data.length; i += 1) {
-      const node = data[i];
-      const { key } = node;
-      dataList.push({ key, title: key });
-      if (node.children) {
-        generateList(node.children);
-      }
-    }
-  };
-  generateList(groups);
+  queryGroups({
+    parentId,
+    filter: searchValue,
+  }).then(({ data }) => {
+    setGroups(data);
+  });
 
   const onExpand = (expandedKey: any) => {
     setExpandedKeys(expandedKey);
-    setAutoExpandParent(false);
   };
 
-  const getTotalPath = (title: any): string => {
-    const parentKey: string = getParentKey(title, groups);
-    return parentKey ? `${getTotalPath(parentKey)}/${title}` : title;
+  const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
+    for (let i = 0; i < data.length; i += 1) {
+      const node = data[i];
+      if (searchValue && node.parentId) {
+        expandedKeySet.add(node.parentId);
+      }
+      if (node.children) {
+        updateExpandedKeySet(node.children, expandedKeySet);
+      }
+    }
   };
+  const updateExpandedKeys = () => {
+    const expandedKeySet = new Set<string | number>();
+    updateExpandedKeySet(groups, expandedKeySet);
+    setExpandedKeys([ ...expandedKeySet ]);
+  }
 
   const titleRender = (nodeData: any): React.ReactNode => {
-    const { title } = nodeData;
+    const { title, path } = nodeData;
     const index = title.indexOf(searchValue);
     const beforeStr = title.substr(0, index);
     const afterStr = title.substr(index + searchValue.length);
@@ -91,46 +71,41 @@ export default (props: any) => {
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
       </span>
-      <Link style={{ marginLeft: 48 }} to={`/${getTotalPath(title)}`}>{tmp}</Link>
+      <Link style={{ marginLeft: 48 }} to={`${path}`}>{tmp}</Link>
     </span>;
   };
 
   // 搜索框输入值监听
   const onChange = (e: any) => {
     const { value } = e.target;
-    const tmpExpandedKeys = dataList
-      .map((item: any) => {
-        if (value && item.title.indexOf(value) > -1) {
-          return getParentKey(item.key, groups);
-        }
-        return '';
-      })
-      .filter((item, i, self) => item && self.indexOf(item) === i);
-
     setSearchValue(value);
-    setExpandedKeys(tmpExpandedKeys);
   };
 
-  const { setInitialState } = useModel('@@initialState');
+  // 搜索框按enter
+  const onPressEnter = () => {
+    queryGroups({
+      parentId,
+      filter: searchValue,
+    }).then(({ data }) => {
+      setGroups(data);
+      updateExpandedKeys();
+    });
+  }
 
   // 选择一行
   const onSelect = (
     selectedKeys: Key[],
     info: {
-      event: 'select';
-      selected: boolean;
-      node: EventDataNode;
-      selectedNodes: DataNode[];
-      nativeEvent: MouseEvent;
+      node: any;
     },
   ) => {
     const { node } = info;
-    setInitialState((s) => ({ ...s, pathname: history.location.pathname }));
+    const { children, key, expanded, path, type, id, name } = node;
+    setInitialState((s) => ({ ...s, resource: { type, id, path, name } }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
-    const { children, key, expanded } = node;
     if (!children?.length) {
       // title变为了element对象，需要注意下
-      history.push(`/${getTotalPath(info.node.title)}`);
+      history.push(`/${path}`);
     } else if (!expanded) {
       setExpandedKeys([ ...expandedKeys, key ]);
     } else {
@@ -138,24 +113,35 @@ export default (props: any) => {
     }
   };
 
-  const query = <Search placeholder="Search" onChange={onChange}/>;
+  const query = <Search placeholder="Search" onPressEnter={onPressEnter} onChange={onChange} onSearch={onPressEnter}/>;
+
+  const formatTreeData = (items: API.GroupChild[]): DataNode[] =>
+    items.map(({ id, name, type, childrenCount, children, ...item }) => ({
+      ...item,
+      key: id,
+      title: name,
+      icon: type === 'application' ? <FileOutlined/> : undefined,
+      // isLeaf: type !== 'group',
+      children: children && formatTreeData(children),
+    }));
 
   return (
     <div>
       <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
         <TabPane tab={props.tabPane} key="1">
-          {groups.map((item: API.Group) => {
-            const hasChildren = item.children && item.children.length > 0;
+          {groups.map((item: API.GroupChild) => {
+            const treeData = formatTreeData([ item ]);
+            const hasChildren = item.childrenCount > 0;
             return (
-              <div key={item.title}>
+              <div key={item.id}>
                 <DirectoryTree
                   onExpand={onExpand}
                   showLine={hasChildren ? { showLeafIcon: false } : false}
                   switcherIcon={<DownOutlined/>}
-                  treeData={[ item ]}
+                  treeData={treeData}
                   titleRender={titleRender}
                   onSelect={onSelect}
-                  autoExpandParent={autoExpandParent}
+                  // autoExpandParent={autoExpandParent}
                   expandedKeys={expandedKeys}
                 />
                 <Divider style={{ margin: '0 0 0 0' }}/>
