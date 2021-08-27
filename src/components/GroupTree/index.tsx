@@ -101,11 +101,12 @@ export default (props: any) => {
   ) => {
     const { node } = info;
     const { children, key, expanded, path, type, id, name } = node;
+    console.log(node)
     setInitialState((s) => ({ ...s, resource: { type, id, path, name } }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!children?.length) {
       // title变为了element对象，需要注意下
-      history.push(`/${path}`);
+      history.push(`${path}`);
     } else if (!expanded) {
       setExpandedKeys([ ...expandedKeys, key ]);
     } else {
@@ -118,6 +119,7 @@ export default (props: any) => {
   const formatTreeData = (items: API.GroupChild[]): DataNode[] =>
     items.map(({ id, name, type, childrenCount, children, ...item }) => ({
       ...item,
+      id,
       key: id,
       title: name,
       icon: type === 'application' ? <FileOutlined/> : undefined,

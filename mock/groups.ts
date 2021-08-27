@@ -6,17 +6,20 @@ const queryGroups = (req: Request, res: Response) => {
       {
         id: 1,
         name: 'music-cloud-native',
+        path: '/music-cloud-native',
         childrenCount: 2,
         children: [
           {
             id: 2,
             name: 'app-deploy',
             childrenCount: 1,
+            path: '/music-cloud-native/app-deploy',
             children: [
               {
                 id: 3,
                 name: 'dev',
-                type: 'application'
+                type: 'application',
+                path: '/music-cloud-native/app-deploy/dev',
               },
             ],
           },

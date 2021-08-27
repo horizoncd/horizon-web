@@ -4,15 +4,15 @@ import { useModel } from "@@/plugin-model/useModel";
 
 export default () => {
   const { initialState } = useModel('@@initialState');
-  const { resourceType, resourceId } = initialState || {};
-  if (!resourceId) {
+  const { id, type } = initialState?.resource || {};
+  if (!id) {
     return <NotFount/>;
   }
 
-  switch (resourceType) {
+  switch (type) {
     case 'group':
-      return (<GroupDetail id={resourceId}/>)
+      return (<GroupDetail id={id}/>)
     default:
-      return (<GroupDetail id={resourceId}/>);
+      return (<GroupDetail id={id}/>);
   }
 }
