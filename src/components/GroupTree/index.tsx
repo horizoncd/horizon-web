@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider, Input, Tabs, Tree } from 'antd';
 import { DownOutlined, FileOutlined } from '@ant-design/icons';
 import { history, Link, useModel } from 'umi';
@@ -14,20 +14,25 @@ const { TabPane } = Tabs;
 export default (props: any) => {
   const { parentId } = props;
 
-  // @ts-ignore
   const { setInitialState } = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
+  const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
   const defaultExpandedKeys: (string | number)[] = [];
   const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
 
-  queryGroups({
-    parentId,
-    filter: searchValue,
-  }).then(({ data }) => {
-    setGroups(data);
-  });
+  useEffect(() => {
+    const refresh = async () => {
+      const { data } = await queryGroups({
+        parentId,
+        filter: searchValue,
+      });
+      setGroups(data);
+      updateExpandedKeys();
+    }
+    refresh();
+  }, [ query ]);
 
   const onExpand = (expandedKey: any) => {
     setExpandedKeys(expandedKey);
@@ -44,6 +49,7 @@ export default (props: any) => {
       }
     }
   };
+
   const updateExpandedKeys = () => {
     const expandedKeySet = new Set<string | number>();
     updateExpandedKeySet(groups, expandedKeySet);
@@ -83,13 +89,12 @@ export default (props: any) => {
 
   // 搜索框按enter
   const onPressEnter = () => {
-    queryGroups({
-      parentId,
-      filter: searchValue,
-    }).then(({ data }) => {
-      setGroups(data);
-      updateExpandedKeys();
-    });
+    setQuery(prev => prev + 1)
+  }
+
+  // 按搜索按钮
+  const onSearch = () => {
+    setQuery(prev => prev + 1)
   }
 
   // 选择一行
@@ -101,7 +106,6 @@ export default (props: any) => {
   ) => {
     const { node } = info;
     const { children, key, expanded, path, type, id, name } = node;
-    console.log(node)
     setInitialState((s) => ({ ...s, resource: { type, id, path, name } }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!children?.length) {
@@ -114,7 +118,7 @@ export default (props: any) => {
     }
   };
 
-  const query = <Search placeholder="Search" onPressEnter={onPressEnter} onChange={onChange} onSearch={onPressEnter}/>;
+  const queryInput = <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] =>
     items.map(({ id, name, type, childrenCount, children, ...item }) => ({
@@ -123,13 +127,12 @@ export default (props: any) => {
       key: id,
       title: name,
       icon: type === 'application' ? <FileOutlined/> : undefined,
-      // isLeaf: type !== 'group',
       children: children && formatTreeData(children),
     }));
 
   return (
     <div>
-      <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={query}>
+      <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={queryInput}>
         <TabPane tab={props.tabPane} key="1">
           {groups.map((item: API.GroupChild) => {
             const treeData = formatTreeData([ item ]);

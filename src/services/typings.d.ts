@@ -29,16 +29,16 @@ declare namespace API {
   };
 
   type GroupChild = {
-    id: string,
+    id: number,
     name: string,
-    description: string,
+    description?: string,
     path: string,
     type: string,
     childrenCount: number,
     subGroupCount: number,
     applicationCount: number,
-    children: GroupChild[],
-    parentId: number,
+    children?: GroupChild[],
+    parentId?: number,
     createTime: Date,
     modifyTime: Date,
   }
