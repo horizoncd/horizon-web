@@ -106,7 +106,7 @@ export default (props: any) => {
   ) => {
     const { node } = info;
     const { children, key, expanded, path, type, id, name } = node;
-    setInitialState((s) => ({ ...s, resource: { type, id, path, name } }));
+    setInitialState((s) => ({ ...s, resource: { type, id, path, name }, settings: {} }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!children?.length) {
       // title变为了element对象，需要注意下
