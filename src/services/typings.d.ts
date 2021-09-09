@@ -20,6 +20,10 @@ declare namespace API {
     parentId?: groupId;
   };
 
+  type Data = {
+    data: Group
+  }
+
   type Group = {
     id: string;
     name: string;

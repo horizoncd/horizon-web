@@ -44,7 +44,7 @@ export async function getGroupDetail(
   options?: { [key: string]: any },
 ) {
   const { id } = params;
-  return request<API.Group>(`/api/v1/groups/${id}`, {
+  return request<API.Data>(`/api/v1/groups/${id}`, {
     method: 'GET',
     ...(options || {}),
   });

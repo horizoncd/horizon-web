@@ -3,7 +3,6 @@ import { Button, Col, Divider, Row } from 'antd';
 import GroupTree from '@/components/GroupTree'
 import { history } from 'umi';
 import './index.less';
-import { stringify } from "querystring";
 
 export default () => {
   const newGroup = '/groups/new';
@@ -11,9 +10,6 @@ export default () => {
   const header = () => {
     return (<Button type="primary" onClick={() => history.push({
       pathname: newGroup,
-      search: stringify({
-        parent_id: 123,
-      }),
     })} style={{ backgroundColor: '#1f75cb' }}>New group</Button>)
   }
 
