@@ -3,27 +3,28 @@ import {history} from 'umi';
 import {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {createGroup, getGroupDetail} from "@/services/groups/groups";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const {TextArea} = Input;
 
 export default (props: any) => {
   const [form] = Form.useForm();
 
-  const [parentPath, setParentPath] = useState('/');
+  const [parentPath, setParentPath] = useState('');
 
-  const parentId = props.location.query.parent_id;
+  const pId = props.location.query.parentId;
 
-  const updateParentPath = async () => {
-    const {data} = await getGroupDetail({
-      id: parentId
-    });
+  if (pId) {
+    useEffect(() => {
+      const updateParentPath = async () => {
+        const {data} = await getGroupDetail({
+          id: pId
+        });
 
-    setParentPath(data.path)
-  }
-
-  if (parentId) {
-    updateParentPath();
+        setParentPath(data.path)
+      }
+      updateParentPath();
+    }, [pId]);
   }
 
   const formatLabel = (labelName: string) => (
@@ -37,7 +38,7 @@ export default (props: any) => {
   const groupDescLabel = formatLabel("Group description (optional)");
   const groupVisibility = formatLabel("Visibility level");
 
-  const getURLPrefix = () => window.location.origin + parentPath
+  const getURLPrefix = () => `${window.location.origin + parentPath}/`
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -60,12 +61,14 @@ export default (props: any) => {
   const onFinish = (values: API.NewGroup) => {
     createGroup({
       ...values,
-      parentId
-    }).then(() =>
+      path: `/${values.path}`,
+      parentId: pId
+    }).then(() => {
       notification.info({
         message: 'Group新建成功',
-        onClose: () => history.push(parentPath)
-      }));
+      })
+      history.push(`${parentPath}/${values.path}`)
+    })
   }
 
   const nameRules: Rule[] = [{

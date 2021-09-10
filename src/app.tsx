@@ -44,17 +44,17 @@ export async function getInitialState(): Promise<{
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = {};
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (error) {
-      history.push({
-        pathname: loginPath,
-        search: stringify({
-          redirect: history.location.pathname + history.location.search,
-        }),
-      });
-    }
+    // try {
+    //   const msg = await queryCurrentUser();
+    //   return msg.data;
+    // } catch (error) {
+    //   history.push({
+    //     pathname: loginPath,
+    //     search: stringify({
+    //       redirect: history.location.pathname + history.location.search,
+    //     }),
+    //   });
+    // }
     return undefined;
   };
   // 如果是登录页面，不执行
@@ -62,12 +62,12 @@ export async function getInitialState(): Promise<{
     // 资源类型的URL
     if (!pathnameInStaticRoutes(history.location.pathname)) {
       resource.path = Utils.getResourcePath(history.location.pathname);
-      resource.name = Utils.getResourceName(history.location.pathname);
       try {
         const { data } = await queryResource(resource.path);
-        const { resourceType, resourceId } = data;
-        resource.id = resourceId;
-        resource.type = resourceType;
+        const { type = "group", id, name } = data || {};
+        resource.id = id;
+        resource.type = type;
+        resource.name = name;
       } catch (e) {
         settings.menuRender = false;
       }
@@ -167,15 +167,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     footerRender: () => <Footer/>,
     onPageChange: () => {
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && history.location.pathname !== loginPath) {
-        // 将当前URL作为查询参数
-        history.push({
-          pathname: loginPath,
-          search: stringify({
-            redirect: history.location.pathname + history.location.search,
-          }),
-        });
-      }
+      // if (!initialState?.currentUser && history.location.pathname !== loginPath) {
+      //   // 将当前URL作为查询参数
+      //   history.push({
+      //     pathname: loginPath,
+      //     search: stringify({
+      //       redirect: history.location.pathname + history.location.search,
+      //     }),
+      //   });
+      // }
     },
     menuHeaderRender: () => {
       const { name: title, path } = initialState?.resource || {};
@@ -198,7 +198,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
       // 根据ResourceType决定菜单
       const { type, path } = initialState?.resource || {};
+      console.log(initialState?.resource)
       if (path && type === 'group') {
+        console.log(loopMenuItem(formatGroupMenu(path)))
         return loopMenuItem(formatGroupMenu(path));
       }
 
@@ -229,27 +231,27 @@ function formatGroupMenu(path: string) {
       icon: 'bank',
       children: [
         {
-          path: `/${path}`,
+          path: `${path}`,
           name: 'Details',
         },
         {
-          path: `/groups/${path}/-/activity`,
+          path: `/groups${path}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/groups/${path}/-/members`,
+      path: `/groups${path}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/groups/${path}/-/settings`,
+      path: `/groups${path}/-/settings`,
       name: 'Settings',
       icon: 'setting',
       children: [
         {
-          path: `/groups/${path}/-/edit`,
+          path: `/groups${path}/-/edit`,
           name: 'General',
         }
       ]

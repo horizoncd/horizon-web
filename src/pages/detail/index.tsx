@@ -11,8 +11,8 @@ export default () => {
 
   switch (type) {
     case 'group':
-      return (<GroupDetail id={id}/>)
+      return (<GroupDetail/>)
     default:
-      return (<GroupDetail id={id}/>);
+      return (<GroupDetail/>);
   }
 }

@@ -5,10 +5,11 @@ import { request } from 'umi';
 export async function queryResource(path: string) {
   return request<{
     data: {
-      resourceType: string,
-      resourceId: number
+      id: number,
+      name: string,
+      type: string,
     };
-  }>('/api/v1/resources', {
+  }>('/api/v1/groups', {
     method: 'GET',
     params: {
       path
