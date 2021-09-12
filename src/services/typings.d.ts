@@ -8,6 +8,7 @@ declare namespace API {
   type Resource = {
     id?: number;
     name?: string;
+    fullName?: string;
     type?: string;
     path?: string;
   }
@@ -24,9 +25,15 @@ declare namespace API {
     data: Group
   }
 
+  type GroupPageResult = {
+    total: int,
+    items: GroupChild[]
+  }
+
   type Group = {
     id: string;
     name: string;
+    fullName: string;
     path: string;
     description?: string;
     visibilityLevel: number;
@@ -35,6 +42,7 @@ declare namespace API {
   type GroupChild = {
     id: number,
     name: string,
+    fullName: string,
     description?: string,
     path: string,
     type: string,
@@ -43,14 +51,12 @@ declare namespace API {
     applicationCount: number,
     children?: GroupChild[],
     parentId?: number,
-    createTime: Date,
-    modifyTime: Date,
   }
 
   type GroupFilterParam = {
     parentId?: string,
     filter?: string,
-    pageIndex?: number,
+    pageNumber?: number,
     pageSize?: number,
   }
 

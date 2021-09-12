@@ -12,13 +12,14 @@ export default (props: any) => {
 
   const [parentPath, setParentPath] = useState('');
 
-  const pId = props.location.query.parentId;
+  const strPid = props.location.query.parentId
+  const pId = parseInt(strPid, 10)
 
   if (pId) {
     useEffect(() => {
       const updateParentPath = async () => {
         const {data} = await getGroupDetail({
-          id: pId
+          id: strPid
         });
 
         setParentPath(data.path)
@@ -61,13 +62,12 @@ export default (props: any) => {
   const onFinish = (values: API.NewGroup) => {
     createGroup({
       ...values,
-      path: `/${values.path}`,
       parentId: pId
     }).then(() => {
       notification.info({
         message: 'Group新建成功',
       })
-      history.push(`${parentPath}/${values.path}`)
+      window.location.href = `${parentPath}/${values.path}`
     })
   }
 

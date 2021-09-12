@@ -16,6 +16,7 @@ export default (props: any) => {
 
   const { setInitialState } = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
+  const [ total, setTotal ] = useState(0);
   const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
@@ -28,11 +29,13 @@ export default (props: any) => {
         parentId,
         filter: searchValue,
       });
-      setGroups(data);
+      const {total: t, items} = data;
+      setGroups(items);
+      setTotal(t)
       updateExpandedKeys();
     }
     refresh();
-  }, [ query ]);
+  }, [ query, parentId ]);
 
   const onExpand = (expandedKey: any) => {
     setExpandedKeys(expandedKey);
@@ -105,8 +108,8 @@ export default (props: any) => {
     },
   ) => {
     const { node } = info;
-    const { children, key, expanded, path, type = 'group', id, name } = node;
-    setInitialState((s) => ({ ...s, resource: { type, id, path, name }, settings: {} }));
+    const { children, key, expanded, path, type = 'group', id, name, fullName } = node;
+    setInitialState((s) => ({ ...s, resource: { type, id, path, name, fullName }, settings: {} }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!children?.length) {
       // title变为了element对象，需要注意下
@@ -124,6 +127,7 @@ export default (props: any) => {
     items.map(({ id, name, type, childrenCount, children, ...item }) => ({
       ...item,
       id,
+      name,
       key: id,
       title: name,
       icon: type === 'application' ? <FileOutlined/> : undefined,

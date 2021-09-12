@@ -62,15 +62,16 @@ export async function getInitialState(): Promise<{
     // 资源类型的URL
     if (!pathnameInStaticRoutes(history.location.pathname)) {
       resource.path = Utils.getResourcePath(history.location.pathname);
-      try {
-        const { data } = await queryResource(resource.path);
-        const { type = "group", id, name } = data || {};
+      queryResource(resource.path).then(({data}) => {
+        const { type = "group", id, name, path, fullName } = data;
         resource.id = id;
         resource.type = type;
         resource.name = name;
-      } catch (e) {
-        settings.menuRender = false;
-      }
+        resource.fullName = fullName;
+        resource.path = path
+      }).catch(() => {
+        settings.menuRender = false
+      })
     }
 
     const currentUser = await fetchUserInfo();
@@ -183,12 +184,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
-      return <span style={{ alignItems: 'center', lineHeight: '40px' }}>
+      return <span style={{ alignItems: 'center', lineHeight: '40px' }} onClick={() => {window.location.href=path}}>
         <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
           {firstLetter}
         </span>
-        <Link style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}
-              to={path}>{title}</Link>
+        <span style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}>{title}</span>
       </span>;
     },
     menuDataRender: (menuData: MenuDataItem[]): MenuDataItem[] => {
@@ -198,9 +198,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
       // 根据ResourceType决定菜单
       const { type, path } = initialState?.resource || {};
-      console.log(initialState?.resource)
       if (path && type === 'group') {
-        console.log(loopMenuItem(formatGroupMenu(path)))
         return loopMenuItem(formatGroupMenu(path));
       }
 
