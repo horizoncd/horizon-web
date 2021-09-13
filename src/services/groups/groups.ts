@@ -39,7 +39,7 @@ export async function createGroup(body: API.NewGroup, options?: { [key: string]:
 /** get the detail of a group GET /api/v1/groups/${param0} */
 export async function getGroupDetail(
   params: {
-    id: string;
+    id: number;
   },
   options?: { [key: string]: any },
 ) {
@@ -53,7 +53,7 @@ export async function getGroupDetail(
 /** update detail of a group PUT /api/v1/groups/${param0} */
 export async function updateGroupDetail(
   params: {
-    id: string;
+    id: number;
   },
   body: API.Group,
   options?: { [key: string]: any },
