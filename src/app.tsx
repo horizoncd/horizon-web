@@ -44,17 +44,17 @@ export async function getInitialState(): Promise<{
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = {};
   const fetchUserInfo = async () => {
-    // try {
-    //   const msg = await queryCurrentUser();
-    //   return msg.data;
-    // } catch (error) {
-    //   history.push({
-    //     pathname: loginPath,
-    //     search: stringify({
-    //       redirect: history.location.pathname + history.location.search,
-    //     }),
-    //   });
-    // }
+    try {
+      const msg = await queryCurrentUser();
+      return msg.data;
+    } catch (error) {
+      history.push({
+        pathname: loginPath,
+        search: stringify({
+          redirect: history.location.pathname + history.location.search,
+        }),
+      });
+    }
     return undefined;
   };
   // 如果是登录页面，不执行
@@ -169,15 +169,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     footerRender: () => <Footer/>,
     onPageChange: () => {
       // 如果没有登录，重定向到 login
-      // if (!initialState?.currentUser && history.location.pathname !== loginPath) {
-      //   // 将当前URL作为查询参数
-      //   history.push({
-      //     pathname: loginPath,
-      //     search: stringify({
-      //       redirect: history.location.pathname + history.location.search,
-      //     }),
-      //   });
-      // }
+      if (!initialState?.currentUser && history.location.pathname !== loginPath) {
+        // 将当前URL作为查询参数
+        history.push({
+          pathname: loginPath,
+          search: stringify({
+            redirect: history.location.pathname + history.location.search,
+          }),
+        });
+      }
     },
     menuHeaderRender: () => {
       const { name: title, path } = initialState?.resource || {};
