@@ -1,18 +1,18 @@
 import GroupDetail from '../groups/Detail'
-import { queryResourceType } from "@/services/core";
-import { history, useRequest } from 'umi';
+import NotFount from '@/pages/404'
+import { useModel } from "@@/plugin-model/useModel";
 
 export default () => {
-  const { data } = useRequest(() => {
-    return queryResourceType(history.location.pathname);
-  });
+  const { initialState } = useModel('@@initialState');
+  const { id, type } = initialState?.resource || {};
+  if (!id) {
+    return <NotFount/>;
+  }
 
-  const { resourceType, resourceId } = data || {};
-
-  switch (resourceType) {
+  switch (type) {
     case 'group':
-      return (<GroupDetail id={resourceId} />)
+      return (<GroupDetail/>)
     default:
-      return (<GroupDetail id={resourceId} />);
+      return (<GroupDetail/>);
   }
 }

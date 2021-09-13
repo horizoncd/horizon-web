@@ -1,13 +1,27 @@
-import { Col, Divider, Row, Form, Button, Input, Space, Radio } from 'antd';
+import {Col, Divider, Row, Form, Button, Input, Space, Radio, notification} from 'antd';
 import { Rule } from 'rc-field-form/lib/interface'
 import './index.less'
+import {useEffect} from "react";
+import {getGroupDetail, updateGroupDetail} from "@/services/groups/groups";
+import {useModel} from "@@/plugin-model/useModel";
 
 const { TextArea } = Input;
 
-export default (props: any) => {
+export default () => {
   const [form] = Form.useForm();
 
-  const parentId = props.location.query.parent_id;
+  const {initialState, setInitialState} = useModel('@@initialState');
+
+  const id = initialState?.resource?.id || 0
+
+  useEffect(() => {
+    const updateDetail = async () => {
+      const {data} = await getGroupDetail({id});
+
+      form.setFieldsValue(data)
+    }
+    updateDetail();
+  }, [id]);
 
   const formatLabel = (labelName: string) => (
     <strong>
@@ -35,9 +49,13 @@ export default (props: any) => {
     }
   }
 
-  const onFinish = (values) => {
-    console.log(values)
-    console.log(parentId)
+  const onFinish = (values: API.Group) => {
+    updateGroupDetail({id}, values).then(() => {
+      notification.info({
+        message: '修改成功',
+      })
+      setInitialState((s) => ({...s, resource: {...s?.resource, name: values.name}}))
+    })
   }
 
   const nameRules: Rule[] = [{
@@ -56,24 +74,21 @@ export default (props: any) => {
           form={form}
           onFinish={onFinish}
           requiredMark={false}
-          initialValues={{
-            groupVisibility: 0
-          }}
         >
-          <Form.Item label={groupNameLabel} name={'groupName'} rules={nameRules}>
-            <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
+          <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
+            <Input style={getGroupNameLabelStyle()} placeholder="My awesome group" disabled/>
           </Form.Item>
-          <Form.Item label={groupDescLabel}  name={'groupDesc'}>
+          <Form.Item label={groupDescLabel}  name={'description'}>
             <TextArea style={getGroupPathAndDescStyle()} allowClear/>
           </Form.Item>
-          <Form.Item label={groupVisibility} name={'groupVisibility'}>
+          <Form.Item label={groupVisibility} name={'visibilityLevel'}>
             <Radio.Group>
               <Space direction="vertical">
-                <Radio value={0}>
+                <Radio value={'public'}>
                   <div>Public</div>
                   <div>The group and any internal projects can be viewed by any logged in user</div>
                 </Radio>
-                <Radio value={1}>
+                <Radio value={'private'}>
                   <div>Private</div>
                   <div>The group and its projects can only be viewed by members</div>
                 </Radio>

@@ -1,14 +1,32 @@
-import { Col, Divider, Row, Form, Button, Input, Space, Radio } from 'antd';
-import { history } from 'umi';
-import { Rule } from 'rc-field-form/lib/interface'
+import {Button, Col, Divider, Form, Input, notification, Radio, Row, Space} from 'antd';
+import {history} from 'umi';
+import {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
+import {createGroup, getGroupDetail} from "@/services/groups/groups";
+import {useEffect, useState} from "react";
 
-const { TextArea } = Input;
+const {TextArea} = Input;
 
 export default (props: any) => {
   const [form] = Form.useForm();
 
-  const parentId = props.location.query.parent_id;
+  const [parentPath, setParentPath] = useState('');
+
+  const strPid = props.location.query.parentId
+  const pId = parseInt(strPid, 10)
+
+  if (pId) {
+    useEffect(() => {
+      const updateParentPath = async () => {
+        const {data} = await getGroupDetail({
+          id: strPid
+        });
+
+        setParentPath(data.path)
+      }
+      updateParentPath();
+    }, [pId]);
+  }
 
   const formatLabel = (labelName: string) => (
     <strong>
@@ -21,7 +39,7 @@ export default (props: any) => {
   const groupDescLabel = formatLabel("Group description (optional)");
   const groupVisibility = formatLabel("Visibility level");
 
-  const getURLPrefix = () => window.location.origin
+  const getURLPrefix = () => `${window.location.origin + parentPath}/`
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -41,9 +59,16 @@ export default (props: any) => {
 
   const cancel = () => history.goBack();
 
-  const onFinish = (values) => {
-    console.log(values)
-    console.log(parentId)
+  const onFinish = (values: API.NewGroup) => {
+    createGroup({
+      ...values,
+      parentId: pId
+    }).then(() => {
+      notification.info({
+        message: 'Group新建成功',
+      })
+      window.location.href = `${parentPath}/${values.path}`
+    })
   }
 
   const nameRules: Rule[] = [{
@@ -59,17 +84,18 @@ export default (props: any) => {
 
   return (
     <Row>
-      <Col span={3} />
+      <Col span={3}/>
       <Col span={18}>
         <h1>New group</h1>
-        <Divider />
+        <Divider/>
         <Row>
           <Col span={4}>
             <h3>
-              Groups allow you to manage and collaborate across multiple projects. Members of a group have access to all of its projects.
+              Groups allow you to manage and collaborate across multiple projects. Members of a group have access to all
+              of its projects.
             </h3>
           </Col>
-          <Col span={2} />
+          <Col span={2}/>
           <Col span={18}>
             <Form
               layout={'vertical'}
@@ -77,26 +103,26 @@ export default (props: any) => {
               onFinish={onFinish}
               requiredMark={false}
               initialValues={{
-                groupVisibility: 0
+                visibilityLevel: 'private'
               }}
             >
-              <Form.Item label={groupNameLabel} name={'groupName'} rules={nameRules}>
+              <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
                 <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
               </Form.Item>
-              <Form.Item label={groupPathLabel}  name={'groupPath'} rules={pathRules}>
+              <Form.Item label={groupPathLabel} name={'path'} rules={pathRules}>
                 <Input addonBefore={getURLPrefix()} style={getGroupPathAndDescStyle()} placeholder="my-awesome-group"/>
               </Form.Item>
-              <Form.Item label={groupDescLabel}  name={'groupDesc'}>
+              <Form.Item label={groupDescLabel} name={'description'}>
                 <TextArea style={getGroupPathAndDescStyle()} allowClear/>
               </Form.Item>
-              <Form.Item label={groupVisibility} name={'groupVisibility'}>
+              <Form.Item label={groupVisibility} name={'visibilityLevel'}>
                 <Radio.Group>
                   <Space direction="vertical">
-                    <Radio value={0}>
+                    <Radio value={'public'}>
                       <div>Public</div>
                       <div>The group and any internal projects can be viewed by any logged in user</div>
                     </Radio>
-                    <Radio value={1}>
+                    <Radio value={'private'}>
                       <div>Private</div>
                       <div>The group and its projects can only be viewed by members</div>
                     </Radio>
@@ -113,7 +139,7 @@ export default (props: any) => {
           </Col>
         </Row>
       </Col>
-      <Col span={3} />
+      <Col span={3}/>
     </Row>
   );
 };

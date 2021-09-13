@@ -5,30 +5,64 @@ declare namespace API {
     name: string;
   }
 
+  type Resource = {
+    id?: number;
+    name?: string;
+    fullName?: string;
+    type?: string;
+    path?: string;
+  }
+
+  type NewGroup = {
+    name: groupName;
+    path: groupPath;
+    description?: groupDescription;
+    visibilityLevel: visibilityLevel;
+    parentId?: groupId;
+  };
+
+  type Data = {
+    data: Group
+  }
+
+  type GroupPageResult = {
+    total: int,
+    items: GroupChild[]
+  }
+
   type Group = {
-    title: string;
-    key: string;
-    path?: string
-    children?: Group[]
+    id: string;
+    name: string;
+    fullName: string;
+    path: string;
+    description?: string;
+    visibilityLevel: number;
+  };
+
+  type PageResult<T> = {
+    total: number,
+    items: T[]
   }
 
   type GroupChild = {
-    id: string,
+    id: number,
     name: string,
-    description: string,
+    fullName: string,
+    description?: string,
     path: string,
     type: string,
+    childrenCount: number,
     subGroupCount: number,
     applicationCount: number,
-    createTime: Date,
-    modifyTime: Date,
+    children?: GroupChild[],
+    parentId?: number,
   }
 
   type GroupFilterParam = {
     parentId?: string,
     filter?: string,
-    pageIndex: number,
-    pageSize: number,
+    pageNumber?: number,
+    pageSize?: number,
   }
 
 }

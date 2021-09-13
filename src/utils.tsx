@@ -1,3 +1,5 @@
+import {Route} from "antd/lib/breadcrumb/Breadcrumb";
+
 const getResourcePath = (pathname: string) => {
   const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'groups')
   let path = '';
@@ -11,35 +13,23 @@ const getResourcePath = (pathname: string) => {
   return path;
 };
 
-const getResourceName = (pathname: string) => {
-  const filteredPath = pathname.split('/').filter(item => item !== '')
-  let name = '';
-  for (let i = 0; i < filteredPath.length; i += 1) {
-    const item = filteredPath[i];
-    if (item === '-') {
-      break
-    }
-    name = item
+const getBreadcrumb = (pathname: string | undefined, fullName: string | undefined) => {
+  const result: Route[] = [];
+  if (!fullName || !pathname) {
+    return result;
   }
-  return name;
-};
 
-const getBreadcrumb = (pathname: string) => {
-  const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'groups' && item !== "-")
+  const filteredFullName = fullName.split('/').filter(item => item !== '');
+  const filteredPath = pathname.split('/').filter(item => item !== '');
   let currentLink = '';
-  const result = [];
-  for (let i = 0; i < filteredPath.length - 1; i += 1) {
+  for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
     currentLink += `/${item}`;
     result.push({
       path: currentLink,
-      breadcrumbName: item
+      breadcrumbName: filteredFullName[i]
     });
   }
-  result.push({
-    path: pathname,
-    breadcrumbName: filteredPath[filteredPath.length - 1]
-  })
   return result;
 };
 
@@ -97,7 +87,6 @@ const getStaticRoutes = () => {
 
 export default {
   getResourcePath,
-  getResourceName,
   getBreadcrumb,
   getAvatarColorIndex,
   getStaticRoutes

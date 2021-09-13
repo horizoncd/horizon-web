@@ -2,16 +2,13 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-export async function queryResourceType(path: string) {
+export async function queryResource(path: string) {
   return request<{
-    data: {
-      resourceType: string,
-      resourceId: number
-    };
-  }>('/api/v1/get-resource-type', {
+    data: API.Resource;
+  }>('/api/v1/groups', {
     method: 'GET',
     params: {
       path
-    }
+    },
   });
 }
