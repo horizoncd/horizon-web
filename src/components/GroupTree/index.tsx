@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Divider, Input, Tabs, Tree } from 'antd';
-import { DownOutlined, FileOutlined } from '@ant-design/icons';
-import { history, Link, useModel } from 'umi';
-import { DataNode, Key } from 'rc-tree/lib/interface';
+import React, {useEffect, useState} from 'react';
+import {Divider, Input, Tabs, Tree, Pagination} from 'antd';
+import {DownOutlined, FileOutlined} from '@ant-design/icons';
+import {history, Link, useModel} from 'umi';
+import {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
-import { queryGroups } from "@/services/groups/groups";
+import {queryGroups, querySubGroups} from "@/services/groups/groups";
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -17,29 +17,13 @@ export default (props: any) => {
   const { setInitialState } = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
   const [ total, setTotal ] = useState(0);
+  const [ pageNumber, setPageNumber ] = useState(1);
+  const [ pageSize ] = useState(20);
   const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
   const defaultExpandedKeys: (string | number)[] = [];
   const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
-
-  useEffect(() => {
-    const refresh = async () => {
-      const { data } = await queryGroups({
-        parentId,
-        filter: searchValue,
-      });
-      const {total: t, items} = data;
-      setGroups(items);
-      setTotal(t)
-      updateExpandedKeys();
-    }
-    refresh();
-  }, [ query, parentId ]);
-
-  const onExpand = (expandedKey: any) => {
-    setExpandedKeys(expandedKey);
-  };
 
   const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
     for (let i = 0; i < data.length; i += 1) {
@@ -58,6 +42,22 @@ export default (props: any) => {
     updateExpandedKeySet(groups, expandedKeySet);
     setExpandedKeys([ ...expandedKeySet ]);
   }
+
+  useEffect(() => {
+    const refresh = async () => {
+      const { data } = await queryGroups({
+        parentId,
+        filter: searchValue,
+        pageSize,
+        pageNumber
+      });
+      const {total: t, items} = data;
+      setGroups(items);
+      setTotal(t)
+      updateExpandedKeys();
+    }
+    refresh();
+  }, [ query, parentId ]);
 
   const titleRender = (nodeData: any): React.ReactNode => {
     const { title, path } = nodeData;
@@ -100,6 +100,20 @@ export default (props: any) => {
     setQuery(prev => prev + 1)
   }
 
+  const updateChildren = (items: API.GroupChild[], id: number, children: API.GroupChild[]): API.GroupChild[] => {
+    for (let i = 0; i < items.length; i += 1){
+      const item = items[i];
+      if (item.id === id) {
+        item.children = children
+      }
+      if (item.children) {
+        updateChildren(item.children, id, children)
+      }
+    }
+
+    return items
+  }
+
   // 选择一行
   const onSelect = (
     selectedKeys: Key[],
@@ -108,14 +122,23 @@ export default (props: any) => {
     },
   ) => {
     const { node } = info;
-    const { children, key, expanded, path, type = 'group', id, name, fullName } = node;
+    const { key, expanded, path, type, id, name, fullName, childrenCount } = node;
     setInitialState((s) => ({ ...s, resource: { type, id, path, name, fullName }, settings: {} }));
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
-    if (!children?.length) {
+    if (!childrenCount) {
       // title变为了element对象，需要注意下
       history.push(`${path}`);
     } else if (!expanded) {
-      setExpandedKeys([ ...expandedKeys, key ]);
+      if (!info.node.children) {
+        const pid = info.node.key as number;
+        querySubGroups(pid).then(({data}) => {
+          const {items} = data;
+          setGroups(updateChildren(groups, pid, items))
+          setExpandedKeys([ ...expandedKeys, key ]);
+        })
+      } else {
+        setExpandedKeys([ ...expandedKeys, key ]);
+      }
     } else {
       setExpandedKeys(expandedKeys.filter((item) => item !== key));
     }
@@ -123,16 +146,40 @@ export default (props: any) => {
 
   const queryInput = <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
 
-  const formatTreeData = (items: API.GroupChild[]): DataNode[] =>
-    items.map(({ id, name, type, childrenCount, children, ...item }) => ({
-      ...item,
-      id,
-      name,
-      key: id,
-      title: name,
-      icon: type === 'application' ? <FileOutlined/> : undefined,
-      children: children && formatTreeData(children),
-    }));
+  const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
+    return items.map(({id, name, type, childrenCount, children, ...item}) => {
+      return {
+        ...item,
+        id,
+        name,
+        type,
+        key: id,
+        title: name,
+        childrenCount,
+        icon: type === 'application' ? <FileOutlined/> : undefined,
+        isLeaf: childrenCount === 0,
+        children: children && formatTreeData(children),
+      }
+    });
+  }
+
+  const onExpand = (expandedKey: any, info: {
+    node: EventDataNode;
+    expanded: boolean;
+    nativeEvent: MouseEvent;
+  }) => {
+    // 如果是展开并且node下的children为空，则进行查询
+    if (info.expanded && !info.node.children) {
+      const pid = info.node.key as number;
+      querySubGroups(pid).then(({data}) => {
+        const {items} = data;
+        setGroups(updateChildren(groups, pid, items))
+        setExpandedKeys(expandedKey);
+      })
+    } else {
+      setExpandedKeys(expandedKey);
+    }
+  };
 
   return (
     <div>
@@ -159,6 +206,10 @@ export default (props: any) => {
           })}
         </TabPane>
       </Tabs>
+      <br/>
+      <div style={{textAlign: 'center'}}>
+        <Pagination simple current={pageNumber} hideOnSinglePage pageSize={20} total={total} onChange={(page) => setPageNumber(page)}/>
+      </div>
     </div>
   );
 };

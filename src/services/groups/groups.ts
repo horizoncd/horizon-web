@@ -13,6 +13,14 @@ export async function queryGroupChildren(parentId: number) {
   });
 }
 
+export async function querySubGroups(parentId: number) {
+  return request<{
+    data: API.PageResult<API.GroupChild>;
+  }>(`/api/v1/groups/${parentId}/subgroups`, {
+    method: 'GET',
+  });
+}
+
 export async function queryGroups(params: API.GroupFilterParam) {
   return request<{
     data: API.GroupPageResult;

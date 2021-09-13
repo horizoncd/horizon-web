@@ -54,7 +54,7 @@ export default () => {
       notification.info({
         message: '修改成功',
       })
-      setInitialState((s) => ({...s, resource: {...s.resource, name: values.name}}))
+      setInitialState((s) => ({...s, resource: {...s?.resource, name: values.name}}))
     })
   }
 

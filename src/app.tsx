@@ -63,7 +63,8 @@ export async function getInitialState(): Promise<{
     if (!pathnameInStaticRoutes(history.location.pathname)) {
       resource.path = Utils.getResourcePath(history.location.pathname);
       queryResource(resource.path).then(({data}) => {
-        const { type = "group", id, name, path, fullName } = data;
+        const { type, id, name, path, fullName } = data;
+        console.log(type)
         resource.id = id;
         resource.type = type;
         resource.name = name;
@@ -198,7 +199,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
       // 根据ResourceType决定菜单
       const { type, path } = initialState?.resource || {};
-      if (path && type === 'group') {
+      if (path) {
         return loopMenuItem(formatGroupMenu(path));
       }
 

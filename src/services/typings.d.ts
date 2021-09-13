@@ -39,6 +39,11 @@ declare namespace API {
     visibilityLevel: number;
   };
 
+  type PageResult<T> = {
+    total: number,
+    items: T[]
+  }
+
   type GroupChild = {
     id: number,
     name: string,
