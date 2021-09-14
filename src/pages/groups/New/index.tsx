@@ -78,7 +78,7 @@ export default (props: any) => {
 
   const pathRules: Rule[] = [{
     required: true,
-    pattern: new RegExp('[a-z][a-z0-9\\-]*'),
+    pattern: new RegExp('^[a-z][a-z0-9-]*$'),
     message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头'
   }];
 

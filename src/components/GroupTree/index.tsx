@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Divider, Input, Tabs, Tree, Pagination} from 'antd';
-import {DownOutlined, FileOutlined} from '@ant-design/icons';
+import {DownOutlined, FolderOutlined, FileOutlined} from '@ant-design/icons';
 import {history, Link, useModel} from 'umi';
 import {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
@@ -156,7 +156,7 @@ export default (props: any) => {
         key: id,
         title: name,
         childrenCount,
-        icon: type === 'application' ? <FileOutlined/> : undefined,
+        icon: type === 'group' ? <FolderOutlined/> : <FileOutlined/>,
         isLeaf: childrenCount === 0,
         children: children && formatTreeData(children),
       }
