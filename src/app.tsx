@@ -1,15 +1,15 @@
-import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading } from '@ant-design/pro-layout';
-import { notification } from 'antd';
-import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history, Link } from 'umi';
+import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import {PageLoading} from '@ant-design/pro-layout';
+import {notification} from 'antd';
+import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
+import {history} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
-import { stringify } from 'querystring';
-import { BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined, } from '@ant-design/icons/lib';
+import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined,} from '@ant-design/icons/lib';
 import Utils from "@/utils";
-import { queryResource } from "@/services/core";
+import {queryResource} from "@/services/core";
+import {stringify} from 'querystring';
 
 const loginPath = '/user/login';
 
@@ -21,7 +21,7 @@ const IconMap = {
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({ icon, children, ...item }) => ({
+  menus.map(({icon, children, ...item}) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
@@ -63,8 +63,7 @@ export async function getInitialState(): Promise<{
     if (!pathnameInStaticRoutes(history.location.pathname)) {
       resource.path = Utils.getResourcePath(history.location.pathname);
       queryResource(resource.path).then(({data}) => {
-        const { type, id, name, path, fullName } = data;
-        console.log(type)
+        const {type, id, name, path, fullName} = data;
         resource.id = id;
         resource.type = type;
         resource.name = name;
@@ -128,6 +127,17 @@ export async function getInitialState(): Promise<{
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 export const request: RequestConfig = {
+  responseInterceptors: [(response) => {
+    if (response.headers.get('X-OIDC-Redirect-To')) {
+      history.push({
+        pathname: loginPath,
+        search: stringify({
+          redirect: history.location.pathname + history.location.search,
+        }),
+      });
+    }
+    return response
+  }],
   errorConfig: {
     adaptor: (resData) => {
       return {
@@ -137,7 +147,7 @@ export const request: RequestConfig = {
     },
   },
   errorHandler: (error: any) => {
-    const { response, data } = error;
+    const {response, data} = error;
     if (!response) {
       notification.error({
         description: '您的网络发生异常，无法连接服务器',
@@ -161,44 +171,37 @@ export const request: RequestConfig = {
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
     waterMarkProps: {},
     footerRender: () => <Footer/>,
     onPageChange: () => {
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && history.location.pathname !== loginPath) {
-        // 将当前URL作为查询参数
-        history.push({
-          pathname: loginPath,
-          search: stringify({
-            redirect: history.location.pathname + history.location.search,
-          }),
-        });
-      }
+
     },
     menuHeaderRender: () => {
-      const { name: title, path } = initialState?.resource || {};
+      const {name: title, path} = initialState?.resource || {};
       if (!title || !path) {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
-      return <span style={{ alignItems: 'center', lineHeight: '40px' }} onClick={() => {window.location.href=path}}>
+      return <span style={{alignItems: 'center', lineHeight: '40px'}} onClick={() => {
+        window.location.href = path
+      }}>
         <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
           {firstLetter}
         </span>
-        <span style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}>{title}</span>
+        <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>{title}</span>
       </span>;
     },
     menuDataRender: (menuData: MenuDataItem[]): MenuDataItem[] => {
-      const { pathname } = history.location;
+      const {pathname} = history.location;
       if (pathnameInStaticRoutes(pathname)) {
         return menuData;
       }
       // 根据ResourceType决定菜单
-      const { type, path } = initialState?.resource || {};
+      const {type, path} = initialState?.resource || {};
       if (path) {
         return loopMenuItem(formatGroupMenu(path));
       }
