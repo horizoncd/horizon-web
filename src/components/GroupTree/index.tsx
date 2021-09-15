@@ -18,7 +18,7 @@ export default (props: any) => {
   const [ searchValue, setSearchValue ] = useState('');
   const [ total, setTotal ] = useState(0);
   const [ pageNumber, setPageNumber ] = useState(1);
-  const [ pageSize ] = useState(20);
+  const [ pageSize ] = useState(3);
   const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
@@ -27,8 +27,9 @@ export default (props: any) => {
 
   const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
     for (let i = 0; i < data.length; i += 1) {
+      console.log(11)
       const node = data[i];
-      if (searchValue && node.parentId) {
+      if (searchValue) {
         expandedKeySet.add(node.parentId);
       }
       if (node.children) {
@@ -37,9 +38,10 @@ export default (props: any) => {
     }
   };
 
-  const updateExpandedKeys = () => {
+  const updateExpandedKeys = (newGroups: API.GroupChild[]) => {
     const expandedKeySet = new Set<string | number>();
-    updateExpandedKeySet(groups, expandedKeySet);
+    updateExpandedKeySet(newGroups, expandedKeySet);
+    console.log(expandedKeySet)
     setExpandedKeys([ ...expandedKeySet ]);
   }
 
@@ -54,10 +56,10 @@ export default (props: any) => {
       const {total: t, items} = data;
       setGroups(items);
       setTotal(t)
-      updateExpandedKeys();
+      updateExpandedKeys(items);
     }
     refresh();
-  }, [ query, parentId ]);
+  }, [ query, parentId, pageNumber ]);
 
   const titleRender = (nodeData: any): React.ReactNode => {
     const { title, path } = nodeData;
@@ -208,7 +210,7 @@ export default (props: any) => {
       </Tabs>
       <br/>
       <div style={{textAlign: 'center'}}>
-        <Pagination simple current={pageNumber} hideOnSinglePage pageSize={20} total={total} onChange={(page) => setPageNumber(page)}/>
+        <Pagination current={pageNumber} hideOnSinglePage pageSize={pageSize} total={total} onChange={(page) => setPageNumber(page)}/>
       </div>
     </div>
   );

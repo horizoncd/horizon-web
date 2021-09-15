@@ -55,7 +55,7 @@ declare namespace API {
     subGroupCount: number,
     applicationCount: number,
     children?: GroupChild[],
-    parentId?: number,
+    parentId: number,
   }
 
   type GroupFilterParam = {
