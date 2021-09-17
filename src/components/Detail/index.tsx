@@ -27,7 +27,6 @@ export default (props: any) => {
     }} to={route.path}>{route.breadcrumbName}
     </Link>
   }
-  console.log(initialState?.resource)
   return (
     <PageContainer
       header={{

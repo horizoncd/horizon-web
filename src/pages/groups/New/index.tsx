@@ -73,7 +73,8 @@ export default (props: any) => {
 
   const nameRules: Rule[] = [{
     required: true,
-    message: 'Group name是必填项，请输入'
+    message: 'name required, max length: 128',
+    max: 128,
   }];
 
   const pathRules: Rule[] = [{

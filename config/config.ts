@@ -1,6 +1,5 @@
 // https://umijs.org/config/
 import { defineConfig } from 'umi';
-import { join } from 'path';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
@@ -40,15 +39,6 @@ export default defineConfig({
   },
   // Fast Refresh 热更新
   fastRefresh: {},
-  openAPI: [
-    {
-      requestLibPath: "import { request } from 'umi'",
-      // 或者使用在线的版本
-      // schemaPath: "https://gw.alipayobjects.com/os/antfincdn/M%24jrzTTYJN/oneapi.json"
-      schemaPath: join(__dirname, 'horizon.json'),
-      mock: false,
-    },
-  ],
   nodeModulesTransform: {
     type: 'none',
   },

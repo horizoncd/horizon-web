@@ -60,7 +60,8 @@ export default () => {
 
   const nameRules: Rule[] = [{
     required: true,
-    message: 'Group name是必填项，请输入'
+    message: 'name required, max length: 128',
+    max: 128,
   }];
 
   return (
@@ -76,7 +77,7 @@ export default () => {
           requiredMark={false}
         >
           <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
-            <Input style={getGroupNameLabelStyle()} placeholder="My awesome group" disabled/>
+            <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
           </Form.Item>
           <Form.Item label={groupDescLabel}  name={'description'}>
             <TextArea style={getGroupPathAndDescStyle()} allowClear/>

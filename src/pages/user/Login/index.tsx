@@ -55,7 +55,7 @@ const Login = () => {
             </div>
           </Col>
           <Col span={13}>
-            <img width="100%" src="/f1011482851d87df78c503700a06198c.jpeg" />
+            <img width="100%" src="/home_page.jpeg" />
           </Col>
         </Row>
       </div>

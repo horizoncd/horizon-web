@@ -18,7 +18,7 @@ export default (props: any) => {
   const [ searchValue, setSearchValue ] = useState('');
   const [ total, setTotal ] = useState(0);
   const [ pageNumber, setPageNumber ] = useState(1);
-  const [ pageSize ] = useState(3);
+  const [ pageSize ] = useState(10);
   const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
@@ -27,7 +27,6 @@ export default (props: any) => {
 
   const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
     for (let i = 0; i < data.length; i += 1) {
-      console.log(11)
       const node = data[i];
       if (searchValue) {
         expandedKeySet.add(node.parentId);
