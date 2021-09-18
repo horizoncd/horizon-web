@@ -5,7 +5,7 @@ import { request } from 'umi';
 export async function queryGroupChildren(parentId: number) {
   return request<{
     data: API.GroupChild[];
-  }>('/api/v1/groups/children', {
+  }>('/apis/front/v1/groups/children', {
     method: 'GET',
     params: {
       parentId
@@ -16,7 +16,7 @@ export async function queryGroupChildren(parentId: number) {
 export async function querySubGroups(parentId: number) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>(`/api/v1/groups/${parentId}/subgroups`, {
+  }>(`/apis/front/v1/groups/${parentId}/groups`, {
     method: 'GET',
   });
 }
@@ -24,7 +24,7 @@ export async function querySubGroups(parentId: number) {
 export async function queryGroups(params: API.GroupFilterParam) {
   return request<{
     data: API.GroupPageResult;
-  }>('/api/v1/groups/search', {
+  }>('/apis/front/v1/groups/search', {
     method: 'GET',
     params: {
       ...params
@@ -32,9 +32,8 @@ export async function queryGroups(params: API.GroupFilterParam) {
   });
 }
 
-/** create a group POST /api/v1/groups */
 export async function createGroup(body: API.NewGroup, options?: { [key: string]: any }) {
-  return request('/api/v1/groups', {
+  return request('/apis/core/v1/groups', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +43,6 @@ export async function createGroup(body: API.NewGroup, options?: { [key: string]:
   });
 }
 
-/** get the detail of a group GET /api/v1/groups/${param0} */
 export async function getGroupDetail(
   params: {
     id: number;
@@ -52,13 +50,12 @@ export async function getGroupDetail(
   options?: { [key: string]: any },
 ) {
   const { id } = params;
-  return request<API.Data>(`/api/v1/groups/${id}`, {
+  return request<API.Data>(`/apis/core/v1/groups/${id}`, {
     method: 'GET',
     ...(options || {}),
   });
 }
 
-/** update detail of a group PUT /api/v1/groups/${param0} */
 export async function updateGroupDetail(
   params: {
     id: number;
@@ -67,7 +64,7 @@ export async function updateGroupDetail(
   options?: { [key: string]: any },
 ) {
   const { id } = params;
-  return request(`/api/v1/groups/${id}`, {
+  return request(`/apis/core/v1/groups/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -77,7 +74,6 @@ export async function updateGroupDetail(
   });
 }
 
-/** delete an empty group DELETE /api/v1/groups/${param0} */
 export async function deleteGroup(
   params: {
     id: string;
@@ -85,7 +81,7 @@ export async function deleteGroup(
   options?: { [key: string]: any },
 ) {
   const { id } = params;
-  return request(`/api/v1/groups/${id}`, {
+  return request(`/apis/core/v1/groups/${id}`, {
     method: 'DELETE',
     ...(options || {}),
   });
