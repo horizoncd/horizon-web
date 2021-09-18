@@ -16,7 +16,7 @@ export async function queryGroupChildren(parentId: number) {
 export async function querySubGroups(parentId: number) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>(`/apis/front/v1/groups/${parentId}/groups`, {
+  }>(`/apis/core/v1/groups/${parentId}/groups`, {
     method: 'GET',
   });
 }
