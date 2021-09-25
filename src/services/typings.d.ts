@@ -6,11 +6,11 @@ declare namespace API {
   }
 
   type Resource = {
-    id?: number;
-    name?: string;
-    fullName?: string;
-    type?: string;
-    path?: string;
+    id: number;
+    type: string;
+    name: string;
+    fullName: string;
+    fullPath: string;
   }
 
   type NewGroup = {
@@ -31,9 +31,10 @@ declare namespace API {
   }
 
   type Group = {
-    id: string;
+    id: number;
     name: string;
     fullName: string;
+    fullPath: string;
     path: string;
     description?: string;
     visibilityLevel: number;
@@ -59,7 +60,7 @@ declare namespace API {
   }
 
   type GroupFilterParam = {
-    parentId?: string,
+    parentId: number,
     filter?: string,
     pageNumber?: number,
     pageSize?: number,

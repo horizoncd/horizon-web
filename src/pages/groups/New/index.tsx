@@ -22,7 +22,7 @@ export default (props: any) => {
           id: strPid
         });
 
-        setParentPath(data.path)
+        setParentPath(data.fullPath)
       }
       updateParentPath();
     }, [pId]);

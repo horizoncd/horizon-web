@@ -76,7 +76,7 @@ export async function updateGroupDetail(
 
 export async function deleteGroup(
   params: {
-    id: string;
+    id: number;
   },
   options?: { [key: string]: any },
 ) {

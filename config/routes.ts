@@ -1,4 +1,4 @@
-﻿const routes = [
+﻿export const routes = [
   {
     path: '/user',
     layout: false,
@@ -61,12 +61,13 @@ const groupRoutes = [
   },
 ];
 
+const allRoute = []
+allRoute.push(...routes)
+allRoute.push(...groupRoutes)
 // @ts-ignore
-routes.push(...groupRoutes)
-// @ts-ignore
-routes.push({
+allRoute.push({
   path: '/*',
   component: 'detail'
 });
 
-export default routes;
+export default allRoute;

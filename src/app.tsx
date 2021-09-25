@@ -10,6 +10,7 @@ import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined,} from '@
 import Utils from "@/utils";
 import {queryResource} from "@/services/core";
 import {stringify} from 'querystring';
+import {routes} from '../config/routes'
 
 const loginPath = '/user/login';
 
@@ -39,37 +40,38 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  resource?: API.Resource
+  resource: API.Resource
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = {};
+  const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: ""};
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (error) {
-      history.push({
-        pathname: loginPath,
-        search: stringify({
-          redirect: history.location.pathname + history.location.search,
-        }),
-      });
-    }
+    // try {
+    //   const msg = await queryCurrentUser();
+    //   return msg.data;
+    // } catch (error) {
+    //   history.push({
+    //     pathname: loginPath,
+    //     search: stringify({
+    //       redirect: history.location.pathname + history.location.search,
+    //     }),
+    //   });
+    // }
     return undefined;
   };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     // 资源类型的URL
     if (!pathnameInStaticRoutes(history.location.pathname)) {
-      resource.path = Utils.getResourcePath(history.location.pathname);
-      queryResource(resource.path).then(({data}) => {
-        const {type, id, name, path, fullName} = data;
+      const path = Utils.getResourcePath(history.location.pathname);
+      queryResource(path).then(({data}) => {
+        const {type, id, name, fullPath, fullName} = data;
         resource.id = id;
         resource.type = type;
         resource.name = name;
         resource.fullName = fullName;
-        resource.path = path
+        resource.fullPath = fullPath
       }).catch(() => {
+        // don't show the menu
         settings.menuRender = false
       })
     }
@@ -85,6 +87,7 @@ export async function getInitialState(): Promise<{
   return {
     fetchUserInfo,
     settings,
+    resource
   };
 }
 
@@ -174,20 +177,18 @@ export const request: RequestConfig = {
 export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     rightContentRender: () => <RightContent/>,
-    disableContentMargin: false,
-    waterMarkProps: {},
     footerRender: () => <Footer/>,
     onPageChange: () => {
 
     },
     menuHeaderRender: () => {
-      const {name: title, path} = initialState?.resource || {};
-      if (!title || !path) {
+      const {name: title, fullPath} = initialState?.resource || {};
+      if (!title || !fullPath) {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
       return <span style={{alignItems: 'center', lineHeight: '40px'}} onClick={() => {
-        window.location.href = path
+        window.location.href = fullPath
       }}>
         <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
           {firstLetter}
@@ -201,9 +202,9 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
         return menuData;
       }
       // 根据ResourceType决定菜单
-      const {type, path} = initialState?.resource || {};
-      if (path) {
-        return loopMenuItem(formatGroupMenu(path));
+      const {type, fullPath} = initialState?.resource || {};
+      if (fullPath) {
+        return loopMenuItem(formatGroupMenu(fullPath));
       }
 
       return menuData;
@@ -215,8 +216,8 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
 };
 
 function pathnameInStaticRoutes(pathname: string): boolean {
-  for (let i = 0; i < Utils.getStaticRoutes().length; i += 1) {
-    const staticRoute = Utils.getStaticRoutes()[i];
+  for (let i = 0; i < routes.length; i += 1) {
+    const staticRoute = routes[i];
     if (pathname === staticRoute.path) {
       return true;
     }
@@ -227,7 +228,7 @@ function pathnameInStaticRoutes(pathname: string): boolean {
 
 function formatGroupMenu(path: string) {
   return [
-    ...Utils.getStaticRoutes(),
+    ...routes,
     {
       name: 'Group overview',
       icon: 'bank',

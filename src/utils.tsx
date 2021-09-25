@@ -1,4 +1,4 @@
-import {Route} from "antd/lib/breadcrumb/Breadcrumb";
+import type {Route} from "antd/lib/breadcrumb/Breadcrumb";
 
 const getResourcePath = (pathname: string) => {
   const filteredPath = pathname.split('/').filter(item => item !== '' && item !== 'groups')
@@ -56,7 +56,7 @@ const getStaticRoutes = () => {
             {
               name: '登录',
               path: '/user/login',
-              component: 'user/Login',
+              component: '@/pages/user/Login',
             },
           ],
         },
@@ -65,7 +65,7 @@ const getStaticRoutes = () => {
     {
       path: '/404',
       menuRender: false,
-      component: '404',
+      component: '@/pages/404',
     },
     {
       path: '/',
@@ -75,7 +75,7 @@ const getStaticRoutes = () => {
     {
       path: '/dashboard/groups',
       menuRender: false,
-      component: 'dashboard/groups',
+      component: '@/pages/dashboard/groups',
     },
     {
       path: '/dashboard/groups/',
@@ -85,7 +85,7 @@ const getStaticRoutes = () => {
     {
       path: '/groups/new',
       menuRender: false,
-      component: 'group/New',
+      component: '@/pages/group/New',
     }
   ]
 }

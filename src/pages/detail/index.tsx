@@ -5,6 +5,7 @@ import { useModel } from "@@/plugin-model/useModel";
 export default () => {
   const { initialState } = useModel('@@initialState');
   const { id, type } = initialState?.resource || {};
+  console.log('111')
   if (!id) {
     return <NotFount/>;
   }
