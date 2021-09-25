@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Divider, Input, Tabs, Tree, Pagination} from 'antd';
 import {DownOutlined, FolderOutlined, FileOutlined} from '@ant-design/icons';
-import {history, Link, useModel} from 'umi';
+import {Link, useModel} from 'umi';
 import {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
@@ -128,7 +128,7 @@ export default (props: any) => {
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      history.push(`${path}`);
+      window.location.href = path
     } else if (!expanded) {
       if (!info.node.children) {
         const pid = info.node.key as number;

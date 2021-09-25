@@ -41,20 +41,26 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
   resource?: API.Resource
 }> {
+  console.log('kkk')
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = {};
+  const { NODE_ENV } = process.env;
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (error) {
-      history.push({
-        pathname: loginPath,
-        search: stringify({
-          redirect: history.location.pathname + history.location.search,
-        }),
-      });
+    // need login when env is not dev
+    if (NODE_ENV !== "development") {
+      try {
+        const msg = await queryCurrentUser();
+        return msg.data;
+      } catch (error) {
+        history.push({
+          pathname: loginPath,
+          search: stringify({
+            redirect: history.location.pathname + history.location.search,
+          }),
+        });
+      }
     }
+
     return undefined;
   };
   // 如果是登录页面，不执行
