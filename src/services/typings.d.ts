@@ -14,11 +14,11 @@ declare namespace API {
   }
 
   type NewGroup = {
-    name: groupName;
-    path: groupPath;
-    description?: groupDescription;
-    visibilityLevel: visibilityLevel;
-    parentId?: groupId;
+    name: string;
+    path: string;
+    description?: string;
+    visibilityLevel: string;
+    parentID?: number;
   };
 
   type Data = {
@@ -56,11 +56,11 @@ declare namespace API {
     subGroupCount: number,
     applicationCount: number,
     children?: GroupChild[],
-    parentId: number,
+    parentID: number,
   }
 
   type GroupFilterParam = {
-    parentId: number,
+    parentID: number,
     filter?: string,
     pageNumber?: number,
     pageSize?: number,

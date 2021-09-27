@@ -13,7 +13,7 @@ const {TextArea} = Input;
 export default () => {
   const [form] = Form.useForm();
 
-  const {initialState, setInitialState} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const { id } = initialState?.resource || {};
   if (!id) {
     return <NotFount/>;
@@ -66,15 +66,7 @@ export default () => {
         message: '修改成功',
       })
       const newFullPath = `${detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)}${values.path}`;
-      const newFullName = `${detail.fullName.substring(0, detail.fullName.length - detail.name.length)}${values.name}`;
-      history.replace(`/groups${newFullPath}/-/edit`);
-      setInitialState((s) => ({...s, resource: {
-          id: detail.id,
-          name: values.name,
-          type: 'group',
-          fullName: newFullName,
-          fullPath: newFullPath,
-        }}))
+      window.location.href = `/groups${newFullPath}/-/edit`
     })
   }
 

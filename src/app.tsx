@@ -44,18 +44,23 @@ export async function getInitialState(): Promise<{
 }> {
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: ""};
+  const { NODE_ENV } = process.env;
   const fetchUserInfo = async () => {
-    // try {
-    //   const msg = await queryCurrentUser();
-    //   return msg.data;
-    // } catch (error) {
-    //   history.push({
-    //     pathname: loginPath,
-    //     search: stringify({
-    //       redirect: history.location.pathname + history.location.search,
-    //     }),
-    //   });
-    // }
+    // need login when env is not dev
+    if (NODE_ENV !== "development") {
+      try {
+        const msg = await queryCurrentUser();
+        return msg.data;
+      } catch (error) {
+        history.push({
+          pathname: loginPath,
+          search: stringify({
+            redirect: history.location.pathname + history.location.search,
+          }),
+        });
+      }
+    }
+
     return undefined;
   };
   // 如果是登录页面，不执行
@@ -226,7 +231,7 @@ function pathnameInStaticRoutes(pathname: string): boolean {
   return false;
 }
 
-function formatGroupMenu(path: string) {
+function formatGroupMenu(fullPath: string) {
   return [
     ...routes,
     {
@@ -234,27 +239,27 @@ function formatGroupMenu(path: string) {
       icon: 'bank',
       children: [
         {
-          path: `${path}`,
+          path: `${fullPath}`,
           name: 'Details',
         },
         {
-          path: `/groups${path}/-/activity`,
+          path: `/groups${fullPath}/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/groups${path}/-/members`,
+      path: `/groups${fullPath}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/groups${path}/-/settings`,
+      path: `/groups${fullPath}/-/settings`,
       name: 'Settings',
       icon: 'setting',
       children: [
         {
-          path: `/groups${path}/-/edit`,
+          path: `/groups${fullPath}/-/edit`,
           name: 'General',
         }
       ]

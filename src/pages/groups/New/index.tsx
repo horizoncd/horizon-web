@@ -12,7 +12,7 @@ export default (props: any) => {
 
   const [parentPath, setParentPath] = useState('');
 
-  const strPid = props.location.query.parentId
+  const strPid = props.location.query.parentID
   const pId = parseInt(strPid, 10)
 
   if (pId) {
@@ -62,7 +62,7 @@ export default (props: any) => {
   const onFinish = (values: API.NewGroup) => {
     createGroup({
       ...values,
-      parentId: pId
+      parentID: pId
     }).then(() => {
       notification.info({
         message: 'Group新建成功',

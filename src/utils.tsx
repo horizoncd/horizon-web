@@ -44,55 +44,8 @@ const getAvatarColorIndex = (title: string) => {
   return count % 7 + 1;
 }
 
-const getStaticRoutes = () => {
-  return [
-    {
-      path: '/user',
-      layout: false,
-      routes: [
-        {
-          path: '/user',
-          routes: [
-            {
-              name: '登录',
-              path: '/user/login',
-              component: '@/pages/user/Login',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      path: '/404',
-      menuRender: false,
-      component: '@/pages/404',
-    },
-    {
-      path: '/',
-      menuRender: false,
-      redirect: '/dashboard/groups',
-    },
-    {
-      path: '/dashboard/groups',
-      menuRender: false,
-      component: '@/pages/dashboard/groups',
-    },
-    {
-      path: '/dashboard/groups/',
-      menuRender: false,
-      redirect: '/dashboard/groups',
-    },
-    {
-      path: '/groups/new',
-      menuRender: false,
-      component: '@/pages/group/New',
-    }
-  ]
-}
-
 export default {
   getResourcePath,
   getBreadcrumb,
   getAvatarColorIndex,
-  getStaticRoutes
 }

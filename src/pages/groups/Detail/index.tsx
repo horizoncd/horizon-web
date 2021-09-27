@@ -1,7 +1,7 @@
 import {Button, Divider} from 'antd';
 import utils from '../../../utils'
 import {history} from 'umi';
-import Detail from '@/components/Detail'
+import Detail from '@/components/PageWithBreadcrumb'
 import './index.less'
 import GroupTree from '@/components/GroupTree'
 import {stringify} from "querystring";
@@ -18,7 +18,7 @@ export default () => {
         <Button style={{marginRight: 15}} onClick={() => history.push({
           pathname: newGroup,
           search: stringify({
-            parentId: id,
+            parentID: id,
           }),
         })}>New subgroup</Button>
         <Button type="primary" style={{backgroundColor: '#1f75cb'}}>New application</Button>
@@ -47,7 +47,7 @@ export default () => {
         {header()}
       </div>
       <Divider className={'group-divider'} />
-      <GroupTree parentId={id} tabPane={'Subgroups and applications'}/>
+      <GroupTree parentID={id} tabPane={'Subgroups and applications'}/>
     </Detail>
   );
 };

@@ -2,22 +2,26 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-export async function queryGroupChildren(parentId: number) {
+export async function queryGroupChildren(parentID: number) {
   return request<{
     data: API.GroupChild[];
   }>('/apis/front/v1/groups/children', {
     method: 'GET',
     params: {
-      parentId
+      parentID
     }
   });
 }
 
-export async function querySubGroups(parentId: number) {
+export async function querySubGroups(parentID: number, pageNumber: number, pageSize: number) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>(`/apis/core/v1/groups/${parentId}/groups`, {
+  }>(`/apis/core/v1/groups/${parentID}/groups`, {
     method: 'GET',
+    params: {
+      pageNumber,
+      pageSize
+    }
   });
 }
 

@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Divider, Input, Pagination, Tabs, Tree} from 'antd';
 import {DownOutlined, FileOutlined, FolderOutlined} from '@ant-design/icons';
-import {history, Link, useModel} from 'umi';
-import {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
+import type {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
 import {queryGroups, querySubGroups} from "@/services/groups/groups";
@@ -12,8 +11,7 @@ const {Search} = Input;
 const {TabPane} = Tabs;
 
 export default (props: any) => {
-  const {parentId} = props;
-  const {setInitialState} = useModel('@@initialState');
+  const {parentID} = props;
   const [searchValue, setSearchValue] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -28,7 +26,7 @@ export default (props: any) => {
     for (let i = 0; i < data.length; i += 1) {
       const node = data[i];
       if (searchValue) {
-        expandedKeySet.add(node.parentId);
+        expandedKeySet.add(node.parentID);
       }
       if (node.children) {
         updateExpandedKeySet(node.children, expandedKeySet);
@@ -45,7 +43,7 @@ export default (props: any) => {
   useEffect(() => {
     const refresh = async () => {
       const {data} = await queryGroups({
-        parentId,
+        parentID,
         filter: searchValue,
         pageSize,
         pageNumber
@@ -56,7 +54,7 @@ export default (props: any) => {
       updateExpandedKeys(items);
     }
     refresh();
-  }, [query, parentId, pageNumber]);
+  }, [query, parentID, pageNumber]);
 
   const titleRender = (node: any): React.ReactNode => {
     const {title} = node;
@@ -76,7 +74,9 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath} = node;
 
-    return <span  onClick={() => {history.push(`${fullPath}`);}}>
+    return <span onClick={() => {
+      window.location.href = fullPath
+    }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
       </span>
@@ -122,13 +122,11 @@ export default (props: any) => {
     },
   ) => {
     const {node} = info;
-    console.log(node)
-    const {key, expanded, fullPath, type, id, name, fullName, childrenCount} = node;
+    const {key, expanded, fullPath, childrenCount} = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
-    setInitialState((s) => ({...s, resource: {type, id, fullPath, name, fullName}, settings: {}}));
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      history.push(`${fullPath}`);
+      window.location.href = fullPath
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {
@@ -163,7 +161,7 @@ export default (props: any) => {
     // 如果是展开并且node下的children为空，则进行查询
     if (info.expanded && !info.node.children) {
       const pid = info.node.key as number;
-      querySubGroups(pid).then(({data}) => {
+      querySubGroups(pid, 1, pageSize).then(({data}) => {
         const {items} = data;
         setGroups(updateChildren(groups, pid, items))
         setExpandedKeys(expandedKey);
