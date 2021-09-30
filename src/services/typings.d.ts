@@ -6,34 +6,30 @@ declare namespace API {
   }
 
   type Resource = {
-    id?: number;
-    name?: string;
-    fullName?: string;
-    type?: string;
-    path?: string;
+    id: number;
+    type: string;
+    name: string;
+    fullName: string;
+    fullPath: string;
   }
 
   type NewGroup = {
-    name: groupName;
-    path: groupPath;
-    description?: groupDescription;
-    visibilityLevel: visibilityLevel;
-    parentId?: groupId;
+    name: string;
+    path: string;
+    description?: string;
+    visibilityLevel: string;
+    parentID?: number;
   };
 
   type Data = {
     data: Group
   }
 
-  type GroupPageResult = {
-    total: int,
-    items: GroupChild[]
-  }
-
   type Group = {
-    id: string;
+    id: number;
     name: string;
     fullName: string;
+    fullPath: string;
     path: string;
     description?: string;
     visibilityLevel: number;
@@ -55,14 +51,14 @@ declare namespace API {
     subGroupCount: number,
     applicationCount: number,
     children?: GroupChild[],
-    parentId: number,
+    parentID: number,
   }
 
   type GroupFilterParam = {
-    parentId?: string,
+    groupID: number,
     filter?: string,
-    pageNumber?: number,
-    pageSize?: number,
+    pageNumber: number,
+    pageSize: number,
   }
 
 }

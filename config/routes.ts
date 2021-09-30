@@ -1,24 +1,14 @@
-﻿const routes = [
+﻿export const routes = [
   {
     path: '/user',
     layout: false,
     routes: [
       {
-        path: '/user',
-        routes: [
-          {
-            name: '登录',
-            path: '/user/login',
-            component: 'user/Login',
-          },
-        ],
+        name: '登录',
+        path: '/user/login',
+        component: 'user/Login',
       },
     ],
-  },
-  {
-    path: '/404',
-    menuRender: false,
-    component: '404',
   },
   {
     path: '/',
@@ -39,6 +29,11 @@
     path: '/groups/new',
     menuRender: false,
     component: 'groups/New',
+  },
+  {
+    path: '/applications/new',
+    menuRender: false,
+    component: 'applications/new',
   }
 ];
 
@@ -61,12 +56,33 @@ const groupRoutes = [
   },
 ];
 
+const applicationRoutes = [
+  {
+    path: '/applications/*/-/members',
+    component: 'applications/member',
+  },
+  {
+    path: '/applications/*/-/settings',
+    component: 'applications/settings',
+  },
+  {
+    path: '/applications/*/-/edit',
+    component: 'applications/edit',
+  },
+  {
+    path: '/applications/*/-/activity',
+    component: 'applications/activity',
+  },
+];
+
+const allRoute = []
+allRoute.push(...routes)
+allRoute.push(...groupRoutes)
+allRoute.push(...applicationRoutes)
 // @ts-ignore
-routes.push(...groupRoutes)
-// @ts-ignore
-routes.push({
+allRoute.push({
   path: '/*',
   component: 'detail'
 });
 
-export default routes;
+export default allRoute;
