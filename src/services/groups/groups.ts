@@ -2,21 +2,10 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-export async function queryGroupChildren(parentID: number) {
-  return request<{
-    data: API.GroupChild[];
-  }>('/apis/front/v1/groups/children', {
-    method: 'GET',
-    params: {
-      parentID
-    }
-  });
-}
-
-export async function querySubGroups(parentID: number, pageNumber: number, pageSize: number) {
+export async function queryChildren(groupID: number, pageNumber: number, pageSize: number) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>(`/apis/core/v1/groups/${parentID}/groups`, {
+  }>(`/apis/front/v1/groups/${groupID}/children`, {
     method: 'GET',
     params: {
       pageNumber,
@@ -25,10 +14,33 @@ export async function querySubGroups(parentID: number, pageNumber: number, pageS
   });
 }
 
-export async function queryGroups(params: API.GroupFilterParam) {
+export async function querySubGroups(groupID: number, pageNumber: number, pageSize: number) {
   return request<{
-    data: API.GroupPageResult;
-  }>('/apis/front/v1/groups/search', {
+    data: API.PageResult<API.GroupChild>;
+  }>(`/apis/core/v1/groups/${groupID}/groups`, {
+    method: 'GET',
+    params: {
+      pageNumber,
+      pageSize
+    }
+  });
+}
+
+export async function searchGroups(params: API.GroupFilterParam) {
+  return request<{
+    data: API.PageResult<API.GroupChild>;
+  }>('/apis/front/v1/groups/search-groups', {
+    method: 'GET',
+    params: {
+      ...params
+    }
+  });
+}
+
+export async function searchChildren(params: API.GroupFilterParam) {
+  return request<{
+    data: API.PageResult<API.GroupChild>;
+  }>('/apis/front/v1/groups/search-children', {
     method: 'GET',
     params: {
       ...params

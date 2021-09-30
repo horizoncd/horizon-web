@@ -4,14 +4,14 @@ import {DownOutlined, FileOutlined, FolderOutlined} from '@ant-design/icons';
 import type {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
-import {queryGroups, querySubGroups} from "@/services/groups/groups";
+import {searchGroups, querySubGroups} from "@/services/groups/groups";
 
 const {DirectoryTree} = Tree;
 const {Search} = Input;
 const {TabPane} = Tabs;
 
 export default (props: any) => {
-  const {parentID} = props;
+  const {groupID} = props;
   const [searchValue, setSearchValue] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -42,8 +42,8 @@ export default (props: any) => {
 
   useEffect(() => {
     const refresh = async () => {
-      const {data} = await queryGroups({
-        parentID,
+      const {data} = await searchGroups({
+        groupID,
         filter: searchValue,
         pageSize,
         pageNumber
@@ -54,7 +54,7 @@ export default (props: any) => {
       updateExpandedKeys(items);
     }
     refresh();
-  }, [query, parentID, pageNumber]);
+  }, [query, groupID, pageNumber]);
 
   const titleRender = (node: any): React.ReactNode => {
     const {title} = node;

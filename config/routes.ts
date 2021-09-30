@@ -11,11 +11,6 @@
     ],
   },
   {
-    path: '/404',
-    menuRender: false,
-    component: '404',
-  },
-  {
     path: '/',
     menuRender: false,
     redirect: '/dashboard/groups',
@@ -34,6 +29,11 @@
     path: '/groups/new',
     menuRender: false,
     component: 'groups/New',
+  },
+  {
+    path: '/applications/new',
+    menuRender: false,
+    component: 'applications/new',
   }
 ];
 
@@ -56,9 +56,29 @@ const groupRoutes = [
   },
 ];
 
+const applicationRoutes = [
+  {
+    path: '/applications/*/-/members',
+    component: 'applications/member',
+  },
+  {
+    path: '/applications/*/-/settings',
+    component: 'applications/settings',
+  },
+  {
+    path: '/applications/*/-/edit',
+    component: 'applications/edit',
+  },
+  {
+    path: '/applications/*/-/activity',
+    component: 'applications/activity',
+  },
+];
+
 const allRoute = []
 allRoute.push(...routes)
 allRoute.push(...groupRoutes)
+allRoute.push(...applicationRoutes)
 // @ts-ignore
 allRoute.push({
   path: '/*',

@@ -25,11 +25,6 @@ declare namespace API {
     data: Group
   }
 
-  type GroupPageResult = {
-    total: int,
-    items: GroupChild[]
-  }
-
   type Group = {
     id: number;
     name: string;
@@ -60,10 +55,10 @@ declare namespace API {
   }
 
   type GroupFilterParam = {
-    parentID: number,
+    groupID: number,
     filter?: string,
-    pageNumber?: number,
-    pageSize?: number,
+    pageNumber: number,
+    pageSize: number,
   }
 
 }

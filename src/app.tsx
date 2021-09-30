@@ -43,7 +43,7 @@ export async function getInitialState(): Promise<{
   resource: API.Resource
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: ""};
+  const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: "group"};
   const { NODE_ENV } = process.env;
   const fetchUserInfo = async () => {
     // need login when env is not dev
@@ -77,7 +77,7 @@ export async function getInitialState(): Promise<{
         resource.fullPath = fullPath
       }).catch(() => {
         // don't show the menu
-        settings.menuRender = false
+        // settings.menuRender = false
       })
     }
 

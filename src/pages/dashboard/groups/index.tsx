@@ -19,7 +19,7 @@ export default () => {
       <Col span={16}>
         <PageContainer header={{ title: 'Groups', extra: header() }} breadcrumbRender={false}>
           <Divider className={'group-divider'}/>
-          <GroupTree parentID={0} tabPane={'Your groups'}/>
+          <GroupTree groupID={0} tabPane={'Your groups'}/>
         </PageContainer>
       </Col>
       <Col span={4}/>

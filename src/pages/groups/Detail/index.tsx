@@ -47,7 +47,7 @@ export default () => {
         {header()}
       </div>
       <Divider className={'group-divider'} />
-      <GroupTree parentID={id} tabPane={'Subgroups and applications'}/>
+      <GroupTree groupID={id} tabPane={'Subgroups and applications'}/>
     </Detail>
   );
 };
