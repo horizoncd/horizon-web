@@ -21,11 +21,6 @@
     component: 'dashboard/groups',
   },
   {
-    path: '/dashboard/groups/',
-    menuRender: false,
-    redirect: '/dashboard/groups',
-  },
-  {
     path: '/groups/new',
     menuRender: false,
     component: 'groups/New',
