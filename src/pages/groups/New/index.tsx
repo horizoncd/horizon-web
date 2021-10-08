@@ -1,32 +1,20 @@
 import {Button, Col, Divider, Form, Input, notification, Radio, Row, Space} from 'antd';
-import {history} from 'umi';
-import {Rule} from 'rc-field-form/lib/interface'
+import {history, useRequest} from 'umi';
+import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
-import {createGroup, getGroupDetail} from "@/services/groups/groups";
-import {useEffect, useState} from "react";
+import {createGroup, getGroupByID} from "@/services/groups/groups";
 
 const {TextArea} = Input;
 
 export default (props: any) => {
   const [form] = Form.useForm();
 
-  const [parentPath, setParentPath] = useState('');
+  const {parentID} = props.location.query
+  const intParentID = parseInt(parentID, 10)
 
-  const strPid = props.location.query.parentID
-  const pId = parseInt(strPid, 10)
-
-  if (pId) {
-    useEffect(() => {
-      const updateParentPath = async () => {
-        const {data} = await getGroupDetail({
-          id: strPid
-        });
-
-        setParentPath(data.fullPath)
-      }
-      updateParentPath();
-    }, [pId]);
-  }
+  const {data} = useRequest(() => getGroupByID({
+    id: intParentID
+  }), {refreshDeps: [intParentID]})
 
   const formatLabel = (labelName: string) => (
     <strong>
@@ -39,7 +27,7 @@ export default (props: any) => {
   const groupDescLabel = formatLabel("Group description (optional)");
   const groupVisibility = formatLabel("Visibility level");
 
-  const getURLPrefix = () => `${window.location.origin + parentPath}/`
+  const getURLPrefix = () => `${window.location.origin + data?.fullPath}/`
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -62,12 +50,12 @@ export default (props: any) => {
   const onFinish = (values: API.NewGroup) => {
     createGroup({
       ...values,
-      parentID: pId
+      parentID: intParentID
     }).then(() => {
       notification.info({
         message: 'Group新建成功',
       })
-      window.location.href = `${parentPath}/${values.path}`
+      window.location.href = `${data?.fullPath}/${values.path}`
     })
   }
 

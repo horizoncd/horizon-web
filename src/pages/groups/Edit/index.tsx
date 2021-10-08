@@ -2,7 +2,7 @@ import {Button, Card, Col, Divider, Form, Input, notification, Popconfirm, Radio
 import {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";
-import {deleteGroup, getGroupDetail, updateGroupDetail} from "@/services/groups/groups";
+import {deleteGroup, getGroupByID, updateGroupDetail} from "@/services/groups/groups";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
 import {QuestionCircleOutlined} from "@ant-design/icons";
@@ -24,7 +24,7 @@ export default () => {
 
   useEffect(() => {
     const updateDetail = async () => {
-      const {data} = await getGroupDetail({id});
+      const {data} = await getGroupByID({id});
       setDetail(data)
       form.setFieldsValue(data)
     }

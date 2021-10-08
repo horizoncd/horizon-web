@@ -59,16 +59,16 @@ export async function createGroup(body: API.NewGroup, options?: { [key: string]:
   });
 }
 
-export async function getGroupDetail(
+export async function getGroupByID(
   params: {
     id: number;
-  },
-  options?: { [key: string]: any },
+  }
 ) {
   const { id } = params;
-  return request<API.Data>(`/apis/core/v1/groups/${id}`, {
+  return request<{
+    data: API.Group
+  }>(`/apis/core/v1/groups/${id}`, {
     method: 'GET',
-    ...(options || {}),
   });
 }
 

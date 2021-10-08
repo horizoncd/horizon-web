@@ -11,6 +11,7 @@ export default () => {
   const { initialState } = useModel('@@initialState');
   const { id, name = '' } = initialState?.resource || {};
   const newGroup = '/groups/new';
+  const newApplication = '/applications/new';
 
   const header = () => {
     return (
@@ -21,7 +22,14 @@ export default () => {
             parentID: id,
           }),
         })}>New subgroup</Button>
-        <Button type="primary" style={{backgroundColor: '#1f75cb'}}>New application</Button>
+        <Button type="primary" style={{backgroundColor: '#1f75cb'}} onClick={() => {
+          history.push({
+            pathname: newApplication,
+            search: stringify({
+              parentID: id,
+            }),
+          })
+        }}>New application</Button>
       </div>
     )
   }

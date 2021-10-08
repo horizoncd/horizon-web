@@ -35,6 +35,17 @@ declare namespace API {
     visibilityLevel: number;
   };
 
+  type Template = {
+    name: string;
+    description: string;
+  }
+
+  type Release = {
+    name: string;
+    description: string;
+    recommended: string;
+  }
+
   type PageResult<T> = {
     total: number,
     items: T[]
@@ -48,8 +59,6 @@ declare namespace API {
     path: string,
     type: string,
     childrenCount: number,
-    subGroupCount: number,
-    applicationCount: number,
     children?: GroupChild[],
     parentID: number,
   }
