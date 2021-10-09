@@ -1,16 +1,16 @@
-import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
-import {PageLoading} from '@ant-design/pro-layout';
-import {notification} from 'antd';
-import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
-import {history} from 'umi';
+import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
+import { PageLoading } from '@ant-design/pro-layout';
+import { notification } from 'antd';
+import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
-import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined,} from '@ant-design/icons/lib';
+import { BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined, } from '@ant-design/icons/lib';
 import Utils from "@/utils";
-import {queryResource} from "@/services/core";
-import {stringify} from 'querystring';
-import {routes} from '../config/routes'
+import { queryResource } from "@/services/core";
+import { stringify } from 'querystring';
+import { routes } from '../config/routes'
 
 const loginPath = '/user/login';
 
@@ -22,7 +22,7 @@ const IconMap = {
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({icon, children, ...item}) => ({
+  menus.map(({ icon, children, ...item }) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
@@ -39,11 +39,11 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: () => Promise<API.CurrentUser|undefined>;
   resource: API.Resource
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: "group"};
+  const resource: API.Resource = { fullName: "", fullPath: "", id: 0, name: "", type: "group" };
   const { NODE_ENV } = process.env;
   const fetchUserInfo = async () => {
     // need login when env is not dev
@@ -68,8 +68,8 @@ export async function getInitialState(): Promise<{
     // 资源类型的URL
     if (!pathnameInStaticRoutes(history.location.pathname)) {
       const path = Utils.getResourcePath(history.location.pathname);
-      queryResource(path).then(({data}) => {
-        const {type, id, name, fullPath, fullName} = data;
+      queryResource(path).then(({ data }) => {
+        const { type, id, name, fullPath, fullName } = data;
         resource.id = id;
         resource.type = type;
         resource.name = name;
@@ -155,7 +155,7 @@ export const request: RequestConfig = {
     },
   },
   errorHandler: (error: any) => {
-    const {response, data} = error;
+    const { response, data } = error;
     if (!response) {
       notification.error({
         description: '您的网络发生异常，无法连接服务器',
@@ -179,7 +179,7 @@ export const request: RequestConfig = {
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({initialState}) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent/>,
     footerRender: () => <Footer/>,
@@ -187,27 +187,27 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
 
     },
     menuHeaderRender: () => {
-      const {name: title, fullPath} = initialState?.resource || {};
+      const { name: title, fullPath } = initialState?.resource || {};
       if (!title || !fullPath) {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
-      return <span style={{alignItems: 'center', lineHeight: '40px'}} onClick={() => {
+      return <span style={ { alignItems: 'center', lineHeight: '40px' } } onClick={ () => {
         window.location.href = fullPath
-      }}>
-        <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
-          {firstLetter}
+      } }>
+        <span className={ `avatar-40 identicon bg${ Utils.getAvatarColorIndex(title) }` }>
+          { firstLetter }
         </span>
-        <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>{title}</span>
+        <span style={ { alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' } }>{ title }</span>
       </span>;
     },
     menuDataRender: (menuData: MenuDataItem[]): MenuDataItem[] => {
-      const {pathname} = history.location;
+      const { pathname } = history.location;
       if (pathnameInStaticRoutes(pathname)) {
         return menuData;
       }
       // 根据ResourceType决定菜单
-      const {type, fullPath} = initialState?.resource || {};
+      const { type, fullPath } = initialState?.resource || {};
       if (fullPath) {
         return loopMenuItem(formatGroupMenu(fullPath));
       }
@@ -221,9 +221,15 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
 };
 
 function pathnameInStaticRoutes(pathname: string): boolean {
+  // handle url end with '/'
+  let path = pathname
+  if (pathname.endsWith("/")) {
+    path = pathname.substring(0, pathname.length - 1);
+  }
+
   for (let i = 0; i < routes.length; i += 1) {
     const staticRoute = routes[i];
-    if (pathname === staticRoute.path) {
+    if (path === staticRoute.path) {
       return true;
     }
   }
@@ -239,27 +245,27 @@ function formatGroupMenu(fullPath: string) {
       icon: 'bank',
       children: [
         {
-          path: `${fullPath}`,
+          path: `${ fullPath }`,
           name: 'Details',
         },
         {
-          path: `/groups${fullPath}/-/activity`,
+          path: `/groups${ fullPath }/-/activity`,
           name: 'Activity',
         },
       ],
     },
     {
-      path: `/groups${fullPath}/-/members`,
+      path: `/groups${ fullPath }/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/groups${fullPath}/-/settings`,
+      path: `/groups${ fullPath }/-/settings`,
       name: 'Settings',
       icon: 'setting',
       children: [
         {
-          path: `/groups${fullPath}/-/edit`,
+          path: `/groups${ fullPath }/-/edit`,
           name: 'General',
         }
       ]

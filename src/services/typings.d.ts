@@ -21,9 +21,38 @@ declare namespace API {
     parentID?: number;
   };
 
-  type Data = {
-    data: Group
-  }
+  type NewApplication = {
+    groupID: number,
+    name: string;
+    description?: string;
+    template: {
+      name: string,
+      release: string,
+    }
+    git: {
+      url: string,
+      subfolder: string,
+      branch: string
+    }
+    templateInput: any
+  };
+
+  type Application = {
+    id: number;
+    groupID: number,
+    name: string;
+    description?: string;
+    template: {
+      name: string,
+      release: string,
+    }
+    git: {
+      url: string,
+      subfolder: string,
+      branch: string
+    }
+    templateInput: any
+  };
 
   type Group = {
     id: number;

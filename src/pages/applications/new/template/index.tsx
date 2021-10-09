@@ -7,7 +7,7 @@ export default (props: any) => {
   const { data } = useRequest(queryTemplates)
 
   const isClicked = (item: API.Template) => {
-    return item.name === props.selectedTemplate?.name
+    return item.name === props.template?.name
   }
 
   return (
@@ -17,7 +17,7 @@ export default (props: any) => {
           return <Col key={item.name} span={ 8 }>
             <Card
               hoverable
-              onClick={ () => props.setSelectedTemplate(item) }
+              onClick={ () => props.resetTemplate(item) }
                   className={`card ${isClicked(item) ? 'card-after-clicked' : 'card-before-clicked'}`}
             >
               <div className='awsui-cards-card-header'>
