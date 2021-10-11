@@ -72,7 +72,7 @@ declare namespace API {
   type Release = {
     name: string;
     description: string;
-    recommended: string;
+    recommended: boolean;
   }
 
   type PageResult<T> = {

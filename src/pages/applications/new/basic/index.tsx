@@ -18,6 +18,23 @@ export default (props: any) => {
     max: 40,
   }];
 
+  const priorities = [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+  ]
+
+  const formatReleaseOption = (item: API.Release) => {
+    if (item.recommended) {
+      return <div>
+        {item.name}{" "}<span style={{ color: "red" }}>(推荐)</span>
+      </div>
+    }
+
+    return item.name;
+  }
+
   return (
     <div>
       <Form
@@ -36,7 +53,16 @@ export default (props: any) => {
             <Select onSelect={props.setRelease} value={props.release} >
               {
                 data?.map(item => {
-                  return <Option key={ item.name } value={ item.name }>{ item.name }</Option>;
+                  return <Option key={ item.name } value={ item.name }>{ formatReleaseOption(item) }</Option>;
+                })
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item required label={ '应用优先级' } name={ 'priority' }>
+            <Select >
+              {
+                priorities.map(item => {
+                  return <Option key={ item } value={ item }>{ item }</Option>;
                 })
               }
             </Select>

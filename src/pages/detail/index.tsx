@@ -1,4 +1,5 @@
 import GroupDetail from '../groups/Detail'
+import ApplicationDetail from '../applications/detail'
 import NotFount from '@/pages/404'
 import { useModel } from "@@/plugin-model/useModel";
 
@@ -13,6 +14,6 @@ export default () => {
     case 'group':
       return (<GroupDetail/>)
     default:
-      return (<GroupDetail/>);
+      return (<ApplicationDetail/>);
   }
 }
