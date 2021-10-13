@@ -4,11 +4,6 @@ import Form from '@rjsf/material-ui';
 import { Card } from 'antd';
 import styles from '../index.less';
 
-// import { withTheme } from '@rjsf/core';
-// import { Theme as AntDTheme } from '@rjsf/antd';
-
-// const Form = withTheme(AntDTheme);
-
 export default (props: any) => {
   const intl = useIntl();
 
