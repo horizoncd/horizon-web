@@ -1,19 +1,91 @@
-import {Button, notification, Steps, Col, Divider} from 'antd';
-import Template from './template'
-import Basic from './basic'
-import Config from './config'
-import {useState} from "react";
-import {PageContainer} from "@ant-design/pro-layout";
+import { Button, Col, Divider, Form, notification, Row, Steps } from 'antd';
+import Template from './template';
+import Basic from './basic';
+import Config from './config';
+import Audit from './audit';
+import { useState } from 'react';
+import NotFount from '@/pages/404';
+import { getGroupByID } from '@/services/groups/groups';
+import { useRequest } from 'umi';
+import './index.less';
+import { createApplication } from '@/services/applications/applications';
 
-const {Step} = Steps;
+const { Step } = Steps;
 
-export default () => {
-  const [current, setCurrent] = useState(1)
+export default (props: any) => {
+  const { parentID } = props.location.query;
+
+  if (!parentID) {
+    return <NotFount />;
+  }
+
+  const [form] = Form.useForm();
+
+  const [current, setCurrent] = useState(2);
+  const defaultTemplate: API.Template = {
+    name: 'javaapp',
+    description: 'javaapp',
+  };
+  const [template, setTemplate] = useState<API.Template>(defaultTemplate);
+  const [release, setRelease] = useState('v1.0.2');
+  const [config, setConfig] = useState({});
+  const [configErrors, setConfigErrors] = useState({});
+
+  const intParentID = parseInt(parentID, 10);
+
+  const { data: parent } = useRequest(() => getGroupByID({ id: intParentID }), {
+    refreshDeps: [intParentID],
+  });
+
+  const resetTemplate = (newTemplate: API.Template) => {
+    setTemplate(newTemplate);
+    // reset selected release version
+    if (newTemplate.name !== template?.name) {
+      form.resetFields(['release']);
+    }
+  };
+
+  const configHasError = () => {
+    console.log(configErrors);
+    let hasError = false;
+    Object.keys(configErrors).forEach((item) => {
+      if (configErrors[item].length > 0) {
+        hasError = true;
+      }
+    });
+
+    return hasError;
+  };
 
   const steps = [
-    {title: "选择服务模版", content: <Template/>},
-    {title: "配置服务", content: <Basic/>},
-    {title: "自定义配置", content: <Config/>}
+    {
+      title: '选择服务模版',
+      content: <Template template={template} resetTemplate={resetTemplate} />,
+      disabled: false,
+    },
+    {
+      title: '配置服务',
+      content: <Basic form={form} template={template} release={release} setRelease={setRelease} />,
+      disabled: !template.name,
+    },
+    {
+      title: '自定义配置',
+      content: (
+        <Config
+          template={template}
+          release={release}
+          config={config}
+          setConfig={setConfig}
+          setConfigErrors={setConfigErrors}
+        />
+      ),
+      disabled: !template.name || !release,
+    },
+    {
+      title: '审计',
+      content: <Audit form={form} template={template} release={release} config={config} />,
+      disabled: !template.name || !release || configHasError(),
+    },
   ];
 
   const next = () => {
@@ -24,41 +96,91 @@ export default () => {
     setCurrent(current - 1);
   };
 
+  const header = `正在为【 ${parent?.name} 】创建应用，请按步骤填写信息`;
+
+  const nextBtnDisabled = () => {
+    switch (current) {
+      case 0:
+        return !template.name;
+      case 1:
+        return !release;
+      case 2:
+        return configHasError();
+      default:
+        return false;
+    }
+  };
+
+  // final submit, check everything
+  const onSubmit = () => {
+    const name = form.getFieldValue('name');
+    createApplication(intParentID, {
+      name,
+      description: form.getFieldValue('description'),
+      priority: form.getFieldValue('priority'),
+      template: {
+        name: template.name,
+        release,
+      },
+      git: {
+        url: form.getFieldValue('url'),
+        subfolder: form.getFieldValue('subfolder'),
+        branch: form.getFieldValue('branch'),
+      },
+      templateInput: config,
+    }).then(() => {
+      notification.success({
+        message: '应用新建成功',
+      });
+      // jump to application's home page
+      window.location.href = `${parent?.fullPath}/${name}`;
+    });
+  };
+
   return (
-    <PageContainer title={false}>
-      <Col span={16} offset={4}>
-        <Steps
-          current={current}
-          onChange={setCurrent}
-        >
-          {steps.map((item, index) => {
-            return <Step title={`Step ${index + 1}`} subTitle={item.title}/>
-          })}
-        </Steps>
-        <Divider/>
-        <div className="steps-content">{steps[current].content}</div>
-        <div className="steps-action">
-          {current < steps.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Next
-            </Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button type="primary" onClick={() => notification.success({
-              message: "done"
-            })}>
-              Done
-            </Button>
-          )}
-          {current > 0 && (
-            <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-              Previous
-            </Button>
-          )}
-        </div>
+    <Row>
+      <Col span={22} offset={1}>
+        <h3 className={'header'}>{header}</h3>
+        <Divider className={'divider'} />
+        <Row>
+          <Col span={4}>
+            <div className={'step'}>
+              <Steps current={current} onChange={setCurrent} direction="vertical">
+                {steps.map((item, index) => {
+                  return (
+                    <Step
+                      key={`Step ${index + 1}`}
+                      title={`第 ${index + 1} 步`}
+                      description={item.title}
+                      disabled={item.disabled}
+                    />
+                  );
+                })}
+              </Steps>
+            </div>
+          </Col>
+          <Col span={20}>
+            <div className="steps-content">{steps[current].content}</div>
+            <div className="steps-action">
+              {current > 0 && (
+                <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                  上一步
+                </Button>
+              )}
+              {current === steps.length - 1 && (
+                <Button type="primary" onClick={onSubmit}>
+                  提交
+                </Button>
+              )}
+              {current < steps.length - 1 && (
+                <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
+                  下一步
+                </Button>
+              )}
+            </div>
+          </Col>
+        </Row>
       </Col>
-
-    </PageContainer>
-  )
-}
-
+    </Row>
+  );
+};

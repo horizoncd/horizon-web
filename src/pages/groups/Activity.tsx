@@ -1,12 +1,18 @@
 import React from 'react';
-import {Card} from 'antd';
-import Detail from '@/components/PageWithBreadcrumb'
+import { Card } from 'antd';
+// import styled from 'styled-components';
+import Detail from '@/components/PageWithBreadcrumb';
+
+// const Group = styled(Card)`
+//   width: 100%
+// `;
 
 export default (): React.ReactNode => {
   return (
     <Detail>
       <Card>
-        <div>group Activity</div>
+        abccc
+        {/*<Group>group Activity</Group>*/}
       </Card>
     </Detail>
   );

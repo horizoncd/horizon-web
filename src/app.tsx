@@ -1,28 +1,33 @@
-import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
-import {PageLoading} from '@ant-design/pro-layout';
-import {notification} from 'antd';
-import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
-import {history} from 'umi';
+import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
+import { PageLoading } from '@ant-design/pro-layout';
+import { notification } from 'antd';
+import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
-import {BankOutlined, ContactsOutlined, SettingOutlined, SmileOutlined,} from '@ant-design/icons/lib';
-import Utils from "@/utils";
-import {queryResource} from "@/services/core";
-import {stringify} from 'querystring';
-import {routes} from '../config/routes'
+import {
+  BankOutlined,
+  ContactsOutlined,
+  SettingOutlined,
+  SmileOutlined,
+} from '@ant-design/icons/lib';
+import Utils from '@/utils';
+import { queryResource } from '@/services/core';
+import { stringify } from 'querystring';
+import { routes } from '../config/routes';
 
 const loginPath = '/user/login';
 
 const IconMap = {
-  smile: <SmileOutlined/>,
-  contacts: <ContactsOutlined/>,
-  setting: <SettingOutlined/>,
-  bank: <BankOutlined/>,
+  smile: <SmileOutlined />,
+  contacts: <ContactsOutlined />,
+  setting: <SettingOutlined />,
+  bank: <BankOutlined />,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({icon, children, ...item}) => ({
+  menus.map(({ icon, children, ...item }) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
@@ -30,7 +35,7 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
-  loading: <PageLoading/>,
+  loading: <PageLoading />,
 };
 
 /**
@@ -40,59 +45,42 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  resource: API.Resource
+  resource: API.Resource;
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = {fullName: "", fullPath: "", id: 0, name: "", type: "group"};
-  const { NODE_ENV } = process.env;
+  const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group' };
   const fetchUserInfo = async () => {
-    // need login when env is not dev
-    if (NODE_ENV !== "development") {
-      try {
-        const msg = await queryCurrentUser();
-        return msg.data;
-      } catch (error) {
-        history.push({
-          pathname: loginPath,
-          search: stringify({
-            redirect: history.location.pathname + history.location.search,
-          }),
-        });
-      }
-    }
-
-    return undefined;
+    const msg = await queryCurrentUser();
+    return msg.data;
   };
-  // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath) {
-    // 资源类型的URL
-    if (!pathnameInStaticRoutes(history.location.pathname)) {
-      const path = Utils.getResourcePath(history.location.pathname);
-      queryResource(path).then(({data}) => {
-        const {type, id, name, fullPath, fullName} = data;
+
+  const currentUser = await fetchUserInfo();
+  if (currentUser.id && history.location.pathname.startsWith(loginPath)) {
+    history.replace('/');
+  }
+
+  // 资源类型的URL
+  if (!pathnameInStaticRoutes()) {
+    const path = Utils.getResourcePath();
+    queryResource(path)
+      .then(({ data }) => {
+        const { type, id, name, fullPath, fullName } = data;
         resource.id = id;
         resource.type = type;
         resource.name = name;
         resource.fullName = fullName;
-        resource.fullPath = fullPath
-      }).catch(() => {
-        // don't show the menu
-        // settings.menuRender = false
+        resource.fullPath = fullPath;
       })
-    }
-
-    const currentUser = await fetchUserInfo();
-    return {
-      fetchUserInfo,
-      currentUser,
-      settings,
-      resource
-    };
+      .catch(() => {
+        // don't show the menu
+        settings.menuRender = false;
+      });
   }
+
   return {
-    fetchUserInfo,
+    currentUser,
     settings,
-    resource
+    resource,
   };
 }
 
@@ -135,17 +123,19 @@ export async function getInitialState(): Promise<{
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 export const request: RequestConfig = {
-  responseInterceptors: [(response) => {
-    if (response.headers.get('X-OIDC-Redirect-To')) {
-      history.push({
-        pathname: loginPath,
-        search: stringify({
-          redirect: history.location.pathname + history.location.search,
-        }),
-      });
-    }
-    return response
-  }],
+  responseInterceptors: [
+    (response) => {
+      if (response.headers.get('X-OIDC-Redirect-To')) {
+        history.push({
+          pathname: loginPath,
+          search: stringify({
+            redirect: history.location.pathname + history.location.search,
+          }),
+        });
+      }
+      return response;
+    },
+  ],
   errorConfig: {
     adaptor: (resData) => {
       return {
@@ -155,7 +145,7 @@ export const request: RequestConfig = {
     },
   },
   errorHandler: (error: any) => {
-    const {response, data} = error;
+    const { response, data } = error;
     if (!response) {
       notification.error({
         description: '您的网络发生异常，无法连接服务器',
@@ -170,7 +160,7 @@ export const request: RequestConfig = {
     } else {
       notification.error({
         description: response.statusText,
-        message: response.status
+        message: response.status,
       });
     }
     throw error;
@@ -179,40 +169,47 @@ export const request: RequestConfig = {
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({initialState}) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
-    rightContentRender: () => <RightContent/>,
-    footerRender: () => <Footer/>,
-    onPageChange: () => {
-
-    },
+    rightContentRender: () => <RightContent />,
+    footerRender: () => <Footer />,
+    onPageChange: () => {},
     menuHeaderRender: () => {
-      const {name: title, fullPath} = initialState?.resource || {};
+      const { name: title, fullPath } = initialState?.resource || {};
       if (!title || !fullPath) {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
-      return <span style={{alignItems: 'center', lineHeight: '40px'}} onClick={() => {
-        window.location.href = fullPath
-      }}>
-        <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
-          {firstLetter}
+      return (
+        <span
+          style={{ alignItems: 'center', lineHeight: '40px' }}
+          onClick={() => {
+            window.location.href = fullPath;
+          }}
+        >
+          <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+            {firstLetter}
+          </span>
+          <span style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}>
+            {title}
+          </span>
         </span>
-        <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>{title}</span>
-      </span>;
+      );
     },
     menuDataRender: (menuData: MenuDataItem[]): MenuDataItem[] => {
-      const {pathname} = history.location;
-      if (pathnameInStaticRoutes(pathname)) {
+      if (pathnameInStaticRoutes() || !initialState) {
         return menuData;
       }
       // 根据ResourceType决定菜单
-      const {type, fullPath} = initialState?.resource || {};
-      if (fullPath) {
-        return loopMenuItem(formatGroupMenu(fullPath));
+      const { type, fullPath } = initialState.resource;
+      switch (type) {
+        case 'group':
+          return loopMenuItem(formatGroupMenu(fullPath));
+        case 'application':
+          return loopMenuItem(formatApplicationMenu(fullPath));
+        default:
+          return menuData;
       }
-
-      return menuData;
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
@@ -220,10 +217,20 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
   };
 };
 
-function pathnameInStaticRoutes(pathname: string): boolean {
+function pathnameInStaticRoutes(): boolean {
+  const pathname = history.location.pathname;
+  // handle url end with '/'
+  let path = pathname;
+  if (pathname.endsWith('/')) {
+    path = pathname.substring(0, pathname.length - 1);
+  }
+  if (path === '') {
+    return true;
+  }
+
   for (let i = 0; i < routes.length; i += 1) {
     const staticRoute = routes[i];
-    if (pathname === staticRoute.path) {
+    if (path === staticRoute.path) {
       return true;
     }
   }
@@ -242,10 +249,6 @@ function formatGroupMenu(fullPath: string) {
           path: `${fullPath}`,
           name: 'Details',
         },
-        {
-          path: `/groups${fullPath}/-/activity`,
-          name: 'Activity',
-        },
       ],
     },
     {
@@ -261,8 +264,34 @@ function formatGroupMenu(fullPath: string) {
         {
           path: `/groups${fullPath}/-/edit`,
           name: 'General',
-        }
-      ]
+        },
+      ],
+    },
+  ];
+}
+
+function formatApplicationMenu(fullPath: string) {
+  return [
+    ...routes,
+    {
+      name: 'Service overview',
+      icon: 'bank',
+      children: [
+        {
+          path: `${fullPath}`,
+          name: 'Details',
+        },
+      ],
+    },
+    {
+      path: `/applications${fullPath}/-/service_instances`,
+      name: 'Service instances',
+      icon: 'appstore',
+    },
+    {
+      path: `/applications${fullPath}/-/members`,
+      name: 'Members',
+      icon: 'contacts',
     },
   ];
 }
