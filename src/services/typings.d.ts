@@ -3,7 +3,7 @@
 declare namespace API {
   type CurrentUser = {
     name: string;
-  }
+  };
 
   type Resource = {
     id: number;
@@ -11,7 +11,7 @@ declare namespace API {
     name: string;
     fullName: string;
     fullPath: string;
-  }
+  };
 
   type NewGroup = {
     name: string;
@@ -22,36 +22,36 @@ declare namespace API {
   };
 
   type NewApplication = {
-    groupID: number,
     name: string;
+    priority: string;
     description?: string;
     template: {
-      name: string,
-      release: string,
-    }
+      name: string;
+      release: string;
+    };
     git: {
-      url: string,
-      subfolder: string,
-      branch: string
-    }
-    templateInput: any
+      url: string;
+      subfolder: string;
+      branch: string;
+    };
+    templateInput: any;
   };
 
   type Application = {
     id: number;
-    groupID: number,
+    groupID: number;
     name: string;
     description?: string;
     template: {
-      name: string,
-      release: string,
-    }
+      name: string;
+      release: string;
+    };
     git: {
-      url: string,
-      subfolder: string,
-      branch: string
-    }
-    templateInput: any
+      url: string;
+      subfolder: string;
+      branch: string;
+    };
+    templateInput: any;
   };
 
   type Group = {
@@ -67,37 +67,35 @@ declare namespace API {
   type Template = {
     name: string;
     description: string;
-  }
+  };
 
   type Release = {
     name: string;
     description: string;
     recommended: boolean;
-  }
+  };
 
   type PageResult<T> = {
-    total: number,
-    items: T[]
-  }
+    total: number;
+    items: T[];
+  };
 
   type GroupChild = {
-    id: number,
-    name: string,
-    fullName: string,
-    description?: string,
-    path: string,
-    type: string,
-    childrenCount: number,
-    children?: GroupChild[],
-    parentID: number,
-  }
+    id: number;
+    name: string;
+    fullName: string;
+    description?: string;
+    path: string;
+    type: string;
+    childrenCount: number;
+    children?: GroupChild[];
+    parentID: number;
+  };
 
   type GroupFilterParam = {
-    groupID: number,
-    filter?: string,
-    pageNumber: number,
-    pageSize: number,
-  }
-
+    groupID: number;
+    filter?: string;
+    pageNumber: number;
+    pageSize: number;
+  };
 }
-

@@ -1,7 +1,7 @@
 import { request } from 'umi';
 
-export async function createApplication(body: API.NewApplication) {
-  return request(`/apis/core/v1/applications`, {
+export async function createApplication(groupID: number, body: API.NewApplication) {
+  return request(`/apis/core/v1/groups/${groupID}/applications`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export async function updateApplication(name: string, body: API.NewApplication) 
 
 export async function getApplication(name: string) {
   return request<{
-    data: API.Application
+    data: API.Application;
   }>(`/apis/core/v1/applications/${name}`, {
     method: 'GET',
   });

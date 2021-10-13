@@ -1,14 +1,8 @@
 ﻿export const routes = [
   {
-    path: '/user',
+    path: '/user/login',
     layout: false,
-    routes: [
-      {
-        name: '登录',
-        path: '/user/login',
-        component: 'user/Login',
-      },
-    ],
+    component: 'user/Login',
   },
   {
     path: '/',
@@ -29,7 +23,7 @@
     path: '/applications/new',
     menuRender: false,
     component: 'applications/new',
-  }
+  },
 ];
 
 const groupRoutes = [
@@ -70,14 +64,14 @@ const applicationRoutes = [
   },
 ];
 
-const allRoute = []
-allRoute.push(...routes)
-allRoute.push(...groupRoutes)
-allRoute.push(...applicationRoutes)
+const allRoute = [];
+allRoute.push(...routes);
+allRoute.push(...groupRoutes);
+allRoute.push(...applicationRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
-  component: 'detail'
+  component: 'detail',
 });
 
 export default allRoute;

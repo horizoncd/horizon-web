@@ -1,6 +1,6 @@
 import { Space } from 'antd';
 import React from 'react';
-import { useModel } from 'umi';
+import { useModel, SelectLang } from 'umi';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
 
@@ -23,6 +23,7 @@ const GlobalHeaderRight: React.FC = () => {
   return (
     <Space className={className}>
       <Avatar />
+      <SelectLang className={styles.action} />
     </Space>
   );
 };
