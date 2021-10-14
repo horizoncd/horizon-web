@@ -31,9 +31,7 @@ export async function searchGroups(params: API.GroupFilterParam) {
     data: API.PageResult<API.GroupChild>;
   }>('/apis/front/v1/groups/search-groups', {
     method: 'GET',
-    params: {
-      ...params
-    }
+    params
   });
 }
 
@@ -42,9 +40,7 @@ export async function searchChildren(params: API.GroupFilterParam) {
     data: API.PageResult<API.GroupChild>;
   }>('/apis/front/v1/groups/search-children', {
     method: 'GET',
-    params: {
-      ...params
-    }
+    params
   });
 }
 

@@ -45,6 +45,10 @@ export default (props: any) => {
     }
   };
 
+  const basicHasError = () => {
+    return form.getFieldsError.length > 0
+  }
+
   const configHasError = () => {
     console.log(configErrors);
     let hasError = false;
@@ -79,12 +83,12 @@ export default (props: any) => {
           setConfigErrors={setConfigErrors}
         />
       ),
-      disabled: !template.name || !release,
+      disabled: !template.name || basicHasError(),
     },
     {
       title: '审计',
       content: <Audit form={form} template={template} release={release} config={config} />,
-      disabled: !template.name || !release || configHasError(),
+      disabled: !template.name || basicHasError() || configHasError(),
     },
   ];
 
@@ -103,7 +107,7 @@ export default (props: any) => {
       case 0:
         return !template.name;
       case 1:
-        return !release;
+        return basicHasError();
       case 2:
         return configHasError();
       default:

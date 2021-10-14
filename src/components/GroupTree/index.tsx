@@ -4,7 +4,7 @@ import {DownOutlined, FileOutlined, FolderOutlined} from '@ant-design/icons';
 import type {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
-import {searchGroups, querySubGroups} from "@/services/groups/groups";
+import { searchGroups, querySubGroups, searchChildren, queryChildren } from "@/services/groups/groups";
 
 const {DirectoryTree} = Tree;
 const {Search} = Input;
@@ -12,10 +12,14 @@ const {TabPane} = Tabs;
 
 export default (props: any) => {
   const {groupID} = props;
+  const pageSize = 10;
+
+  const searchFunc = groupID ? searchChildren : searchGroups
+  const queryFunc = groupID ? queryChildren : querySubGroups
+
   const [searchValue, setSearchValue] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(10);
   const [query, setQuery] = useState(0);
   const [groups, setGroups] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
@@ -42,7 +46,7 @@ export default (props: any) => {
 
   useEffect(() => {
     const refresh = async () => {
-      const {data} = await searchGroups({
+      const {data} = await searchFunc({
         groupID,
         filter: searchValue,
         pageSize,
@@ -161,7 +165,7 @@ export default (props: any) => {
     // 如果是展开并且node下的children为空，则进行查询
     if (info.expanded && !info.node.children) {
       const pid = info.node.key as number;
-      querySubGroups(pid, 1, pageSize).then(({data}) => {
+      queryFunc(pid, 1, pageSize).then(({data}) => {
         const {items} = data;
         setGroups(updateChildren(groups, pid, items))
         setExpandedKeys(expandedKey);

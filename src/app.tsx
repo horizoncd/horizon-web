@@ -50,12 +50,16 @@ export async function getInitialState(): Promise<{
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group' };
   const fetchUserInfo = async () => {
-    const msg = await queryCurrentUser();
-    return msg.data;
+    try {
+      const msg = await queryCurrentUser();
+      return msg.data;
+    } catch (e) {
+      return undefined
+    }
   };
 
   const currentUser = await fetchUserInfo();
-  if (currentUser.id && history.location.pathname.startsWith(loginPath)) {
+  if (currentUser?.id && history.location.pathname.startsWith(loginPath)) {
     history.replace('/');
   }
 
@@ -66,8 +70,8 @@ export async function getInitialState(): Promise<{
       .then(({ data }) => {
         const { type, id, name, fullPath, fullName } = data;
         resource.id = id;
-        resource.type = type;
         resource.name = name;
+        resource.type = type;
         resource.fullName = fullName;
         resource.fullPath = fullPath;
       })

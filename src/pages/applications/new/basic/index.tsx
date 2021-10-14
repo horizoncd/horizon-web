@@ -46,8 +46,8 @@ export default (props: any) => {
           <Form.Item label={'应用描述'} name={'description'}>
             <TextArea placeholder="长度上限为255个字符" maxLength={255} disabled={readonly} />
           </Form.Item>
-          <Form.Item required label={'模版版本'}>
-            <Select onSelect={props.setRelease} value={props.release} disabled={readonly}>
+          <Form.Item required label={'模版版本'} name={'release'}>
+            <Select onSelect={props.setRelease} disabled={readonly}>
               {data?.map((item) => {
                 return (
                   <Option key={item.name} value={item.name}>
