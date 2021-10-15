@@ -42,6 +42,7 @@ declare namespace API {
     id: number;
     groupID: number;
     name: string;
+    priority: string;
     description?: string;
     template: {
       name: string;

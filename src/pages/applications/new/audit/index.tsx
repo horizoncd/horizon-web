@@ -20,7 +20,7 @@ export default (props: any) => {
         <h4>{template.description}</h4>
       </Card>
 
-      <Basic form={form} template={template} release={release} readonly />
+      <Basic form={form} template={template} readonly />
 
       <Config template={template} release={release} config={config} readonly />
     </div>

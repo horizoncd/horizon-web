@@ -36,9 +36,14 @@ export default (props: any) => {
 
   const { readonly = false } = props;
 
+  const onValuesChange = (value: any, allValues: any) => {
+    console.log(allValues);
+    props.setFormData(allValues)
+  }
+
   return (
     <div>
-      <Form layout={'vertical'} form={props.form} requiredMark={'optional'}>
+      <Form layout={'vertical'} form={props.form} requiredMark={'optional'} onValuesChange={onValuesChange}>
         <Card title={'Service Basic'} className={styles.gapBetweenCards}>
           <Form.Item label={'应用名'} name={'name'} rules={nameRules}>
             <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={readonly} />
@@ -46,8 +51,8 @@ export default (props: any) => {
           <Form.Item label={'应用描述'} name={'description'}>
             <TextArea placeholder="长度上限为255个字符" maxLength={255} disabled={readonly} />
           </Form.Item>
-          <Form.Item required label={'模版版本'} name={'release'}>
-            <Select onSelect={props.setRelease} disabled={readonly}>
+          <Form.Item required label={'模版版本'} name={'release'} >
+            <Select disabled={readonly}>
               {data?.map((item) => {
                 return (
                   <Option key={item.name} value={item.name}>

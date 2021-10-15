@@ -12,6 +12,16 @@ import { createApplication } from '@/services/applications/applications';
 
 const { Step } = Steps;
 
+interface FormData {
+  name: string;
+  description?: string;
+  priority: string;
+  release: string;
+  url: string;
+  subfolder: string;
+  branch: string;
+}
+
 export default (props: any) => {
   const { parentID } = props.location.query;
 
@@ -19,15 +29,12 @@ export default (props: any) => {
     return <NotFount />;
   }
 
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
 
-  const [current, setCurrent] = useState(2);
-  const defaultTemplate: API.Template = {
-    name: 'javaapp',
-    description: 'javaapp',
-  };
-  const [template, setTemplate] = useState<API.Template>(defaultTemplate);
-  const [release, setRelease] = useState('v1.0.2');
+  const [current, setCurrent] = useState(0);
+  const [template, setTemplate] = useState<API.Template>({description: "", name: ""});
+  const [basic, setBasic] = useState<FormData | undefined>();
+  const [form] = useState(Form.useForm()[0]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
 
@@ -45,12 +52,31 @@ export default (props: any) => {
     }
   };
 
-  const basicHasError = () => {
-    return form.getFieldsError.length > 0
+  const basicHasError = async () => {
+    let hasError = false;
+    try {
+      const data = await form.validateFields(['name'])
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+    form.validateFields(['name']).then(r => {
+    }).catch(errorInfo => {
+      if (errorInfo.errorFields.length > 0) {
+        hasError = true
+      }
+    })
+    // for (let i = 0; i < form.getFieldsError(['name']).length; i += 1) {
+    //   form.validateFields().then(r => {}).catch(errorInfo => {
+    //     hasError = true;
+    //   })
+    // if (form.getFieldsError(['name'])[i].errors.length > 0)
+    //   hasError = true;
+    // }
+    return !basic || hasError
   }
 
   const configHasError = () => {
-    console.log(configErrors);
     let hasError = false;
     Object.keys(configErrors).forEach((item) => {
       if (configErrors[item].length > 0) {
@@ -64,30 +90,18 @@ export default (props: any) => {
   const steps = [
     {
       title: '选择服务模版',
-      content: <Template template={template} resetTemplate={resetTemplate} />,
       disabled: false,
     },
     {
       title: '配置服务',
-      content: <Basic form={form} template={template} release={release} setRelease={setRelease} />,
       disabled: !template.name,
     },
     {
       title: '自定义配置',
-      content: (
-        <Config
-          template={template}
-          release={release}
-          config={config}
-          setConfig={setConfig}
-          setConfigErrors={setConfigErrors}
-        />
-      ),
       disabled: !template.name || basicHasError(),
     },
     {
       title: '审计',
-      content: <Audit form={form} template={template} release={release} config={config} />,
       disabled: !template.name || basicHasError() || configHasError(),
     },
   ];
@@ -124,7 +138,7 @@ export default (props: any) => {
       priority: form.getFieldValue('priority'),
       template: {
         name: template.name,
-        release,
+        release: basic!.release,
       },
       git: {
         url: form.getFieldValue('url'),
@@ -164,7 +178,22 @@ export default (props: any) => {
             </div>
           </Col>
           <Col span={20}>
-            <div className="steps-content">{steps[current].content}</div>
+            <div className="steps-content">
+              {
+                current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
+              }
+              {
+                current === 1 && <Basic form={form} template={template} setFormData={setBasic}/>
+              }
+              {
+                current === 2 && <Config template={template} release={basic!.release} config={config}
+                    setConfig={setConfig} setConfigErrors={setConfigErrors}
+                />
+              }
+              {
+                current === 3 && <Audit form={form} template={template} release={basic!.release} config={config}/>
+              }
+            </div>
             <div className="steps-action">
               {current > 0 && (
                 <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
