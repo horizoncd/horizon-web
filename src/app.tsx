@@ -49,36 +49,34 @@ export async function getInitialState(): Promise<{
 }> {
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group' };
-  const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (e) {
-      return undefined
-    }
-  };
+  let currentUser: API.CurrentUser | undefined = {id: 0, name: ""}
 
-  const currentUser = await fetchUserInfo();
-  if (currentUser?.id && history.location.pathname.startsWith(loginPath)) {
-    history.replace('/');
+  try {
+    const {data: userData} = await queryCurrentUser();
+
+    if (userData?.id && history.location.pathname.startsWith(loginPath)) {
+      history.replace('/');
+    }
+
+    currentUser.id = userData.id
+    currentUser.name = userData.name
+  } catch (e) {
+    currentUser = undefined
   }
 
   // 资源类型的URL
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
-    queryResource(path)
-      .then(({ data }) => {
-        const { type, id, name, fullPath, fullName } = data;
-        resource.id = id;
-        resource.name = name;
-        resource.type = type;
-        resource.fullName = fullName;
-        resource.fullPath = fullPath;
-      })
-      .catch(() => {
-        // don't show the menu
-        settings.menuRender = false;
-      });
+    try {
+      const {data: resourceData} = await queryResource(path);
+      resource.id = resourceData.id;
+      resource.name = resourceData.name;
+      resource.type = resourceData.type;
+      resource.fullName = resourceData.fullName;
+      resource.fullPath = resourceData.fullPath;
+    } catch (e) {
+      settings.menuRender = false;
+    }
   }
 
   return {

@@ -3,6 +3,7 @@
 declare namespace API {
   type CurrentUser = {
     name: string;
+    id: number
   };
 
   type Resource = {

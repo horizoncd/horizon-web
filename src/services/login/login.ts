@@ -18,7 +18,9 @@ export async function outLogin() {
 }
 
 export async function currentUser() {
-  return request('/apis/login/v1/status', {
+  return request<{
+    data: API.CurrentUser
+  }>('/apis/login/v1/status', {
     method: 'GET',
   });
 }
