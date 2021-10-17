@@ -29,7 +29,7 @@ export async function querySubGroups(groupID: number, pageNumber: number, pageSi
 export async function searchGroups(params: API.GroupFilterParam) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>('/apis/front/v1/groups/search-groups', {
+  }>('/apis/front/v1/groups/searchgroups', {
     method: 'GET',
     params
   });
@@ -38,7 +38,7 @@ export async function searchGroups(params: API.GroupFilterParam) {
 export async function searchChildren(params: API.GroupFilterParam) {
   return request<{
     data: API.PageResult<API.GroupChild>;
-  }>('/apis/front/v1/groups/search-children', {
+  }>('/apis/front/v1/groups/searchchildren', {
     method: 'GET',
     params
   });

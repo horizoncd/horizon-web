@@ -12,6 +12,14 @@ import { createApplication } from '@/services/applications/applications';
 
 const { Step } = Steps;
 
+interface FieldData {
+  name: string | number | (string | number)[];
+  value?: any;
+  touched?: boolean;
+  validating?: boolean;
+  errors?: string[];
+}
+
 export default (props: any) => {
   const { parentID } = props.location.query;
 
@@ -19,15 +27,15 @@ export default (props: any) => {
     return <NotFount />;
   }
 
+  const basicNeedValidFileds = [
+    'name', 'release', "priority", "url", "branch"
+  ]
+
   const [form] = Form.useForm();
 
-  const [current, setCurrent] = useState(2);
-  const defaultTemplate: API.Template = {
-    name: 'javaapp',
-    description: 'javaapp',
-  };
-  const [template, setTemplate] = useState<API.Template>(defaultTemplate);
-  const [release, setRelease] = useState('v1.0.2');
+  const [current, setCurrent] = useState(0);
+  const [template, setTemplate] = useState<API.Template>({description: "", name: ""});
+  const [basic, setBasic] = useState<FieldData[]>([]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
 
@@ -46,11 +54,18 @@ export default (props: any) => {
   };
 
   const basicHasError = () => {
-    return form.getFieldsError.length > 0
+    let hasError = false;
+
+    for (const val of basic!) {
+      if (val.errors && val.errors.length > 0) {
+        hasError = true
+      }
+    }
+
+    return hasError
   }
 
   const configHasError = () => {
-    console.log(configErrors);
     let hasError = false;
     Object.keys(configErrors).forEach((item) => {
       if (configErrors[item].length > 0) {
@@ -64,36 +79,52 @@ export default (props: any) => {
   const steps = [
     {
       title: '选择服务模版',
-      content: <Template template={template} resetTemplate={resetTemplate} />,
       disabled: false,
     },
     {
       title: '配置服务',
-      content: <Basic form={form} template={template} release={release} setRelease={setRelease} />,
       disabled: !template.name,
     },
     {
       title: '自定义配置',
-      content: (
-        <Config
-          template={template}
-          release={release}
-          config={config}
-          setConfig={setConfig}
-          setConfigErrors={setConfigErrors}
-        />
-      ),
-      disabled: !template.name || basicHasError(),
+      disabled: !template.name || basicHasError()
     },
     {
       title: '审计',
-      content: <Audit form={form} template={template} release={release} config={config} />,
-      disabled: !template.name || basicHasError() || configHasError(),
+      disabled: !template.name || basicHasError() || configHasError()
     },
   ];
 
-  const next = () => {
-    setCurrent(current + 1);
+  const currentIsValid = async () => {
+    let valid: boolean;
+    switch (current) {
+      case 0:
+        valid = !!template.name
+        break;
+      case 1:
+        try {
+          await form.validateFields(basicNeedValidFileds)
+          valid = true
+        } catch (e: any) {
+          const {errorFields} = e
+          valid = !errorFields.length
+        }
+        break;
+      case 2:
+        valid = !configHasError()
+        break;
+      default:
+        valid = true
+    }
+
+    return valid
+  }
+
+  const next = async () => {
+    // 要校验字段是否均合法，才能进入下一步
+    if (await currentIsValid()) {
+      setCurrent(current + 1);
+    }
   };
 
   const prev = () => {
@@ -107,13 +138,15 @@ export default (props: any) => {
       case 0:
         return !template.name;
       case 1:
-        return basicHasError();
+        return basicHasError()
       case 2:
-        return configHasError();
+        return configHasError()
       default:
         return false;
     }
   };
+
+  const release = form.getFieldValue('release')
 
   // final submit, check everything
   const onSubmit = () => {
@@ -141,6 +174,12 @@ export default (props: any) => {
     });
   };
 
+  const onCurrentChange = async (cur: number) => {
+    if (await currentIsValid()) {
+      setCurrent(cur);
+    }
+  }
+
   return (
     <Row>
       <Col span={22} offset={1}>
@@ -149,7 +188,7 @@ export default (props: any) => {
         <Row>
           <Col span={4}>
             <div className={'step'}>
-              <Steps current={current} onChange={setCurrent} direction="vertical">
+              <Steps current={current} onChange={onCurrentChange} direction="vertical">
                 {steps.map((item, index) => {
                   return (
                     <Step
@@ -164,7 +203,22 @@ export default (props: any) => {
             </div>
           </Col>
           <Col span={20}>
-            <div className="steps-content">{steps[current].content}</div>
+            <div className="steps-content">
+              {
+                current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
+              }
+              {
+                current === 1 && <Basic form={form} template={template} setFormData={setBasic}/>
+              }
+              {
+                current === 2 && <Config template={template} release={release} config={config}
+                    setConfig={setConfig} setConfigErrors={setConfigErrors}
+                />
+              }
+              {
+                current === 3 && <Audit form={form} template={template} release={release} config={config}/>
+              }
+            </div>
             <div className="steps-action">
               {current > 0 && (
                 <Button style={{ margin: '0 8px' }} onClick={() => prev()}>

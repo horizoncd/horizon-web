@@ -2,8 +2,8 @@ import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 import { history } from 'umi';
 
 const getResourcePath = () => {
-  const pathname = history.location.pathname;
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups');
+  const {pathname} = history.location;
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' && item !== 'applications');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];

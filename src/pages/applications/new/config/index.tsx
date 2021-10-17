@@ -7,12 +7,12 @@ import styles from '../index.less';
 export default (props: any) => {
   const intl = useIntl();
 
+  const { readonly = false } = props;
+
   // query schema by template and release
   const { data } = useRequest(() => querySchema(props.template.name, props.release));
 
   const titlePrefix = 'pages.applicationNew.config';
-
-  const { readonly = false } = props;
 
   return (
     <div>
@@ -43,6 +43,8 @@ export default (props: any) => {
                 schema={jsonSchema}
                 onChange={onChange}
                 uiSchema={uiSchema}
+                liveValidate
+                showErrorList={false}
               >
                 <div />
               </Form>

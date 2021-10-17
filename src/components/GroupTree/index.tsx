@@ -1,32 +1,32 @@
-import React, {useEffect, useState} from 'react';
-import {Divider, Input, Pagination, Tabs, Tree} from 'antd';
-import {DownOutlined, FileOutlined, FolderOutlined} from '@ant-design/icons';
-import type {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
+import React, { useEffect, useState } from 'react';
+import { Divider, Input, Pagination, Tabs, Tree } from 'antd';
+import { DownOutlined, FileOutlined, FolderOutlined } from '@ant-design/icons';
+import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
-import { searchGroups, querySubGroups, searchChildren, queryChildren } from "@/services/groups/groups";
+import { queryChildren, querySubGroups, searchChildren, searchGroups } from "@/services/groups/groups";
 
-const {DirectoryTree} = Tree;
-const {Search} = Input;
-const {TabPane} = Tabs;
+const { DirectoryTree } = Tree;
+const { Search } = Input;
+const { TabPane } = Tabs;
 
 export default (props: any) => {
-  const {groupID} = props;
+  const { groupID } = props;
   const pageSize = 10;
 
   const searchFunc = groupID ? searchChildren : searchGroups
   const queryFunc = groupID ? queryChildren : querySubGroups
 
-  const [searchValue, setSearchValue] = useState('');
-  const [total, setTotal] = useState(0);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [query, setQuery] = useState(0);
-  const [groups, setGroups] = useState<API.GroupChild[]>([]);
+  const [ searchValue, setSearchValue ] = useState('');
+  const [ total, setTotal ] = useState(0);
+  const [ pageNumber, setPageNumber ] = useState(1);
+  const [ query, setQuery ] = useState(0);
+  const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
   // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
-  const defaultExpandedKeys: (string | number)[] = [];
-  const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
+  const defaultExpandedKeys: (string|number)[] = [];
+  const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
 
-  const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
+  const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string|number>) => {
     for (let i = 0; i < data.length; i += 1) {
       const node = data[i];
       if (searchValue) {
@@ -39,58 +39,62 @@ export default (props: any) => {
   };
 
   const updateExpandedKeys = (newGroups: API.GroupChild[]) => {
-    const expandedKeySet = new Set<string | number>();
+    const expandedKeySet = new Set<string|number>();
     updateExpandedKeySet(newGroups, expandedKeySet);
-    setExpandedKeys([...expandedKeySet]);
+    setExpandedKeys([ ...expandedKeySet ]);
   }
 
   useEffect(() => {
     const refresh = async () => {
-      const {data} = await searchFunc({
+      const { data } = await searchFunc({
         groupID,
         filter: searchValue,
         pageSize,
         pageNumber
       });
-      const {total: t, items} = data;
+      const { total: t, items } = data;
       setGroups(items);
       setTotal(t)
       updateExpandedKeys(items);
     }
     refresh();
-  }, [query, groupID, pageNumber]);
+  }, [ query, groupID, pageNumber ]);
 
   const titleRender = (node: any): React.ReactNode => {
-    const {title} = node;
+    const { title } = node;
     const index = title.indexOf(searchValue);
     const beforeStr = title.substr(0, index);
     const afterStr = title.substr(index + searchValue.length);
     const tmp =
       searchValue && index > -1 ? (
         <span className="group-title">
-          {beforeStr}
-          <span className="site-tree-search-value">{searchValue}</span>
-          {afterStr}
+          { beforeStr }
+          <span className="site-tree-search-value">{ searchValue }</span>
+          { afterStr }
         </span>
       ) : (
-        <span className="group-title">{title}</span>
+        <span className="group-title">{ title }</span>
       );
     const firstLetter = title.substring(0, 1).toUpperCase()
-    const {fullPath} = node;
+    const { fullPath, type } = node;
 
-    return <span onClick={() => {
-      window.location.href = fullPath
-    }}>
-      <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
-        {firstLetter}
+    return <span onClick={ () => {
+      let targetPath = fullPath
+      if (type === 'application') {
+        targetPath = `/applications${ fullPath }/-/clusters`
+      }
+      window.location.href = targetPath
+    } }>
+      <span className={ `avatar-32 identicon bg${ Utils.getAvatarColorIndex(title) }` }>
+        { firstLetter }
       </span>
-      <span style={{marginLeft: 48}}>{tmp}</span>
+      <span style={ { marginLeft: 48 } }>{ tmp }</span>
     </span>;
   };
 
   // 搜索框输入值监听
   const onChange = (e: any) => {
-    const {value} = e.target;
+    const { value } = e.target;
     setSearchValue(value);
   };
 
@@ -125,23 +129,28 @@ export default (props: any) => {
       node: any;
     },
   ) => {
-    const {node} = info;
-    const {key, expanded, fullPath, childrenCount} = node;
+    const { node } = info;
+    const { key, expanded, fullPath, childrenCount, type } = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      window.location.href = fullPath
+      let targetPath = fullPath
+      if (type === 'application') {
+        targetPath = `/applications${ fullPath }/-/clusters`
+      }
+      window.location.href = targetPath
     } else if (!expanded) {
-      setExpandedKeys([...expandedKeys, key]);
+      setExpandedKeys([ ...expandedKeys, key ]);
     } else {
       setExpandedKeys(expandedKeys.filter((item) => item !== key));
     }
   };
 
-  const queryInput = <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
+  const queryInput = <Search placeholder="Search" onPressEnter={ onPressEnter } onSearch={ onSearch }
+                             onChange={ onChange }/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
-    return items.map(({id, name, type, childrenCount, children, ...item}) => {
+    return items.map(({ id, name, type, childrenCount, children, ...item }) => {
       return {
         ...item,
         id,
@@ -165,8 +174,8 @@ export default (props: any) => {
     // 如果是展开并且node下的children为空，则进行查询
     if (info.expanded && !info.node.children) {
       const pid = info.node.key as number;
-      queryFunc(pid, 1, pageSize).then(({data}) => {
-        const {items} = data;
+      queryFunc(pid, 1, pageSize).then(({ data }) => {
+        const { items } = data;
         setGroups(updateChildren(groups, pid, items))
         setExpandedKeys(expandedKey);
       })
@@ -177,33 +186,33 @@ export default (props: any) => {
 
   return (
     <div>
-      <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={queryInput}>
-        <TabPane tab={props.tabPane} key="1">
-          {groups.map((item: API.GroupChild) => {
-            const treeData = formatTreeData([item]);
+      <Tabs defaultActiveKey="1" size={ 'large' } tabBarExtraContent={ queryInput }>
+        <TabPane tab={ props.tabPane } key="1">
+          { groups.map((item: API.GroupChild) => {
+            const treeData = formatTreeData([ item ]);
             const hasChildren = item.childrenCount > 0;
             return (
-              <div key={item.id}>
+              <div key={ item.id }>
                 <DirectoryTree
-                  onExpand={onExpand}
-                  showLine={hasChildren ? {showLeafIcon: false} : false}
-                  switcherIcon={<DownOutlined/>}
-                  treeData={treeData}
-                  titleRender={titleRender}
-                  onSelect={onSelect}
+                  onExpand={ onExpand }
+                  showLine={ hasChildren ? { showLeafIcon: false } : false }
+                  switcherIcon={ <DownOutlined/> }
+                  treeData={ treeData }
+                  titleRender={ titleRender }
+                  onSelect={ onSelect }
                   // autoExpandParent={autoExpandParent}
-                  expandedKeys={expandedKeys}
+                  expandedKeys={ expandedKeys }
                 />
-                <Divider style={{margin: '0 0 0 0'}}/>
+                <Divider style={ { margin: '0 0 0 0' } }/>
               </div>
             );
-          })}
+          }) }
         </TabPane>
       </Tabs>
       <br/>
-      <div style={{textAlign: 'center'}}>
-        <Pagination current={pageNumber} hideOnSinglePage pageSize={pageSize} total={total}
-                    onChange={(page) => setPageNumber(page)}/>
+      <div style={ { textAlign: 'center' } }>
+        <Pagination current={ pageNumber } hideOnSinglePage pageSize={ pageSize } total={ total }
+                    onChange={ (page) => setPageNumber(page) }/>
       </div>
     </div>
   );
