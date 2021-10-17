@@ -43,6 +43,8 @@ export default (props: any) => {
                 schema={jsonSchema}
                 onChange={onChange}
                 uiSchema={uiSchema}
+                liveValidate
+                showErrorList={false}
               >
                 <div />
               </Form>

@@ -11,6 +11,7 @@ import {
   ContactsOutlined,
   SettingOutlined,
   SmileOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons/lib';
 import Utils from '@/utils';
 import { queryResource } from '@/services/core';
@@ -24,6 +25,7 @@ const IconMap = {
   contacts: <ContactsOutlined />,
   setting: <SettingOutlined />,
   bank: <BankOutlined />,
+  appstore: <AppstoreOutlined />,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -255,8 +257,8 @@ function formatApplicationMenu(fullPath: string) {
       ],
     },
     {
-      path: `/applications${fullPath}/-/service_instances`,
-      name: 'Service instances',
+      path: `/applications${fullPath}/-/clusters`,
+      name: 'Cluster',
       icon: 'appstore',
     },
     {

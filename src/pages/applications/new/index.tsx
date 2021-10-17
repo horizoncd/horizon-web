@@ -12,14 +12,12 @@ import { createApplication } from '@/services/applications/applications';
 
 const { Step } = Steps;
 
-interface FormData {
-  name: string;
-  description?: string;
-  priority: string;
-  release: string;
-  url: string;
-  subfolder: string;
-  branch: string;
+interface FieldData {
+  name: string | number | (string | number)[];
+  value?: any;
+  touched?: boolean;
+  validating?: boolean;
+  errors?: string[];
 }
 
 export default (props: any) => {
@@ -29,12 +27,15 @@ export default (props: any) => {
     return <NotFount />;
   }
 
-  // const [form] = Form.useForm();
+  const basicNeedValidFileds = [
+    'name', 'release', "priority", "url", "branch"
+  ]
+
+  const [form] = Form.useForm();
 
   const [current, setCurrent] = useState(0);
   const [template, setTemplate] = useState<API.Template>({description: "", name: ""});
-  const [basic, setBasic] = useState<FormData | undefined>();
-  const [form] = useState(Form.useForm()[0]);
+  const [basic, setBasic] = useState<FieldData[]>([]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
 
@@ -52,28 +53,16 @@ export default (props: any) => {
     }
   };
 
-  const basicHasError = async () => {
+  const basicHasError = () => {
     let hasError = false;
-    try {
-      const data = await form.validateFields(['name'])
-      console.log(data);
-    } catch (e) {
-      console.log(e);
-    }
-    form.validateFields(['name']).then(r => {
-    }).catch(errorInfo => {
-      if (errorInfo.errorFields.length > 0) {
+
+    for (const val of basic!) {
+      if (val.errors && val.errors.length > 0) {
         hasError = true
       }
-    })
-    // for (let i = 0; i < form.getFieldsError(['name']).length; i += 1) {
-    //   form.validateFields().then(r => {}).catch(errorInfo => {
-    //     hasError = true;
-    //   })
-    // if (form.getFieldsError(['name'])[i].errors.length > 0)
-    //   hasError = true;
-    // }
-    return !basic || hasError
+    }
+
+    return hasError
   }
 
   const configHasError = () => {
@@ -98,16 +87,44 @@ export default (props: any) => {
     },
     {
       title: '自定义配置',
-      disabled: !template.name || basicHasError(),
+      disabled: !template.name || basicHasError()
     },
     {
       title: '审计',
-      disabled: !template.name || basicHasError() || configHasError(),
+      disabled: !template.name || basicHasError() || configHasError()
     },
   ];
 
-  const next = () => {
-    setCurrent(current + 1);
+  const currentIsValid = async () => {
+    let valid: boolean;
+    switch (current) {
+      case 0:
+        valid = !!template.name
+        break;
+      case 1:
+        try {
+          await form.validateFields(basicNeedValidFileds)
+          valid = true
+        } catch (e: any) {
+          const {errorFields} = e
+          valid = !errorFields.length
+        }
+        break;
+      case 2:
+        valid = !configHasError()
+        break;
+      default:
+        valid = true
+    }
+
+    return valid
+  }
+
+  const next = async () => {
+    // 要校验字段是否均合法，才能进入下一步
+    if (await currentIsValid()) {
+      setCurrent(current + 1);
+    }
   };
 
   const prev = () => {
@@ -121,13 +138,15 @@ export default (props: any) => {
       case 0:
         return !template.name;
       case 1:
-        return basicHasError();
+        return basicHasError()
       case 2:
-        return configHasError();
+        return configHasError()
       default:
         return false;
     }
   };
+
+  const release = form.getFieldValue('release')
 
   // final submit, check everything
   const onSubmit = () => {
@@ -138,7 +157,7 @@ export default (props: any) => {
       priority: form.getFieldValue('priority'),
       template: {
         name: template.name,
-        release: basic!.release,
+        release,
       },
       git: {
         url: form.getFieldValue('url'),
@@ -155,6 +174,12 @@ export default (props: any) => {
     });
   };
 
+  const onCurrentChange = async (cur: number) => {
+    if (await currentIsValid()) {
+      setCurrent(cur);
+    }
+  }
+
   return (
     <Row>
       <Col span={22} offset={1}>
@@ -163,7 +188,7 @@ export default (props: any) => {
         <Row>
           <Col span={4}>
             <div className={'step'}>
-              <Steps current={current} onChange={setCurrent} direction="vertical">
+              <Steps current={current} onChange={onCurrentChange} direction="vertical">
                 {steps.map((item, index) => {
                   return (
                     <Step
@@ -186,12 +211,12 @@ export default (props: any) => {
                 current === 1 && <Basic form={form} template={template} setFormData={setBasic}/>
               }
               {
-                current === 2 && <Config template={template} release={basic!.release} config={config}
+                current === 2 && <Config template={template} release={release} config={config}
                     setConfig={setConfig} setConfigErrors={setConfigErrors}
                 />
               }
               {
-                current === 3 && <Audit form={form} template={template} release={basic!.release} config={config}/>
+                current === 3 && <Audit form={form} template={template} release={release} config={config}/>
               }
             </div>
             <div className="steps-action">

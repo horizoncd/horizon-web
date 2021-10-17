@@ -3,7 +3,7 @@ import { history } from 'umi';
 
 const getResourcePath = () => {
   const {pathname} = history.location;
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups');
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' && item !== 'applications');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];

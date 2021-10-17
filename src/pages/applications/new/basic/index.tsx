@@ -20,13 +20,19 @@ export default (props: any) => {
     },
   ];
 
-  const priorities = ['P0', 'P1', 'P2', 'P3'];
+  const requiredRule: Rule[] = [
+    {
+      required: true,
+    },
+  ];
+
+  const priorities = [ 'P0', 'P1', 'P2', 'P3' ];
 
   const formatReleaseOption = (item: API.Release) => {
     if (item.recommended) {
       return (
         <div>
-          {item.name} <span style={{ color: 'red' }}>(推荐)</span>
+          { item.name } <span style={ { color: 'red' } }>(推荐)</span>
         </div>
       );
     }
@@ -36,57 +42,56 @@ export default (props: any) => {
 
   const { readonly = false } = props;
 
-  const onValuesChange = (value: any, allValues: any) => {
-    console.log(allValues);
-    props.setFormData(allValues)
-  }
-
   return (
     <div>
-      <Form layout={'vertical'} form={props.form} requiredMark={'optional'} onValuesChange={onValuesChange}>
-        <Card title={'Service Basic'} className={styles.gapBetweenCards}>
-          <Form.Item label={'应用名'} name={'name'} rules={nameRules}>
-            <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={readonly} />
+      <Form layout={ 'vertical' } form={ props.form } requiredMark={ 'optional' }
+            onFieldsChange={ (a, b) => {
+              props.setFormData(b)
+            } }
+      >
+        <Card title={ 'Service Basic' } className={ styles.gapBetweenCards }>
+          <Form.Item label={ '应用名' } name={ 'name' } rules={ nameRules }>
+            <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={ readonly }/>
           </Form.Item>
-          <Form.Item label={'应用描述'} name={'description'}>
-            <TextArea placeholder="长度上限为255个字符" maxLength={255} disabled={readonly} />
+          <Form.Item label={ '应用描述' } name={ 'description' }>
+            <TextArea placeholder="长度上限为255个字符" maxLength={ 255 } disabled={ readonly }/>
           </Form.Item>
-          <Form.Item required label={'模版版本'} name={'release'} >
-            <Select disabled={readonly}>
-              {data?.map((item) => {
+          <Form.Item label={ '模版版本' } name={ 'release' } rules={ requiredRule }>
+            <Select disabled={ readonly }>
+              { data?.map((item) => {
                 return (
-                  <Option key={item.name} value={item.name}>
-                    {formatReleaseOption(item)}
+                  <Option key={ item.name } value={ item.name }>
+                    { formatReleaseOption(item) }
                   </Option>
                 );
-              })}
+              }) }
             </Select>
           </Form.Item>
-          <Form.Item required label={'应用优先级'} name={'priority'}>
-            <Select disabled={readonly}>
-              {priorities.map((item) => {
+          <Form.Item label={ '应用优先级' } name={ 'priority' } rules={ requiredRule }>
+            <Select disabled={ readonly }>
+              { priorities.map((item) => {
                 return (
-                  <Option key={item} value={item}>
-                    {item}
+                  <Option key={ item } value={ item }>
+                    { item }
                   </Option>
                 );
-              })}
+              }) }
             </Select>
           </Form.Item>
         </Card>
 
-        <Card title={'Repo'} className={styles.gapBetweenCards}>
-          <Form.Item required label={'url'} name={'url'}>
+        <Card title={ 'Repo' } className={ styles.gapBetweenCards }>
+          <Form.Item label={ 'url' } name={ 'url' } rules={ requiredRule }>
             <Input
               placeholder="如 ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
-              disabled={readonly}
+              disabled={ readonly }
             />
           </Form.Item>
-          <Form.Item label={'subfolder'} name={'subfolder'}>
-            <Input placeholder="如 /" disabled={readonly} />
+          <Form.Item label={ 'subfolder' } name={ 'subfolder' }>
+            <Input placeholder="如 /" disabled={ readonly }/>
           </Form.Item>
-          <Form.Item required label={'branch'} name={'branch'}>
-            <Input placeholder="如 master" disabled={readonly} />
+          <Form.Item label={ 'branch' } name={ 'branch' } rules={ requiredRule }>
+            <Input placeholder="如 master" disabled={ readonly }/>
           </Form.Item>
         </Card>
       </Form>
