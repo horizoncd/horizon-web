@@ -56,7 +56,8 @@ export default (props: any) => {
   const basicHasError = () => {
     let hasError = false;
 
-    for (const val of basic!) {
+    for (let i = 0; i < basic!.length; i += 1){
+      const val = basic![i];
       if (val.errors && val.errors.length > 0) {
         hasError = true
       }

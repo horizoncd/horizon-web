@@ -4,4 +4,7 @@ export default {
   'menu.Members': 'Members',
   'menu.Settings': 'Settings',
   'menu.Settings.General': 'General',
+  'menu.Service overview': 'Service overview',
+  'menu.Service overview.Details': 'Details',
+  'menu.Clusters': 'Clusters',
 };

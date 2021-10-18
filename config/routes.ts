@@ -51,16 +51,12 @@ const applicationRoutes = [
     component: 'applications/member',
   },
   {
-    path: '/applications/*/-/settings',
-    component: 'applications/settings',
+    path: '/applications/*/-/clusters',
+    component: 'applications/Clusters',
   },
   {
     path: '/applications/*/-/edit',
     component: 'applications/edit',
-  },
-  {
-    path: '/applications/*/-/activity',
-    component: 'applications/activity',
   },
 ];
 

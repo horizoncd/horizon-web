@@ -258,7 +258,7 @@ function formatApplicationMenu(fullPath: string) {
     },
     {
       path: `/applications${fullPath}/-/clusters`,
-      name: 'Cluster',
+      name: 'Clusters',
       icon: 'appstore',
     },
     {

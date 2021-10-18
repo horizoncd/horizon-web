@@ -6,23 +6,24 @@ import {Divider} from "antd";
 import './index.less'
 
 export default (props: any) => {
-  const {initialState} = useModel('@@initialState');
-  const itemRender = (route: Route) => {
-    return <a href={route.path}>{route.breadcrumbName}
-    </a>
-  }
-  return (
-    <PageContainer
-      header={{
-        breadcrumb: {
-          routes: utils.getBreadcrumb(initialState?.resource.fullPath, initialState?.resource?.fullName),
-          itemRender
-        },
-      }}
-      title={false}
-    >
-      <Divider className={'divider'}/>
-      {props.children}
-    </PageContainer>
-  );
+    const {initialState} = useModel('@@initialState');
+    const itemRender = (route: Route) => {
+        return <a href={route.path}>{route.breadcrumbName}
+        </a>
+    }
+    const {fullName} = initialState!.resource
+    return (
+        <PageContainer
+            header={{
+                breadcrumb: {
+                    routes: utils.getBreadcrumbs(fullName),
+                    itemRender
+                },
+            }}
+            title={false}
+        >
+            <Divider className={'divider'}/>
+            {props.children}
+        </PageContainer>
+    );
 };

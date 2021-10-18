@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Form, Input, notification, Radio, Row, Space } from 'antd';
+import { Button, Col, Divider, Form, Input, notification, Row} from 'antd';
 import { history, useRequest } from 'umi';
 import type { Rule } from 'rc-field-form/lib/interface';
 import './index.less';
@@ -27,7 +27,6 @@ export default (props: any) => {
   const groupNameLabel = formatLabel('Group name');
   const groupPathLabel = formatLabel('Group URL');
   const groupDescLabel = formatLabel('Group description (optional)');
-  const groupVisibility = formatLabel('Visibility level');
 
   const getURLPrefix = () => `${window.location.origin + parent?.fullPath}/`;
 
@@ -52,6 +51,7 @@ export default (props: any) => {
   const onFinish = (values: API.NewGroup) => {
     createGroup({
       ...values,
+      visibilityLevel: 'private',
       parentID: intParentID,
     }).then(() => {
       notification.info({
@@ -97,9 +97,6 @@ export default (props: any) => {
               form={form}
               onFinish={onFinish}
               requiredMark={false}
-              initialValues={{
-                visibilityLevel: 'private',
-              }}
             >
               <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
                 <Input style={getGroupNameLabelStyle()} placeholder="My awesome group" />
@@ -113,22 +110,6 @@ export default (props: any) => {
               </Form.Item>
               <Form.Item label={groupDescLabel} name={'description'}>
                 <TextArea style={getGroupPathAndDescStyle()} allowClear />
-              </Form.Item>
-              <Form.Item label={groupVisibility} name={'visibilityLevel'}>
-                <Radio.Group>
-                  <Space direction="vertical">
-                    <Radio value={'public'}>
-                      <div>Public</div>
-                      <div>
-                        The group and any internal projects can be viewed by any logged in user
-                      </div>
-                    </Radio>
-                    <Radio value={'private'}>
-                      <div>Private</div>
-                      <div>The group and its projects can only be viewed by members</div>
-                    </Radio>
-                  </Space>
-                </Radio.Group>
               </Form.Item>
               <Form.Item style={getSubmitBtnStyle()}>
                 <div className={'form-actions'}>
