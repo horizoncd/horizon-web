@@ -217,12 +217,7 @@ function formatGroupMenu(fullPath: string) {
     {
       name: 'Group overview',
       icon: 'bank',
-      children: [
-        {
-          path: `${fullPath}`,
-          name: 'Details',
-        },
-      ],
+      path: `${fullPath}`,
     },
     {
       path: `/groups${fullPath}/-/members`,
@@ -247,14 +242,9 @@ function formatApplicationMenu(fullPath: string) {
   return [
     ...routes,
     {
-      name: 'Service overview',
+      name: 'Application overview',
       icon: 'bank',
-      children: [
-        {
-          path: `${fullPath}`,
-          name: 'Details',
-        },
-      ],
+      path: `${fullPath}`,
     },
     {
       path: `/applications${fullPath}/-/clusters`,
