@@ -44,7 +44,7 @@ export default (props: any) => {
     return <NotFount/>;
   }
 
-  if (!editing && !application) {
+  if (editing && !application) {
     return <NotFount/>;
   }
 
@@ -55,19 +55,22 @@ export default (props: any) => {
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
   const [parent, setParent] = useState<API.Group>();
-  const [groupID, setGroupID] = useState(intParentID);
 
-  const {data} = useRequest(() => {
-    if (groupID) {
-      getGroupByID({id: groupID});
-    }
-  }, {
+  const {data, run: refreshParent} = useRequest((groupID) => getGroupByID({id: groupID}), {
     onSuccess: () => {
       setParent(data)
-      console.log(parent)
     },
-    refreshDeps: [groupID]
+    manual: true,
   });
+
+  // query parent if creating
+  if (creating) {
+    const {data: parentData} = useRequest(() => getGroupByID({id: intParentID}), {
+      onSuccess: () => {
+        setParent(parentData)
+      }
+    });
+  }
 
   // query application if editing
   if (editing) {
@@ -96,7 +99,7 @@ export default (props: any) => {
         )
         setTemplate({name: tn})
         setConfig(templateInput)
-        setGroupID(gID)
+        refreshParent(gID)
       }
     });
   }
@@ -278,7 +281,7 @@ export default (props: any) => {
                 current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
               }
               {
-                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData} editing/>
+                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData} editing={editing} />
               }
               {
                 current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
