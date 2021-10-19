@@ -6,6 +6,8 @@ export default {
 
   'pages.applicationNew.config.application': 'deploy config',
   'pages.applicationNew.config.pipeline': 'build config',
+  'pages.applicationNew.success': 'create application succeed',
+  'pages.applicationEdit.success': 'update application succeed',
 
   'pages.groups.members.title': 'Group members',
   'pages.members.user.title': 'Invite user',

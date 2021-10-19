@@ -2,13 +2,13 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-export async function queryResource(path: string) {
+export async function queryResource(fullPath: string) {
   return request<{
     data: API.Resource;
   }>('/apis/core/v1/groups', {
     method: 'GET',
     params: {
-      path
+      fullPath
     },
   });
 }

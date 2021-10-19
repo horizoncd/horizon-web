@@ -24,6 +24,11 @@
     menuRender: false,
     component: 'applications/new',
   },
+  {
+    path: '/applications/edit',
+    menuRender: false,
+    component: 'applications/new',
+  },
 ];
 
 const groupRoutes = [
@@ -53,10 +58,6 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/clusters',
     component: 'applications/Clusters',
-  },
-  {
-    path: '/applications/*/-/edit',
-    component: 'applications/edit',
   },
 ];
 

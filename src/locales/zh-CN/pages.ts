@@ -6,6 +6,8 @@ export default {
 
   'pages.applicationNew.config.application': '部署配置',
   'pages.applicationNew.config.pipeline': '构建配置',
+  'pages.applicationNew.success': '应用创建成功',
+  'pages.applicationEdit.success': '应用更新成功',
 
   'pages.groups.members.title': '分组成员',
   'pages.members.user.title': '添加用户',

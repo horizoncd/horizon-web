@@ -1,16 +1,17 @@
-import { Button, Col, Divider, Form, notification, Row, Steps } from 'antd';
+import {Button, Col, Divider, Form, notification, Row, Steps} from 'antd';
 import Template from './template';
 import Basic from './basic';
 import Config from './config';
 import Audit from './audit';
-import { useState } from 'react';
+import {useState} from 'react';
 import NotFount from '@/pages/404';
-import { getGroupByID } from '@/services/groups/groups';
-import { useRequest } from 'umi';
+import {getGroupByID} from '@/services/groups/groups';
+import {useRequest} from 'umi';
 import './index.less';
-import { createApplication } from '@/services/applications/applications';
+import {createApplication, getApplication, updateApplication} from '@/services/applications/applications';
+import {useIntl} from "@@/plugin-locale/localeExports";
 
-const { Step } = Steps;
+const {Step} = Steps;
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -21,29 +22,84 @@ interface FieldData {
 }
 
 export default (props: any) => {
-  const { parentID } = props.location.query;
+  const intl = useIntl();
 
-  if (!parentID) {
-    return <NotFount />;
-  }
-
+  const name = 'name'
+  const release = 'release'
+  const priority = 'priority'
+  const url = 'url'
+  const branch = 'branch'
+  const description = 'description'
+  const subfolder = 'subfolder'
   const basicNeedValidFields = [
-    'name', 'release', "priority", "url", "branch"
+    name, release, priority, url, branch
   ]
 
-  const [form] = Form.useForm();
+  const {parentID, application} = props.location.query;
+  const creating = props.location.pathname.endsWith('new')
+  const editing = props.location.pathname.endsWith('edit')
 
+  const intParentID = parseInt(parentID, 10);
+  if (creating && (!parentID || Number.isNaN(intParentID))) {
+    return <NotFount/>;
+  }
+
+  if (!editing && !application) {
+    return <NotFount/>;
+  }
+
+  const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
   const [template, setTemplate] = useState<API.Template>({description: "", name: ""});
   const [basic, setBasic] = useState<FieldData[]>([]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
+  const [parent, setParent] = useState<API.Group>();
+  const [groupID, setGroupID] = useState(intParentID);
 
-  const intParentID = parseInt(parentID, 10);
-
-  const { data: parent } = useRequest(() => getGroupByID({ id: intParentID }), {
-    refreshDeps: [intParentID],
+  const {data} = useRequest(() => {
+    if (groupID) {
+      getGroupByID({id: groupID});
+    }
+  }, {
+    onSuccess: () => {
+      setParent(data)
+      console.log(parent)
+    },
+    refreshDeps: [groupID]
   });
+
+  // query application if editing
+  if (editing) {
+    const {data: app} = useRequest(() => getApplication(application), {
+      onSuccess: () => {
+        const {
+          groupID: gID,
+          name: n,
+          priority: p,
+          description: d,
+          git,
+          templateInput,
+          template: t,
+        } = app!
+        const {url: u, branch: b, subfolder: s} = git
+        const {release: r, name: tn} = t
+        setBasic([
+            {name, value: n},
+            {name: description, value: d},
+            {name: release, value: r},
+            {name: priority, value: p},
+            {name: url, value: u},
+            {name: branch, value: b},
+            {name: subfolder, value: s},
+          ]
+        )
+        setTemplate({name: tn})
+        setConfig(templateInput)
+        setGroupID(gID)
+      }
+    });
+  }
 
   const resetTemplate = (newTemplate: API.Template) => {
     setTemplate(newTemplate);
@@ -56,7 +112,7 @@ export default (props: any) => {
   const basicHasError = () => {
     let hasError = false;
 
-    for (let i = 0; i < basic!.length; i += 1){
+    for (let i = 0; i < basic!.length; i += 1) {
       const val = basic![i];
       if (val.errors && val.errors.length > 0) {
         hasError = true
@@ -132,7 +188,7 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = `正在为【 ${parent?.name} 】创建应用，请按步骤填写信息`;
+  const header = creating ? `正在为【 ${parent?.name} 】创建应用，请按步骤填写信息` : `正在编辑【${application}】，请按步骤填写信息`;
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -147,35 +203,34 @@ export default (props: any) => {
     }
   };
 
-  const release = form.getFieldValue('release')
 
-  const { loading, run } = useRequest(createApplication, {
+  const submitFunc = creating ? createApplication : updateApplication
+  const {loading, run} = useRequest(submitFunc, {
     manual: true,
     onSuccess: () => {
       notification.success({
-        message: '应用新建成功',
+        message: creating ? intl.formatMessage({ id: 'pages.applicationNew.success' }) : intl.formatMessage({ id: 'pages.applicationEdit.success' }),
       });
-      const name = form.getFieldValue('name');
       // jump to application's home page
-      window.location.href = `${parent?.fullPath}/${name}`;
+      window.location.href = `${parent?.fullPath}/${form.getFieldValue(name)}`;
     }
   });
 
   // final submit, check everything
   const onSubmit = () => {
-    const name = form.getFieldValue('name');
-    run(intParentID, {
-      name,
-      description: form.getFieldValue('description'),
-      priority: form.getFieldValue('priority'),
+    const p = creating ? intParentID : application
+    run(p, {
+      name: form.getFieldValue(name),
+      description: form.getFieldValue(description),
+      priority: form.getFieldValue(priority),
       template: {
         name: template.name,
-        release,
+        release: form.getFieldValue(release),
       },
       git: {
-        url: form.getFieldValue('url'),
-        subfolder: form.getFieldValue('subfolder'),
-        branch: form.getFieldValue('branch'),
+        url: form.getFieldValue(url),
+        subfolder: form.getFieldValue(subfolder),
+        branch: form.getFieldValue(branch),
       },
       templateInput: config,
     })
@@ -187,11 +242,19 @@ export default (props: any) => {
     }
   }
 
+  const setBasicFormData = (changingFiled: FieldData[], data: FieldData[]) => {
+    // clear config if release has been changed
+    if (changingFiled[0].name[0] === release) {
+      setConfig({})
+    }
+    setBasic(data)
+  }
+
   return (
     <Row>
       <Col span={22} offset={1}>
         <h3 className={'header'}>{header}</h3>
-        <Divider className={'divider'} />
+        <Divider className={'divider'}/>
         <Row>
           <Col span={4}>
             <div className={'step'}>
@@ -215,20 +278,20 @@ export default (props: any) => {
                 current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
               }
               {
-                current === 1 && <Basic form={form} template={template} setFormData={setBasic}/>
+                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData} editing/>
               }
               {
-                current === 2 && <Config template={template} release={release} config={config}
-                    setConfig={setConfig} setConfigErrors={setConfigErrors}
+                current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
+                                         setConfig={setConfig} setConfigErrors={setConfigErrors}
                 />
               }
               {
-                current === 3 && <Audit form={form} template={template} release={release} config={config}/>
+                current === 3 && <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
               }
             </div>
             <div className="steps-action">
               {current > 0 && (
-                <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                <Button style={{margin: '0 8px'}} onClick={() => prev()}>
                   上一步
                 </Button>
               )}

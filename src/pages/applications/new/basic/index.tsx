@@ -40,18 +40,19 @@ export default (props: any) => {
     return item.name;
   };
 
-  const { readonly = false } = props;
+  const { readonly = false, editing = false } = props;
 
   return (
     <div>
       <Form layout={ 'vertical' } form={ props.form } requiredMark={ 'optional' }
             onFieldsChange={ (a, b) => {
-              props.setFormData(b)
+              props.setFormData(a, b)
             } }
+            fields={props.formData}
       >
         <Card title={ 'Service Basic' } className={ styles.gapBetweenCards }>
           <Form.Item label={ '应用名' } name={ 'name' } rules={ nameRules }>
-            <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={ readonly }/>
+            <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={ readonly || editing }/>
           </Form.Item>
           <Form.Item label={ '应用描述' } name={ 'description' }>
             <TextArea placeholder="长度上限为255个字符" maxLength={ 255 } disabled={ readonly }/>

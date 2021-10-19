@@ -121,7 +121,7 @@ declare namespace API {
 
   type Template = {
     name: string;
-    description: string;
+    description?: string;
   };
 
   type Release = {

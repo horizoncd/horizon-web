@@ -69,8 +69,8 @@ const getBreadcrumbs = (fullName: string) => {
   }
 
   // add current route
-  if (pathname.indexOf('-') > -1) {
-    const p = pathname.split('/')
+  const p = pathname.split('/')
+  if (p.indexOf('-') > -1) {
     result.push({
       path: pathname,
       breadcrumbName: p[p.length - 1],

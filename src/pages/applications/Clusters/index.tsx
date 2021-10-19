@@ -6,6 +6,10 @@ import {stringify} from "querystring";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import styles from './index.less'
+import {useRequest} from "@@/plugin-request/request";
+import {queryEnvironments} from "@/services/environments/environments";
+import {queryClusters} from "@/services/clusters/clusters";
+import NotFount from "@/pages/404";
 
 const {TabPane} = Tabs;
 const {Search} = Input;
@@ -14,17 +18,24 @@ export default () => {
   const intl = useIntl();
   const newCluster = '/clusters/new';
   const {initialState} = useModel('@@initialState');
-  const {id} = initialState?.resource || {};
+  const {id, name: application} = initialState?.resource || {};
+  if (!application) {
+    return <NotFount/>;
+  }
+
   const pageSize = 10;
 
-  const [searchValue, setSearchValue] = useState('');
+  const [filter, setFilter] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [query, setQuery] = useState(0);
+  const [env, setEnv] = useState('');
 
-  const envs = [
-    'dev', 'test'
-  ]
+  const {data: envs} = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      setEnv(envs![0].name)
+    }
+  });
 
   const columns = [
     {
@@ -33,36 +44,45 @@ export default () => {
       key: 'name',
     },
     {
+      title: 'region',
+      dataIndex: 'region',
+      key: 'region',
+    },
+    {
       title: 'template',
       dataIndex: 'template',
       key: 'template',
     },
     {
-      title: 'version',
-      dataIndex: 'version',
-      key: 'version',
+      title: 'createTime',
+      dataIndex: 'createTime',
+      key: 'createTime',
     },
     {
-      title: 'status',
-      dataIndex: 'status',
-      key: 'status',
+      title: 'updateTime',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
   ]
 
-  const data = [
-    {
-      key: 1,
-      name: 'John Brown',
-      template: 'New York No. 1 Lake Park',
-      version: 'version',
-      status: 'status'
+  const {data: clusters} = useRequest(() => {
+    if (env) {
+      queryClusters(application, {
+          filter, env, pageNumber, pageSize,
+        }
+      )
+    }
+  }, {
+    onSuccess: () => {
+      setTotal(clusters?.total || 0)
     },
-  ]
+    refreshDeps: [query, env, pageNumber],
+  });
 
   // 搜索框输入值监听
   const onChange = (e: any) => {
     const {value} = e.target;
-    setSearchValue(value);
+    setFilter(value);
   };
 
   // 搜索框按enter
@@ -99,14 +119,22 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <Tabs defaultActiveKey="1" size={'large'} tabBarExtraContent={queryInput}>
+      <Tabs defaultActiveKey={env} size={'large'} tabBarExtraContent={queryInput}>
         {
-          envs.map(env => {
-            return <TabPane tab={env} key={env}>
+          envs?.map(item => {
+            const {name, displayName} = item
+            return <TabPane tab={displayName} key={name}>
               <Table
                 columns={columns}
-                dataSource={data}
-                pagination={{ position: ['bottomCenter'], current: pageNumber, hideOnSinglePage: true, pageSize, total, onChange: (page) => setPageNumber(page) }}
+                dataSource={clusters?.items}
+                pagination={{
+                  position: ['bottomCenter'],
+                  current: pageNumber,
+                  hideOnSinglePage: true,
+                  pageSize,
+                  total,
+                  onChange: (page) => setPageNumber(page)
+                }}
               />
             </TabPane>
           })

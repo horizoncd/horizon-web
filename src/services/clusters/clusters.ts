@@ -1,6 +1,6 @@
 import { request } from 'umi';
 
-export async function listClusters(application: string, params: API.ClusterFilter) {
+export async function queryClusters(application: string, params: API.ClusterFilter) {
   return request<{
     data: API.PageResult<API.ClusterBaseInfo>;
   }>(`/apis/core/v1/applications/${application}/clusters`, {
