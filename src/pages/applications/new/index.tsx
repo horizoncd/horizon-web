@@ -27,7 +27,7 @@ export default (props: any) => {
     return <NotFount />;
   }
 
-  const basicNeedValidFileds = [
+  const basicNeedValidFields = [
     'name', 'release', "priority", "url", "branch"
   ]
 
@@ -104,7 +104,7 @@ export default (props: any) => {
         break;
       case 1:
         try {
-          await form.validateFields(basicNeedValidFileds)
+          await form.validateFields(basicNeedValidFields)
           valid = true
         } catch (e: any) {
           const {errorFields} = e
@@ -149,10 +149,22 @@ export default (props: any) => {
 
   const release = form.getFieldValue('release')
 
+  const { loading, run } = useRequest(createApplication, {
+    manual: true,
+    onSuccess: () => {
+      notification.success({
+        message: '应用新建成功',
+      });
+      const name = form.getFieldValue('name');
+      // jump to application's home page
+      window.location.href = `${parent?.fullPath}/${name}`;
+    }
+  });
+
   // final submit, check everything
   const onSubmit = () => {
     const name = form.getFieldValue('name');
-    createApplication(intParentID, {
+    run(intParentID, {
       name,
       description: form.getFieldValue('description'),
       priority: form.getFieldValue('priority'),
@@ -166,13 +178,7 @@ export default (props: any) => {
         branch: form.getFieldValue('branch'),
       },
       templateInput: config,
-    }).then(() => {
-      notification.success({
-        message: '应用新建成功',
-      });
-      // jump to application's home page
-      window.location.href = `${parent?.fullPath}/${name}`;
-    });
+    })
   };
 
   const onCurrentChange = async (cur: number) => {
@@ -227,7 +233,7 @@ export default (props: any) => {
                 </Button>
               )}
               {current === steps.length - 1 && (
-                <Button type="primary" onClick={onSubmit}>
+                <Button type="primary" onClick={onSubmit} loading={loading}>
                   提交
                 </Button>
               )}
