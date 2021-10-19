@@ -9,6 +9,7 @@ const roles = {
   Developer: "Developer",
   Reporter: "Reporter",
   Guest: "Guest",
+  NotExist: "NotExist"
 };
 
 const actions = {
@@ -33,6 +34,9 @@ const rolePermissions = {
   [roles.Guest]: {
     [actions.ManageMember]: [roles.Guest],
   },
+  [roles.NotExist]: {
+    [actions.ManageMember]: [],
+  }
 };
 
 const getResourcePath = () => {
