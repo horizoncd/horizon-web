@@ -38,6 +38,59 @@ declare namespace API {
     templateInput: any;
   };
 
+  type NewMember = {
+    // ResourceType group/application/applicationInstance
+    resourceType: string,
+    // ResourceID group id;application id ...
+    resourceID: number,
+    // MemberNameID group id / userid
+    memberNameID: number,
+    // MemberType user or group
+    memberType: number
+    // Role owner/maintainer/develop/...
+    role: string,
+  };
+
+  type UpdateMember = {
+    // ResourceType group/application/applicationInstance
+    id: number,
+    // Role owner/maintainer/develop/...
+    role: string,
+  };
+
+  type Member = {
+    // ID the uniq id of the member entry
+    id: number,
+    // MemberType user or group
+    memberType: string,
+    memberName: string
+    memberNameID: number,
+    // ResourceName   application/group
+    resourceType: string,
+    resourceName: string,
+    resourcePath: string,
+    resourceID: number,
+    // Role the role name that bind
+    role: string,
+    // GrantBy user who grant the role
+    grantedBy: number,
+    // GrantTime
+    grantTime: string,
+  };
+
+  type Role = {
+    name: number,
+    verb: string[],
+    resources: string[],
+  };
+
+  type User = {
+    id: number,
+    name: string,
+    fullName: string,
+    email: string,
+  };
+
   type Application = {
     id: number;
     groupID: number;
@@ -266,4 +319,13 @@ declare namespace API {
       };
     }
   }
+
+  type PageParam = {
+    pageNumber: number,
+    pageSize: number,
+    filter?: string,
+    // isConcat为true表示保留上一页列表（如下拉列表滚动翻页），为false表示直接翻页。
+    // todo:看下有没有其他实现方法
+    isConcat?: boolean,
+  };
 }

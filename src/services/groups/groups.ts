@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import {request} from 'umi';
 
 export async function queryChildren(groupID: number, pageNumber: number, pageSize: number) {
   return request<{
@@ -60,7 +60,7 @@ export async function getGroupByID(
     id: number;
   }
 ) {
-  const { id } = params;
+  const {id} = params;
   return request<{
     data: API.Group
   }>(`/apis/core/v1/groups/${id}`, {
@@ -75,7 +75,7 @@ export async function updateGroupDetail(
   body: API.Group,
   options?: { [key: string]: any },
 ) {
-  const { id } = params;
+  const {id} = params;
   return request(`/apis/core/v1/groups/${id}`, {
     method: 'PUT',
     headers: {
@@ -92,7 +92,7 @@ export async function deleteGroup(
   },
   options?: { [key: string]: any },
 ) {
-  const { id } = params;
+  const {id} = params;
   return request(`/apis/core/v1/groups/${id}`, {
     method: 'DELETE',
     ...(options || {}),
