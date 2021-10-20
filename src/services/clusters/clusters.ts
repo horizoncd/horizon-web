@@ -2,7 +2,7 @@ import { request } from 'umi';
 
 export async function queryClusters(application: string, params: API.ClusterFilter) {
   return request<{
-    data: API.PageResult<API.ClusterBaseInfo>;
+    data: API.PageResult<API.ClusterBase>;
   }>(`/apis/core/v1/applications/${application}/clusters`, {
     method: 'GET',
     params
@@ -19,8 +19,22 @@ export async function createCluster(application: string, scope: string, data: AP
   });
 }
 
-export async function updateCluster(application: string, data: API.UpdateCluster) {
-  return request(`/apis/core/v1/applications/${application}/clusters`, {
+export async function deleteCluster(cluster: string) {
+  return request(`/apis/core/v1/clusters/${cluster}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getCluster(cluster: string) {
+  return request<{
+    data: API.Cluster
+  }>(`/apis/core/v1/clusters/${cluster}`, {
+    method: 'GET',
+  });
+}
+
+export async function updateCluster(cluster: string, data: API.UpdateCluster) {
+  return request(`/apis/core/v1/clusters/${cluster}`, {
     method: 'PUT',
     data
   });

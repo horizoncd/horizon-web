@@ -3,19 +3,26 @@ import type { Rule } from 'rc-field-form/lib/interface';
 import { useRequest } from 'umi';
 import { queryReleases } from '@/services/templates/templates';
 import styles from '../index.less';
+import {useIntl} from "@@/plugin-locale/localeExports";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export default (props: any) => {
+  const intl = useIntl();
+
   // query release version
   const { data } = useRequest(() => queryReleases(props.template?.name));
+
+  const formatMessage = (suffix: string) => {
+    return intl.formatMessage({ id: `pages.applicationNew.basic.${suffix}` })
+  }
 
   const nameRules: Rule[] = [
     {
       required: true,
       pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
-      message: '应用名是必填项，支持字母、数字和中划线的组合，且必须以字母开头',
+      message: formatMessage('name.ruleMessage'),
       max: 40,
     },
   ];
@@ -50,14 +57,14 @@ export default (props: any) => {
             } }
             fields={props.formData}
       >
-        <Card title={ 'Service Basic' } className={ styles.gapBetweenCards }>
-          <Form.Item label={ '应用名' } name={ 'name' } rules={ nameRules }>
-            <Input placeholder="支持字母、数字或中划线、长度最大为40字符" disabled={ readonly || editing }/>
+        <Card title={ formatMessage('title') } className={ styles.gapBetweenCards }>
+          <Form.Item label={ formatMessage('name') } name={ 'name' } rules={ nameRules }>
+            <Input placeholder={formatMessage('name.ruleMessage')} disabled={ readonly || editing }/>
           </Form.Item>
-          <Form.Item label={ '应用描述' } name={ 'description' }>
-            <TextArea placeholder="长度上限为255个字符" maxLength={ 255 } disabled={ readonly }/>
+          <Form.Item label={ formatMessage('description') } name={ 'description' }>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={ 255 } disabled={ readonly }/>
           </Form.Item>
-          <Form.Item label={ '模版版本' } name={ 'release' } rules={ requiredRule }>
+          <Form.Item label={ formatMessage('release') } name={ 'release' } rules={ requiredRule }>
             <Select disabled={ readonly }>
               { data?.map((item) => {
                 return (
@@ -68,7 +75,7 @@ export default (props: any) => {
               }) }
             </Select>
           </Form.Item>
-          <Form.Item label={ '应用优先级' } name={ 'priority' } rules={ requiredRule }>
+          <Form.Item label={ formatMessage('priority') } name={ 'priority' } rules={ requiredRule }>
             <Select disabled={ readonly }>
               { priorities.map((item) => {
                 return (
@@ -81,18 +88,18 @@ export default (props: any) => {
           </Form.Item>
         </Card>
 
-        <Card title={ 'Repo' } className={ styles.gapBetweenCards }>
-          <Form.Item label={ 'url' } name={ 'url' } rules={ requiredRule }>
+        <Card title={ formatMessage('repo') } className={ styles.gapBetweenCards }>
+          <Form.Item label={ formatMessage('url') } name={ 'url' } rules={ requiredRule }>
             <Input
-              placeholder="如 ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
+              placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
               disabled={ readonly }
             />
           </Form.Item>
-          <Form.Item label={ 'subfolder' } name={ 'subfolder' }>
-            <Input placeholder="如 /" disabled={ readonly }/>
+          <Form.Item label={ formatMessage('subfolder') } name={ 'subfolder' }>
+            <Input disabled={ readonly }/>
           </Form.Item>
-          <Form.Item label={ 'branch' } name={ 'branch' } rules={ requiredRule }>
-            <Input placeholder="如 master" disabled={ readonly }/>
+          <Form.Item label={ formatMessage('branch') } name={ 'branch' } rules={ requiredRule }>
+            <Input placeholder="master" disabled={ readonly }/>
           </Form.Item>
         </Card>
       </Form>

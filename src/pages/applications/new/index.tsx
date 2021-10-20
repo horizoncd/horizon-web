@@ -138,19 +138,19 @@ export default (props: any) => {
 
   const steps = [
     {
-      title: '选择服务模版',
+      title: intl.formatMessage({ id: 'pages.applicationNew.step.one' }),
       disabled: false,
     },
     {
-      title: '配置服务',
+      title: intl.formatMessage({ id: 'pages.applicationNew.step.two' }),
       disabled: !template.name,
     },
     {
-      title: '自定义配置',
+      title: intl.formatMessage({ id: 'pages.applicationNew.step.three' }),
       disabled: !template.name || basicHasError()
     },
     {
-      title: '审计',
+      title: intl.formatMessage({ id: 'pages.applicationNew.step.four' }),
       disabled: !template.name || basicHasError() || configHasError()
     },
   ];
@@ -181,7 +181,6 @@ export default (props: any) => {
   }
 
   const next = async () => {
-    // 要校验字段是否均合法，才能进入下一步
     if (await currentIsValid()) {
       setCurrent(current + 1);
     }
@@ -191,7 +190,8 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? `正在为【 ${parent?.name} 】创建应用，请按步骤填写信息` : `正在编辑【${application}】，请按步骤填写信息`;
+  const header = creating ? intl.formatMessage({ id: 'pages.applicationNew.header' }, {group: <b>{parent?.name}</b>})
+    : intl.formatMessage({ id: 'pages.applicationEdit.header' }, {application: <b>{application}</b>});
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -205,7 +205,6 @@ export default (props: any) => {
         return false;
     }
   };
-
 
   const submitFunc = creating ? createApplication : updateApplication
   const {loading, run} = useRequest(submitFunc, {
@@ -240,17 +239,17 @@ export default (props: any) => {
   };
 
   const onCurrentChange = async (cur: number) => {
-    if (await currentIsValid()) {
+    if (cur < current || await currentIsValid()) {
       setCurrent(cur);
     }
   }
 
-  const setBasicFormData = (changingFiled: FieldData[], data: FieldData[]) => {
+  const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     // clear config if release has been changed
     if (changingFiled[0].name[0] === release) {
       setConfig({})
     }
-    setBasic(data)
+    setBasic(allFields)
   }
 
   return (
@@ -266,7 +265,7 @@ export default (props: any) => {
                   return (
                     <Step
                       key={`Step ${index + 1}`}
-                      title={`第 ${index + 1} 步`}
+                      title={intl.formatMessage({ id: 'pages.applicationNew.step.message' }, {index: index + 1})}
                       description={item.title}
                       disabled={item.disabled}
                     />
@@ -295,17 +294,17 @@ export default (props: any) => {
             <div className="steps-action">
               {current > 0 && (
                 <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-                  上一步
+                  {intl.formatMessage({ id: 'pages.applicationNew.back' })}
                 </Button>
               )}
               {current === steps.length - 1 && (
                 <Button type="primary" onClick={onSubmit} loading={loading}>
-                  提交
+                  {intl.formatMessage({ id: 'pages.applicationNew.submit' })}
                 </Button>
               )}
               {current < steps.length - 1 && (
                 <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
-                  下一步
+                  {intl.formatMessage({ id: 'pages.applicationNew.next' })}
                 </Button>
               )}
             </div>

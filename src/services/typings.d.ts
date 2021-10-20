@@ -171,7 +171,7 @@ declare namespace API {
     env: string
   };
 
-  type ClusterBaseInfo = {
+  type ClusterBase = {
     id: number,
     name: string;
     scope: {
@@ -183,6 +183,28 @@ declare namespace API {
       release: string;
     };
   }
+
+  type Cluster = {
+    application: string;
+    name: string;
+    priority: string;
+    description?: string;
+    template: {
+      name: string;
+      release: string;
+    };
+    git: {
+      url: string;
+      subfolder: string;
+      branch: string;
+    };
+    scope: {
+      env: string,
+      region: string
+    }
+    templateInput: any;
+  };
+
 
   type NewCluster = {
     name: string;
