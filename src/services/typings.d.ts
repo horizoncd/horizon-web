@@ -72,8 +72,10 @@ declare namespace API {
     resourceID: number,
     // Role the role name that bind
     role: string,
-    // GrantBy user who grant the role
+    // GrantBy id of user who grant the role
     grantedBy: number,
+    // GrantorName name of user who grant the role
+    grantorName: string,
     // GrantTime
     grantTime: string,
   };

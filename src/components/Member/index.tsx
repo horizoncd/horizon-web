@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {Button, Card, Divider, Form, Input, List, notification, Select} from 'antd';
+import {Alert, Button, Card, Divider, Form, Input, List, notification, Select} from 'antd';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {queryUsers} from "@/services/members/members";
@@ -49,7 +49,7 @@ export default (props: MemberProps) => {
   } = props;
   const {initialState} = useModel('@@initialState');
   const currentUser = initialState?.currentUser as API.CurrentUser;
-  const [currentRole, setCurrentRole] = useState<string>(Utils.roles.Guest);
+  const [currentRole, setCurrentRole] = useState<string>(Utils.roles.NotExist);
   // const now = new Date();
 
   // member翻页监听：重新获取member列表
@@ -62,7 +62,7 @@ export default (props: MemberProps) => {
   })
   useEffect(() => {
     onListMembers(resourceType, resourceID).then(({data}) => {
-      setCurrentRole(Utils.roles.Guest)
+      setCurrentRole(Utils.roles.NotExist)
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].memberNameID === currentUser.id) {
           setCurrentRole(data.items[i].role);
@@ -189,12 +189,24 @@ export default (props: MemberProps) => {
     }
   }
 
-  // 移除/退出按钮点击事件：删除member
-  const onLeaveOrRemoveClick = (e: any) => {
+  // 移除按钮点击事件：删除member
+  const onRemoveClick = (e: any) => {
     onRemoveMember(e.currentTarget.value).then(() => {
       notification.success(
         {
           message: intl.formatMessage({id: "pages.members.remove.success"}),
+        }
+      );
+      setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+    })
+  }
+
+  // 退出按钮点击事件：删除member
+  const onLeaveClick = (e: any) => {
+    onRemoveMember(e.currentTarget.value).then(() => {
+      notification.success(
+        {
+          message: intl.formatMessage({id: "pages.members.leave.success"}),
         }
       );
       setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
@@ -247,7 +259,9 @@ export default (props: MemberProps) => {
 
   const inviteTabsContents = {
     inviteMember: <Form layout="vertical" onFinish={onInviteClick}>
-      <Form.Item name="userID" label={searchMemberLabel}>
+      <Form.Item name="userID"
+                 rules={[{required: true, message: intl.formatMessage({id: "pages.members.user.email.message"})}]}
+                 label={searchMemberLabel}>
         <Select
           showSearch
           defaultOpen={false}
@@ -259,8 +273,11 @@ export default (props: MemberProps) => {
           {userOptions}
         </Select>
       </Form.Item>
-      <Form.Item name="role" label={chooseRoleLabel} tooltip={(
-        <div className={styles.whitespacePreLine}>{intl.formatMessage({id: "pages.members.role.tip"})}</div>)}>
+      <Form.Item name="role" label={chooseRoleLabel}
+                 rules={[{required: true, message: intl.formatMessage({id: "pages.members.user.role.message"})}]}
+                 tooltip={(
+                   <div
+                     className={styles.whitespacePreLine}>{intl.formatMessage({id: "pages.members.role.tip"})}</div>)}>
         <Select>
           {roleOptions}
         </Select>
@@ -274,7 +291,11 @@ export default (props: MemberProps) => {
     <Detail>
       <h1>{title}</h1>
       <Divider/>
+      {currentRole === Utils.roles.NotExist ? <Alert
+        message={intl.formatMessage({id: "pages.members.user.notExist.alert"})}
+      /> : null}
       <Card
+        hidden={currentRole === Utils.roles.NotExist}
         tabList={inviteTabList}
         activeTabKey={inviteMemberKey}
       >
@@ -315,7 +336,10 @@ export default (props: MemberProps) => {
                 </span>}
                 className={styles.memberListPadding}
                 description={(
-                  <span>{intl.formatMessage({id: "pages.members.remove.givenAccess"}) + Utils.timeFromNow(item.grantTime)}</span>)}
+                  <span>{intl.formatMessage({id: "pages.members.remove.givenAccess"}, {
+                    grantorName: item.grantorName,
+                    grantedTime: Utils.timeFromNow(item.grantTime)
+                  })}</span>)}
               />
               {currentUser.id !== item.memberNameID && Utils.permissionAllowed(currentRole, Utils.actions.ManageMember, item.role) ?
                 <Select
@@ -333,7 +357,7 @@ export default (props: MemberProps) => {
               && item.resourceID === resourceID ? <Button type="primary" danger
                                                           className={styles.buttonRightSide}
                                                           size="small"
-                                                          onClick={onLeaveOrRemoveClick}
+                                                          onClick={onLeaveClick}
                                                           value={item.id}
                                                           icon={
                                                             <ExportOutlined/>}>
@@ -344,7 +368,7 @@ export default (props: MemberProps) => {
                 <Button type="primary" danger
                         className={styles.buttonRightSide}
                         value={item.id}
-                        onClick={onLeaveOrRemoveClick}
+                        onClick={onRemoveClick}
                         icon={<DeleteOutlined/>}>
                 </Button> : null}
             </List.Item>
