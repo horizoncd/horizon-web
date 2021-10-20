@@ -7,7 +7,7 @@ import {useState} from 'react';
 import NotFount from '@/pages/404';
 import {getGroupByID} from '@/services/groups/groups';
 import {useRequest} from 'umi';
-import './index.less';
+import styles from './index.less';
 import {createApplication, getApplication, updateApplication} from '@/services/applications/applications';
 import {useIntl} from "@@/plugin-locale/localeExports";
 
@@ -35,9 +35,11 @@ export default (props: any) => {
     name, release, priority, url, branch
   ]
 
-  const {parentID, application} = props.location.query;
-  const creating = props.location.pathname.endsWith('new')
-  const editing = props.location.pathname.endsWith('edit')
+  const {location} = props;
+  const {query, pathname} = location;
+  const {parentID, application} = query;
+  const creating = pathname.endsWith('new')
+  const editing = pathname.endsWith('edit')
 
   const intParentID = parseInt(parentID, 10);
   if (creating && (!parentID || Number.isNaN(intParentID))) {
@@ -138,19 +140,19 @@ export default (props: any) => {
 
   const steps = [
     {
-      title: intl.formatMessage({ id: 'pages.applicationNew.step.one' }),
+      title: intl.formatMessage({id: 'pages.applicationNew.step.one'}),
       disabled: false,
     },
     {
-      title: intl.formatMessage({ id: 'pages.applicationNew.step.two' }),
+      title: intl.formatMessage({id: 'pages.applicationNew.step.two'}),
       disabled: !template.name,
     },
     {
-      title: intl.formatMessage({ id: 'pages.applicationNew.step.three' }),
+      title: intl.formatMessage({id: 'pages.applicationNew.step.three'}),
       disabled: !template.name || basicHasError()
     },
     {
-      title: intl.formatMessage({ id: 'pages.applicationNew.step.four' }),
+      title: intl.formatMessage({id: 'pages.applicationNew.step.four'}),
       disabled: !template.name || basicHasError() || configHasError()
     },
   ];
@@ -190,8 +192,8 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? intl.formatMessage({ id: 'pages.applicationNew.header' }, {group: <b>{parent?.name}</b>})
-    : intl.formatMessage({ id: 'pages.applicationEdit.header' }, {application: <b>{application}</b>});
+  const header = creating ? intl.formatMessage({id: 'pages.applicationNew.header'}, {group: <b>{parent?.name}</b>})
+    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{application}</b>});
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -206,22 +208,8 @@ export default (props: any) => {
     }
   };
 
-  const submitFunc = creating ? createApplication : updateApplication
-  const {loading, run} = useRequest(submitFunc, {
-    manual: true,
-    onSuccess: () => {
-      notification.success({
-        message: creating ? intl.formatMessage({ id: 'pages.applicationNew.success' }) : intl.formatMessage({ id: 'pages.applicationEdit.success' }),
-      });
-      // jump to application's home page
-      window.location.href = `${parent?.fullPath}/${form.getFieldValue(name)}`;
-    }
-  });
-
-  // final submit, check everything
-  const onSubmit = () => {
-    const p = creating ? intParentID : application
-    run(p, {
+  const {loading, run: onSubmit} = useRequest(() => {
+    const info = {
       name: form.getFieldValue(name),
       description: form.getFieldValue(description),
       priority: form.getFieldValue(priority),
@@ -235,8 +223,21 @@ export default (props: any) => {
         branch: form.getFieldValue(branch),
       },
       templateInput: config,
-    })
-  };
+    }
+    if (creating) {
+      return createApplication(intParentID, info)
+    }
+    return updateApplication(application, info)
+  }, {
+    manual: true,
+    onSuccess: () => {
+      notification.success({
+        message: creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}),
+      });
+      // jump to application's home page
+      window.location.href = `${parent?.fullPath}/${form.getFieldValue(name)}`;
+    }
+  });
 
   const onCurrentChange = async (cur: number) => {
     if (cur < current || await currentIsValid()) {
@@ -255,17 +256,17 @@ export default (props: any) => {
   return (
     <Row>
       <Col span={22} offset={1}>
-        <h3 className={'header'}>{header}</h3>
-        <Divider className={'divider'}/>
+        <h3 className={styles.header}>{header}</h3>
+        <Divider className={styles.divider}/>
         <Row>
           <Col span={4}>
-            <div className={'step'}>
+            <div className={styles.step}>
               <Steps current={current} onChange={onCurrentChange} direction="vertical">
                 {steps.map((item, index) => {
                   return (
                     <Step
                       key={`Step ${index + 1}`}
-                      title={intl.formatMessage({ id: 'pages.applicationNew.step.message' }, {index: index + 1})}
+                      title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
                       description={item.title}
                       disabled={item.disabled}
                     />
@@ -275,12 +276,13 @@ export default (props: any) => {
             </div>
           </Col>
           <Col span={20}>
-            <div className="steps-content">
+            <div className={styles.stepsContent}>
               {
                 current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
               }
               {
-                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData} editing={editing} />
+                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData}
+                                        editing={editing}/>
               }
               {
                 current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
@@ -288,23 +290,24 @@ export default (props: any) => {
                 />
               }
               {
-                current === 3 && <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
+                current === 3 &&
+                <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
               }
             </div>
-            <div className="steps-action">
+            <div className={styles.stepsAction}>
               {current > 0 && (
                 <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-                  {intl.formatMessage({ id: 'pages.applicationNew.back' })}
+                  {intl.formatMessage({id: 'pages.common.back'})}
                 </Button>
               )}
               {current === steps.length - 1 && (
                 <Button type="primary" onClick={onSubmit} loading={loading}>
-                  {intl.formatMessage({ id: 'pages.applicationNew.submit' })}
+                  {intl.formatMessage({id: 'pages.common.submit'})}
                 </Button>
               )}
               {current < steps.length - 1 && (
                 <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
-                  {intl.formatMessage({ id: 'pages.applicationNew.next' })}
+                  {intl.formatMessage({id: 'pages.common.next'})}
                 </Button>
               )}
             </div>

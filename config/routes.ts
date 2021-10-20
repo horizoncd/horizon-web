@@ -22,12 +22,22 @@
   {
     path: '/applications/new',
     menuRender: false,
-    component: 'applications/new',
+    component: 'applications/NewOrEdit',
   },
   {
     path: '/applications/edit',
     menuRender: false,
-    component: 'applications/new',
+    component: 'applications/NewOrEdit',
+  },
+  {
+    path: '/clusters/new',
+    menuRender: false,
+    component: 'clusters/NewOrEdit',
+  },
+  {
+    path: '/clusters/edit',
+    menuRender: false,
+    component: 'clusters/NewOrEdit',
   },
 ];
 

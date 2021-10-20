@@ -1,12 +1,14 @@
-import { Card, Radio } from 'antd';
+import {Card, Radio} from 'antd';
 import Basic from '../basic';
 import Config from '../config';
 import styles from '../index.less';
+import {useIntl} from "@@/plugin-locale/localeExports";
 
 export default (props: any) => {
-  const { template, form, release, config } = props;
+  const {template, form, release, config} = props;
+  const intl = useIntl();
 
-  const templateTitle = '服务模版';
+  const templateTitle = intl.formatMessage({id: 'pages.applicationNew.step.one'})
 
   return (
     <div>
@@ -14,15 +16,15 @@ export default (props: any) => {
         <div className="awsui-cards-card-header">
           <span className="awsui-cards-card-header-inner">{template.name}</span>
           <span className="radio">
-            <Radio checked={true} />
+            <Radio checked={true}/>
           </span>
         </div>
         <h4>{template.description}</h4>
       </Card>
 
-      <Basic form={form} template={template} readonly />
+      <Basic form={form} template={template} readonly/>
 
-      <Config template={template} release={release} config={config} readonly />
+      <Config template={template} release={release} config={config} readonly/>
     </div>
   );
 };

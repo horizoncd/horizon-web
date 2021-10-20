@@ -79,18 +79,15 @@ export default () => {
     refreshDeps: [query, env, pageNumber],
   });
 
-  // 搜索框输入值监听
   const onChange = (e: any) => {
     const {value} = e.target;
     setFilter(value);
   };
 
-  // 搜索框按enter
   const onPressEnter = () => {
     setQuery(prev => prev + 1)
   }
 
-  // 按搜索按钮
   const onSearch = () => {
     setQuery(prev => prev + 1)
   }
@@ -107,7 +104,7 @@ export default () => {
           history.push({
             pathname: newCluster,
             search: stringify({
-              parentID: id,
+              application
             }),
           });
         }}
