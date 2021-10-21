@@ -18,7 +18,7 @@ export default (props: any) => {
   const {name, fullPath} = initialState?.resource || {};
   const {location} = props;
   const {query} = location;
-  const {type} = query;
+  const {type = 'deploy'} = query;
   if (!type) {
     return <NotFount/>;
   }

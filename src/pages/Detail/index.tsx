@@ -1,12 +1,12 @@
 import GroupDetail from '../groups/Detail'
-import ApplicationDetail from '../applications/detail'
+import ApplicationDetail from '../applications/Detail'
 import NotFount from '@/pages/404'
-import { useModel } from "@@/plugin-model/useModel";
-import { ResourceType } from '@/const'
+import {useModel} from "@@/plugin-model/useModel";
+import {ResourceType} from '@/const'
 
 export default () => {
-  const { initialState } = useModel('@@initialState');
-  const { id, type } = initialState?.resource || {};
+  const {initialState} = useModel('@@initialState');
+  const {id, type} = initialState?.resource || {};
   if (!id) {
     return <NotFount/>;
   }

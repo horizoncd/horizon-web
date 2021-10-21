@@ -1,4 +1,4 @@
-import { request } from 'umi';
+import {request} from 'umi';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
@@ -27,5 +27,13 @@ export async function getApplication(name: string) {
     data: API.Application;
   }>(`/apis/core/v1/applications/${name}`, {
     method: 'GET',
+  });
+}
+
+export async function deleteApplication(name: string) {
+  return request<{
+    data: API.Application;
+  }>(`/apis/core/v1/applications/${name}`, {
+    method: 'DELETE',
   });
 }

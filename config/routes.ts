@@ -70,7 +70,7 @@ const applicationRoutes = [
     component: 'applications/Clusters',
   },
   {
-    path: '/applications/*/-/pipelines/new',
+    path: '/applications/*/-/pipelines',
     component: 'clusters/pipelines/New',
   },
 ];
@@ -82,7 +82,7 @@ allRoute.push(...applicationRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
-  component: 'detail',
+  component: 'Detail',
 });
 
 export default allRoute;
