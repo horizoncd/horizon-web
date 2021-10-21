@@ -1,7 +1,9 @@
 import {request} from 'umi';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
-  return request(`/apis/core/v1/groups/${groupID}/applications`, {
+  return request<{
+    data: API.Application
+  }>(`/apis/core/v1/groups/${groupID}/applications`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

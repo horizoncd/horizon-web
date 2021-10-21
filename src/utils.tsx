@@ -72,13 +72,19 @@ const getBreadcrumbs = (fullName: string) => {
     });
   }
 
-  // add current route
-  const p = pathname.split('/')
-  if (p.indexOf('-') > -1) {
-    result.push({
-      path: pathname,
-      breadcrumbName: p[p.length - 1],
-    });
+  const p = pathname.split('/').filter((item) => item !== '');
+  const idx = p.indexOf('-')
+  const funcURL = idx > -1
+  if (funcURL) {
+    currentLink += `/-`;
+    for (let i = idx + 1; i < p.length; i += 1) {
+      const item = p[i];
+      currentLink += `/${item}`;
+      result.push({
+        path: `/${p[0]}${currentLink}`,
+        breadcrumbName: item,
+      });
+    }
   }
 
   return result;

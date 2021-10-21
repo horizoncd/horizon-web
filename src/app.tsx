@@ -17,6 +17,7 @@ import Utils from '@/utils';
 import { queryResource } from '@/services/core';
 import { stringify } from 'querystring';
 import { routes } from '../config/routes';
+import { ResourceType } from '@/const'
 
 const loginPath = '/user/login';
 
@@ -175,9 +176,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         // 根据ResourceType决定菜单
         const { type, fullPath } = initialState.resource;
         switch (type) {
-          case 'group':
+          case ResourceType.GROUP:
             return loopMenuItem(formatGroupMenu(fullPath));
-          case 'application':
+          case ResourceType.APPLICATION:
             return loopMenuItem(formatApplicationMenu(fullPath));
           default:
             return defaultMenuData;
@@ -255,6 +256,17 @@ function formatApplicationMenu(fullPath: string) {
       path: `/applications${fullPath}/-/members`,
       name: 'Members',
       icon: 'contacts',
+    },
+    {
+      path: `/applications${fullPath}/-/pipelines`,
+      name: 'Pipelines',
+      icon: 'contacts',
+    },
+    {
+      path: `/applications${fullPath}/-/pipelines/new`,
+      hideInMenu: true,
+      name: 'Pipelines-new',
+      parentKeys: [`/applications${fullPath}/-/pipelines`],
     },
   ];
 }

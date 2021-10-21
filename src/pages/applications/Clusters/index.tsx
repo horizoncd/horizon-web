@@ -18,7 +18,7 @@ export default () => {
   const intl = useIntl();
   const newCluster = '/clusters/new';
   const {initialState} = useModel('@@initialState');
-  const {id, name: application} = initialState?.resource || {};
+  const {name: application} = initialState?.resource || {};
   if (!application) {
     return <NotFount/>;
   }
@@ -104,7 +104,8 @@ export default () => {
           history.push({
             pathname: newCluster,
             search: stringify({
-              application
+              application,
+              env
             }),
           });
         }}

@@ -2,6 +2,7 @@ import GroupDetail from '../groups/Detail'
 import ApplicationDetail from '../applications/Detail'
 import NotFount from '@/pages/404'
 import {useModel} from "@@/plugin-model/useModel";
+import {ResourceType} from '@/const'
 
 export default () => {
   const {initialState} = useModel('@@initialState');
@@ -11,7 +12,7 @@ export default () => {
   }
 
   switch (type) {
-    case 'group':
+    case ResourceType.GROUP:
       return (<GroupDetail/>)
     default:
       return (<ApplicationDetail/>);

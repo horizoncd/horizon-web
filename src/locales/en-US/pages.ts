@@ -62,6 +62,8 @@ export default {
   'pages.clusterNew.basic.description.ruleMessage': 'max length: 255',
   'pages.clusterNew.basic.repo': 'Repo',
   'pages.clusterNew.basic.url': 'url',
+  'pages.clusterNew.basic.subfolder': 'subfolder',
+  'pages.clusterNew.basic.branch': 'branch',
   'pages.clusterNew.basic.env': 'env',
   'pages.clusterNew.basic.region': 'region',
   'pages.clusterEdit.success': 'update cluster succeed',

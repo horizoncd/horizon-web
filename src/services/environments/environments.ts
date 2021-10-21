@@ -10,7 +10,7 @@ export async function queryEnvironments() {
 
 export async function queryRegions(environment: string) {
   return request<{
-    data: API.Release[];
+    data: API.Region[];
   }>(`/apis/core/v1/environments/${environment}/regions`, {
     method: 'GET',
   });

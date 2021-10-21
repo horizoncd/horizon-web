@@ -96,6 +96,7 @@ declare namespace API {
   type Application = {
     id: number;
     groupID: number;
+    fullPath: string
     name: string;
     priority: string;
     description?: string;
@@ -190,6 +191,7 @@ declare namespace API {
   }
 
   type Cluster = {
+    fullPath: string,
     application: string;
     name: string;
     priority: string;
