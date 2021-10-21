@@ -69,6 +69,10 @@ const applicationRoutes = [
     path: '/applications/*/-/clusters',
     component: 'applications/Clusters',
   },
+  {
+    path: '/applications/*/-/pipelines/new',
+    component: 'clusters/pipelines/New',
+  },
 ];
 
 const allRoute = [];

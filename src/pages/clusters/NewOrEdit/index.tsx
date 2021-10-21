@@ -6,7 +6,6 @@ import {useState} from 'react';
 import NotFount from '@/pages/404';
 import {useRequest} from 'umi';
 import styles from './index.less';
-import {getApplication} from '@/services/applications/applications';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 
@@ -24,15 +23,19 @@ export default (props: any) => {
   const intl = useIntl();
 
   const name = 'name'
+  const url = 'url'
   const branch = 'branch'
   const description = 'description'
+  const subfolder = 'subfolder'
+  const env = 'env'
+  const region = 'region'
   const basicNeedValidFields = [
-    name, branch
+    name, branch, env, region
   ]
 
   const {location} = props;
   const {query, pathname} = location;
-  const {application, cluster} = query;
+  const {application, cluster, env: envFromQuery} = query;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
 
@@ -46,50 +49,40 @@ export default (props: any) => {
 
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
-  const [template, setTemplate] = useState< {name: string, release: string}>({release: "", name: ""});
-  const [basic, setBasic] = useState<FieldData[]>([]);
+  const [template, setTemplate] = useState<{ name: string, release: string }>({release: "", name: ""});
+  const [basic, setBasic] = useState<FieldData[]>([{
+    name: env, value: envFromQuery
+  }]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
-  const [parent, setParent] = useState<API.Application>();
-
-  const {data, run: refreshParent} = useRequest((app) => getApplication(app), {
-    onSuccess: () => {
-      setParent(data)
-    },
-    manual: true,
-  });
-
-  // query parent if creating
-  if (creating) {
-    const {data: parentData} = useRequest(() => getApplication(application), {
-      onSuccess: () => {
-        setParent(parentData)
-      }
-    });
-  }
 
   // query application if editing
   if (editing) {
     const {data: clusterData} = useRequest(() => getCluster(cluster), {
       onSuccess: () => {
         const {
-          application: a,
           name: n,
           description: d,
           git,
           template: t,
           templateInput,
+          scope
         } = clusterData!
-        const {branch: b} = git
+        const {url: u, branch: b, subfolder: s} = git
+        const {env: e, region: r} = scope
         setBasic([
             {name, value: n},
             {name: description, value: d},
             {name: branch, value: b},
+            {name: env, value: e},
+            {name: region, value: r},
+            {name: url, value: u},
+            {name: branch, value: b},
+            {name: subfolder, value: s},
           ]
         )
         setConfig(templateInput)
         setTemplate(t)
-        refreshParent(a)
       }
     });
   }
@@ -191,15 +184,15 @@ export default (props: any) => {
     if (creating) {
       return createCluster(application, '', info)
     }
-    return updateCluster(cluster,  info)
+    return updateCluster(cluster, info)
   }, {
     manual: true,
-    onSuccess: () => {
+    onSuccess: (res: API.Cluster) => {
       notification.success({
         message: creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}),
       });
-      // jump to application's home page
-      window.location.href = `${parent?.fullPath}/${form.getFieldValue(name)}`;
+      // jump to cluster's home page
+      window.location.href = res.fullPath;
     }
   });
 

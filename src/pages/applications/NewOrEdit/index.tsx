@@ -230,12 +230,12 @@ export default (props: any) => {
     return updateApplication(application, info)
   }, {
     manual: true,
-    onSuccess: () => {
+    onSuccess: (res: API.Application) => {
       notification.success({
         message: creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}),
       });
       // jump to application's home page
-      window.location.href = `${parent?.fullPath}/${form.getFieldValue(name)}`;
+      window.location.href = res.fullPath;
     }
   });
 

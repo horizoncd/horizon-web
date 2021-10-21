@@ -1,7 +1,7 @@
 import { Button, Divider } from 'antd';
 import utils from '../../../utils';
 import { history } from 'umi';
-import Detail from '@/components/PageWithBreadcrumb';
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import './index.less';
 import GroupTree from '@/components/GroupTree';
 import { stringify } from 'querystring';
@@ -53,7 +53,7 @@ export default () => {
   const firstLetter = name.substring(0, 1).toUpperCase();
 
   return (
-    <Detail>
+    <PageWithBreadcrumb>
       <div className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3 align-items-center">
         <div className="home-panel-title-row gl-display-flex align-items-center">
           <div className="avatar-container rect-avatar s64 home-panel-avatar gl-flex-shrink-0 gl-w-11 gl-h-11 gl-mr-3! float-none">
@@ -75,6 +75,6 @@ export default () => {
       </div>
       <Divider className={'group-divider'} />
       <GroupTree groupID={id} tabPane={'Subgroups and applications'} />
-    </Detail>
+    </PageWithBreadcrumb>
   );
 };

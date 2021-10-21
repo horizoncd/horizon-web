@@ -28,6 +28,8 @@ export default {
   'pages.applicationNew.basic.url': '地址',
   'pages.applicationNew.basic.subfolder': '代码目录',
   'pages.applicationNew.basic.branch': '分支',
+  'pages.applicationEdit.success': '更新应用成功',
+  'pages.applicationEdit.header': '正在编辑【 {application} 】，请按步骤填写信息',
 
   'pages.clusterNew.config.application': '部署配置',
   'pages.clusterNew.config.pipeline': '构建配置',
@@ -43,6 +45,8 @@ export default {
   'pages.clusterNew.basic.description': '集群描述',
   'pages.clusterNew.basic.description.ruleMessage': '长度上限为255个字符',
   'pages.clusterNew.basic.repo': 'Git仓库',
+  'pages.clusterNew.basic.url': '地址',
+  'pages.clusterNew.basic.subfolder': '代码目录',
   'pages.clusterNew.basic.branch': '分支',
   'pages.clusterNew.basic.env': '环境',
   'pages.clusterNew.basic.region': '区域',

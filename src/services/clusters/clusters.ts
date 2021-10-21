@@ -10,7 +10,9 @@ export async function queryClusters(application: string, params: API.ClusterFilt
 }
 
 export async function createCluster(application: string, scope: string, data: API.NewCluster) {
-  return request(`/apis/core/v1/applications/${application}/clusters`, {
+  return request<{
+    data: API.Cluster
+  }>(`/apis/core/v1/applications/${application}/clusters`, {
     method: 'POST',
     params: {
       scope
