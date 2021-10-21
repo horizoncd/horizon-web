@@ -78,7 +78,7 @@ allRoute.push(...applicationRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
-  component: 'detail',
+  component: 'Detail',
 });
 
 export default allRoute;

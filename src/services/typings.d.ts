@@ -102,6 +102,7 @@ declare namespace API {
     template: {
       name: string;
       release: string;
+      recommendedRelease: string;
     };
     git: {
       url: string;
@@ -109,6 +110,8 @@ declare namespace API {
       branch: string;
     };
     templateInput: any;
+    createdAt: string;
+    updatedAt: string;
   };
 
   type Group = {
