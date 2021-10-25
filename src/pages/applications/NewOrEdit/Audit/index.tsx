@@ -1,6 +1,6 @@
 import {Card, Radio} from 'antd';
-import Basic from '../basic';
-import Config from '../config';
+import Basic from '../Basic';
+import Config from '../Config';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 

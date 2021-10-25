@@ -1,7 +1,7 @@
 import {Button, Col, Divider, Form, notification, Row, Steps} from 'antd';
-import Basic from './basic';
-import Config from './config';
-import Audit from './audit';
+import Basic from './Basic';
+import Config from '../../applications/NewOrEdit/Config';
+import Audit from './Audit';
 import {useState} from 'react';
 import NotFount from '@/pages/404';
 import {useRequest} from 'umi';
@@ -209,7 +209,7 @@ export default (props: any) => {
   return (
     <Row>
       <Col span={22} offset={1}>
-        <h3 className={styles.header}>{header}</h3>
+        <div className={styles.header}>{header}</div>
         <Divider className={styles.divider}/>
         <Row>
           <Col span={4}>

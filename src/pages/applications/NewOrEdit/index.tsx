@@ -1,8 +1,8 @@
 import {Button, Col, Divider, Form, notification, Row, Steps} from 'antd';
-import Template from './template';
-import Basic from './basic';
-import Config from './config';
-import Audit from './audit';
+import Template from './Template';
+import Basic from './Basic';
+import Config from './Config';
+import Audit from './Audit';
 import {useState} from 'react';
 import NotFount from '@/pages/404';
 import {getGroupByID} from '@/services/groups/groups';

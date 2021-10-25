@@ -5,4 +5,5 @@ export default {
   'menu.Settings.General': '基础设置',
   'menu.Application overview': '应用主页',
   'menu.Clusters': '集群',
+  'menu.Pipelines': '流水线',
 };

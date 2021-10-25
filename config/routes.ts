@@ -12,7 +12,7 @@
   {
     path: '/dashboard/groups',
     menuRender: false,
-    component: 'dashboard/groups',
+    component: 'dashboard/Groups',
   },
   {
     path: '/groups/new',

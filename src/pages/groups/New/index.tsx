@@ -81,14 +81,14 @@ export default (props: any) => {
     <Row>
       <Col span={3} />
       <Col span={18}>
-        <h1>New group</h1>
+        <div style={{fontSize: "20px"}}>New group</div>
         <Divider />
         <Row>
           <Col span={4}>
-            <h3>
+            <div style={{fontSize: "16px"}}>
               Groups allow you to manage and collaborate across multiple projects. Members of a
               group have access to all of its projects.
-            </h3>
+            </div>
           </Col>
           <Col span={2} />
           <Col span={18}>
