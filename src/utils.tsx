@@ -112,7 +112,7 @@ const permissionAllowed = (role: string, action: string, resource: string) => {
 
 // 计算出某个时间点是当前多久以前
 function timeFromNow(oldTime: string) {
-  return moment(oldTime, "YYYY-MM-DD HH:mm:ss").locale(getLocale()).fromNow()
+  return moment(oldTime).local().locale(getLocale()).fromNow()
 }
 
 export default {
