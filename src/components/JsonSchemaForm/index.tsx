@@ -14,6 +14,12 @@ interface FormProps {
   uiSchema: any;
   // 表单预置数据
   formData: any;
+  // 表单变化回调方法
+  onChange?: any;
+  // 实时校验表单
+  liveValidate?: boolean;
+  // 是否在表格最上方展示错误列表
+  showErrorList?: boolean;
 }
 
 export default (props: FormProps) => {
@@ -25,6 +31,9 @@ export default (props: FormProps) => {
         formData={props.formData}
         schema={props.jsonSchema}
         uiSchema={props.uiSchema}
+        onChange={props.onChange}
+        liveValidate={props.liveValidate}
+        showErrorList={props.showErrorList}
       >
         <div/>
       </Form>

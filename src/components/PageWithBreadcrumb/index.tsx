@@ -3,27 +3,29 @@ import utils from '../../utils'
 import type {Route} from "antd/lib/breadcrumb/Breadcrumb";
 import {useModel} from "@@/plugin-model/useModel";
 import {Divider} from "antd";
-import './index.less'
+import styles from './index.less'
 
 export default (props: any) => {
-    const {initialState} = useModel('@@initialState');
-    const itemRender = (route: Route) => {
-        return <a href={route.path}>{route.breadcrumbName}
-        </a>
-    }
-    const {fullName} = initialState!.resource
-    return (
-        <PageContainer
-            header={{
-                breadcrumb: {
-                    routes: utils.getBreadcrumbs(fullName),
-                    itemRender
-                },
-            }}
-            title={false}
-        >
-            <Divider className={'divider'}/>
-            {props.children}
-        </PageContainer>
-    );
+  const {initialState} = useModel('@@initialState');
+  const itemRender = (route: Route) => {
+    return <a href={route.path}>{route.breadcrumbName}
+    </a>
+  }
+  const {fullName} = initialState!.resource
+  return (
+    <div className={styles.pageContainer}>
+      <PageContainer
+        header={{
+          breadcrumb: {
+            routes: utils.getBreadcrumbs(fullName),
+            itemRender
+          },
+        }}
+        title={false}
+      >
+        <Divider className={styles.divider}/>
+        {props.children}
+      </PageContainer>
+    </div>
+  );
 };

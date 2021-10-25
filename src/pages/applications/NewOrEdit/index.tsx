@@ -37,7 +37,7 @@ export default (props: any) => {
 
   const {location} = props;
   const {query, pathname} = location;
-  const {parentID, application} = query;
+  const {parentID, applicationID} = query;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
 
@@ -46,7 +46,8 @@ export default (props: any) => {
     return <NotFount/>;
   }
 
-  if (editing && !application) {
+  const intApplicationID = parseInt(applicationID, 10);
+  if (editing && (!applicationID || Number.isNaN(intApplicationID))) {
     return <NotFount/>;
   }
 
@@ -57,6 +58,7 @@ export default (props: any) => {
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
   const [parent, setParent] = useState<API.Group>();
+  const [application, setApplication] = useState<API.Application>();
 
   const {data, run: refreshParent} = useRequest((groupID) => getGroupByID({id: groupID}), {
     onSuccess: () => {
@@ -76,7 +78,7 @@ export default (props: any) => {
 
   // query application if editing
   if (editing) {
-    const {data: app} = useRequest(() => getApplication(application), {
+    const {data: app} = useRequest(() => getApplication(intApplicationID), {
       onSuccess: () => {
         const {
           groupID: gID,
@@ -99,6 +101,7 @@ export default (props: any) => {
             {name: subfolder, value: s},
           ]
         )
+        setApplication(app)
         setTemplate({name: tn})
         setConfig(templateInput)
         refreshParent(gID)
@@ -193,7 +196,7 @@ export default (props: any) => {
   };
 
   const header = creating ? intl.formatMessage({id: 'pages.applicationNew.header'}, {group: <b>{parent?.name}</b>})
-    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{application}</b>});
+    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{application?.name}</b>});
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -227,7 +230,7 @@ export default (props: any) => {
     if (creating) {
       return createApplication(intParentID, info)
     }
-    return updateApplication(application, info)
+    return updateApplication(intApplicationID, info)
   }, {
     manual: true,
     onSuccess: (res: API.Application) => {
@@ -256,7 +259,7 @@ export default (props: any) => {
   return (
     <Row>
       <Col span={22} offset={1}>
-        <h3 className={styles.header}>{header}</h3>
+        <div className={styles.header}>{header}</div>
         <Divider className={styles.divider}/>
         <Row>
           <Col span={4}>

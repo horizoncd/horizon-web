@@ -1,4 +1,5 @@
-import DetailCard, {Param} from '@/components/DetailCard'
+import type {Param} from '@/components/DetailCard';
+import DetailCard from '@/components/DetailCard'
 import {useEffect, useState} from "react";
 import {deleteApplication, getApplication} from '@/services/applications/applications';
 import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, notification} from 'antd';
@@ -18,8 +19,9 @@ export default () => {
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
-  const {name: applicationName, fullPath: applicationFullPath} = initialState!.resource
+  const {id, name: applicationName, fullPath: applicationFullPath} = initialState!.resource
   const defaultApplication: API.Application = {
+    fullPath: "",
     id: 0,
     groupID: 0,
     name: '',
@@ -37,7 +39,7 @@ export default () => {
     },
     templateInput: undefined,
     createdAt: '',
-    updatedAt: '',
+    updatedAt: ''
   }
   const [application, setApplication] = useState<API.Application>(defaultApplication)
   const [template, setTemplate] = useState([])
@@ -53,7 +55,7 @@ export default () => {
     [
       {
         key: intl.formatMessage({id: 'pages.applicationDetail.basic.release'}),
-        value: application.template.name + '-' + application.template.release
+        value: `${application.template.name  }-${  application.template.release}`
       },
     ],
     [
@@ -66,12 +68,12 @@ export default () => {
   if (application.template.release !== application.template.recommendedRelease) {
     serviceDetail[1] = serviceDetail[1].concat({
       key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
-      value: application.template.name + '-' + application.template.recommendedRelease
+      value: `${application.template.name  }-${  application.template.recommendedRelease}`
     })
   }
 
   const {run: refreshApplication} = useRequest(() => {
-    return getApplication(applicationName).then(({data: result}) => {
+    return getApplication(id).then(({data: result}) => {
       setApplication(result);
       // query schema by template and release
       querySchema(result.template.name, result.template.release).then(({data}) => {
@@ -81,7 +83,7 @@ export default () => {
   }, {manual: true})
 
   const {run: delApplication} = useRequest(() => {
-    return deleteApplication(applicationName).then(() => {
+    return deleteApplication(id).then(() => {
       notification.success({
         message: intl.formatMessage({id: "pages.applicationDelete.success"}),
       });
@@ -141,7 +143,7 @@ export default () => {
               history.push({
                 pathname: editApplicationRoute,
                 search: stringify({
-                  application: applicationName,
+                  applicationID: id,
                 }),
               })
             }

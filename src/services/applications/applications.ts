@@ -12,8 +12,8 @@ export async function createApplication(groupID: number, body: API.NewApplicatio
   });
 }
 
-export async function updateApplication(name: string, body: API.NewApplication) {
-  return request(`/apis/core/v1/applications/${name}`, {
+export async function updateApplication(id: number, body: API.NewApplication) {
+  return request(`/apis/core/v1/applications/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -22,18 +22,18 @@ export async function updateApplication(name: string, body: API.NewApplication) 
   });
 }
 
-export async function getApplication(name: string) {
+export async function getApplication(id: number) {
   return request<{
     data: API.Application;
-  }>(`/apis/core/v1/applications/${name}`, {
+  }>(`/apis/core/v1/applications/${id}`, {
     method: 'GET',
   });
 }
 
-export async function deleteApplication(name: string) {
+export async function deleteApplication(id: number) {
   return request<{
     data: API.Application;
-  }>(`/apis/core/v1/applications/${name}`, {
+  }>(`/apis/core/v1/applications/${id}`, {
     method: 'DELETE',
   });
 }

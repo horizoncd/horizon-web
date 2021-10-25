@@ -26,7 +26,7 @@ export default (props: any) => {
                   <Radio checked={isClicked(item)} />
                 </span>
               </div>
-              <h4>{item.description}</h4>
+              <div>{item.description}</div>
             </Card>
           </Col>
         );

@@ -1,6 +1,6 @@
 import {useIntl, useRequest} from 'umi';
 import {querySchema} from '@/services/templates/templates';
-import Form from '@rjsf/material-ui';
+import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {Card} from 'antd';
 import styles from '../index.less';
 
@@ -37,17 +37,15 @@ export default (props: any) => {
             key={item}
             title={intl.formatMessage({id: `${titlePrefix}.${item}`})}
           >
-            <Form
+            <JsonSchemaForm
               disabled={readonly}
               formData={currentFormData}
-              schema={jsonSchema}
+              jsonSchema={jsonSchema}
               onChange={onChange}
               uiSchema={uiSchema}
               liveValidate
               showErrorList={false}
-            >
-              <div/>
-            </Form>
+             />
           </Card>
         );
       })}
