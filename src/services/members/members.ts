@@ -3,12 +3,12 @@ import {request} from 'umi';
 
 export async function queryUsers(pageNumber: number, pageSize: number, filter?: string) {
   const params: any = {pageNumber: pageNumber, pageSize: pageSize}
-  if (filter != undefined) {
+  if (filter) {
     params.filter = filter
   }
   return request(`/apis/front/v1/users/search`, {
     method: 'GET',
-    params: params,
+    params,
   });
 }
 
@@ -18,40 +18,40 @@ export async function queryRoles() {
   });
 }
 
-// export async function queryResourceMembers(resourceType: string, resourceID: number, pageNumber: number, pageSize: number, filter?: string) {
-//   const params: any = {pageNumber: pageNumber, pageSize: pageSize}
-//   if (filter != undefined) {
-//     params.filter = filter
-//   }
-//   return request(`/apis/core/v1/resources/${resourceID}/members`, {
-//     method: 'GET',
-//     params: params,
-//   });
-// }
-
-export async function queryGroupMembers(resourceType: string, resourceID: number, filter?: string) {
+export async function queryGroupMembers(resourceID: number, filter?: string) {
   const params: any = {}
-  if (filter != undefined) {
+  if (filter) {
     params.filter = filter
   }
   return request(`/apis/core/v1/groups/${resourceID}/members`, {
     method: 'GET',
-    params: params,
+    params,
   });
 }
 
-// export async function inviteGroupMember(groupID: number, body: API.NewMember) {
-//   return request(`/apis/core/v1/resources/${groupID}/member`, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     data: body,
-//   });
-// }
-
 export async function inviteGroupMember(body: API.NewMember) {
   return request(`/apis/core/v1/groups/${body.resourceID}/members`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function queryApplicationMembers(resourceID: number, filter?: string) {
+  const params: any = {}
+  if (filter) {
+    params.filter = filter
+  }
+  return request(`/apis/core/v1/applications/${resourceID}/members`, {
+    method: 'GET',
+    params,
+  });
+}
+
+export async function inviteApplicationMember(body: API.NewMember) {
+  return request(`/apis/core/v1/applications/${body.resourceID}/members`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

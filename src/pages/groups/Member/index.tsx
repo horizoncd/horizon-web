@@ -2,6 +2,7 @@ import React from 'react';
 import {useModel} from "@@/plugin-model/useModel";
 import {inviteGroupMember, queryGroupMembers, removeMember, updateMember} from "@/services/members/members";
 import Member from '@/components/Member'
+import {ResourceType} from '@/const'
 import {useIntl} from "@@/plugin-locale/localeExports";
 
 export default (): React.ReactNode => {
@@ -12,17 +13,17 @@ export default (): React.ReactNode => {
   return (
     <Member
       title={intl.formatMessage({id: 'pages.groups.members.title'})}
-      resourceType={"group"}
+      resourceType={ResourceType.GROUP}
       resourceID={groupID}
       resourceName={groupName}
-      onInviteMember={(resourceType, resourceID, member) => {
+      onInviteMember={(member) => {
         return inviteGroupMember(member)
       }}
       onUpdateMember={(id, member) => {
         return updateMember(id, member)
       }}
-      onListMembers={(resourceType, resourceID) => {
-        return queryGroupMembers(resourceType, resourceID)
+      onListMembers={(resourceID) => {
+        return queryGroupMembers(resourceID)
       }}
       onRemoveMember={(id) => {
         return removeMember(id)

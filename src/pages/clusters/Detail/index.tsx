@@ -1,5 +1,4 @@
-import type {Param} from '@/components/DetailCard';
-import DetailCard from '@/components/DetailCard'
+import DetailCard, {Param} from '@/components/DetailCard'
 import {useEffect, useState} from "react";
 import {deleteApplication, getApplication} from '@/services/applications/applications';
 import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, notification} from 'antd';
@@ -16,12 +15,12 @@ import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 
 export default () => {
+  console.log("clusters page")
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
-  const {id, name: applicationName, fullPath: applicationFullPath} = initialState!.resource
+  const {name: applicationName, fullPath: applicationFullPath} = initialState!.resource
   const defaultApplication: API.Application = {
-    fullPath: "",
     id: 0,
     groupID: 0,
     name: '',
@@ -38,8 +37,9 @@ export default () => {
       branch: '',
     },
     templateInput: undefined,
+    fullPath: '',
     createdAt: '',
-    updatedAt: ''
+    updatedAt: '',
   }
   const [application, setApplication] = useState<API.Application>(defaultApplication)
   const [template, setTemplate] = useState([])
@@ -55,7 +55,7 @@ export default () => {
     [
       {
         key: intl.formatMessage({id: 'pages.applicationDetail.basic.release'}),
-        value: `${application.template.name  }-${  application.template.release}`
+        value: application.template.name + '-' + application.template.release
       },
     ],
     [
@@ -68,12 +68,12 @@ export default () => {
   if (application.template.release !== application.template.recommendedRelease) {
     serviceDetail[1] = serviceDetail[1].concat({
       key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
-      value: `${application.template.name  }-${  application.template.recommendedRelease}`
+      value: application.template.name + '-' + application.template.recommendedRelease
     })
   }
 
   const {run: refreshApplication} = useRequest(() => {
-    return getApplication(id).then(({data: result}) => {
+    return getApplication(applicationName).then(({data: result}) => {
       setApplication(result);
       // query schema by template and release
       querySchema(result.template.name, result.template.release).then(({data}) => {
@@ -83,7 +83,7 @@ export default () => {
   }, {manual: true})
 
   const {run: delApplication} = useRequest(() => {
-    return deleteApplication(id).then(() => {
+    return deleteApplication(applicationName).then(() => {
       notification.success({
         message: intl.formatMessage({id: "pages.applicationDelete.success"}),
       });
@@ -134,19 +134,20 @@ export default () => {
           </Avatar>
           <span className={styles.titleFont}>{applicationName}</span>
           <div className={styles.flex}/>
-          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button> <Button
-          type="primary" className={styles.button}
-          onClick={() =>
-            history.push({
-              pathname: editApplicationRoute,
-              search: stringify({
-                application: id,
-              }),
-            })
-          }
-        >
-          {intl.formatMessage({id: 'pages.applicationDetail.basic.edit'})}
-        </Button>
+          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button>
+          <Button
+            type="primary" className={styles.button}
+            onClick={() =>
+              history.push({
+                pathname: editApplicationRoute,
+                search: stringify({
+                  application: applicationName,
+                }),
+              })
+            }
+          >
+            {intl.formatMessage({id: 'pages.applicationDetail.basic.edit'})}
+          </Button>
           <Dropdown className={styles.button} overlay={operateDropdown}
                     trigger={["click"]}><Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
         </div>

@@ -44,7 +44,7 @@
 const groupRoutes = [
   {
     path: '/groups/*/-/members',
-    component: 'groups/Members',
+    component: 'groups/Member',
   },
   {
     path: '/groups/*/-/settings',
@@ -63,7 +63,7 @@ const groupRoutes = [
 const applicationRoutes = [
   {
     path: '/applications/*/-/members',
-    component: 'applications/member',
+    component: 'applications/Member',
   },
   {
     path: '/applications/*/-/clusters',

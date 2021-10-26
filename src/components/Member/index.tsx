@@ -1,12 +1,13 @@
 import {useEffect, useRef, useState} from 'react';
-import {Alert, Button, Card, Divider, Form, Input, List, notification, Select} from 'antd';
+import {Alert, Button, Card, Divider, Form, Input, List, Modal, notification, Select} from 'antd';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {queryUsers} from "@/services/members/members";
 import Utils from "@/utils";
-import {DeleteOutlined, ExportOutlined} from "@ant-design/icons";
+import {DeleteOutlined, ExclamationCircleOutlined, ExportOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import {useIntl} from "@@/plugin-locale/localeExports";
+import {MemberType} from '@/const'
 
 const {Option} = Select;
 const {Search} = Input;
@@ -26,9 +27,9 @@ interface MemberProps {
   // 关联资源名称
   resourceName: string
   // 新增member
-  onInviteMember: (resourceType: string, resourceID: number, member: API.NewMember) => Promise<any>;
+  onInviteMember: (member: API.NewMember) => Promise<any>;
   // 查询member列表
-  onListMembers: (resourceType: string, resourceID: number) => Promise<any>;
+  onListMembers: (resourceID: number) => Promise<any>;
   // 更新member
   onUpdateMember: (id: number, member: API.UpdateMember) => Promise<any>;
   // 移除member
@@ -61,7 +62,7 @@ export default (props: MemberProps) => {
     pageSize: defaultMemberPageSize
   })
   useEffect(() => {
-    onListMembers(resourceType, resourceID).then(({data}) => {
+    onListMembers(resourceID).then(({data}) => {
       setCurrentRole(Utils.roles.NotExist)
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].memberNameID === currentUser.id) {
@@ -158,10 +159,10 @@ export default (props: MemberProps) => {
     role: string,
     userID: number,
   }) => {
-    onInviteMember(resourceType, resourceID, {
+    onInviteMember({
       resourceType: resourceType,
       resourceID: resourceID,
-      memberType: 0,
+      memberType: MemberType.USER,
       memberNameID: values.userID,
       role: values.role,
     }).then(() => {
@@ -190,27 +191,45 @@ export default (props: MemberProps) => {
   }
 
   // 移除按钮点击事件：删除member
-  const onRemoveClick = (e: any) => {
-    onRemoveMember(e.currentTarget.value).then(() => {
-      notification.success(
-        {
-          message: intl.formatMessage({id: "pages.members.remove.success"}),
-        }
-      );
-      setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
-    })
+  const onRemoveClick = (memberID: number, memberName: string) => {
+    Modal.confirm({
+      title: intl.formatMessage({id: 'pages.members.remove.confirm.title'}, {
+        member: <span className={styles.bold}> {memberName}</span>
+      }),
+      icon: <ExclamationCircleOutlined/>,
+      okText: intl.formatMessage({id: 'pages.applicationDelete.confirm.ok'}),
+      cancelText: intl.formatMessage({id: 'pages.applicationDelete.confirm.cancel'}),
+      onOk: () => {
+        onRemoveMember(memberID).then(() => {
+          notification.success(
+            {
+              message: intl.formatMessage({id: "pages.members.remove.success"}),
+            }
+          );
+          setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+        });
+      },
+    });
   }
 
   // 退出按钮点击事件：删除member
-  const onLeaveClick = (e: any) => {
-    onRemoveMember(e.currentTarget.value).then(() => {
-      notification.success(
-        {
-          message: intl.formatMessage({id: "pages.members.leave.success"}),
-        }
-      );
-      setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
-    })
+  const onLeaveClick = (memberID: number) => {
+    Modal.confirm({
+      title: intl.formatMessage({id: 'pages.members.leave.confirm.title'}),
+      icon: <ExclamationCircleOutlined/>,
+      okText: intl.formatMessage({id: 'pages.applicationDelete.confirm.ok'}),
+      cancelText: intl.formatMessage({id: 'pages.applicationDelete.confirm.cancel'}),
+      onOk: () => {
+        onRemoveMember(memberID).then(() => {
+          notification.success(
+            {
+              message: intl.formatMessage({id: "pages.members.leave.success"}),
+            }
+          );
+          setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+        });
+      },
+    });
   }
 
   // 选择角色事件：更新member
@@ -357,7 +376,9 @@ export default (props: MemberProps) => {
               && item.resourceID === resourceID ? <Button type="primary" danger
                                                           className={styles.buttonRightSide}
                                                           size="small"
-                                                          onClick={onLeaveClick}
+                                                          onClick={() => {
+                                                            onLeaveClick(item.id)
+                                                          }}
                                                           value={item.id}
                                                           icon={
                                                             <ExportOutlined/>}>
@@ -368,7 +389,9 @@ export default (props: MemberProps) => {
                 <Button type="primary" danger
                         className={styles.buttonRightSide}
                         value={item.id}
-                        onClick={onRemoveClick}
+                        onClick={() => {
+                          onRemoveClick(item.id, item.memberName)
+                        }}
                         icon={<DeleteOutlined/>}>
                 </Button> : null}
             </List.Item>

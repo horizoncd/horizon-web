@@ -69,6 +69,7 @@ export default {
   'pages.clusterEdit.success': 'update cluster succeed',
   'pages.clusterEdit.header': 'Editing [ {cluster} ], please fill in the information step by step',
 
+  'pages.application.members.title': 'Application members',
   'pages.groups.members.title': 'Group members',
   'pages.members.user.title': 'Invite user',
   'pages.members.user.email.label': 'User name or Email address',
@@ -81,6 +82,8 @@ export default {
   'pages.members.list.leave': 'Leave',
   'pages.members.list.label': 'Existing shares',
   'pages.members.add.success': 'Add member success',
+  'pages.members.remove.confirm.title': 'Are you sure to remove this member:{member}?',
+  'pages.members.leave.confirm.title': 'Are you sure to leave?',
   'pages.members.update.success': 'Update member success',
   'pages.members.remove.success': 'Remove member success',
   'pages.members.leave.success': 'Leave success',
