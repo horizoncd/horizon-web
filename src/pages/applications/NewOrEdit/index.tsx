@@ -4,12 +4,12 @@ import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
 import {useState} from 'react';
-import NotFount from '@/pages/404';
-import {getGroupByID} from '@/services/groups/groups';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {createApplication, getApplication, updateApplication} from '@/services/applications/applications';
 import {useIntl} from "@@/plugin-locale/localeExports";
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import {useModel} from "@@/plugin-model/useModel";
 
 const {Step} = Steps;
 
@@ -35,21 +35,13 @@ export default (props: any) => {
     name, release, priority, url, branch
   ]
 
+  const {initialState} = useModel('@@initialState');
+  const {id, name: resourceName} = initialState!.resource;
+
   const {location} = props;
-  const {query, pathname} = location;
-  const {parentID, applicationID} = query;
+  const {pathname} = location;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
-
-  const intParentID = parseInt(parentID, 10);
-  if (creating && (!parentID || Number.isNaN(intParentID))) {
-    return <NotFount/>;
-  }
-
-  const intApplicationID = parseInt(applicationID, 10);
-  if (editing && (!applicationID || Number.isNaN(intApplicationID))) {
-    return <NotFount/>;
-  }
 
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
@@ -57,31 +49,12 @@ export default (props: any) => {
   const [basic, setBasic] = useState<FieldData[]>([]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
-  const [parent, setParent] = useState<API.Group>();
-  const [application, setApplication] = useState<API.Application>();
-
-  const {data, run: refreshParent} = useRequest((groupID) => getGroupByID({id: groupID}), {
-    onSuccess: () => {
-      setParent(data)
-    },
-    manual: true,
-  });
-
-  // query parent if creating
-  if (creating) {
-    const {data: parentData} = useRequest(() => getGroupByID({id: intParentID}), {
-      onSuccess: () => {
-        setParent(parentData)
-      }
-    });
-  }
 
   // query application if editing
   if (editing) {
-    const {data: app} = useRequest(() => getApplication(intApplicationID), {
+    const {data: app} = useRequest(() => getApplication(id), {
       onSuccess: () => {
         const {
-          groupID: gID,
           name: n,
           priority: p,
           description: d,
@@ -101,10 +74,8 @@ export default (props: any) => {
             {name: subfolder, value: s},
           ]
         )
-        setApplication(app)
         setTemplate({name: tn})
         setConfig(templateInput)
-        refreshParent(gID)
       }
     });
   }
@@ -195,8 +166,8 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? intl.formatMessage({id: 'pages.applicationNew.header'}, {group: <b>{parent?.name}</b>})
-    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{application?.name}</b>});
+  const header = creating ? intl.formatMessage({id: 'pages.applicationNew.header'}, {group: <b>{resourceName}</b>})
+    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{resourceName}</b>});
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -228,9 +199,9 @@ export default (props: any) => {
       templateInput: config,
     }
     if (creating) {
-      return createApplication(intParentID, info)
+      return createApplication(id, info)
     }
-    return updateApplication(intApplicationID, info)
+    return updateApplication(id, info)
   }, {
     manual: true,
     onSuccess: (res: API.Application) => {
@@ -257,66 +228,64 @@ export default (props: any) => {
   }
 
   return (
-    <Row>
-      <Col span={22} offset={1}>
-        <div className={styles.header}>{header}</div>
-        <Divider className={styles.divider}/>
-        <Row>
-          <Col span={4}>
-            <div className={styles.step}>
-              <Steps current={current} onChange={onCurrentChange} direction="vertical">
-                {steps.map((item, index) => {
-                  return (
-                    <Step
-                      key={`Step ${index + 1}`}
-                      title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
-                      description={item.title}
-                      disabled={item.disabled}
-                    />
-                  );
-                })}
-              </Steps>
-            </div>
-          </Col>
-          <Col span={20}>
-            <div className={styles.stepsContent}>
-              {
-                current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
-              }
-              {
-                current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData}
-                                        editing={editing}/>
-              }
-              {
-                current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
-                                         setConfig={setConfig} setConfigErrors={setConfigErrors}
-                />
-              }
-              {
-                current === 3 &&
-                <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
-              }
-            </div>
-            <div className={styles.stepsAction}>
-              {current > 0 && (
-                <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-                  {intl.formatMessage({id: 'pages.common.back'})}
-                </Button>
-              )}
-              {current === steps.length - 1 && (
-                <Button type="primary" onClick={onSubmit} loading={loading}>
-                  {intl.formatMessage({id: 'pages.common.submit'})}
-                </Button>
-              )}
-              {current < steps.length - 1 && (
-                <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
-                  {intl.formatMessage({id: 'pages.common.next'})}
-                </Button>
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+    <PageWithBreadcrumb>
+      <div className={styles.header}>{header}</div>
+      <Divider className={styles.divider}/>
+      <Row>
+        <Col span={4}>
+          <div className={styles.step}>
+            <Steps current={current} onChange={onCurrentChange} direction="vertical">
+              {steps.map((item, index) => {
+                return (
+                  <Step
+                    key={`Step ${index + 1}`}
+                    title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
+                    description={item.title}
+                    disabled={item.disabled}
+                  />
+                );
+              })}
+            </Steps>
+          </div>
+        </Col>
+        <Col span={20}>
+          <div className={styles.stepsContent}>
+            {
+              current === 0 && <Template template={template} resetTemplate={resetTemplate}/>
+            }
+            {
+              current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData}
+                                      editing={editing}/>
+            }
+            {
+              current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
+                                       setConfig={setConfig} setConfigErrors={setConfigErrors}
+              />
+            }
+            {
+              current === 3 &&
+              <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
+            }
+          </div>
+          <div className={styles.stepsAction}>
+            {current > 0 && (
+              <Button style={{margin: '0 8px'}} onClick={() => prev()}>
+                {intl.formatMessage({id: 'pages.common.back'})}
+              </Button>
+            )}
+            {current === steps.length - 1 && (
+              <Button type="primary" onClick={onSubmit} loading={loading}>
+                {intl.formatMessage({id: 'pages.common.submit'})}
+              </Button>
+            )}
+            {current < steps.length - 1 && (
+              <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
+                {intl.formatMessage({id: 'pages.common.next'})}
+              </Button>
+            )}
+          </div>
+        </Col>
+      </Row>
+    </PageWithBreadcrumb>
   );
 };

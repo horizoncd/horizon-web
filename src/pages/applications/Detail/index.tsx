@@ -11,7 +11,6 @@ import styles from './index.less'
 import utils from '@/utils';
 import {DownOutlined, ExclamationCircleOutlined, ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
-import {stringify} from 'querystring';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 
@@ -122,7 +121,7 @@ export default () => {
     </Menu>
   );
 
-  const editApplicationRoute = '/applications/edit';
+  const editApplicationRoute = `/applications${applicationFullPath}/-/edit`;
 
   return (
     <Detail>
@@ -139,9 +138,6 @@ export default () => {
           onClick={() =>
             history.push({
               pathname: editApplicationRoute,
-              search: stringify({
-                application: id,
-              }),
             })
           }
         >

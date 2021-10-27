@@ -4,7 +4,6 @@ import { history } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import './index.less';
 import GroupTree from '@/components/GroupTree';
-import { stringify } from 'querystring';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 
@@ -12,9 +11,9 @@ export default () => {
   const intl = useIntl();
 
   const { initialState } = useModel('@@initialState');
-  const { id, name = '' } = initialState?.resource || {};
-  const newGroup = '/groups/new';
-  const newApplication = '/applications/new';
+  const { id, name = '', fullPath } = initialState?.resource || {};
+  const newGroup = `/groups${fullPath}/-/subgroups/new`
+  const newApplication = `/groups${fullPath}/-/applications/new`
 
   const header = () => {
     return (
@@ -24,9 +23,6 @@ export default () => {
           onClick={() =>
             history.push({
               pathname: newGroup,
-              search: stringify({
-                parentID: id,
-              }),
             })
           }
         >
@@ -38,9 +34,6 @@ export default () => {
           onClick={() => {
             history.push({
               pathname: newApplication,
-              search: stringify({
-                parentID: id,
-              }),
             });
           }}
         >

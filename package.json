@@ -66,7 +66,13 @@
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.0.4",
     "umi": "^3.5.20",
-    "umi-serve": "^1.9.10"
+    "umi-serve": "^1.9.10",
+    "xterm": "^4.1.0",
+    "xterm-addon-attach": "^0.3.0",
+    "xterm-addon-fit": "^0.2.1",
+    "xterm-addon-web-links": "^0.2.1",
+    "url-parse": "^1.4.7",
+    "sockjs-client": "^1.4.0"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.0.2",
@@ -77,6 +83,8 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-helmet": "^6.1.0",
+    "@types/url-parse": "^1.4.3",
+    "@types/sockjs-client": "^1.1.1",
     "@umijs/fabric": "^2.6.2",
     "@umijs/plugin-blocks": "^2.0.5",
     "@umijs/plugin-esbuild": "^1.0.1",

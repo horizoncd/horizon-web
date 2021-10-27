@@ -20,21 +20,6 @@
     component: 'groups/New',
   },
   {
-    path: '/applications/new',
-    menuRender: false,
-    component: 'applications/NewOrEdit',
-  },
-  {
-    path: '/applications/edit',
-    menuRender: false,
-    component: 'applications/NewOrEdit',
-  },
-  {
-    path: '/clusters/new',
-    menuRender: false,
-    component: 'clusters/NewOrEdit',
-  },
-  {
     path: '/clusters/edit',
     menuRender: false,
     component: 'clusters/NewOrEdit',
@@ -58,6 +43,16 @@ const groupRoutes = [
     path: '/groups/*/-/activity',
     component: 'groups/Activity',
   },
+  {
+    path: '/groups/*/-/subgroups/new',
+    menuRender: false,
+    component: 'groups/New',
+  },
+  {
+    path: '/groups/*/-/applications/new',
+    menuRender: false,
+    component: 'applications/NewOrEdit',
+  },
 ];
 
 const applicationRoutes = [
@@ -72,6 +67,16 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/pipelines',
     component: 'clusters/pipelines/New',
+  },
+  {
+    path: '/applications/*/-/edit',
+    menuRender: false,
+    component: 'applications/NewOrEdit',
+  },
+  {
+    path: '/applications/*/-/clusters/new',
+    menuRender: false,
+    component: 'clusters/NewOrEdit',
   },
 ];
 

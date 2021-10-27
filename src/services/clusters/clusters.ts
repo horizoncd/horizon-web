@@ -1,18 +1,18 @@
 import { request } from 'umi';
 
-export async function queryClusters(application: string, params: API.ClusterFilter) {
+export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
   return request<{
-    data: API.PageResult<API.ClusterBase>;
-  }>(`/apis/core/v1/applications/${application}/clusters`, {
+    data: API.PageResult<CLUSTER.ClusterBase>;
+  }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'GET',
     params
   });
 }
 
-export async function createCluster(application: string, scope: string, data: API.NewCluster) {
+export async function createCluster(applicationID: number, scope: string, data: CLUSTER.NewCluster) {
   return request<{
-    data: API.Cluster
-  }>(`/apis/core/v1/applications/${application}/clusters`, {
+    data: CLUSTER.Cluster
+  }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'POST',
     params: {
       scope
@@ -21,28 +21,28 @@ export async function createCluster(application: string, scope: string, data: AP
   });
 }
 
-export async function deleteCluster(cluster: string) {
-  return request(`/apis/core/v1/clusters/${cluster}`, {
+export async function deleteCluster(clusterID: number) {
+  return request(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'DELETE',
   });
 }
 
-export async function getCluster(cluster: string) {
+export async function getCluster(clusterID: number) {
   return request<{
-    data: API.Cluster
-  }>(`/apis/core/v1/clusters/${cluster}`, {
+    data: CLUSTER.Cluster
+  }>(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'GET',
   });
 }
 
-export async function updateCluster(cluster: string, data: API.UpdateCluster) {
-  return request(`/apis/core/v1/clusters/${cluster}`, {
+export async function updateCluster(clusterID: number, data: CLUSTER.UpdateCluster) {
+  return request(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'PUT',
     data
   });
 }
 
-export async function buildDeploy(cluster: string, data: API.ClusterBuildDeploy) {
+export async function buildDeploy(cluster: string, data: CLUSTER.ClusterBuildDeploy) {
   return request<{
     data: {
       id: string
@@ -53,7 +53,7 @@ export async function buildDeploy(cluster: string, data: API.ClusterBuildDeploy)
   });
 }
 
-export async function deploy(cluster: string, data: API.ClusterDeploy) {
+export async function deploy(cluster: string, data: CLUSTER.ClusterDeploy) {
   return request<{
     data: {
       id: string
@@ -64,7 +64,7 @@ export async function deploy(cluster: string, data: API.ClusterDeploy) {
   });
 }
 
-export async function rollback(cluster: string, data: API.ClusterRollback) {
+export async function rollback(cluster: string, data: CLUSTER.ClusterRollback) {
   return request<{
     data: {
       id: string
@@ -93,7 +93,7 @@ export async function next(cluster: string) {
 
 export async function diffsOfCode(cluster: string, targetBranch: string) {
   return request<{
-    data: API.ClusterDiffs
+    data: CLUSTER.ClusterDiffs
   }>(`/apis/core/v1/clusters/${cluster}/diffs`, {
     method: 'GET',
     params: {
@@ -110,10 +110,10 @@ export async function getPipelineRuns(cluster: string) {
   });
 }
 
-export async function getClusterStatus(cluster: string) {
+export async function getClusterStatus(clusterID: number) {
   return request<{
-    data: API.ClusterStatus
-  }>(`/apis/core/v1/clusters/${cluster}/status`, {
+    data: CLUSTER.ClusterStatus
+  }>(`/apis/core/v1/clusters/${clusterID}/status`, {
     method: 'GET',
   });
 }

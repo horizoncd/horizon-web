@@ -51,7 +51,7 @@ export async function getInitialState(): Promise<{
   resource: API.Resource;
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group' };
+  const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group', parentID: 0 };
   let currentUser: API.CurrentUser | undefined = {id: 0, name: ""}
 
   try {
@@ -236,6 +236,14 @@ function formatGroupMenu(fullPath: string) {
         },
       ],
     },
+    {
+      path: `/groups${fullPath}/-/subgroups/new`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/applications/new`,
+      menuRender: false,
+    },
   ];
 }
 
@@ -264,9 +272,15 @@ function formatApplicationMenu(fullPath: string) {
     },
     {
       path: `/applications${fullPath}/-/pipelines/new`,
-      hideInMenu: true,
-      name: 'Pipelines-new',
       parentKeys: [`/applications${fullPath}/-/pipelines`],
+    },
+    {
+      path: `/applications${fullPath}/-/edit`,
+      menuRender: false,
+    },
+    {
+      path: `/applications${fullPath}/-/clusters/new`,
+      menuRender: false,
     },
   ];
 }
