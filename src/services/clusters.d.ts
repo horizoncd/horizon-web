@@ -57,6 +57,7 @@ declare namespace CLUSTER {
       url: string;
       subfolder: string;
       branch: string;
+      commit: string;
     };
     scope: Scope
     templateInput: any;

@@ -52,7 +52,9 @@ export default (props: Props) => {
                 </div>
               }))
             } else if (valueType === ValueType.Object) {
-              for (const i in param.value as object) {
+              const keys = Object.keys(param.value)
+              for (let key = 0; key < keys.length; key += 1){
+                const i = keys[key];
                 itemContents.push(<div className={styles.textValue}>{i}: {param.value[i]} </div>)
               }
             }

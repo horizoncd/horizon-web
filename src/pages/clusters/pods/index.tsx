@@ -1,4 +1,4 @@
-import {Button, Col, notification, Row, Steps, Tabs} from "antd";
+import {Button, Card, Col, notification, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
@@ -6,10 +6,21 @@ import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
 import {getCluster, getClusterStatus, next} from "@/services/clusters/clusters";
 import {useState} from 'react';
-import {FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
+import {
+  CopyOutlined,
+  FrownOutlined,
+  HourglassOutlined,
+  LoadingOutlined,
+  SmileOutlined
+} from "@ant-design/icons";
 import {RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
-import {cancelPipeline} from "@/services/pipelineruns/pipelineruns";
+import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
+import CodeEditor from "@/components/CodeEditor";
+import copy from "copy-to-clipboard";
+import styles2 from '@/pages/clusters/pipelines/Detail/index.less'
+import type {Param} from "@/components/DetailCard";
+import DetailCard from "@/components/DetailCard";
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -18,46 +29,134 @@ const loading = <LoadingOutlined/>
 const frown = <FrownOutlined/>
 const waiting = <HourglassOutlined/>
 
-const mapTaskStatus2Icon = new Map();
-mapTaskStatus2Icon.set(TaskStatus.RUNNING.toString(), loading)
-mapTaskStatus2Icon.set(TaskStatus.SUCCEEDED.toString(), smile)
-mapTaskStatus2Icon.set(TaskStatus.FAILED.toString(), frown)
+const taskStatus2Entity = new Map<TaskStatus, {
+  icon: JSX.Element,
+  buildTitle: string,
+  deployTitle: string,
+  stepStatus: 'wait' | 'process' | 'finish' | 'error',
+}>([
+  [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
+  [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
+  [TaskStatus.FAILED, {icon: frown, buildTitle: '构建失败', deployTitle: '发布失败', stepStatus: 'error'}]
+]);
 
-const mapTaskStatus2BuildTitle = new Map();
-mapTaskStatus2BuildTitle.set(TaskStatus.RUNNING.toString(), '构建中...')
-mapTaskStatus2BuildTitle.set(TaskStatus.SUCCEEDED.toString(), '构建完成')
-mapTaskStatus2BuildTitle.set(TaskStatus.FAILED.toString(), '构建失败')
+interface DeployPageProps {
+  step: {
+    index: number,
+    total: number
+  },
+  onNext: () => void,
+  onCancel: () => void
+}
 
-const mapTaskStatus2DeployTitle = new Map();
-mapTaskStatus2DeployTitle.set(TaskStatus.RUNNING.toString(), '发布中...')
-mapTaskStatus2DeployTitle.set(TaskStatus.SUCCEEDED.toString(), '发布完成')
-mapTaskStatus2DeployTitle.set(TaskStatus.FAILED.toString(), '发布失败')
-
-const mapTaskStatus2StepStatus = new Map();
-mapTaskStatus2StepStatus.set(TaskStatus.RUNNING.toString(), 'process')
-mapTaskStatus2StepStatus.set(TaskStatus.SUCCEEDED.toString(), 'finish')
-mapTaskStatus2StepStatus.set(TaskStatus.FAILED.toString(), 'error')
-
+const pollingInterval = 6000;
 export default () => {
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
   const {id} = initialState!.resource;
   const [current, setCurrent] = useState(0);
-  const [stepStatus, setStepStatus] = useState();
-  const [task, setTask] = useState(RunningTask.NONE.toString());
+  const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
+  const [task, setTask] = useState(RunningTask.NONE);
+  const [pipelinerunID, setPipelinerunID] = useState<number>();
   const [steps, setSteps] = useState([
     {
-      title: '待构建',
+      title: '',
       content: <div/>,
       icon: waiting
     },
     {
-      title: '待发布',
+      title: '',
       content: <div/>,
       icon: waiting
     },
   ]);
+
+  const {data: cluster} = useRequest(() => getCluster(id));
+  const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
+    manual: true
+  })
+  const {data: status} = useRequest(() => getClusterStatus(id), {
+    pollingInterval,
+    onSuccess: () => {
+      if (status) {
+        const {task: t, taskStatus} = status.runningTask;
+        const {step} = status.clusterStatus;
+        setPipelinerunID(status.runningTask.pipelinerunID)
+        const tt = t as RunningTask
+        setTask(tt)
+
+        const tStatus = taskStatus as TaskStatus
+        const entity = taskStatus2Entity.get(tStatus)
+        if (tt === RunningTask.BUILD) {
+          steps[0] = {
+            title: entity!.buildTitle,
+            content: <BuildPage log={buildLog}/>,
+            icon: entity!.icon,
+          }
+          // refresh build log when in build task
+          refreshBuildLog()
+        }
+        if (tt === RunningTask.DEPLOY) {
+          const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
+          steps[0] = {
+            title: succeed!.buildTitle,
+            content: <div/>,
+            icon: smile,
+          }
+          steps[1] = {
+            title: entity!.deployTitle,
+            content: <DeployPage step={step} onNext={() => {
+              next(id).then(() => {
+                notification.success({
+                  message: '下一批次开始发布',
+                });
+              })
+            }
+            } onCancel={() => {
+              cancelPipeline(pipelinerunID!).then(() => {
+                notification.success({
+                  message: '取消发布成功',
+                });
+              })
+            }
+            }/>,
+            icon: entity!.icon,
+          }
+          setCurrent(1)
+        }
+        setSteps(steps)
+        setStepStatus(entity!.stepStatus)
+      }
+    }
+  });
+
+  const onCopyClick = () => {
+    if (copy(buildLog)) {
+      notification.success({message: "复制成功"})
+    } else {
+      notification.success({message: "复制失败"})
+    }
+  }
+
+  function BuildPage({log}: { log: string }) {
+    return <div>
+      <Card
+        title={"构建日志"}
+        tabBarExtraContent={(
+          <div>
+            <Button className={styles2.buttonClass}>
+              <CopyOutlined className={styles2.iconCommonModal} onClick={onCopyClick}/>
+            </Button>
+          </div>
+        )}
+      >
+        <CodeEditor
+          content={log}
+        />
+      </Card>
+    </div>
+  }
 
   function DeployStep({index, total}: { index: number, total: number }) {
     const s = []
@@ -81,72 +180,23 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, onCancel}: {step: {index: number, total: number}, onNext: () => void, onCancel: () => void}) {
-    return <div>
+  function DeployPage({step, onNext, onCancel}: DeployPageProps) {
+    const {index, total} = step
+    return <Card title={"发布阶段"}>
       <DeployStep {...step}/>
       <div>
-        <Button style={{margin: '0 8px'}} onClick={onNext}>
-          下一步
-        </Button>
+        {
+          index < total &&
+          <Button style={{margin: '0 8px'}} onClick={onNext}>
+            下一步
+          </Button>
+        }
+
         <Button style={{margin: '0 8px'}} onClick={onCancel}>
           取消发布
         </Button>
       </div>
-    </div>
-  }
-
-  const {data: cluster} = useRequest(() => getCluster(id));
-  const {data: status} = useRequest(() => getClusterStatus(id), {
-    pollingInterval: 6000,
-    onSuccess: () => {
-      if (status) {
-        const {task: t, taskStatus} = status.runningTask;
-        const {step} = status.clusterStatus;
-
-        setTask(t)
-        const icon = mapTaskStatus2Icon.get(taskStatus)
-        if (t === RunningTask.BUILD.toString()) {
-          const title = mapTaskStatus2BuildTitle.get(taskStatus)
-          steps[0] = {
-            title,
-            content: <div/>,
-            icon
-          }
-        }
-        if (t === RunningTask.DEPLOY.toString()) {
-          steps[0] = {
-            title: mapTaskStatus2BuildTitle.get(TaskStatus.SUCCEEDED.toString()),
-            content: <div/>,
-            icon: mapTaskStatus2Icon.get(TaskStatus.SUCCEEDED.toString()),
-          }
-          const title = mapTaskStatus2StepStatus.get(taskStatus)
-
-          steps[1] = {
-            title,
-            content: <DeployPage step={step} onNext={onNext} onCancel={onCancel}/>,
-            icon
-          }
-          setCurrent(1)
-        }
-        setSteps(steps)
-        setStepStatus(mapTaskStatus2StepStatus.get(taskStatus))
-      }
-    }
-  });
-
-  const onNext = () => {
-    next(id).then(() => {
-      notification.success({
-        message: '下一批次开始发布',
-      });
-    })
-  }
-  const onCancel = () => {
-    cancelPipeline(status!.runningTask.pipelinerunID).then(() => {
-      notification.success({
-        message: '取消发布成功',
-      });
-    })
+    </Card>
   }
 
   const oldPods: CLUSTER.PodInTable[] = []
@@ -186,8 +236,32 @@ export default () => {
     return `${title}(${pods.length})`
   };
 
+  const data: Param[][] = [
+    [
+      {
+        key: '集群状态',
+        value: status?.clusterStatus.status || '',
+      },
+    ],
+    [
+      {
+        key: 'Git Repo',
+        value: {
+          URL: cluster!.git.url,
+          branch: cluster!.git.branch,
+          commit: cluster!.git.commit,
+        }
+      }
+    ],
+  ]
+
   return (
     <PageWithBreadcrumb>
+      <DetailCard
+        title={<span>基础信息</span>}
+        data={data}
+      />
+
       {
         task !== RunningTask.NONE.toString() && (
           <Row>
@@ -221,4 +295,4 @@ export default () => {
       }
     </PageWithBreadcrumb>
   )
-}
+};

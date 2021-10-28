@@ -5,3 +5,9 @@ export async function cancelPipeline(pipelinerunID: number) {
     method: 'POST',
   });
 }
+
+export async function queryPipelineLog(pipelinerunID: number) {
+  return request<string>(`/apis/core/v1/pipielineruns/${pipelinerunID}/log`, {
+    method: 'GET',
+  });
+}
