@@ -80,10 +80,19 @@ const applicationRoutes = [
   },
 ];
 
+const clusterRoutes = [
+  {
+    path: '/clusters/*/-/webconsole',
+    menuRender: false,
+    component: 'clusters/pods/Console',
+  }
+];
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
+allRoute.push(...clusterRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

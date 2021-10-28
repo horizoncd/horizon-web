@@ -24,13 +24,15 @@ declare namespace CLUSTER {
     env: string
   };
 
+  type Scope = {
+    env: string;
+    region: string;
+  }
+
   type ClusterBase = {
     id: number,
     name: string;
-    scope: {
-      env: string;
-      region: string;
-    };
+    scope: Scope
     template: {
       name: string;
       release: string;
@@ -39,7 +41,11 @@ declare namespace CLUSTER {
 
   type Cluster = {
     fullPath: string,
-    application: string;
+    application: {
+      id: number,
+      name: string
+    };
+    id: number
     name: string;
     priority: string;
     description?: string;
@@ -52,10 +58,7 @@ declare namespace CLUSTER {
       subfolder: string;
       branch: string;
     };
-    scope: {
-      env: string,
-      region: string
-    }
+    scope: Scope
     templateInput: any;
   };
 
@@ -118,6 +121,44 @@ declare namespace CLUSTER {
     }]
   }
 
+  type PodFromBackend = {
+    metadata: {
+      namespace: string
+    }
+    spec: {
+      nodeName: string,
+      initContainers: [{
+        name: string,
+        image: string,
+      }]
+      containers: [{
+        name: string,
+        image: string,
+      }]
+    }
+    status: {
+      hostIP: string,
+      podIP: string
+      phase: string
+      containerStatuses: [{
+        name: string
+        ready: boolean
+        state: {
+          state: string
+          reason: string
+          message: string
+        }
+      }]
+      events: [{
+        type: string
+        reason: string
+        message: string
+        count: number
+        eventTimestamp: string
+      }]
+    }
+  }
+
   type ClusterStatus = {
     runningTask: {
       task: string,
@@ -134,45 +175,20 @@ declare namespace CLUSTER {
       replicas: number,
       versions: Record<string, {
         replicas: number
-        pods: Record<string, {
-          metadata: {
-            namespace: string
-          }
-          spec: {
-            nodeName: string,
-            initContainers: [{
-              name: string,
-              image: string,
-            }]
-            containers: [{
-              name: string,
-              image: string,
-            }]
-          }
-          status: {
-            hostIP: string,
-            podIP: string
-            phase: string
-            containerStatuses: [{
-              name: string
-              ready: boolean
-              state: {
-                state: string
-                reason: string
-                message: string
-              }
-            }]
-            events: [{
-              type: string
-              reason: string
-              message: string
-              count: number
-              eventTimestamp: string
-            }]
-          }
-        }>
+        pods: Record<string, PodFromBackend>
       }>
     }
+  }
+
+  type PodInTable = {
+    podName: string
+    status: string
+    ip: string
+    onlineStatus: string
+    createTime: string
+    restartCount: number
+    containerName: string
+    namespace: string
   }
 
 }

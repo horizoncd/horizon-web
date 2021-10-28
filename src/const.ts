@@ -14,7 +14,7 @@ export enum MemberType {
   GROUP = 1,
 }
 
-export enum RunningTaskStep {
+export enum RunningTask {
   BUILD = 'build',
   DEPLOY = 'deploy',
   NONE = 'none',

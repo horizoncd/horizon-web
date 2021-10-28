@@ -85,8 +85,8 @@ export async function restart(cluster: string) {
   });
 }
 
-export async function next(cluster: string) {
-  return request(`/apis/core/v1/clusters/${cluster}/next`, {
+export async function next(clusterID: number) {
+  return request(`/apis/core/v1/clusters/${clusterID}/next`, {
     method: 'POST',
   });
 }

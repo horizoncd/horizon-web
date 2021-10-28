@@ -1,17 +1,26 @@
 import {Button, Input, Space, Table} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useState} from "react";
+import {useModel} from "@@/plugin-model/useModel";
 
 const {Search} = Input;
 
-export default (props: any) => {
-  const {data} = props;
+export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster }) => {
+  const {data, theCluster} = props;
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
+  const {initialState} = useModel('@@initialState');
+  const {fullPath} = initialState!.resource;
 
   const formatMessage = (suffix: string, defaultMsg: string) => {
     return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
+  }
+
+  const formatConsoleURL = (pod: CLUSTER.PodInTable) => {
+    const {env} = theCluster.scope
+    return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
+    containerName=${pod.containerName}&environment=${env}`
   }
 
   const columns = [
@@ -48,9 +57,9 @@ export default (props: any) => {
     {
       title: formatMessage('action', '操作'),
       key: 'action',
-      render: (text: any, record: any) => (
+      render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
-          <a>登录Terminal</a>
+          <a href={formatConsoleURL(record)} target="_blank">登录Terminal</a>
           <a>查看容器日志</a>
         </Space>
       ),
