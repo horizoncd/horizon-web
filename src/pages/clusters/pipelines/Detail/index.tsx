@@ -189,7 +189,6 @@ export default (props: any) => {
       onClose={onClose}
       fullscreen={true}
       allowToggle={false}
-      content={buildLog + deployLog}
     >
       <CodeEditor
         content={buildLog + deployLog}
