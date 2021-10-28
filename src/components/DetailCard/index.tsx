@@ -36,7 +36,7 @@ export default (props: Props) => {
 
   data.forEach((params, index) => {
       const columnContent = <div className={styles.data} key={col++}>
-        {index !== 0 ? columnSeparator : null}
+        {index > 0 ? columnSeparator : null}
         <div className={styles.dataColumn}>
           {params.map((param) => {
             const itemContents: any = []

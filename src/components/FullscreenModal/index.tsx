@@ -11,7 +11,6 @@ interface Props {
   visible: boolean
   fullscreen: boolean
   allowToggle: boolean
-  content: string
   onClose: () => void
   children?: any
 }
@@ -22,7 +21,7 @@ export default (props: Props) => {
     setFullscreen(!fullscreen)
   }
   const onCopyClick = () => {
-    if (copy(props.content)) {
+    if (copy(props.children.props.content)) {
       notification.success({message: "复制成功"})
     } else {
       notification.success({message: "复制失败"})
