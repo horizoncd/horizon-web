@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Form, notification, Row, Steps} from 'antd';
+import {Button, Col, Form, notification, Row} from 'antd';
 import Basic from './Basic';
 import Config from '../../applications/NewOrEdit/Config';
 import Audit from './Audit';
@@ -10,8 +10,7 @@ import {createCluster, getCluster, updateCluster} from "@/services/clusters/clus
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
-
-const {Step} = Steps;
+import HSteps from "@/components/HSteps";
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -36,7 +35,7 @@ export default (props: any) => {
   ]
 
   const {initialState} = useModel('@@initialState');
-  const {id, name: resourceName, parentID} = initialState!.resource;
+  const {id, parentID} = initialState!.resource;
 
   const {location} = props;
   const {query, pathname} = location;
@@ -165,9 +164,6 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? intl.formatMessage({id: 'pages.clusterNew.header'}, {application: <b>{resourceName}</b>})
-    : intl.formatMessage({id: 'pages.clusterEdit.header'}, {cluster: <b>{resourceName}</b>});
-
   const nextBtnDisabled = () => {
     switch (current) {
       case 0:
@@ -215,23 +211,10 @@ export default (props: any) => {
 
   return (
     <PageWithBreadcrumb>
-      <div className={styles.header}>{header}</div>
-      <Divider className={styles.divider}/>
       <Row>
         <Col span={4}>
           <div className={styles.step}>
-            <Steps current={current} onChange={onCurrentChange} direction="vertical">
-              {steps.map((item, index) => {
-                return (
-                  <Step
-                    key={`Step ${index + 1}`}
-                    title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
-                    description={item.title}
-                    disabled={item.disabled}
-                  />
-                );
-              })}
-            </Steps>
+            <HSteps current={current} onChange={onCurrentChange} steps={steps}/>
           </div>
         </Col>
         <Col span={20}>

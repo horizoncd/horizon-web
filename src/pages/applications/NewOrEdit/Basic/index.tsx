@@ -14,8 +14,8 @@ export default (props: any) => {
   // query release version
   const {data} = useRequest(() => queryReleases(props.template?.name));
 
-  const formatMessage = (suffix: string) => {
-    return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`})
+  const formatMessage = (suffix: string, defaultMsg?: string) => {
+    return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg})
   }
 
   const nameRules: Rule[] = [
@@ -51,7 +51,7 @@ export default (props: any) => {
 
   return (
     <div>
-      <Form layout={'vertical'} form={props.form} requiredMark={'optional'}
+      <Form layout={'vertical'} form={props.form}
             onFieldsChange={(a, b) => {
               props.setFormData(a, b)
             }}
@@ -64,6 +64,9 @@ export default (props: any) => {
           <Form.Item label={formatMessage('description')} name={'description'}>
             <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
                       autoSize={{minRows: 3}}/>
+          </Form.Item>
+          <Form.Item label={formatMessage('template', 'template')}>
+            <Input disabled={true} value={props.template?.name}/>
           </Form.Item>
           <Form.Item label={formatMessage('release')} name={'release'} rules={requiredRule}>
             <Select disabled={readonly}>

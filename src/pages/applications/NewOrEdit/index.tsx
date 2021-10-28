@@ -1,4 +1,5 @@
-import {Button, Col, Divider, Form, notification, Row, Steps} from 'antd';
+import {Button, Col, Form, notification, Row} from 'antd';
+import HSteps from '@/components/HSteps'
 import Template from './Template';
 import Basic from './Basic';
 import Config from './Config';
@@ -10,8 +11,6 @@ import {createApplication, getApplication, updateApplication} from '@/services/a
 import {useIntl} from "@@/plugin-locale/localeExports";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-
-const {Step} = Steps;
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -36,7 +35,7 @@ export default (props: any) => {
   ]
 
   const {initialState} = useModel('@@initialState');
-  const {id, name: resourceName} = initialState!.resource;
+  const {id} = initialState!.resource;
 
   const {location} = props;
   const {pathname} = location;
@@ -166,9 +165,6 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? intl.formatMessage({id: 'pages.applicationNew.header'}, {group: <b>{resourceName}</b>})
-    : intl.formatMessage({id: 'pages.applicationEdit.header'}, {application: <b>{resourceName}</b>});
-
   const nextBtnDisabled = () => {
     switch (current) {
       case 0:
@@ -229,23 +225,10 @@ export default (props: any) => {
 
   return (
     <PageWithBreadcrumb>
-      <div className={styles.header}>{header}</div>
-      <Divider className={styles.divider}/>
       <Row>
         <Col span={4}>
           <div className={styles.step}>
-            <Steps current={current} onChange={onCurrentChange} direction="vertical">
-              {steps.map((item, index) => {
-                return (
-                  <Step
-                    key={`Step ${index + 1}`}
-                    title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
-                    description={item.title}
-                    disabled={item.disabled}
-                  />
-                );
-              })}
-            </Steps>
+            <HSteps current={current} onChange={onCurrentChange} steps={steps}/>
           </div>
         </Col>
         <Col span={20}>
