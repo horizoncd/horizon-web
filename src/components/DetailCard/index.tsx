@@ -3,6 +3,11 @@ import {Card} from "antd";
 import styles from './index.less'
 import * as React from "react";
 
+enum ValueType {
+  String = 'string',
+  Array = 'array',
+  Object = 'object',
+}
 
 interface Props {
   // 标题
@@ -21,14 +26,39 @@ export default (props: Props) => {
   const contents: any = []
   let col = 0
   const columnSeparator = <div className={styles.separator}/>
+
+  function getType(value: any) {
+    if (Array.isArray(value)) {
+      return ValueType.Array
+    }
+    return typeof value
+  }
+
   data.forEach((params, index) => {
       const columnContent = <div className={styles.data} key={col++}>
         {index !== 0 ? columnSeparator : null}
         <div className={styles.dataColumn}>
           {params.map((param) => {
+            const itemContents: any = []
+            // 获取参数类型，string/array/object
+            const valueType = getType(param.value)
+            // 根据参数类型返回不同的格式
+            if (valueType === ValueType.String) {
+              itemContents.push(<div className={styles.textValue}>{param.value}</div>)
+            } else if (valueType === ValueType.Array) {
+              itemContents.push((param.value as string[]).map((v) => {
+                return <div key={v} className={styles.textValue}>
+                  {v}
+                </div>
+              }))
+            } else if (valueType === ValueType.Object) {
+              for (const i in param.value as object) {
+                itemContents.push(<div className={styles.textValue}>{i}: {param.value[i]} </div>)
+              }
+            }
             return <div key={param.key} className={styles.dataColumnItem}>
               <div className={styles.textKey}>{param.key}</div>
-              <div>{param.value}</div>
+              {itemContents}
             </div>
           })}
         </div>

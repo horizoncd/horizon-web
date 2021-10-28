@@ -17,7 +17,7 @@ export default () => {
       return (<GroupDetail/>)
     case ResourceType.APPLICATION:
       return (<ApplicationDetail/>);
-    case ResourceType.APPLICATION:
+    case ResourceType.CLUSTER:
       return (<ClusterDetail/>);
     default:
       return <NotFount/>

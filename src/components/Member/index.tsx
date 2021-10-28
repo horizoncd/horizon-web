@@ -64,6 +64,9 @@ export default (props: MemberProps) => {
   useEffect(() => {
     onListMembers(resourceID).then(({data}) => {
       setCurrentRole(Utils.roles.NotExist)
+      if (!data.items) {
+        data.items = []
+      }
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].memberNameID === currentUser.id) {
           setCurrentRole(data.items[i].role);
