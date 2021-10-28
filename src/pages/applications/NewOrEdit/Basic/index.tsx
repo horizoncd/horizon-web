@@ -1,21 +1,21 @@
-import { Card, Form, Input, Select } from 'antd';
-import type { Rule } from 'rc-field-form/lib/interface';
-import { useRequest } from 'umi';
-import { queryReleases } from '@/services/templates/templates';
+import {Card, Form, Input, Select} from 'antd';
+import type {Rule} from 'rc-field-form/lib/interface';
+import {useRequest} from 'umi';
+import {queryReleases} from '@/services/templates/templates';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 
-const { TextArea } = Input;
-const { Option } = Select;
+const {TextArea} = Input;
+const {Option} = Select;
 
 export default (props: any) => {
   const intl = useIntl();
 
   // query release version
-  const { data } = useRequest(() => queryReleases(props.template?.name));
+  const {data} = useRequest(() => queryReleases(props.template?.name));
 
   const formatMessage = (suffix: string) => {
-    return intl.formatMessage({ id: `pages.applicationNew.basic.${suffix}` })
+    return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`})
   }
 
   const nameRules: Rule[] = [
@@ -33,13 +33,13 @@ export default (props: any) => {
     },
   ];
 
-  const priorities = [ 'P0', 'P1', 'P2', 'P3' ];
+  const priorities = ['P0', 'P1', 'P2', 'P3'];
 
   const formatReleaseOption = (item: API.Release) => {
     if (item.recommended) {
       return (
         <div>
-          { item.name } <span style={ { color: 'red' } }>(推荐)</span>
+          {item.name} <span style={{color: 'red'}}>(推荐)</span>
         </div>
       );
     }
@@ -47,59 +47,60 @@ export default (props: any) => {
     return item.name;
   };
 
-  const { readonly = false, editing = false } = props;
+  const {readonly = false, editing = false} = props;
 
   return (
     <div>
-      <Form layout={ 'vertical' } form={ props.form } requiredMark={ 'optional' }
-            onFieldsChange={ (a, b) => {
+      <Form layout={'vertical'} form={props.form} requiredMark={'optional'}
+            onFieldsChange={(a, b) => {
               props.setFormData(a, b)
-            } }
+            }}
             fields={props.formData}
       >
-        <Card title={ formatMessage('title') } className={ styles.gapBetweenCards }>
-          <Form.Item label={ formatMessage('name') } name={ 'name' } rules={ nameRules }>
-            <Input placeholder={formatMessage('name.ruleMessage')} disabled={ readonly || editing }/>
+        <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
+          <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
+            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
           </Form.Item>
-          <Form.Item label={ formatMessage('description') } name={ 'description' }>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={ 255 } disabled={ readonly }/>
+          <Form.Item label={formatMessage('description')} name={'description'}>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
+                      autoSize={{minRows: 3}}/>
           </Form.Item>
-          <Form.Item label={ formatMessage('release') } name={ 'release' } rules={ requiredRule }>
-            <Select disabled={ readonly }>
-              { data?.map((item) => {
+          <Form.Item label={formatMessage('release')} name={'release'} rules={requiredRule}>
+            <Select disabled={readonly}>
+              {data?.map((item) => {
                 return (
-                  <Option key={ item.name } value={ item.name }>
-                    { formatReleaseOption(item) }
+                  <Option key={item.name} value={item.name}>
+                    {formatReleaseOption(item)}
                   </Option>
                 );
-              }) }
+              })}
             </Select>
           </Form.Item>
-          <Form.Item label={ formatMessage('priority') } name={ 'priority' } rules={ requiredRule }>
-            <Select disabled={ readonly }>
-              { priorities.map((item) => {
+          <Form.Item label={formatMessage('priority')} name={'priority'} rules={requiredRule}>
+            <Select disabled={readonly}>
+              {priorities.map((item) => {
                 return (
-                  <Option key={ item } value={ item }>
-                    { item }
+                  <Option key={item} value={item}>
+                    {item}
                   </Option>
                 );
-              }) }
+              })}
             </Select>
           </Form.Item>
         </Card>
 
-        <Card title={ formatMessage('repo') } className={ styles.gapBetweenCards }>
-          <Form.Item label={ formatMessage('url') } name={ 'url' } rules={ requiredRule }>
+        <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>
+          <Form.Item label={formatMessage('url')} name={'url'} rules={requiredRule}>
             <Input
               placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
-              disabled={ readonly }
+              disabled={readonly}
             />
           </Form.Item>
-          <Form.Item label={ formatMessage('subfolder') } name={ 'subfolder' }>
-            <Input disabled={ readonly }/>
+          <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
+            <Input disabled={readonly} placeholder={"非必填，默认为项目根目录"}/>
           </Form.Item>
-          <Form.Item label={ formatMessage('branch') } name={ 'branch' } rules={ requiredRule }>
-            <Input placeholder="master" disabled={ readonly }/>
+          <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
+            <Input placeholder="master" disabled={readonly}/>
           </Form.Item>
         </Card>
       </Form>

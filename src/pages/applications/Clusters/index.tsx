@@ -9,19 +9,15 @@ import styles from './index.less'
 import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
-import NotFount from "@/pages/404";
 
 const {TabPane} = Tabs;
 const {Search} = Input;
 
 export default () => {
   const intl = useIntl();
-  const newCluster = '/clusters/new';
   const {initialState} = useModel('@@initialState');
-  const {name: application} = initialState?.resource || {};
-  if (!application) {
-    return <NotFount/>;
-  }
+  const {id, name: application, fullPath} = initialState!.resource;
+  const newCluster = `/applications${fullPath}/-/clusters/new`;
 
   const pageSize = 10;
 
@@ -67,7 +63,7 @@ export default () => {
 
   const {data: clusters} = useRequest(() => {
     if (env) {
-      queryClusters(application, {
+      queryClusters(id, {
           filter, env, pageNumber, pageSize,
         }
       )

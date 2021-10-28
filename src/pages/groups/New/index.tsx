@@ -1,26 +1,18 @@
-import { Button, Col, Divider, Form, Input, notification, Row} from 'antd';
-import { history, useRequest } from 'umi';
-import type { Rule } from 'rc-field-form/lib/interface';
+import {Button, Col, Divider, Form, Input, notification, Row} from 'antd';
+import {history} from 'umi';
+import type {Rule} from 'rc-field-form/lib/interface';
 import './index.less';
-import { createGroup, getGroupByID } from '@/services/groups/groups';
+import {createGroup} from '@/services/groups/groups';
+import {useModel} from "@@/plugin-model/useModel";
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 
-const { TextArea } = Input;
+const {TextArea} = Input;
 
-export default (props: any) => {
+export default () => {
   const [form] = Form.useForm();
 
-  const { parentID } = props.location.query;
-  const intParentID = parseInt(parentID, 10);
-  let parent: { fullPath: string } = { fullPath: '' };
-  if (intParentID) {
-    parent = useRequest(
-      () =>
-        getGroupByID({
-          id: intParentID,
-        }),
-      { refreshDeps: [intParentID] },
-    ).data || { fullPath: '' };
-  }
+  const {initialState} = useModel('@@initialState');
+  const {id, fullPath} = initialState?.resource || {};
 
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
 
@@ -28,7 +20,7 @@ export default (props: any) => {
   const groupPathLabel = formatLabel('Group URL');
   const groupDescLabel = formatLabel('Group description (optional)');
 
-  const getURLPrefix = () => `${window.location.origin + parent?.fullPath}/`;
+  const getURLPrefix = () => `${window.location.origin + fullPath}/`;
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -52,12 +44,12 @@ export default (props: any) => {
     createGroup({
       ...values,
       visibilityLevel: 'private',
-      parentID: intParentID,
+      parentID: id,
     }).then(() => {
       notification.info({
         message: 'Group新建成功',
       });
-      window.location.href = `${parent?.fullPath}/${values.path}`;
+      window.location.href = `${fullPath}/${values.path}`;
     });
   };
 
@@ -78,54 +70,50 @@ export default (props: any) => {
   ];
 
   return (
-    <Row>
-      <Col span={3} />
-      <Col span={18}>
-        <div style={{fontSize: "20px"}}>New group</div>
-        <Divider />
-        <Row>
-          <Col span={4}>
-            <div style={{fontSize: "16px"}}>
-              Groups allow you to manage and collaborate across multiple projects. Members of a
-              group have access to all of its projects.
-            </div>
-          </Col>
-          <Col span={2} />
-          <Col span={18}>
-            <Form
-              layout={'vertical'}
-              form={form}
-              onFinish={onFinish}
-              requiredMark={false}
-            >
-              <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
-                <Input style={getGroupNameLabelStyle()} placeholder="My awesome group" />
-              </Form.Item>
-              <Form.Item label={groupPathLabel} name={'path'} rules={pathRules}>
-                <Input
-                  addonBefore={getURLPrefix()}
-                  style={getGroupPathAndDescStyle()}
-                  placeholder="my-awesome-group"
-                />
-              </Form.Item>
-              <Form.Item label={groupDescLabel} name={'description'}>
-                <TextArea style={getGroupPathAndDescStyle()} allowClear />
-              </Form.Item>
-              <Form.Item style={getSubmitBtnStyle()}>
-                <div className={'form-actions'}>
-                  <Button type="primary" htmlType={'submit'}>
-                    Create group
-                  </Button>
-                  <Button style={{ float: 'right' }} onClick={cancel}>
-                    Cancel
-                  </Button>
-                </div>
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
-      </Col>
-      <Col span={3} />
-    </Row>
+    <PageWithBreadcrumb>
+      <div style={{fontSize: "20px"}}>New group</div>
+      <Divider/>
+      <Row>
+        <Col span={4}>
+          <div style={{fontSize: "16px"}}>
+            Groups allow you to manage and collaborate across multiple projects. Members of a
+            group have access to all of its projects.
+          </div>
+        </Col>
+        <Col span={2}/>
+        <Col span={18}>
+          <Form
+            layout={'vertical'}
+            form={form}
+            onFinish={onFinish}
+            requiredMark={false}
+          >
+            <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
+              <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
+            </Form.Item>
+            <Form.Item label={groupPathLabel} name={'path'} rules={pathRules}>
+              <Input
+                addonBefore={getURLPrefix()}
+                style={getGroupPathAndDescStyle()}
+                placeholder="my-awesome-group"
+              />
+            </Form.Item>
+            <Form.Item label={groupDescLabel} name={'description'}>
+              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}}/>
+            </Form.Item>
+            <Form.Item style={getSubmitBtnStyle()}>
+              <div className={'form-actions'}>
+                <Button type="primary" htmlType={'submit'}>
+                  Create group
+                </Button>
+                <Button style={{float: 'right'}} onClick={cancel}>
+                  Cancel
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </Col>
+      </Row>
+    </PageWithBreadcrumb>
   );
 };

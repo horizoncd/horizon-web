@@ -3,11 +3,13 @@ import Basic from './Basic';
 import Config from '../../applications/NewOrEdit/Config';
 import Audit from './Audit';
 import {useState} from 'react';
-import NotFount from '@/pages/404';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import {useModel} from "@@/plugin-model/useModel";
+import {getApplication} from "@/services/applications/applications";
 
 const {Step} = Steps;
 
@@ -33,19 +35,14 @@ export default (props: any) => {
     name, branch, env, region
   ]
 
+  const {initialState} = useModel('@@initialState');
+  const {id, name: resourceName, parentID} = initialState!.resource;
+
   const {location} = props;
   const {query, pathname} = location;
-  const {application, cluster, env: envFromQuery} = query;
+  const {env: envFromQuery} = query;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
-
-  if (creating && !application) {
-    return <NotFount/>;
-  }
-
-  if (editing && !cluster) {
-    return <NotFount/>;
-  }
 
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
@@ -56,9 +53,19 @@ export default (props: any) => {
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
 
-  // query application if editing
+  // query application if creating
+  if (creating) {
+    const {data} = useRequest(() => getApplication(parentID), {
+      onSuccess: () => {
+        const {template: t} = data!
+        setTemplate(t)
+      }
+    });
+  }
+
+  // query cluster if editing
   if (editing) {
-    const {data: clusterData} = useRequest(() => getCluster(cluster), {
+    const {data: clusterData} = useRequest(() => getCluster(id), {
       onSuccess: () => {
         const {
           name: n,
@@ -158,8 +165,8 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
 
-  const header = creating ? intl.formatMessage({id: 'pages.clusterNew.header'}, {application: <b>{application}</b>})
-    : intl.formatMessage({id: 'pages.clusterEdit.header'}, {cluster: <b>{cluster}</b>});
+  const header = creating ? intl.formatMessage({id: 'pages.clusterNew.header'}, {application: <b>{resourceName}</b>})
+    : intl.formatMessage({id: 'pages.clusterEdit.header'}, {cluster: <b>{resourceName}</b>});
 
   const nextBtnDisabled = () => {
     switch (current) {
@@ -182,12 +189,12 @@ export default (props: any) => {
       templateInput: config,
     }
     if (creating) {
-      return createCluster(application, '', info)
+      return createCluster(id, '', info)
     }
-    return updateCluster(cluster, info)
+    return updateCluster(id, info)
   }, {
     manual: true,
-    onSuccess: (res: API.Cluster) => {
+    onSuccess: (res: CLUSTER.Cluster) => {
       notification.success({
         message: creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}),
       });
@@ -207,63 +214,61 @@ export default (props: any) => {
   }
 
   return (
-    <Row>
-      <Col span={22} offset={1}>
-        <div className={styles.header}>{header}</div>
-        <Divider className={styles.divider}/>
-        <Row>
-          <Col span={4}>
-            <div className={styles.step}>
-              <Steps current={current} onChange={onCurrentChange} direction="vertical">
-                {steps.map((item, index) => {
-                  return (
-                    <Step
-                      key={`Step ${index + 1}`}
-                      title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
-                      description={item.title}
-                      disabled={item.disabled}
-                    />
-                  );
-                })}
-              </Steps>
-            </div>
-          </Col>
-          <Col span={20}>
-            <div className={styles.stepsContent}>
-              {
-                current === 0 && <Basic form={form} formData={basic} setFormData={setBasicFormData}
-                                        editing={editing}/>
-              }
-              {
-                current === 1 && <Config release={template.release} config={config}
-                                         setConfig={setConfig} setConfigErrors={setConfigErrors}
-                />
-              }
-              {
-                current === 2 &&
-                <Audit form={form} release={template.release} config={config}/>
-              }
-            </div>
-            <div className={styles.stepsAction}>
-              {current > 0 && (
-                <Button style={{margin: '0 8px'}} onClick={() => prev()}>
-                  {intl.formatMessage({id: 'pages.common.back'})}
-                </Button>
-              )}
-              {current === steps.length - 1 && (
-                <Button type="primary" onClick={onSubmit} loading={loading}>
-                  {intl.formatMessage({id: 'pages.common.submit'})}
-                </Button>
-              )}
-              {current < steps.length - 1 && (
-                <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
-                  {intl.formatMessage({id: 'pages.common.next'})}
-                </Button>
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+    <PageWithBreadcrumb>
+      <div className={styles.header}>{header}</div>
+      <Divider className={styles.divider}/>
+      <Row>
+        <Col span={4}>
+          <div className={styles.step}>
+            <Steps current={current} onChange={onCurrentChange} direction="vertical">
+              {steps.map((item, index) => {
+                return (
+                  <Step
+                    key={`Step ${index + 1}`}
+                    title={intl.formatMessage({id: 'pages.applicationNew.step.message'}, {index: index + 1})}
+                    description={item.title}
+                    disabled={item.disabled}
+                  />
+                );
+              })}
+            </Steps>
+          </div>
+        </Col>
+        <Col span={20}>
+          <div className={styles.stepsContent}>
+            {
+              current === 0 && <Basic form={form} formData={basic} setFormData={setBasicFormData}
+                                      editing={editing}/>
+            }
+            {
+              current === 1 && <Config release={template.release} config={config}
+                                       setConfig={setConfig} setConfigErrors={setConfigErrors}
+              />
+            }
+            {
+              current === 2 &&
+              <Audit form={form} release={template.release} config={config}/>
+            }
+          </div>
+          <div className={styles.stepsAction}>
+            {current > 0 && (
+              <Button style={{margin: '0 8px'}} onClick={() => prev()}>
+                {intl.formatMessage({id: 'pages.common.back'})}
+              </Button>
+            )}
+            {current === steps.length - 1 && (
+              <Button type="primary" onClick={onSubmit} loading={loading}>
+                {intl.formatMessage({id: 'pages.common.submit'})}
+              </Button>
+            )}
+            {current < steps.length - 1 && (
+              <Button type="primary" disabled={nextBtnDisabled()} onClick={() => next()}>
+                {intl.formatMessage({id: 'pages.common.next'})}
+              </Button>
+            )}
+          </div>
+        </Col>
+      </Row>
+    </PageWithBreadcrumb>
   );
 };

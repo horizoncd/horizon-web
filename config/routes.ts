@@ -20,21 +20,6 @@
     component: 'groups/New',
   },
   {
-    path: '/applications/new',
-    menuRender: false,
-    component: 'applications/NewOrEdit',
-  },
-  {
-    path: '/applications/edit',
-    menuRender: false,
-    component: 'applications/NewOrEdit',
-  },
-  {
-    path: '/clusters/new',
-    menuRender: false,
-    component: 'clusters/NewOrEdit',
-  },
-  {
     path: '/clusters/edit',
     menuRender: false,
     component: 'clusters/NewOrEdit',
@@ -58,6 +43,16 @@ const groupRoutes = [
     path: '/groups/*/-/activity',
     component: 'groups/Activity',
   },
+  {
+    path: '/groups/*/-/subgroups/new',
+    menuRender: false,
+    component: 'groups/New',
+  },
+  {
+    path: '/groups/*/-/applications/new',
+    menuRender: false,
+    component: 'applications/NewOrEdit',
+  },
 ];
 
 const applicationRoutes = [
@@ -74,15 +69,30 @@ const applicationRoutes = [
     component: 'clusters/pipelines/New',
   },
   {
-    path: '/applications/*/-/pipelines/:id',
-    component: 'clusters/pipelines/Detail',
+    path: '/applications/*/-/edit',
+    menuRender: false,
+    component: 'applications/NewOrEdit',
   },
+  {
+    path: '/applications/*/-/clusters/new',
+    menuRender: false,
+    component: 'clusters/NewOrEdit',
+  },
+];
+
+const clusterRoutes = [
+  {
+    path: '/clusters/*/-/webconsole',
+    menuRender: false,
+    component: 'clusters/pods/Console',
+  }
 ];
 
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
+allRoute.push(...clusterRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
