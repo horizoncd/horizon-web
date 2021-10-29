@@ -20,8 +20,8 @@ export default (props: any) => {
     }
   });
 
-  const formatMessage = (suffix: string) => {
-    return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`})
+  const formatMessage = (suffix: string, defaultMsg?: string) => {
+    return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
   }
 
   const nameRules: Rule[] = [
@@ -43,7 +43,7 @@ export default (props: any) => {
 
   return (
     <div>
-      <Form layout={'vertical'} form={props.form} requiredMark={'optional'}
+      <Form layout={'vertical'} form={props.form}
             onFieldsChange={(a, b) => {
               // query regions when env selected
               if (a[0].name[0] === 'env') {
@@ -59,6 +59,12 @@ export default (props: any) => {
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
             <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize/>
+          </Form.Item>
+          <Form.Item label={formatMessage('template', 'template')}>
+            <Input disabled={true} value={props.template?.name}/>
+          </Form.Item>
+          <Form.Item label={formatMessage('release', 'release')}>
+            <Input disabled={true} value={props.template?.release}/>
           </Form.Item>
           <Form.Item label={formatMessage('env')} name={'env'} rules={requiredRule}>
             <Select disabled={readonly}>

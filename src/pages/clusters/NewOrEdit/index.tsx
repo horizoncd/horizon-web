@@ -221,7 +221,7 @@ export default (props: any) => {
           <div className={styles.stepsContent}>
             {
               current === 0 && <Basic form={form} formData={basic} setFormData={setBasicFormData}
-                                      editing={editing}/>
+                                      editing={editing} template={template}/>
             }
             {
               current === 1 && <Config release={template.release} config={config}
