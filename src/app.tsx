@@ -279,7 +279,6 @@ function formatApplicationMenu(fullPath: string) {
 }
 
 function formatClusterMenu(fullPath: string) {
-  console.log('formatClusterMenu')
   return [
     ...routes,
     {
@@ -307,7 +306,8 @@ function formatClusterMenu(fullPath: string) {
       icon: 'contacts',
     },
     {
-      path: `/clusters${fullPath}/-/webconosle`,
+      path: `/clusters${fullPath}/-/webconsole`,
+      name: 'kkk'
     },
   ];
 }

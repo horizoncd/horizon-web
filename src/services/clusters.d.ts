@@ -25,7 +25,7 @@ declare namespace CLUSTER {
   };
 
   type Scope = {
-    env: string;
+    environment: string;
     region: string;
   }
 
@@ -186,10 +186,10 @@ declare namespace CLUSTER {
     status: string
     ip: string
     onlineStatus: string
-    createTime: string
-    restartCount: number
-    containerName: string
-    namespace: string
+    createTime?: string
+    restartCount?: number
+    containerName?: string
+    namespace?: string
   }
 
 }

@@ -5,7 +5,7 @@ import './index.less'
 
 const {Step} = Steps;
 
-export default (props: StepsProps & {steps: {title: string, disabled: boolean}[]}) => {
+export default (props: StepsProps & {steps: {title: string, disabled?: boolean, icon?: JSX.Element}[], content?: any}) => {
   const intl = useIntl();
 
   const {current, onChange, steps} = props;
@@ -13,6 +13,7 @@ export default (props: StepsProps & {steps: {title: string, disabled: boolean}[]
   return (
     <Steps current={current} onChange={onChange} direction="vertical">
       {steps.map((item, index) => {
+        const {icon} = item
         const selected = current === index
         return (
           <Step
@@ -32,7 +33,7 @@ export default (props: StepsProps & {steps: {title: string, disabled: boolean}[]
               </div>
             }
             disabled={item.disabled}
-            icon={<div/>}
+            icon={icon ? icon : <div/>}
           />
         );
       })}

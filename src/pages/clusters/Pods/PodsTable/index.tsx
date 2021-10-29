@@ -8,6 +8,7 @@ const {Search} = Input;
 
 export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster }) => {
   const {data, theCluster} = props;
+  data.push({podName: '1', status: '2', ip: '3', onlineStatus: 'online', namespace: '123', containerName: "111"})
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
@@ -19,9 +20,9 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
   }
 
   const formatConsoleURL = (pod: CLUSTER.PodInTable) => {
-    const {env} = theCluster.scope
+    // const {environment} = theCluster.scope
     return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
-    containerName=${pod.containerName}&environment=${env}`
+    containerName=${pod.containerName}&environment=123`
   }
 
   const columns = [
@@ -97,7 +98,6 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
 
     </div>
   }
-
   const filteredData = data.filter((item: any) => {
     return !filter || item.podName.contains(filter)
   })

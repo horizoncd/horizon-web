@@ -1,4 +1,4 @@
-import {Button, Card, Col, notification, Row, Steps, Tabs} from "antd";
+import {Button, Col, notification, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
@@ -6,19 +6,13 @@ import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
 import {getCluster, getClusterStatus, next} from "@/services/clusters/clusters";
 import {useState} from 'react';
-import {
-  CopyOutlined,
-  FrownOutlined,
-  HourglassOutlined,
-  LoadingOutlined,
-  SmileOutlined
-} from "@ant-design/icons";
+import HSteps from '@/components/HSteps'
+import {FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
 import {RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
 import copy from "copy-to-clipboard";
-import styles2 from '@/pages/clusters/pipelines/Detail/index.less'
 import type {Param} from "@/components/DetailCard";
 import DetailCard from "@/components/DetailCard";
 
@@ -61,13 +55,27 @@ export default () => {
   const [pipelinerunID, setPipelinerunID] = useState<number>();
   const [steps, setSteps] = useState([
     {
-      title: '',
-      content: <div/>,
-      icon: waiting
+      title: '构建中',
+      content: <BuildPage log={'This a test\n1\n2\n3\n4\n1\n2\n3\n4\n5'}/>,
+      icon: loading
     },
     {
-      title: '',
-      content: <div/>,
+      title: '待发布',
+      content: <DeployPage step={{total: 4, index: 1}} onNext={() => {
+        next(id).then(() => {
+          notification.success({
+            message: '下一批次开始发布',
+          });
+        })
+      }
+      } onCancel={() => {
+        cancelPipeline(pipelinerunID!).then(() => {
+          notification.success({
+            message: '取消发布成功',
+          });
+        })
+      }
+      }/>,
       icon: waiting
     },
   ]);
@@ -131,30 +139,12 @@ export default () => {
     }
   });
 
-  const onCopyClick = () => {
-    if (copy(buildLog)) {
-      notification.success({message: "复制成功"})
-    } else {
-      notification.success({message: "复制失败"})
-    }
-  }
-
   function BuildPage({log}: { log: string }) {
     return <div>
-      <Card
-        title={"构建日志"}
-        tabBarExtraContent={(
-          <div>
-            <Button className={styles2.buttonClass}>
-              <CopyOutlined className={styles2.iconCommonModal} onClick={onCopyClick}/>
-            </Button>
-          </div>
-        )}
-      >
-        <CodeEditor
-          content={log}
-        />
-      </Card>
+      <div style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</div>
+      <CodeEditor
+        content={log}
+      />
     </div>
   }
 
@@ -162,15 +152,15 @@ export default () => {
     const s = []
     for (let i = 0; i < total; i += 1) {
       s.push({
-        title: `阶段${index}`
+        title: `阶段${i + 1}`
       })
     }
-    return <Steps current={index}>
+    return <Steps current={index - 1}>
       {s.map((item, idx) => {
         let icon;
-        if (idx < total) {
+        if (idx < index) {
           icon = smile
-        } else if (idx === total) {
+        } else if (idx === index) {
           icon = loading
         } else {
           icon = waiting
@@ -182,9 +172,9 @@ export default () => {
 
   function DeployPage({step, onNext, onCancel}: DeployPageProps) {
     const {index, total} = step
-    return <Card title={"发布阶段"}>
+    return <div title={"发布阶段"}>
       <DeployStep {...step}/>
-      <div>
+      <div style={{textAlign: 'center'}}>
         {
           index < total &&
           <Button style={{margin: '0 8px'}} onClick={onNext}>
@@ -192,11 +182,11 @@ export default () => {
           </Button>
         }
 
-        <Button style={{margin: '0 8px'}} onClick={onCancel}>
+        <Button danger style={{margin: '0 8px'}} onClick={onCancel}>
           取消发布
         </Button>
       </div>
-    </Card>
+    </div>
   }
 
   const oldPods: CLUSTER.PodInTable[] = []
@@ -230,7 +220,7 @@ export default () => {
     })
   }
 
-  const currentPodsTabTitle = oldPods.length ? 'New Pods' : 'Pods'
+  const currentPodsTabTitle = oldPods.length === 0 ? 'New Pods' : 'Pods'
   const oldPodsTitle = 'Old Pods';
   const formatTabTitle = (title: string, pods: CLUSTER.PodInTable[]) => {
     return `${title} (${pods.length})`
@@ -240,7 +230,7 @@ export default () => {
     [
       {
         key: '集群状态',
-        value: status?.clusterStatus.status || '',
+        value: status?.clusterStatus.status || 'Running',
       },
     ],
     [
@@ -258,21 +248,17 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={"基础信息"}
         data={data}
       />
 
       {
-        task !== RunningTask.NONE.toString() && (
+        (
           <Row>
             <Col span={4}>
-              <Steps current={current} status={stepStatus} direction={"vertical"}>
-                {steps.map(item => (
-                  <Step key={item.title} title={item.title}/>
-                ))}
-              </Steps>
+              <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
             </Col>
-            <Col>
+            <Col span={20}>
               <div className={styles.stepsContent}>{steps[current].content}</div>
             </Col>
           </Row>
@@ -286,7 +272,6 @@ export default () => {
       </Tabs>
 
       {
-        oldPods.length > 0 &&
         <Tabs size={'large'}>
           <TabPane tab={formatTabTitle(oldPodsTitle, oldPods)}>
             <PodsTable data={oldPods} theCluster={cluster!}/>
