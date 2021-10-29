@@ -11,8 +11,7 @@ export default () => {
   if (!id) {
     return <NotFount/>;
   }
-
-  switch (type) {
+  switch (type as ResourceType) {
     case ResourceType.GROUP:
       return (<GroupDetail/>)
     case ResourceType.APPLICATION:

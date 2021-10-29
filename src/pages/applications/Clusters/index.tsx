@@ -21,23 +21,16 @@ export default () => {
 
   const pageSize = 10;
 
-  const [filter, setFilter] = useState('');
-  const [total, setTotal] = useState(0);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [query, setQuery] = useState(0);
-  const [env, setEnv] = useState('');
-
-  const {data: envs} = useRequest(queryEnvironments, {
-    onSuccess: () => {
-      setEnv(envs![0].name)
-    }
-  });
-
   const columns = [
     {
       title: 'name',
       dataIndex: 'name',
       key: 'name',
+      render: (text: string) => {
+        return <a href={`/clusters${fullPath}/${text}/-/pods`}>
+          {text}
+        </a>
+      }
     },
     {
       title: 'region',
@@ -61,18 +54,25 @@ export default () => {
     },
   ]
 
-  const {data: clusters} = useRequest(() => {
-    if (env) {
-      queryClusters(id, {
-          filter, env, pageNumber, pageSize,
-        }
-      )
-    }
-  }, {
+  const [filter, setFilter] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [query, setQuery] = useState(0);
+  const [environment, setEnvironment] = useState('');
+
+  const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
-      setTotal(clusters?.total || 0)
-    },
-    refreshDeps: [query, env, pageNumber],
+      setEnvironment(envs![0].name)
+    }
+  });
+
+  const {data: clusters} = useRequest(() => {
+    return queryClusters(id, {
+        filter, environment, pageNumber, pageSize,
+      }
+    )
+  }, {
+    ready: !!environment,
+    refreshDeps: [query, environment, pageNumber],
   });
 
   const onChange = (e: any) => {
@@ -101,7 +101,7 @@ export default () => {
             pathname: newCluster,
             search: stringify({
               application,
-              env
+              environment
             }),
           });
         }}
@@ -111,22 +111,31 @@ export default () => {
     </div>
   )
 
+  const data = clusters?.items.map(item => {
+    return {
+      key: item.name,
+      name: item.name,
+      region: item.scope.region,
+      template: item.template.name,
+    }
+  })
+
   return (
     <PageWithBreadcrumb>
-      <Tabs defaultActiveKey={env} size={'large'} tabBarExtraContent={queryInput}>
+      <Tabs defaultActiveKey={environment} size={'large'} tabBarExtraContent={queryInput} onChange={setEnvironment}>
         {
           envs?.map(item => {
             const {name, displayName} = item
             return <TabPane tab={displayName} key={name}>
               <Table
                 columns={columns}
-                dataSource={clusters?.items}
+                dataSource={data}
                 pagination={{
                   position: ['bottomCenter'],
                   current: pageNumber,
                   hideOnSinglePage: true,
                   pageSize,
-                  total,
+                  total: clusters?.total,
                   onChange: (page) => setPageNumber(page)
                 }}
               />

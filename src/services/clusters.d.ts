@@ -21,7 +21,7 @@ declare namespace CLUSTER {
     filter?: string;
     pageNumber: number;
     pageSize: number;
-    env: string
+    environment: string
   };
 
   type Scope = {

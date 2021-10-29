@@ -82,9 +82,25 @@ const applicationRoutes = [
 
 const clusterRoutes = [
   {
+    path: '/clusters/*/-/pods',
+    component: 'clusters/Pods',
+  },
+  {
+    path: '/clusters/*/-/pipelines',
+    component: 'clusters/pipelines/History',
+  },
+  {
+    path: '/clusters/*/-/pipelines/new',
+    component: 'clusters/pipelines/New',
+  },
+  {
+    path: '/clusters/*/-/members',
+    component: 'applications/Member',
+  },
+  {
     path: '/clusters/*/-/webconsole',
     menuRender: false,
-    component: 'clusters/pods/Console',
+    component: 'clusters/Pods/Console',
   }
 ];
 

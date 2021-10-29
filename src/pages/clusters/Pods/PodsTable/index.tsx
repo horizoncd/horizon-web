@@ -2,6 +2,7 @@ import {Button, Input, Space, Table} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
+import './index.less'
 
 const {Search} = Input;
 
@@ -73,7 +74,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
 
   const renderTile = () => {
     return <div>
-      <Search placeholder="Search" onChange={onChange}/>
+      <Search placeholder="Search" onChange={onChange} style={{width: '300px'}}/>
 
       <div style={{float: 'right'}}>
         <Button
@@ -85,8 +86,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
           {formatMessage('online', '上线')}
         </Button>
         <Button
-          type="primary"
-          style={{marginRight: '10px'}}
+          style={{marginLeft: '10px'}}
           onClick={() => {
 
           }}
@@ -114,5 +114,4 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
     }}
     title={renderTile}
   />
-
 }

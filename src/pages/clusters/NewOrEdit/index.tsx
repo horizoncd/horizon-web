@@ -35,11 +35,11 @@ export default (props: any) => {
   ]
 
   const {initialState} = useModel('@@initialState');
-  const {id, parentID} = initialState!.resource;
+  const {id} = initialState!.resource;
 
   const {location} = props;
   const {query, pathname} = location;
-  const {env: envFromQuery} = query;
+  const {environment: envFromQuery} = query;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
 
@@ -51,13 +51,22 @@ export default (props: any) => {
   }]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
+  const [applicationName, setApplicationName] = useState('');
 
   // query application if creating
   if (creating) {
-    const {data} = useRequest(() => getApplication(parentID), {
+    const {data} = useRequest(() => getApplication(id), {
       onSuccess: () => {
-        const {template: t} = data!
+        const {template: t, git, templateInput, name: n} = data!
         setTemplate(t)
+        const {url: u, subfolder: s} = git
+        setBasic([
+            {name: url, value: u},
+            {name: subfolder, value: s},
+          ]
+        )
+        setConfig(templateInput)
+        setApplicationName(n)
       }
     });
   }
@@ -177,7 +186,7 @@ export default (props: any) => {
 
   const {loading, run: onSubmit} = useRequest(() => {
     const info = {
-      name: form.getFieldValue(name),
+      name: `${applicationName}-${form.getFieldValue(name)}`,
       description: form.getFieldValue(description),
       git: {
         branch: form.getFieldValue(branch),
@@ -185,7 +194,7 @@ export default (props: any) => {
       templateInput: config,
     }
     if (creating) {
-      return createCluster(id, '', info)
+      return createCluster(id, `${envFromQuery}/${form.getFieldValue(region)}`, info)
     }
     return updateCluster(id, info)
   }, {
@@ -220,17 +229,17 @@ export default (props: any) => {
         <Col span={20}>
           <div className={styles.stepsContent}>
             {
-              current === 0 && <Basic form={form} formData={basic} setFormData={setBasicFormData}
+              current === 0 && <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
                                       editing={editing} template={template}/>
             }
             {
-              current === 1 && <Config release={template.release} config={config}
+              current === 1 && <Config template={template} release={template.release} config={config}
                                        setConfig={setConfig} setConfigErrors={setConfigErrors}
               />
             }
             {
               current === 2 &&
-              <Audit form={form} release={template.release} config={config}/>
+              <Audit template={template}  form={form} release={template.release} config={config}/>
             }
           </div>
           <div className={styles.stepsAction}>

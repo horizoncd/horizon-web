@@ -41,7 +41,8 @@ const rolePermissions = {
 
 const getResourcePath = () => {
   const {pathname} = history.location;
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' && item !== 'applications');
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
+    item !== 'applications' && item !== 'clusters');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -58,7 +59,8 @@ const getBreadcrumbs = (fullName: string) => {
   const {pathname} = history.location;
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' && item !== 'applications');
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
+    item !== 'applications' && item !== 'clusters');
   let currentLink = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];

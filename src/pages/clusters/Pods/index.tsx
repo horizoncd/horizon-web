@@ -49,7 +49,7 @@ interface DeployPageProps {
   onCancel: () => void
 }
 
-const pollingInterval = 6000;
+const pollingInterval = 0;
 export default () => {
 
   const intl = useIntl();
@@ -233,7 +233,7 @@ export default () => {
   const currentPodsTabTitle = oldPods.length ? 'New Pods' : 'Pods'
   const oldPodsTitle = 'Old Pods';
   const formatTabTitle = (title: string, pods: CLUSTER.PodInTable[]) => {
-    return `${title}(${pods.length})`
+    return `${title} (${pods.length})`
   };
 
   const data: Param[][] = [
@@ -247,9 +247,9 @@ export default () => {
       {
         key: 'Git Repo',
         value: {
-          URL: cluster!.git.url,
-          branch: cluster!.git.branch,
-          commit: cluster!.git.commit,
+          URL: cluster?.git.url || '',
+          branch: cluster?.git.branch || '',
+          commit: cluster?.git.commit || '',
         }
       }
     ],
@@ -286,7 +286,7 @@ export default () => {
       </Tabs>
 
       {
-        oldPods.length &&
+        oldPods.length > 0 &&
         <Tabs size={'large'}>
           <TabPane tab={formatTabTitle(oldPodsTitle, oldPods)}>
             <PodsTable data={oldPods} theCluster={cluster!}/>

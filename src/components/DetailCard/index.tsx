@@ -39,15 +39,16 @@ export default (props: Props) => {
         {index > 0 ? columnSeparator : null}
         <div className={styles.dataColumn}>
           {params.map((param) => {
+            let col2 = 0
             const itemContents: any = []
             // 获取参数类型，string/array/object
             const valueType = getType(param.value)
             // 根据参数类型返回不同的格式
             if (valueType === ValueType.String) {
-              itemContents.push(<div className={styles.textValue}>{param.value}</div>)
+              itemContents.push(<div key={col2++} className={styles.textValue}>{param.value}</div>)
             } else if (valueType === ValueType.Array) {
               itemContents.push((param.value as string[]).map((v) => {
-                return <div key={v} className={styles.textValue}>
+                return <div key={col2++} className={styles.textValue}>
                   {v}
                 </div>
               }))
@@ -55,7 +56,7 @@ export default (props: Props) => {
               const keys = Object.keys(param.value)
               for (let key = 0; key < keys.length; key += 1){
                 const i = keys[key];
-                itemContents.push(<div className={styles.textValue}>{i}: {param.value[i]} </div>)
+                itemContents.push(<div key={col2++} className={styles.textValue}>{i}: {param.value[i]} </div>)
               }
             }
             return <div key={param.key} className={styles.dataColumnItem}>

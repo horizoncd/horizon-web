@@ -180,6 +180,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
             return loopMenuItem(formatGroupMenu(fullPath));
           case ResourceType.APPLICATION:
             return loopMenuItem(formatApplicationMenu(fullPath));
+          case ResourceType.CLUSTER:
+            return loopMenuItem(formatClusterMenu(fullPath));
           default:
             return defaultMenuData;
         }
@@ -266,21 +268,46 @@ function formatApplicationMenu(fullPath: string) {
       icon: 'contacts',
     },
     {
-      path: `/applications${fullPath}/-/pipelines`,
-      name: 'Pipelines',
-      icon: 'contacts',
-    },
-    {
-      path: `/applications${fullPath}/-/pipelines/new`,
-      parentKeys: [`/applications${fullPath}/-/pipelines`],
-    },
-    {
       path: `/applications${fullPath}/-/edit`,
       menuRender: false,
     },
     {
       path: `/applications${fullPath}/-/clusters/new`,
       menuRender: false,
+    },
+  ];
+}
+
+function formatClusterMenu(fullPath: string) {
+  console.log('formatClusterMenu')
+  return [
+    ...routes,
+    {
+      name: 'Cluster overview',
+      icon: 'bank',
+      path: `${fullPath}`,
+    },
+    {
+      path: `/clusters${fullPath}/-/pods`,
+      name: 'Pods',
+      icon: 'appstore',
+    },
+    {
+      path: `/clusters${fullPath}/-/pipelines`,
+      name: 'Pipelines',
+      icon: 'contacts',
+    },
+    {
+      path: `/clusters${fullPath}/-/pipelines/new`,
+      parentKeys: [`/clusters${fullPath}/-/pipelines`],
+    },
+    {
+      path: `/clusters${fullPath}/-/members`,
+      name: 'Members',
+      icon: 'contacts',
+    },
+    {
+      path: `/clusters${fullPath}/-/webconosle`,
     },
   ];
 }
