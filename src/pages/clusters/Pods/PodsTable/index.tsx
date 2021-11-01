@@ -3,6 +3,7 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
+import FullscreenModal from "@/components/FullscreenModal";
 
 const {Search} = Input;
 
@@ -14,6 +15,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
   const [filter, setFilter] = useState('');
   const {initialState} = useModel('@@initialState');
   const {fullPath} = initialState!.resource;
+  const [fullscreen, setFullscreen] = useState(false)
 
   const formatMessage = (suffix: string, defaultMsg: string) => {
     return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
@@ -23,6 +25,10 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
     // const {environment} = theCluster.scope
     return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
     containerName=${pod.containerName}&environment=123`
+  }
+
+  const onClickStdout = (record: CLUSTER.PodInTable) => {
+    setFullscreen(true)
   }
 
   const columns = [
@@ -62,7 +68,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
           <a href={formatConsoleURL(record)} target="_blank">登录Terminal</a>
-          <a>查看容器日志</a>
+          <a onClick={() => onClickStdout(record)}>查看容器日志</a>
         </Space>
       ),
     },
@@ -102,16 +108,29 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
     return !filter || item.podName.contains(filter)
   })
 
-  return <Table
-    columns={columns}
-    dataSource={filteredData}
-    pagination={{
-      position: ['bottomCenter'],
-      current: pageNumber,
-      hideOnSinglePage: true,
-      total: data.length,
-      onChange: (page) => setPageNumber(page)
-    }}
-    title={renderTile}
-  />
+  return <div>
+      <Table
+      columns={columns}
+      dataSource={filteredData}
+      pagination={{
+        position: ['bottomCenter'],
+        current: pageNumber,
+        hideOnSinglePage: true,
+        total: data.length,
+        onChange: (page) => setPageNumber(page)
+      }}
+      title={renderTile}
+    />
+    <FullscreenModal
+      title={'Stdout信息'}
+      visible={fullscreen}
+      onClose={() => setFullscreen(false)}
+      fullscreen={false}
+      allowToggle={true}
+    >
+      <div>
+        kkk
+      </div>
+    </FullscreenModal>
+  </div>
 }

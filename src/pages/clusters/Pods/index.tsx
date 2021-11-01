@@ -1,4 +1,4 @@
-import {Button, Col, notification, Row, Steps, Tabs} from "antd";
+import {Button, Col, Dropdown, Menu, notification, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
@@ -7,12 +7,11 @@ import PodsTable from './PodsTable'
 import {getCluster, getClusterStatus, next} from "@/services/clusters/clusters";
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
-import {FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
+import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
 import {RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
-import copy from "copy-to-clipboard";
 import type {Param} from "@/components/DetailCard";
 import DetailCard from "@/components/DetailCard";
 
@@ -245,8 +244,38 @@ export default () => {
     ],
   ]
 
+  const onClickOperation = ({key}: {key: string}) => {
+    switch (key) {
+      case '1':
+        break;
+      case '2':
+        break;
+      case '3':
+        break;
+      default:
+
+    }
+  }
+
+  const operateDropdown = (
+    <Menu onClick={onClickOperation}>
+      <Menu.Item key="1">构建发布</Menu.Item>
+      <Menu.Item key="2">直接发布</Menu.Item>
+      <Menu.Item key="3">重新启动</Menu.Item>
+      <Menu.Item key="4">回滚</Menu.Item>
+    </Menu>
+  );
+
   return (
     <PageWithBreadcrumb>
+      <div>
+        <div style={{marginBottom: '5px', textAlign: 'right'}}>
+          <Dropdown overlay={operateDropdown} trigger={["click"]} overlayStyle={{}}>
+            <Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button>
+          </Dropdown>
+        </div>
+      </div>
+
       <DetailCard
         title={"基础信息"}
         data={data}

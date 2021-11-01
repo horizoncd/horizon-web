@@ -11,7 +11,8 @@ import {
   ContactsOutlined,
   SettingOutlined,
   SmileOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  MonitorOutlined
 } from '@ant-design/icons/lib';
 import Utils from '@/utils';
 import { queryResource } from '@/services/core';
@@ -27,6 +28,7 @@ const IconMap = {
   setting: <SettingOutlined />,
   bank: <BankOutlined />,
   appstore: <AppstoreOutlined />,
+  monitoring: <MonitorOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -307,7 +309,11 @@ function formatClusterMenu(fullPath: string) {
     },
     {
       path: `/clusters${fullPath}/-/webconsole`,
-      name: 'kkk'
+    },
+    {
+      path: `/clusters${fullPath}/-/monitoring`,
+      name: 'Monitoring',
+      icon: 'monitoring'
     },
   ];
 }

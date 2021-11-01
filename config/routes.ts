@@ -101,6 +101,10 @@ const clusterRoutes = [
     path: '/clusters/*/-/webconsole',
     menuRender: false,
     component: 'clusters/Pods/Console',
+  },
+  {
+    path: '/clusters/*/-/monitoring',
+    component: 'clusters/Monitoring',
   }
 ];
 
