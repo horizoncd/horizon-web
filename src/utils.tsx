@@ -4,12 +4,13 @@ import moment from "moment";
 import {getLocale} from "@@/plugin-locale/localeExports";
 
 const roles = {
-  Owner: "Owner",
-  Maintainer: "Maintainer",
-  Developer: "Developer",
-  Reporter: "Reporter",
-  Guest: "Guest",
-  NotExist: "NotExist"
+  Owner: 'owner',
+  Maintainer: 'maintainer',
+  Developer: 'developer',
+  Reporter: 'reporter',
+  Guest: 'guest',
+  PE: 'pe',
+  NotExist: 'notExist'
 };
 
 const actions = {
@@ -20,16 +21,19 @@ const actions = {
 // 如：developer在管理member时，只能操作developer、reporter、guest，无法操作owner、maintainer
 const rolePermissions = {
   [roles.Owner]: {
-    [actions.ManageMember]: [roles.Owner, roles.Maintainer, roles.Developer, roles.Reporter, roles.Guest],
+    [actions.ManageMember]: [roles.Owner, roles.Maintainer, roles.Developer, roles.Reporter, roles.PE, roles.Guest],
   },
   [roles.Maintainer]: {
-    [actions.ManageMember]: [roles.Maintainer, roles.Developer, roles.Reporter, roles.Guest],
+    [actions.ManageMember]: [roles.Maintainer, roles.Developer, roles.Reporter, roles.PE, roles.Guest],
   },
   [roles.Developer]: {
-    [actions.ManageMember]: [roles.Developer, roles.Reporter, roles.Guest],
+    [actions.ManageMember]: [roles.Developer, roles.Reporter, roles.PE, roles.Guest],
   },
   [roles.Reporter]: {
-    [actions.ManageMember]: [roles.Reporter, roles.Guest],
+    [actions.ManageMember]: [roles.Reporter, roles.PE, roles.Guest],
+  },
+  [roles.PE]: {
+    [actions.ManageMember]: [roles.PE, roles.Guest],
   },
   [roles.Guest]: {
     [actions.ManageMember]: [roles.Guest],
