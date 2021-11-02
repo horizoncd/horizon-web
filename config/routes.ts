@@ -95,7 +95,7 @@ const clusterRoutes = [
   },
   {
     path: '/clusters/*/-/members',
-    component: 'applications/Member',
+    component: 'clusters/Member',
   },
   {
     path: '/clusters/*/-/webconsole',

@@ -8,6 +8,7 @@ import {DeleteOutlined, ExclamationCircleOutlined, ExportOutlined} from "@ant-de
 import styles from './index.less'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {MemberType} from '@/const'
+import {useRequest} from "@@/plugin-request/request";
 
 const {Option} = Select;
 const {Search} = Input;
@@ -51,59 +52,44 @@ export default (props: MemberProps) => {
   const {initialState} = useModel('@@initialState');
   const currentUser = initialState?.currentUser as API.CurrentUser;
   const [currentRole, setCurrentRole] = useState<string>(Utils.roles.NotExist);
-  // const now = new Date();
+  const [memberFilter, setMemberFilter] = useState<string>('');
 
   // member翻页监听：重新获取member列表
   const defaultMemberPageSize = 6;
-  const [members, setMembers] = useState<API.PageResult<API.Member>>({items: [], total: 0})
   const [membersAfterFilter, setMembersAfterFilter] = useState<API.PageResult<API.Member>>({items: [], total: 0})
-  const [memberPage, setMemberPage] = useState<API.PageParam>({
-    pageNumber: defaultPageNumber,
-    pageSize: defaultMemberPageSize
-  })
-  useEffect(() => {
-    onListMembers(resourceID).then(({data}) => {
-      setCurrentRole(Utils.roles.NotExist)
+
+  const {data, run: refreshMembers} = useRequest(() => {
+    return onListMembers(resourceID);
+  }, {
+    refreshDeps: [memberFilter],
+    onSuccess: () => {
+      console.log(memberFilter)
+      let latestCurrentRole = Utils.roles.NotExist
       if (!data.items) {
         data.items = []
       }
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].memberNameID === currentUser.id) {
-          setCurrentRole(data.items[i].role);
+          latestCurrentRole = data.items[i].role;
           break;
         }
       }
-      setMembers(data);
-
-      //前端过滤
-      if (memberPage.filter === undefined || memberPage.filter === "") {
-        setMembersAfterFilter(data)
+      if (memberFilter === '') {
+        setMembersAfterFilter({items: data.items, total: data.total})
       } else {
         let cnt = 0;
         let items: API.Member[] = [];
         for (let i = 0; i < data.items.length; i++) {
-          if (data.items[i].memberName.indexOf(memberPage.filter) !== -1) {
+          if (data.items[i].memberName.indexOf(memberFilter) !== -1) {
             items = items.concat(data.items[i])
             cnt++;
           }
         }
         setMembersAfterFilter({items: items, total: cnt});
       }
-    })
-  }, [memberPage]);
-
-  // role翻页监听：重新获取role列表
-  // const defaultRolePageSize = 6;
-  // const [roleList, setRoleList] = useState<API.Role[]>([])
-  // const [rolePage, setRolePage] = useState<API.PageParam>({
-  //   pageNumber: defaultPageNumber,
-  //   pageSize: defaultRolePageSize
-  // })
-  // useEffect(() => {
-  //   queryRoles().then(({items}) => {
-  //     setRoleList(items)
-  //   });
-  // }, [rolePage]);
+      setCurrentRole(latestCurrentRole);
+    }
+  })
 
   // user翻页监听：重新获取user列表
   const defaultUserPageSize = 20;
@@ -120,24 +106,18 @@ export default (props: MemberProps) => {
       pageOnMount.current = false;
       return;
     }
-    queryUsers(userPage.pageNumber, userPage.pageSize, userPage.filter).then(({data}) => {
+    queryUsers(userPage.pageNumber, userPage.pageSize, userPage.filter).then((result) => {
       if (userPage.isConcat === true) {
         const newUsers = {
           total: users.total,
-          items: users.items.concat(data.items)
+          items: users.items.concat(result.data.items)
         }
         setUsers(newUsers);
       } else {
-        setUsers(data);
+        setUsers(result.data);
       }
     });
   }, [userPage]);
-
-  // 页面刷新监听
-  useEffect(() => {
-    // setRolePage({pageNumber: defaultPageNumber, pageSize: defaultRolePageSize});
-    setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
-  }, []);
 
   // user搜索框过滤事件：查询user列表
   const onSearchUser = (filter: string) => {
@@ -172,24 +152,19 @@ export default (props: MemberProps) => {
       notification.success({
         message: intl.formatMessage({id: "pages.members.add.success"}),
       })
-      setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+      refreshMembers().then();
     })
   }
 
-  // member列表翻页
-  // const onMemberPageChange = (page: number, pageSize: number) => {
-  //   setMemberPage({pageSize: pageSize, pageNumber: page, filter: memberPage.filter});
-  // }
-
   // member搜索
   const onMemberSearch = (filter: string) => {
-    setMemberPage({pageSize: defaultMemberPageSize, pageNumber: defaultPageNumber, filter: filter})
+    setMemberFilter(filter);
   }
 
   // member搜索条件变化事件：清空则重置搜索条件
   const onMemberChange = (e: any) => {
-    if (e.target.value === "") {
-      setMemberPage({pageSize: defaultMemberPageSize, pageNumber: defaultPageNumber})
+    if (e.target.value === '') {
+      setMemberFilter(e.target.value);
     }
   }
 
@@ -209,7 +184,7 @@ export default (props: MemberProps) => {
               message: intl.formatMessage({id: "pages.members.remove.success"}),
             }
           );
-          setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+          refreshMembers().then();
         });
       },
     });
@@ -229,7 +204,7 @@ export default (props: MemberProps) => {
               message: intl.formatMessage({id: "pages.members.leave.success"}),
             }
           );
-          setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+          refreshMembers().then();
         });
       },
     });
@@ -246,7 +221,7 @@ export default (props: MemberProps) => {
           message: intl.formatMessage({id: "pages.members.update.success"}),
         }
       )
-      setMemberPage({pageNumber: defaultPageNumber, pageSize: defaultUserPageSize});
+      refreshMembers().then();
     })
   }
 
@@ -261,7 +236,7 @@ export default (props: MemberProps) => {
     {
       key: memberListKey,
       tab: <div>{intl.formatMessage({id: 'pages.members.list.label'})}<span
-        className={styles.tabNumber}>{members.total}</span></div>,
+        className={styles.tabNumber}>{membersAfterFilter.total}</span></div>,
     },
   ]
 
@@ -308,7 +283,6 @@ export default (props: MemberProps) => {
     </Form>,
   }
 
-
   return (
     <Detail>
       <h1>{title}</h1>
@@ -343,7 +317,7 @@ export default (props: MemberProps) => {
             //   onMemberPageChange(page, pageSize as number)
             // },
             pageSize: defaultMemberPageSize,
-            total: members.total,
+            total: membersAfterFilter.total,
           }}
           itemLayout="horizontal"
           dataSource={membersAfterFilter.items}
@@ -363,7 +337,8 @@ export default (props: MemberProps) => {
                     grantedTime: Utils.timeFromNow(item.grantTime)
                   })}</span>)}
               />
-              {currentUser.id !== item.memberNameID && Utils.permissionAllowed(currentRole, Utils.actions.ManageMember, item.role) ?
+              {currentUser.id !== item.memberNameID && Utils.permissionAllowed(currentRole, Utils.actions.ManageMember, item.role)
+              && item.resourceID === resourceID ?
                 <Select
                   dropdownMatchSelectWidth={false}
                   onSelect={(role: string) => {
@@ -401,7 +376,6 @@ export default (props: MemberProps) => {
           )}
         />
       </Card>
-
     </Detail>
   );
 };

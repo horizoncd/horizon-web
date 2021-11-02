@@ -6,4 +6,5 @@ export default {
   'menu.Application overview': '应用主页',
   'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
+  'menu.Cluster overview': '集群主页',
 };
