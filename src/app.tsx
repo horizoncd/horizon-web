@@ -303,6 +303,10 @@ function formatClusterMenu(fullPath: string) {
       parentKeys: [`/clusters${fullPath}/-/pipelines`],
     },
     {
+      path: `/clusters${fullPath}/-/pipelines/:id`,
+      parentKeys: [`/clusters${fullPath}/-/pipelines`],
+    },
+    {
       path: `/clusters${fullPath}/-/members`,
       name: 'Members',
       icon: 'contacts',

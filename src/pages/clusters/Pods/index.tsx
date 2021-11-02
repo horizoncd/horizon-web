@@ -8,12 +8,14 @@ import {getCluster, getClusterStatus, next} from "@/services/clusters/clusters";
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
-import {RunningTask, TaskStatus} from "@/const";
+import {PublishType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
 import type {Param} from "@/components/DetailCard";
 import DetailCard from "@/components/DetailCard";
+import {history} from 'umi';
+import {stringify} from "querystring";
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -47,7 +49,7 @@ export default () => {
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
-  const {id} = initialState!.resource;
+  const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [task, setTask] = useState(RunningTask.NONE);
@@ -244,9 +246,15 @@ export default () => {
     ],
   ]
 
-  const onClickOperation = ({key}: {key: string}) => {
+  const onClickOperation = ({key}: { key: string }) => {
     switch (key) {
       case '1':
+        history.push({
+            pathname: `/clusters${fullPath}/-/pipelines/new`,
+            search: stringify({
+              type: PublishType.BUILD_DEPLOY,
+            })
+          })
         break;
       case '2':
         break;

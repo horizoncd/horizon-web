@@ -94,6 +94,10 @@ const clusterRoutes = [
     component: 'clusters/pipelines/New',
   },
   {
+    path: '/clusters/*/-/pipelines/:id',
+    component: 'clusters/pipelines/Detail',
+  },
+  {
     path: '/clusters/*/-/members',
     component: 'applications/Member',
   },

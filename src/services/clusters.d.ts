@@ -94,7 +94,7 @@ declare namespace CLUSTER {
   }
 
   type ClusterRollback = {
-    pipelinerunID: string
+    pipelinerunID: number
   }
 
   type ClusterDiffs = {

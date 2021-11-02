@@ -64,12 +64,12 @@ export async function deploy(cluster: string, data: CLUSTER.ClusterDeploy) {
   });
 }
 
-export async function rollback(cluster: string, data: CLUSTER.ClusterRollback) {
+export async function rollback(clusterID: number, data: CLUSTER.ClusterRollback) {
   return request<{
     data: {
       id: string
     };
-  }>(`/apis/core/v1/clusters/${cluster}/rollback`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/rollback`, {
     method: 'POST',
     data
   });
@@ -102,11 +102,12 @@ export async function diffsOfCode(cluster: string, targetBranch: string) {
   });
 }
 
-export async function getPipelineRuns(cluster: string) {
+export async function getPipelines(clusterID: number, params: API.PageParam) {
   return request<{
-    data: API.PageResult<API.Pipelinerun>
-  }>(`/apis/core/v1/clusters/${cluster}/pipelineruns`, {
+    data: API.PageResult<PIPELINES.Pipeline>
+  }>(`/apis/core/v1/clusters/${clusterID}/pipelineruns`, {
     method: 'GET',
+    params
   });
 }
 

@@ -161,21 +161,6 @@ declare namespace API {
     pageSize: number;
   };
 
-  type Pipelinerun = {
-    id: number,
-    status: string,
-    action: string,
-    title: string,
-    description: string,
-    codeBranch: string,
-    codeCommit: string,
-    configCommit: string,
-    rollbackFrom: number,
-    createdBy: string,
-    startedAt: number,
-    finishedAt: number,
-  }
-
   type PageParam = {
     pageNumber: number,
     pageSize: number,

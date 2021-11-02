@@ -16,6 +16,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
   const {initialState} = useModel('@@initialState');
   const {fullPath} = initialState!.resource;
   const [fullscreen, setFullscreen] = useState(false)
+  const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
 
   const formatMessage = (suffix: string, defaultMsg: string) => {
     return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
@@ -89,6 +90,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
           onClick={() => {
 
           }}
+          disabled={!selectedPods.length}
         >
           {formatMessage('online', '上线')}
         </Button>
@@ -97,19 +99,36 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
           onClick={() => {
 
           }}
+          disabled={!selectedPods.length}
         >
           {formatMessage('offline', '下线')}
         </Button>
-      </div>
+        <Button
+          style={{marginLeft: '10px'}}
+          onClick={() => {
 
+          }}
+          disabled={!selectedPods.length}
+        >
+          {formatMessage('restartPod', '重启Pod')}
+        </Button>
+      </div>
     </div>
   }
   const filteredData = data.filter((item: any) => {
     return !filter || item.podName.contains(filter)
   })
 
+  const onPodSelected = (selectedRowKeys: React.Key[], selectedRows: CLUSTER.PodInTable[]) => {
+    setSelectedPods(selectedRows)
+  };
+
   return <div>
-      <Table
+    <Table
+      rowSelection={{
+        type: 'checkbox',
+        onChange: onPodSelected
+      }}
       columns={columns}
       dataSource={filteredData}
       pagination={{

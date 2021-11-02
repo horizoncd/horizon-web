@@ -43,14 +43,9 @@ export default () => {
       key: 'template',
     },
     {
-      title: 'createTime',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
       title: 'updateTime',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
     },
   ]
 
