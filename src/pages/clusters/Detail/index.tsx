@@ -1,6 +1,5 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import {useEffect, useState} from "react";
-import {deleteApplication, getApplication} from '@/services/applications/applications';
 import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, notification} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
@@ -13,68 +12,67 @@ import {useHistory, useIntl} from 'umi';
 import {stringify} from 'querystring';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
+import {deleteCluster, getCluster} from "@/services/clusters/clusters";
 
 export default () => {
-  console.log("clusters page")
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
-  const {name: applicationName, fullPath: applicationFullPath} = initialState!.resource
-  const defaultApplication: API.Application = {
+  const {id: clusterID, name: clusterName, fullPath: clusterFullPath} = initialState!.resource
+  const defaultCluster: CLUSTER.Cluster = {
     id: 0,
-    groupID: 0,
+    application: {
+      id: 0,
+      name: '',
+    },
     name: '',
     priority: 'P0',
     description: '',
     template: {
       name: '',
       release: '',
-      recommendedRelease: '',
     },
     git: {
       url: '',
       subfolder: '',
       branch: '',
+      commit: '',
+    },
+    scope: {
+      environment: '',
+      region: '',
     },
     templateInput: undefined,
     fullPath: '',
     createdAt: '',
     updatedAt: '',
   }
-  const [application, setApplication] = useState<API.Application>(defaultApplication)
+  const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
     [
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.name'}), value: application.name},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.description'}), value: application.description || ''},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.priority'}), value: application.priority},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.url'}), value: application.git.url},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.subfolder'}), value: application.git.subfolder},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.priority'}), value: cluster.priority},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.url'}), value: cluster.git.url},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.subfolder'}), value: cluster.git.subfolder},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.branch'}), value: cluster.git.branch},
     ],
     [
       {
-        key: intl.formatMessage({id: 'pages.applicationDetail.basic.release'}),
-        value: application.template.name + '-' + application.template.release
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.release'}),
+        value: cluster.template.name + '-' + cluster.template.release
       },
     ],
     [
-      {key: intl.formatMessage({id: 'pages.applicationDetail.basic.createTime'}), value: application.createdAt},
-      {key: intl.formatMessage({id: 'pages.applicationDetail.basic.updateTime'}), value: application.updatedAt},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.createTime'}), value: cluster.createdAt},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}), value: cluster.updatedAt},
     ],
   ]
 
-  // 仅当推荐版本与当前版本不一致时显示推荐信息
-  if (application.template.release !== application.template.recommendedRelease) {
-    serviceDetail[1] = serviceDetail[1].concat({
-      key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
-      value: application.template.name + '-' + application.template.recommendedRelease
-    })
-  }
-
-  const {run: refreshApplication} = useRequest(() => {
-    return getApplication(applicationName).then(({data: result}) => {
-      setApplication(result);
+  const {run: refreshCluster} = useRequest(() => {
+    return getCluster(clusterID).then(({data: result}) => {
+      setCluster(result);
       // query schema by template and release
       querySchema(result.template.name, result.template.release).then(({data}) => {
         setTemplate(data);
@@ -82,82 +80,77 @@ export default () => {
     });
   }, {manual: true})
 
-  const {run: delApplication} = useRequest(() => {
-    return deleteApplication(applicationName).then(() => {
+  const {run: delCluster} = useRequest(() => {
+    return deleteCluster(clusterID).then(() => {
       notification.success({
-        message: intl.formatMessage({id: "pages.applicationDelete.success"}),
+        message: intl.formatMessage({id: "pages.clusterDelete.success"}),
       });
-      window.location.href = applicationFullPath.substring(0, applicationFullPath.lastIndexOf('/'));
+      window.location.href = clusterFullPath.substring(0, clusterFullPath.lastIndexOf('/'));
     });
   }, {manual: true})
 
   useEffect(() => {
-    refreshApplication();
+    refreshCluster().then();
   }, []);
 
 
-  const firstLetter = applicationName.substring(0, 1).toUpperCase();
+  const firstLetter = clusterName.substring(0, 1).toUpperCase();
   const operateDropdown = (
     <Menu>
-      <Menu.Item>
-        <a>{intl.formatMessage({id: 'pages.applicationDetail.basic.createCluster'})}</a>
-      </Menu.Item>
       <Menu.Item onClick={() => {
         Modal.confirm({
-          title: intl.formatMessage({id: 'pages.applicationDelete.confirm.title'}, {
-            application: <span className={styles.bold}> {applicationName}</span>
+          title: intl.formatMessage({id: 'pages.clusterDelete.confirm.title'}, {
+            cluster: <span className={styles.bold}> {clusterName}</span>
           }),
           icon: <ExclamationCircleOutlined/>,
           content: <div
-            className={styles.bold}>{intl.formatMessage({id: 'pages.applicationDelete.confirm.content'})} </div>,
-          okText: intl.formatMessage({id: 'pages.applicationDelete.confirm.ok'}),
-          cancelText: intl.formatMessage({id: 'pages.applicationDelete.confirm.cancel'}),
+            className={styles.bold}>{intl.formatMessage({id: 'pages.clusterDelete.confirm.content'})} </div>,
+          okText: intl.formatMessage({id: 'pages.clusterDelete.confirm.ok'}),
+          cancelText: intl.formatMessage({id: 'pages.clusterDelete.confirm.cancel'}),
           onOk: () => {
-            delApplication().then();
+            delCluster().then();
           },
         });
       }}>
-        <a>{intl.formatMessage({id: 'pages.applicationDetail.basic.delete'})}</a>
+        <a>{intl.formatMessage({id: 'pages.clusterDetail.basic.delete'})}</a>
       </Menu.Item>
     </Menu>
   );
 
-  const editApplicationRoute = '/applications/edit';
+  const editClusterRoute = '/clusters/edit';
 
   return (
     <Detail>
       <div>
         <div className={styles.avatarBlock}>
-          <Avatar className={`${styles.avatar} identicon bg${utils.getAvatarColorIndex(applicationName)}`} size={64}
+          <Avatar className={`${styles.avatar} identicon bg${utils.getAvatarColorIndex(clusterName)}`} size={64}
                   shape={"square"}>
             <span className={styles.avatarFont}>{firstLetter}</span>
           </Avatar>
-          <span className={styles.titleFont}>{applicationName}</span>
+          <span className={styles.titleFont}>{clusterName}</span>
           <div className={styles.flex}/>
-          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button>
+          <Button className={styles.button} onClick={refreshCluster}><ReloadOutlined/></Button>
           <Button
             type="primary" className={styles.button}
             onClick={() =>
               history.push({
-                pathname: editApplicationRoute,
+                pathname: editClusterRoute,
                 search: stringify({
-                  application: applicationName,
+                  cluster: clusterName,
                 }),
               })
             }
           >
-            {intl.formatMessage({id: 'pages.applicationDetail.basic.edit'})}
+            {intl.formatMessage({id: 'pages.clusterDetail.basic.edit'})}
           </Button>
-          <Dropdown className={styles.button} overlay={operateDropdown}
-                    trigger={["click"]}><Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
         </div>
       </div>
       <Divider className={styles.groupDivider}/>
       <DetailCard title={(
-        <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.applicationDetail.basic.detail'})}</span>)}
+        <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.clusterDetail.basic.detail'})}</span>)}
                   data={serviceDetail}/>
       <Card title={(
-        <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.applicationDetail.basic.config'})}</span>)}
+        <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.clusterDetail.basic.config'})}</span>)}
             type={"inner"}>
         {
           template && Object.keys(template).map((item) => {
@@ -166,7 +159,7 @@ export default () => {
                 key={item}
                 disabled={true}
                 uiSchema={template[item].uiSchema}
-                formData={application.templateInput[item]}
+                formData={cluster.templateInput[item]}
                 jsonSchema={template[item].jsonSchema}
               />)
           })

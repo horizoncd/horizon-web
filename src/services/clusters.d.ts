@@ -61,6 +61,8 @@ declare namespace CLUSTER {
     };
     scope: Scope
     templateInput: any;
+    createdAt: string;
+    updatedAt: string;
   };
 
   type NewCluster = {

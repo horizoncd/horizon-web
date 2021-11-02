@@ -98,9 +98,6 @@ export default () => {
   const firstLetter = applicationName.substring(0, 1).toUpperCase();
   const operateDropdown = (
     <Menu>
-      <Menu.Item>
-        <a>{intl.formatMessage({id: 'pages.applicationDetail.basic.createCluster'})}</a>
-      </Menu.Item>
       <Menu.Item onClick={() => {
         Modal.confirm({
           title: intl.formatMessage({id: 'pages.applicationDelete.confirm.title'}, {
