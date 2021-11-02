@@ -2,7 +2,7 @@ import {Button, Col, Divider, Form, Input, notification, Row} from 'antd';
 import {history} from 'umi';
 import type {Rule} from 'rc-field-form/lib/interface';
 import './index.less';
-import {createGroup} from '@/services/groups/groups';
+import {createGroup, createSubGroup} from '@/services/groups/groups';
 import {useModel} from "@@/plugin-model/useModel";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 
@@ -41,16 +41,28 @@ export default () => {
   const cancel = () => history.goBack();
 
   const onFinish = (values: API.NewGroup) => {
-    createGroup({
-      ...values,
-      visibilityLevel: 'private',
-      parentID: id,
-    }).then(() => {
+    const hook = () => {
       notification.info({
         message: 'Group新建成功',
       });
       window.location.href = `${fullPath}/${values.path}`;
-    });
+    }
+
+    if (id) {
+      createSubGroup(id, {
+        ...values,
+        visibilityLevel: 'private',
+      }).then(() => {
+        hook()
+      })
+    } else {
+      createGroup({
+        ...values,
+        visibilityLevel: 'private',
+      }).then(() => {
+        hook()
+      });
+    }
   };
 
   const nameRules: Rule[] = [

@@ -55,6 +55,13 @@ export async function createGroup(body: API.NewGroup, options?: { [key: string]:
   });
 }
 
+export async function createSubGroup(id: number, data: API.NewGroup) {
+  return request(`/apis/core/v1/groups/${id}/groups`, {
+    method: 'POST',
+    data
+  });
+}
+
 export async function getGroupByID(
   params: {
     id: number;
