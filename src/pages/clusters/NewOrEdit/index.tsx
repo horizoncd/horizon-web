@@ -84,7 +84,7 @@ export default (props: any) => {
           scope
         } = clusterData!
         const {url: u, branch: b, subfolder: s} = git
-        const {env: e, region: r} = scope
+        const {environment: e, region: r} = scope
         setBasic([
             {name, value: n},
             {name: description, value: d},

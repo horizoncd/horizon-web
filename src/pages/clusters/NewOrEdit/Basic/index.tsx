@@ -55,10 +55,12 @@ export default (props: any) => {
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
-            <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
+            <Input addonBefore={(editing || readonly) ? '' : `${props.applicationName}-`}
+                   placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize/>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
+                      autoSize/>
           </Form.Item>
           <Form.Item label={formatMessage('template', 'template')}>
             <Input disabled={true} value={props.template?.name}/>

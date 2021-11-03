@@ -19,11 +19,6 @@
     menuRender: false,
     component: 'groups/New',
   },
-  {
-    path: '/clusters/edit',
-    menuRender: false,
-    component: 'clusters/NewOrEdit',
-  },
 ];
 
 const groupRoutes = [
@@ -81,6 +76,11 @@ const applicationRoutes = [
 ];
 
 const clusterRoutes = [
+  {
+    path: '/clusters/*/-/edit',
+    menuRender: false,
+    component: 'clusters/NewOrEdit',
+  },
   {
     path: '/clusters/*/-/pods',
     component: 'clusters/Pods',

@@ -10,6 +10,8 @@ const {TextArea} = Input;
 
 export default () => {
   const [form] = Form.useForm();
+  console.log(history.location.pathname)
+  const createRootGroup = history.location.pathname === '/groups/new'
 
   const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState?.resource || {};
@@ -20,7 +22,7 @@ export default () => {
   const groupPathLabel = formatLabel('Group URL');
   const groupDescLabel = formatLabel('Group description');
 
-  const getURLPrefix = () => `${window.location.origin + fullPath}/`;
+  const getURLPrefix = () => `${window.location.origin + (createRootGroup ? '' : fullPath)}/`;
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -45,7 +47,7 @@ export default () => {
       notification.info({
         message: 'Group新建成功',
       });
-      window.location.href = `${fullPath}/${values.path}`;
+      window.location.href = `${createRootGroup ? '' : fullPath}/${values.path}`;
     }
 
     if (id) {

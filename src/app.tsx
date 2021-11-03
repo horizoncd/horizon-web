@@ -274,6 +274,10 @@ function formatClusterMenu(fullPath: string) {
       icon: 'appstore',
     },
     {
+      path: `/clusters${fullPath}/-/edit`,
+      menuRender: false,
+    },
+    {
       path: `/clusters${fullPath}/-/pipelines`,
       name: 'Pipelines',
       icon: 'contacts',

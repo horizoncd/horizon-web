@@ -1,15 +1,14 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import {useEffect, useState} from "react";
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, notification} from 'antd';
+import {Avatar, Button, Card, Divider, notification} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
 import 'antd/lib/form/style';
 import styles from './index.less'
 import utils from '@/utils';
-import {DownOutlined, ExclamationCircleOutlined, ReloadOutlined} from '@ant-design/icons';
+import {ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
-import {stringify} from 'querystring';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 import {deleteCluster, getCluster} from "@/services/clusters/clusters";
@@ -95,29 +94,8 @@ export default () => {
 
 
   const firstLetter = clusterName.substring(0, 1).toUpperCase();
-  const operateDropdown = (
-    <Menu>
-      <Menu.Item onClick={() => {
-        Modal.confirm({
-          title: intl.formatMessage({id: 'pages.clusterDelete.confirm.title'}, {
-            cluster: <span className={styles.bold}> {clusterName}</span>
-          }),
-          icon: <ExclamationCircleOutlined/>,
-          content: <div
-            className={styles.bold}>{intl.formatMessage({id: 'pages.clusterDelete.confirm.content'})} </div>,
-          okText: intl.formatMessage({id: 'pages.clusterDelete.confirm.ok'}),
-          cancelText: intl.formatMessage({id: 'pages.clusterDelete.confirm.cancel'}),
-          onOk: () => {
-            delCluster().then();
-          },
-        });
-      }}>
-        <a>{intl.formatMessage({id: 'pages.clusterDetail.basic.delete'})}</a>
-      </Menu.Item>
-    </Menu>
-  );
 
-  const editClusterRoute = '/clusters/edit';
+  const editClusterRoute = `/clusters${clusterFullPath}/-/edit`;
 
   return (
     <Detail>
@@ -135,9 +113,6 @@ export default () => {
             onClick={() =>
               history.push({
                 pathname: editClusterRoute,
-                search: stringify({
-                  cluster: clusterName,
-                }),
               })
             }
           >
