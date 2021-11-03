@@ -2,11 +2,11 @@ import Basic from '../Basic';
 import Config from '../../../applications/NewOrEdit/Config';
 
 export default (props: any) => {
-  const { template, form, release, config } = props;
+  const { template, form, release, config, applicationName, editing } = props;
 
   return (
     <div>
-      <Basic form={form} template={template} readonly />
+      <Basic editing={editing} applicationName={applicationName}  form={form} template={template} readonly />
 
       <Config template={template} release={release} config={config} readonly />
     </div>

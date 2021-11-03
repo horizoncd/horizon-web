@@ -41,6 +41,8 @@ export default (props: any) => {
 
   const {readonly = false, editing = false} = props;
 
+  const name = editing ? <Input disabled/> : <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}  disabled={readonly}/>;
+
   return (
     <div>
       <Form layout={'vertical'} form={props.form}
@@ -55,8 +57,7 @@ export default (props: any) => {
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
-            <Input addonBefore={(editing || readonly) ? '' : `${props.applicationName}-`}
-                   placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
+            {name}
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
             <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}

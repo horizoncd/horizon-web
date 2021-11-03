@@ -239,7 +239,7 @@ export default (props: any) => {
             }
             {
               current === 2 &&
-              <Audit template={template}  form={form} release={template.release} config={config}/>
+              <Audit template={template} editing={editing} form={form} applicationName={applicationName} release={template.release} config={config}/>
             }
           </div>
           <div className={styles.stepsAction}>
