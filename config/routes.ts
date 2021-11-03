@@ -44,12 +44,12 @@ const groupRoutes = [
     component: 'groups/Activity',
   },
   {
-    path: '/groups/*/-/subgroups/new',
+    path: '/groups/*/-/newgroup',
     menuRender: false,
     component: 'groups/New',
   },
   {
-    path: '/groups/*/-/applications/new',
+    path: '/groups/*/-/newapplication',
     menuRender: false,
     component: 'applications/NewOrEdit',
   },

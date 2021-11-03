@@ -18,23 +18,23 @@ export default () => {
 
   const groupNameLabel = formatLabel('Group name');
   const groupPathLabel = formatLabel('Group URL');
-  const groupDescLabel = formatLabel('Group description (optional)');
+  const groupDescLabel = formatLabel('Group description');
 
   const getURLPrefix = () => `${window.location.origin + fullPath}/`;
 
   const getGroupNameLabelStyle = () => {
     return {
-      width: '40%',
+      width: '30%',
     };
   };
   const getGroupPathAndDescStyle = () => {
     return {
-      width: '80%',
+      width: '70%',
     };
   };
   const getSubmitBtnStyle = () => {
     return {
-      width: '80%',
+      width: '70%',
     };
   };
 
@@ -86,32 +86,24 @@ export default () => {
       <div style={{fontSize: "20px"}}>New group</div>
       <Divider/>
       <Row>
-        <Col span={4}>
-          <div style={{fontSize: "16px"}}>
-            Groups allow you to manage and collaborate across multiple projects. Members of a
-            group have access to all of its projects.
-          </div>
-        </Col>
-        <Col span={2}/>
+        <Col span={5}/>
         <Col span={18}>
           <Form
             layout={'vertical'}
             form={form}
             onFinish={onFinish}
-            requiredMark={false}
           >
             <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
-              <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
+              <Input style={getGroupNameLabelStyle()}/>
             </Form.Item>
             <Form.Item label={groupPathLabel} name={'path'} rules={pathRules}>
               <Input
                 addonBefore={getURLPrefix()}
                 style={getGroupPathAndDescStyle()}
-                placeholder="my-awesome-group"
               />
             </Form.Item>
             <Form.Item label={groupDescLabel} name={'description'}>
-              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}}/>
+              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}} maxLength={256}/>
             </Form.Item>
             <Form.Item style={getSubmitBtnStyle()}>
               <div className={'form-actions'}>

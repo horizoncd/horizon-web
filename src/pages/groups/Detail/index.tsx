@@ -12,8 +12,9 @@ export default () => {
 
   const { initialState } = useModel('@@initialState');
   const { id, name = '', fullPath } = initialState?.resource || {};
-  const newGroup = `/groups${fullPath}/-/subgroups/new`
-  const newApplication = `/groups${fullPath}/-/applications/new`
+  const newGroup = `/groups${fullPath}/-/newgroup`
+  const newApplication = `/groups${fullPath}/-/newapplication`
+  // const editGroup = `/groups${fullPath}/-/edit`
 
   const header = () => {
     return (

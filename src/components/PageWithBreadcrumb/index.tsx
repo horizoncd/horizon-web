@@ -1,5 +1,5 @@
 import {PageContainer} from '@ant-design/pro-layout';
-import utils from '../../utils'
+import utils, {pathnameInStaticRoutes} from '../../utils'
 import type {Route} from "antd/lib/breadcrumb/Breadcrumb";
 import {useModel} from "@@/plugin-model/useModel";
 import {Divider} from "antd";
@@ -12,10 +12,12 @@ export default (props: any) => {
     </a>
   }
   const {fullName} = initialState!.resource
+  const staticRoute = pathnameInStaticRoutes()
+
   return (
     <div className={styles.pageContainer}>
       <PageContainer
-        header={{
+        header={staticRoute ? {} : {
           breadcrumb: {
             routes: utils.getBreadcrumbs(fullName),
             itemRender
@@ -23,7 +25,9 @@ export default (props: any) => {
         }}
         title={false}
       >
-        <Divider className={styles.divider}/>
+        {
+          !staticRoute && <Divider className={styles.divider}/>
+        }
         {props.children}
       </PageContainer>
     </div>

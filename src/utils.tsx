@@ -2,6 +2,7 @@ import type {Route} from 'antd/lib/breadcrumb/Breadcrumb';
 import {history} from 'umi';
 import {getLocale} from "@@/plugin-locale/localeExports";
 import moment, { isMoment } from 'moment';
+import {routes} from "../config/routes";
 
 const roles = {
   Owner: 'owner',
@@ -247,6 +248,27 @@ export const formatQueryParam = (data, options ) => {
 
   return result;
 };
+
+export const pathnameInStaticRoutes = (): boolean => {
+  const {pathname} = history.location;
+  // handle url end with '/'
+  let path = pathname;
+  if (pathname.endsWith('/')) {
+    path = pathname.substring(0, pathname.length - 1);
+  }
+  if (path === '') {
+    return true;
+  }
+
+  for (let i = 0; i < routes.length; i += 1) {
+    const staticRoute = routes[i];
+    if (path === staticRoute.path) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 export default {
   roles,

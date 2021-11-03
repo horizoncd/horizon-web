@@ -14,7 +14,7 @@ import {
   AppstoreOutlined,
   MonitorOutlined
 } from '@ant-design/icons/lib';
-import Utils from '@/utils';
+import Utils, {pathnameInStaticRoutes} from '@/utils';
 import { queryResource } from '@/services/core';
 import { stringify } from 'querystring';
 import { routes } from '../config/routes';
@@ -192,29 +192,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     ...initialState?.settings,
+    logo: <div/>
   };
 };
-
-function pathnameInStaticRoutes(): boolean {
-  const {pathname} = history.location;
-  // handle url end with '/'
-  let path = pathname;
-  if (pathname.endsWith('/')) {
-    path = pathname.substring(0, pathname.length - 1);
-  }
-  if (path === '') {
-    return true;
-  }
-
-  for (let i = 0; i < routes.length; i += 1) {
-    const staticRoute = routes[i];
-    if (path === staticRoute.path) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 function formatGroupMenu(fullPath: string) {
   return [
@@ -241,11 +221,11 @@ function formatGroupMenu(fullPath: string) {
       ],
     },
     {
-      path: `/groups${fullPath}/-/subgroups/new`,
+      path: `/groups${fullPath}/-/newgroup`,
       menuRender: false,
     },
     {
-      path: `/groups${fullPath}/-/applications/new`,
+      path: `/groups${fullPath}/-/newapplication`,
       menuRender: false,
     },
   ];
