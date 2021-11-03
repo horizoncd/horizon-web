@@ -1,11 +1,12 @@
-import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading } from '@ant-design/pro-layout';
+import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import {PageLoading} from '@ant-design/pro-layout';
 import {Alert, notification} from 'antd';
-import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
-import { history } from 'umi';
+import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
+import {history} from 'umi';
+import RBAC from '@/rbac';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/login/login';
+import {currentUser as queryCurrentUser} from './services/login/login';
 import {
   BankOutlined,
   ContactsOutlined,
@@ -19,16 +20,18 @@ import { queryResource } from '@/services/core';
 import { stringify } from 'querystring';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const'
+import {queryRoles, querySelfMember} from "@/services/members/members";
+
 
 const loginPath = '/user/login';
 
 const IconMap = {
-  smile: <SmileOutlined />,
-  contacts: <ContactsOutlined />,
-  setting: <SettingOutlined />,
-  bank: <BankOutlined />,
-  appstore: <AppstoreOutlined />,
-  monitoring: <MonitorOutlined />
+  smile: <SmileOutlined/>,
+  contacts: <ContactsOutlined/>,
+  setting: <SettingOutlined/>,
+  bank: <BankOutlined/>,
+  appstore: <AppstoreOutlined/>,
+  monitoring: <MonitorOutlined/>
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -49,12 +52,20 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  roles?: API.Role[];
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
   resource: API.Resource;
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = { fullName: '', fullPath: '', id: 0, name: '', type: 'group', parentID: 0 };
-  let currentUser: API.CurrentUser | undefined = {id: 0, name: ""}
+  const resource: API.Resource = {fullName: '', fullPath: '', id: 0, name: '', type: 'group', parentID: 0};
+  let currentUser: API.CurrentUser | undefined = {
+    id: 0,
+    name: "",
+    isAdmin: false,
+    role: RBAC.AnonymousRole,
+  }
+  let roles: API.Role[] = [];
+
 
   try {
     const {data: userData} = await queryCurrentUser();
@@ -65,6 +76,12 @@ export async function getInitialState(): Promise<{
 
     currentUser.id = userData.id
     currentUser.name = userData.name
+    currentUser.isAdmin = userData.isAdmin
+
+    const {data: rolesData} = await queryRoles()
+    roles = rolesData
+
+
   } catch (e) {
     currentUser = undefined
   }
@@ -79,6 +96,16 @@ export async function getInitialState(): Promise<{
       resource.type = resourceData.type;
       resource.fullName = resourceData.fullName;
       resource.fullPath = resourceData.fullPath;
+
+      const {data: memberData} = await querySelfMember(resource.type, resource.id)
+      if (memberData.total > 0) {
+        currentUser!.role = memberData.items[0].role;
+      } else {
+        currentUser!.role = RBAC.AnonymousRole;
+      }
+
+      RBAC.RefreshPermissions(roles, currentUser!.role);
+
     } catch (e) {
       settings.menuRender = false;
     }
@@ -86,6 +113,7 @@ export async function getInitialState(): Promise<{
 
   return {
     currentUser,
+    roles,
     settings,
     resource,
   };

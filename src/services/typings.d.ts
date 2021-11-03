@@ -3,7 +3,9 @@
 declare namespace API {
   type CurrentUser = {
     name: string;
-    id: number
+    id: number;
+    isAdmin: boolean;
+    role: string;
   };
 
   type Resource = {
@@ -79,12 +81,6 @@ declare namespace API {
     grantorName: string,
     // GrantTime
     grantTime: string,
-  };
-
-  type Role = {
-    name: number,
-    verb: string[],
-    resources: string[],
   };
 
   type User = {
@@ -169,4 +165,17 @@ declare namespace API {
     // todo:看下有没有其他实现方法
     isConcat?: boolean,
   };
+
+  type RoleRule = {
+    verbs: string[],
+    apiGroups: string[],
+    resources: string[],
+    scopes: string[],
+    nonResourceURLs: string[],
+  }
+
+  type Role = {
+    name: string,
+    rules: RoleRule[]
+  }
 }

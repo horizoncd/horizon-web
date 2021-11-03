@@ -12,6 +12,7 @@ import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 import {deleteCluster, getCluster} from "@/services/clusters/clusters";
+import RBAC from '@/rbac';
 
 export default () => {
   const intl = useIntl();
@@ -40,6 +41,7 @@ export default () => {
     scope: {
       environment: '',
       region: '',
+      regionDisplayName: '',
     },
     templateInput: undefined,
     fullPath: '',
@@ -64,8 +66,14 @@ export default () => {
       },
     ],
     [
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.createTime'}), value: cluster.createdAt},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}), value: cluster.updatedAt},
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.createTime'}),
+        value: utils.timeToLocal(cluster.createdAt)
+      },
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}),
+        value: utils.timeToLocal(cluster.updatedAt)
+      },
     ],
   ]
 
@@ -108,16 +116,18 @@ export default () => {
           <span className={styles.titleFont}>{clusterName}</span>
           <div className={styles.flex}/>
           <Button className={styles.button} onClick={refreshCluster}><ReloadOutlined/></Button>
-          <Button
-            type="primary" className={styles.button}
-            onClick={() =>
-              history.push({
-                pathname: editClusterRoute,
-              })
-            }
-          >
-            {intl.formatMessage({id: 'pages.clusterDetail.basic.edit'})}
-          </Button>
+          {
+            RBAC.Permissions.updateCluster.allowed && <Button
+              type="primary" className={styles.button}
+              onClick={() =>
+                history.push({
+                  pathname: editClusterRoute,
+                })
+              }
+            >
+              {intl.formatMessage({id: 'pages.clusterDetail.basic.edit'})}
+            </Button>
+          }
         </div>
       </div>
       <Divider className={styles.groupDivider}/>

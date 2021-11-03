@@ -13,6 +13,7 @@ import {DownOutlined, ExclamationCircleOutlined, ReloadOutlined} from '@ant-desi
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
+import RBAC from '@/rbac'
 
 export default () => {
   const intl = useIntl();
@@ -58,8 +59,14 @@ export default () => {
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
     ],
     [
-      {key: intl.formatMessage({id: 'pages.applicationDetail.basic.createTime'}), value: application.createdAt},
-      {key: intl.formatMessage({id: 'pages.applicationDetail.basic.updateTime'}), value: application.updatedAt},
+      {
+        key: intl.formatMessage({id: 'pages.applicationDetail.basic.createTime'}),
+        value: utils.timeToLocal(application.createdAt),
+      },
+      {
+        key: intl.formatMessage({id: 'pages.applicationDetail.basic.updateTime'}),
+        value: utils.timeToLocal(application.updatedAt)
+      },
     ],
   ]
 
@@ -130,18 +137,26 @@ export default () => {
           </Avatar>
           <span className={styles.titleFont}>{applicationName}</span>
           <div className={styles.flex}/>
-          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button> <Button
-          type="primary" className={styles.button}
-          onClick={() =>
-            history.push({
-              pathname: editApplicationRoute,
-            })
+          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button>
+          {
+            RBAC.Permissions.updateApplication.allowed &&
+            <Button
+              type="primary" className={styles.button}
+              onClick={() =>
+                history.push({
+                  pathname: editApplicationRoute,
+                })
+              }
+            >
+              {intl.formatMessage({id: 'pages.applicationDetail.basic.edit'})}
+            </Button>
           }
-        >
-          {intl.formatMessage({id: 'pages.applicationDetail.basic.edit'})}
-        </Button>
-          <Dropdown className={styles.button} overlay={operateDropdown}
-                    trigger={["click"]}><Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
+          {
+            RBAC.Permissions.deleteApplication.allowed &&
+            <Dropdown className={styles.button} overlay={operateDropdown}
+                      trigger={["click"]}>
+              <Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
+          }
         </div>
       </div>
       <Divider className={styles.groupDivider}/>

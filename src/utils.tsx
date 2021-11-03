@@ -4,46 +4,6 @@ import {getLocale} from "@@/plugin-locale/localeExports";
 import moment, { isMoment } from 'moment';
 import {routes} from "../config/routes";
 
-const roles = {
-  Owner: 'owner',
-  Maintainer: 'maintainer',
-  Developer: 'developer',
-  Reporter: 'reporter',
-  Guest: 'guest',
-  PE: 'pe',
-  NotExist: 'notExist'
-};
-
-const actions = {
-  ManageMember: "manage member",
-};
-
-// 角色、操作、资源的对应关系
-// 如：developer在管理member时，只能操作developer、reporter、guest，无法操作owner、maintainer
-const rolePermissions = {
-  [roles.Owner]: {
-    [actions.ManageMember]: [roles.Owner, roles.Maintainer, roles.Developer, roles.Reporter, roles.PE, roles.Guest],
-  },
-  [roles.Maintainer]: {
-    [actions.ManageMember]: [roles.Maintainer, roles.Developer, roles.Reporter, roles.PE, roles.Guest],
-  },
-  [roles.Developer]: {
-    [actions.ManageMember]: [roles.Developer, roles.Reporter, roles.PE, roles.Guest],
-  },
-  [roles.Reporter]: {
-    [actions.ManageMember]: [roles.Reporter, roles.PE, roles.Guest],
-  },
-  [roles.PE]: {
-    [actions.ManageMember]: [roles.PE, roles.Guest],
-  },
-  [roles.Guest]: {
-    [actions.ManageMember]: [roles.Guest],
-  },
-  [roles.NotExist]: {
-    [actions.ManageMember]: [],
-  }
-};
-
 const getResourcePath = () => {
   const {pathname} = history.location;
   const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
@@ -108,18 +68,14 @@ const getAvatarColorIndex = (title: string) => {
   return (count % 7) + 1;
 };
 
-// 基于rbac判断某个操作是否被允许，可用于作为组件隐藏、置灰的条件
-const permissionAllowed = (role: string, action: string, resource: string) => {
-  let allowed = false;
-  if (rolePermissions[role][action].includes(resource)) {
-    allowed = true
-  }
-  return allowed
-};
-
 // 计算出某个时间点是当前多久以前
 function timeFromNow(oldTime: string) {
   return moment(oldTime).local().locale(getLocale()).fromNow()
+}
+
+// 将日期转为浏览器当前时区
+function timeToLocal(time: string) {
+  return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString()
 }
 
 export const mergeDefaultValue = (value: any, defaultValue: { [x: string]: any; }) => {
@@ -271,12 +227,9 @@ export const pathnameInStaticRoutes = (): boolean => {
 }
 
 export default {
-  roles,
-  actions,
-  rolePermissions,
   getResourcePath,
   getBreadcrumbs,
   getAvatarColorIndex,
-  permissionAllowed,
   timeFromNow,
+  timeToLocal,
 };
