@@ -113,11 +113,17 @@ const Permissions = {
 //     }
 //   ]
 // }
-const RefreshPermissions = (roles: API.Role[], currentRole: string) => {
-  if (currentRole === AnonymousRole) {
+const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => {
+  if (currentUser.isAdmin) {
+    Object.keys(Permissions).forEach((operation) => {
+      Permissions[operation].allowed = true;
+      Permissions[operation].allowedEnv = [AllowAll];
+    })
     return;
   }
-
+  if (currentUser.role === AnonymousRole) {
+    return;
+  }
   // rolePolicy用于记录自身角色被允许的操作、资源、环境，其中 resource/subResource 和 subResource 是有区别的，前者只对 create 操作生效，后者对除 create 之外的操作生效
   // rolePolicy示例：
   // {
@@ -130,7 +136,7 @@ const RefreshPermissions = (roles: API.Role[], currentRole: string) => {
   // }
   const rolePolicy = {};
   for (const role of roles) {
-    if (role.name !== currentRole) {
+    if (role.name !== currentUser.role) {
       continue;
     }
     for (const rule of role.rules) {

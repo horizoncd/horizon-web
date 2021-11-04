@@ -1,6 +1,6 @@
 import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
 import {PageLoading} from '@ant-design/pro-layout';
-import {Alert, notification} from 'antd';
+import {notification} from 'antd';
 import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history} from 'umi';
 import RBAC from '@/rbac';
@@ -8,18 +8,18 @@ import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import {currentUser as queryCurrentUser} from './services/login/login';
 import {
+  AppstoreOutlined,
   BankOutlined,
   ContactsOutlined,
+  MonitorOutlined,
   SettingOutlined,
-  SmileOutlined,
-  AppstoreOutlined,
-  MonitorOutlined
+  SmileOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
-import { queryResource } from '@/services/core';
-import { stringify } from 'querystring';
-import { routes } from '../config/routes';
-import { ResourceType } from '@/const'
+import {queryResource} from '@/services/core';
+import {stringify} from 'querystring';
+import {routes} from '../config/routes';
+import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
 
 
@@ -35,7 +35,7 @@ const IconMap = {
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({ icon, children, ...item }) => ({
+  menus.map(({icon, children, ...item}) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
@@ -43,7 +43,7 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
-  loading: <PageLoading />,
+  loading: <PageLoading/>,
 };
 
 /**
@@ -104,7 +104,7 @@ export async function getInitialState(): Promise<{
         currentUser!.role = RBAC.AnonymousRole;
       }
 
-      RBAC.RefreshPermissions(roles, currentUser!.role);
+      RBAC.RefreshPermissions(roles, currentUser!);
 
     } catch (e) {
       settings.menuRender = false;
@@ -142,7 +142,7 @@ export const request: RequestConfig = {
     },
   },
   errorHandler: (error: any) => {
-    const { response, data } = error;
+    const {response, data} = error;
     if (!response) {
       notification.error({
         message: '网络异常',
@@ -166,20 +166,21 @@ export const request: RequestConfig = {
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
-    rightContentRender: () => <RightContent />,
-    footerRender: () => <Footer />,
-    onPageChange: () => {},
+    rightContentRender: () => <RightContent/>,
+    footerRender: () => <Footer/>,
+    onPageChange: () => {
+    },
     menuHeaderRender: () => {
-      const { name: title, fullPath } = initialState?.resource || {};
+      const {name: title, fullPath} = initialState?.resource || {};
       if (!title || !fullPath) {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
       return (
         <span
-          style={{ alignItems: 'center', lineHeight: '40px' }}
+          style={{alignItems: 'center', lineHeight: '40px'}}
           onClick={() => {
             window.location.href = fullPath;
           }}
@@ -187,7 +188,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
           <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
             {firstLetter}
           </span>
-          <span style={{ alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px' }}>
+          <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>
             {title}
           </span>
         </span>
@@ -204,7 +205,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         }
 
         // 根据ResourceType决定菜单
-        const { type, fullPath } = initialState.resource;
+        const {type, fullPath} = initialState.resource;
         switch (type) {
           case ResourceType.GROUP:
             return loopMenuItem(formatGroupMenu(fullPath));
