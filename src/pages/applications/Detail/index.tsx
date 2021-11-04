@@ -47,15 +47,15 @@ export default () => {
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.name'}), value: application.name},
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.description'}), value: application.description || ''},
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.priority'}), value: application.priority},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.url'}), value: application.git.url},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.subfolder'}), value: application.git.subfolder},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
     ],
     [
       {
         key: intl.formatMessage({id: 'pages.applicationDetail.basic.release'}),
-        value: `${application.template.name  }-${  application.template.release}`
+        value: `${application.template.name}-${application.template.release}`
       },
+      {key: intl.formatMessage({id: 'pages.applicationNew.basic.url'}), value: application.git.url},
+      {key: intl.formatMessage({id: 'pages.applicationNew.basic.subfolder'}), value: application.git.subfolder},
+      {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
     ],
     [
       {key: intl.formatMessage({id: 'pages.applicationDetail.basic.createTime'}), value: application.createdAt},
@@ -67,7 +67,7 @@ export default () => {
   if (application.template.release !== application.template.recommendedRelease) {
     serviceDetail[1] = serviceDetail[1].concat({
       key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
-      value: `${application.template.name  }-${  application.template.recommendedRelease}`
+      value: `${application.template.name}-${application.template.recommendedRelease}`
     })
   }
 

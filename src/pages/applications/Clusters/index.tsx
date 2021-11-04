@@ -34,7 +34,7 @@ export default () => {
     },
     {
       title: 'region',
-      dataIndex: 'region',
+      dataIndex: 'regionDisplayName',
       key: 'region',
     },
     {
@@ -43,9 +43,9 @@ export default () => {
       key: 'template',
     },
     {
-      title: 'updateTime',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
+      title: 'updatedTime',
+      dataIndex: 'updatedTime',
+      key: 'updatedTime',
     },
   ]
 
@@ -95,7 +95,6 @@ export default () => {
           history.push({
             pathname: newCluster,
             search: stringify({
-              application,
               environment
             }),
           });
@@ -107,11 +106,13 @@ export default () => {
   )
 
   const data = clusters?.items.map(item => {
+    const {name, scope, template, updatedAt} = item
     return {
-      key: item.name,
-      name: item.name,
-      region: item.scope.region,
-      template: item.template.name,
+      key: name,
+      name: name,
+      regionDisplayName: scope.regionDisplayName,
+      template: `${template.name}-${template.release}`,
+      updatedTime: updatedAt
     }
   })
 

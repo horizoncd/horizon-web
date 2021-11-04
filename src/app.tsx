@@ -1,6 +1,6 @@
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { notification } from 'antd';
+import {Alert, notification} from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
@@ -117,19 +117,19 @@ export const request: RequestConfig = {
     const { response, data } = error;
     if (!response) {
       notification.error({
-        description: '您的网络发生异常，无法连接服务器',
         message: '网络异常',
+        description: '您的网络发生异常，无法连接服务器',
       });
     }
     if (data.errorCode || data.errorMessage) {
       notification.error({
-        description: data.errorMessage,
         message: data.errorCode,
+        description: data.errorMessage,
       });
     } else {
       notification.error({
-        description: response.statusText,
         message: response.status,
+        description: response.statusText,
       });
     }
     throw error;

@@ -85,13 +85,13 @@ export default () => {
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true
   })
-  const {data: status} = useRequest(() => getClusterStatus(id), {
+  const {data: clusterStatus} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
-      if (status) {
-        const {task: t, taskStatus} = status.runningTask;
-        const {step} = status.clusterStatus;
-        setPipelinerunID(status.runningTask.pipelinerunID)
+      if (clusterStatus) {
+        const {task: t, taskStatus} = clusterStatus.runningTask;
+        const {step} = clusterStatus.clusterStatus;
+        setPipelinerunID(clusterStatus.runningTask.pipelinerunID)
         const tt = t as RunningTask
         setTask(tt)
 
@@ -192,32 +192,48 @@ export default () => {
 
   const oldPods: CLUSTER.PodInTable[] = []
   const newPods: CLUSTER.PodInTable[] = []
+  const healthyPods: CLUSTER.PodInTable[] = []
+  const notHealthyPods: CLUSTER.PodInTable[] = []
+  const images = new Set<string>()
 
-  if (status) {
-    const {podTemplateHash} = status.clusterStatus;
+  if (clusterStatus) {
+    const {podTemplateHash, versions} = clusterStatus.clusterStatus;
 
-    Object.keys(status.clusterStatus.versions).forEach(version => {
+    Object.keys(versions).forEach(version => {
       // filter new/old pods
-      const versionObj = status.clusterStatus.versions[version]
-      const podInTables = Object.keys(versionObj.pods).map(podName => {
+      const versionObj = versions[version]
+      Object.keys(versionObj.pods).forEach(podName => {
         const podObj = versionObj.pods[podName]
+        const {status, spec, metadata} = podObj
+        const {containers, initContainers} = spec
+        const {namespace} = metadata
+        const {containerStatuses} = status
+        const {state} = containerStatuses[0].state
+
         const podInTable: CLUSTER.PodInTable = {
           podName,
-          status: podObj.status.containerStatuses[0].state.state,
+          status: state,
           createTime: "",
-          ip: podObj.status.podIP,
-          onlineStatus: podObj.status.containerStatuses[0].ready ? 'online' : 'offline',
+          ip: status.podIP,
+          onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
           restartCount: 0,
-          containerName: podObj.spec.containers[0].name,
-          namespace: podObj.metadata.namespace
+          containerName: containers[0].name,
+          namespace
+        };
+        if (state === 'Running') {
+          healthyPods.push(podInTable)
+        } else {
+          notHealthyPods.push(podInTable)
+        }
+        if (podTemplateHash === version) {
+          newPods.push(podInTable)
+          containers.forEach(item => images.add(item.image))
+          initContainers.forEach(item => images.add(item.image))
+        } else {
+          oldPods.push(podInTable)
         }
         return podInTable;
       })
-      if (podTemplateHash === version) {
-        newPods.push(...podInTables)
-      } else {
-        oldPods.push(...podInTables)
-      }
     })
   }
 
@@ -227,11 +243,20 @@ export default () => {
     return `${title} (${pods.length})`
   };
 
-  const data: Param[][] = [
+  const baseInfo: Param[][] = [
+    [
+      {
+        key: 'Pods数量',
+        value: {
+          Health: healthyPods.length,
+          NotHealth: notHealthyPods.length,
+        }
+      }
+    ],
     [
       {
         key: '集群状态',
-        value: status?.clusterStatus.status || 'Running',
+        value: clusterStatus?.clusterStatus.status || 'Running',
       },
     ],
     [
@@ -244,17 +269,23 @@ export default () => {
         }
       }
     ],
+    [
+      {
+        key: 'Images',
+        value: Array.from(images)
+      }
+    ]
   ]
 
   const onClickOperation = ({key}: { key: string }) => {
     switch (key) {
       case '1':
         history.push({
-            pathname: `/clusters${fullPath}/-/pipelines/new`,
-            search: stringify({
-              type: PublishType.BUILD_DEPLOY,
-            })
+          pathname: `/clusters${fullPath}/-/pipelines/new`,
+          search: stringify({
+            type: PublishType.BUILD_DEPLOY,
           })
+        })
         break;
       case '2':
         break;
@@ -286,7 +317,7 @@ export default () => {
 
       <DetailCard
         title={"基础信息"}
-        data={data}
+        data={baseInfo}
       />
 
       {

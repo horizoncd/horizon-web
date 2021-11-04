@@ -18,7 +18,7 @@ interface Props {
 
 export type Param = {
   key: string,
-  value: string | string[] | Record<string, string>;
+  value: string | string[] | Record<string, string | number>;
 }
 
 export default (props: Props) => {
@@ -54,7 +54,7 @@ export default (props: Props) => {
               }))
             } else if (valueType === ValueType.Object) {
               const keys = Object.keys(param.value)
-              for (let key = 0; key < keys.length; key += 1){
+              for (let key = 0; key < keys.length; key += 1) {
                 const i = keys[key];
                 itemContents.push(<div key={col2++} className={styles.textValue}>{i}: {param.value[i]} </div>)
               }

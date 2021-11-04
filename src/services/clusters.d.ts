@@ -27,6 +27,7 @@ declare namespace CLUSTER {
   type Scope = {
     environment: string;
     region: string;
+    regionDisplayName: string;
   }
 
   type ClusterBase = {
@@ -37,6 +38,7 @@ declare namespace CLUSTER {
       name: string;
       release: string;
     };
+    updatedAt: string
   }
 
   type Cluster = {

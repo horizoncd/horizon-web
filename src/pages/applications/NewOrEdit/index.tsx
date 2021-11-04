@@ -39,7 +39,7 @@ export default (props: any) => {
 
   const {location} = props;
   const {pathname} = location;
-  const creating = pathname.endsWith('new')
+  const creating = pathname.endsWith('newapplication')
   const editing = pathname.endsWith('edit')
 
   const [form] = Form.useForm();

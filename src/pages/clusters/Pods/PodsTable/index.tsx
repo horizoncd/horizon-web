@@ -9,7 +9,7 @@ const {Search} = Input;
 
 export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster }) => {
   const {data, theCluster} = props;
-  data.push({podName: '1', status: '2', ip: '3', onlineStatus: 'online', namespace: '123', containerName: "111"})
+  data.push({podName: 'argocd-redis-ha-server-0', status: '2', ip: '3', onlineStatus: 'online', namespace: 'argocd', containerName: "111"})
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
@@ -28,8 +28,12 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
     containerName=${pod.containerName}&environment=123`
   }
 
-  const onClickStdout = (record: CLUSTER.PodInTable) => {
+  const onClickStdout = (pod: CLUSTER.PodInTable) => {
     setFullscreen(true)
+  }
+
+  const formatMonitorURL = (pod: CLUSTER.PodInTable) => {
+    return `/clusters${fullPath}/-/monitoring?namespace=${pod.namespace}&podName=${pod.podName}&environment=123`
   }
 
   const columns = [
@@ -70,6 +74,7 @@ export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster
         <Space size="middle">
           <a href={formatConsoleURL(record)} target="_blank">登录Terminal</a>
           <a onClick={() => onClickStdout(record)}>查看容器日志</a>
+          <a href={formatMonitorURL(record)}>Monitor</a>
         </Space>
       ),
     },

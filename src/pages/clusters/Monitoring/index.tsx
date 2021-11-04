@@ -9,6 +9,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 // @ts-ignore
 const TaskDetailMonitor = ({location, history}) => {
   const {query} = location;
+  const {namespace, podName, environment} = query
   // const url = 'http://grafana.yf-onlinetest.netease.com/d/pBhIGKznz/serverless-han-shu-shu-ju-liu?orgId=1'
   const url = 'http://grafana.yf-onlinetest.netease.com/d/6581e46e4e5c7ba40a07646395ef7b23/kubernetes-compute-resources-pod?orgId=1'
 
@@ -46,7 +47,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
     return `${url}&kiosk&theme=light&${queryString.stringify({
       from, to, refresh
-    })}`;
+    })}&var-namespace=${namespace}&var-pod=${podName}`;
   }, [url, formData]);
 
   return (
