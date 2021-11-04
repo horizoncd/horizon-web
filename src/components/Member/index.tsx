@@ -152,6 +152,7 @@ export default (props: MemberProps) => {
   // member搜索
   const onMemberSearch = (filter: string) => {
     setMemberFilter(filter);
+    refreshMembers().then();
   }
 
   // member搜索条件变化事件：清空则重置搜索条件
