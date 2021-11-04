@@ -109,8 +109,9 @@ export default {
   'pages.members.update.success': 'Update member success',
   'pages.members.remove.success': 'Remove member success',
   'pages.members.leave.success': 'Leave success',
-  'pages.members.remove.givenAccess': 'Given access by {grantorName} {grantedTime}',
+  'pages.members.list.givenAccess': 'given access by {grantorName} {grantedTime}',
+  'pages.members.list.sourceFrom': 'source from {resourceName}，',
   'pages.members.role.tip': `1.Permission from high to low：Owner、Maintainer、Developer、Reporter、Guest
   2.All members could manage other members whose permission is equal to or lower then self`,
-  'pages.members.user.notExist.alert': `Please ask for other members to invite you first`,
+  'pages.members.user.anonymous.alert': `Please ask for other members to invite you first`,
 };

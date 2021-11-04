@@ -9,6 +9,7 @@ import styles from './index.less'
 import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
+import RBAC from '@/rbac'
 
 const {TabPane} = Tabs;
 const {Search} = Input;
@@ -88,20 +89,26 @@ export default () => {
               onSearch={onSearch}
               onChange={onChange}/>
 
-      <Button
-        type="primary"
-        className={styles.createClusterBtn}
-        onClick={() => {
-          history.push({
-            pathname: newCluster,
-            search: stringify({
-              environment
-            }),
-          });
-        }}
-      >
-        {intl.formatMessage({id: 'pages.groups.New cluster'})}
-      </Button>
+      {
+        (RBAC.Permissions.createCluster.allowed
+          && (RBAC.Permissions.createCluster.allowedEnv.includes(environment)
+            || RBAC.Permissions.createCluster.allowedEnv.includes(RBAC.AllowAll))) &&
+        <Button
+          type="primary"
+          className={styles.createClusterBtn}
+          onClick={() => {
+            history.push({
+              pathname: newCluster,
+              search: stringify({
+                application,
+                environment
+              }),
+            });
+          }}
+        >
+          {intl.formatMessage({id: 'pages.groups.New cluster'})}
+        </Button>
+      }
     </div>
   )
 

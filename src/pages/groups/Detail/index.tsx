@@ -1,17 +1,18 @@
-import { Button, Divider } from 'antd';
+import {Button, Divider} from 'antd';
 import utils from '../../../utils';
-import { history } from 'umi';
+import {history} from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import './index.less';
 import GroupTree from '@/components/GroupTree';
-import { useModel } from '@@/plugin-model/useModel';
-import { useIntl } from '@@/plugin-locale/localeExports';
+import {useModel} from '@@/plugin-model/useModel';
+import {useIntl} from '@@/plugin-locale/localeExports';
+import RBAC from '@/rbac'
 
 export default () => {
   const intl = useIntl();
 
-  const { initialState } = useModel('@@initialState');
-  const { id, name = '', fullPath } = initialState?.resource || {};
+  const {initialState} = useModel('@@initialState');
+  const {id, name = '', fullPath} = initialState?.resource || {};
   const newGroup = `/groups${fullPath}/-/newgroup`
   const newApplication = `/groups${fullPath}/-/newapplication`
   // const editGroup = `/groups${fullPath}/-/edit`
@@ -19,27 +20,31 @@ export default () => {
   const header = () => {
     return (
       <div>
-        <Button
-          style={{ marginRight: 15 }}
-          onClick={() =>
-            history.push({
-              pathname: newGroup,
-            })
-          }
-        >
-          {intl.formatMessage({ id: 'pages.groups.New subgroup' })}
-        </Button>
-        <Button
-          type="primary"
-          style={{ backgroundColor: '#1f75cb' }}
-          onClick={() => {
-            history.push({
-              pathname: newApplication,
-            });
-          }}
-        >
-          {intl.formatMessage({ id: 'pages.groups.New application' })}
-        </Button>
+        {
+          RBAC.Permissions.createGroup.allowed && <Button
+            style={{marginRight: 15}}
+            onClick={() =>
+              history.push({
+                pathname: newGroup,
+              })
+            }
+          >
+            {intl.formatMessage({id: 'pages.groups.New subgroup'})}
+          </Button>
+        }
+        {
+          RBAC.Permissions.createApplication.allowed && <Button
+            type="primary"
+            style={{backgroundColor: '#1f75cb'}}
+            onClick={() => {
+              history.push({
+                pathname: newApplication,
+              });
+            }}
+          >
+            {intl.formatMessage({id: 'pages.groups.New application'})}
+          </Button>
+        }
       </div>
     );
   };
@@ -48,9 +53,11 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <div className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3 align-items-center">
+      <div
+        className="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-sm-flex-direction-column gl-mb-3 align-items-center">
         <div className="home-panel-title-row gl-display-flex align-items-center">
-          <div className="avatar-container rect-avatar s64 home-panel-avatar gl-flex-shrink-0 gl-w-11 gl-h-11 gl-mr-3! float-none">
+          <div
+            className="avatar-container rect-avatar s64 home-panel-avatar gl-flex-shrink-0 gl-w-11 gl-h-11 gl-mr-3! float-none">
             <span
               className={`avatar avatar-tile s64 identicon bg${utils.getAvatarColorIndex(name)}`}
             >
@@ -59,7 +66,8 @@ export default () => {
           </div>
           <div className="d-flex flex-column flex-wrap align-items-baseline">
             <div className="d-inline-flex align-items-baseline">
-              <h1 className="home-panel-title gl-mt-3 gl-mb-2 gl-font-size-h1 gl-line-height-24 gl-font-weight-bold gl-ml-3">
+              <h1
+                className="home-panel-title gl-mt-3 gl-mb-2 gl-font-size-h1 gl-line-height-24 gl-font-weight-bold gl-ml-3">
                 {name}
               </h1>
             </div>
@@ -67,8 +75,8 @@ export default () => {
         </div>
         {header()}
       </div>
-      <Divider className={'group-divider'} />
-      <GroupTree groupID={id} tabPane={'Subgroups and applications'} />
+      <Divider className={'group-divider'}/>
+      <GroupTree groupID={id} tabPane={'Subgroups and applications'}/>
     </PageWithBreadcrumb>
   );
 };

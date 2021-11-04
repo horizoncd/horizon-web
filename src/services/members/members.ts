@@ -12,12 +12,6 @@ export async function queryUsers(pageNumber: number, pageSize: number, filter?: 
   });
 }
 
-export async function queryRoles() {
-  return request('/apis/core/v1/roles', {
-    method: 'GET'
-  });
-}
-
 export async function queryGroupMembers(resourceID: number, filter?: string) {
   const params: any = {}
   if (filter) {
@@ -97,5 +91,20 @@ export async function updateMember(memberID: number, body: API.UpdateMember) {
       'Content-Type': 'application/json',
     },
     data: body
+  });
+}
+
+export async function queryRoles() {
+  return request(`/apis/core/v1/roles`, {
+    method: 'GET',
+  });
+}
+
+export async function querySelfMember(resourceType: string, resourceID: number) {
+  return request(`/apis/core/v1/${resourceType}s/${resourceID}/members?`, {
+    method: 'GET',
+    params: {
+      self: 'true'
+    }
   });
 }

@@ -4,6 +4,7 @@ import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {queryUsers} from "@/services/members/members";
 import Utils from "@/utils";
+import RBAC from "@/rbac"
 import {DeleteOutlined, ExclamationCircleOutlined, ExportOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import {useIntl} from "@@/plugin-locale/localeExports";
@@ -49,30 +50,23 @@ export default (props: MemberProps) => {
     onUpdateMember,
     onRemoveMember
   } = props;
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const currentUser = initialState?.currentUser as API.CurrentUser;
-  const [currentRole, setCurrentRole] = useState<string>(Utils.roles.NotExist);
+  // const roles = initialState?.;
   const [memberFilter, setMemberFilter] = useState<string>('');
 
   // member翻页监听：重新获取member列表
   const defaultMemberPageSize = 6;
   const [membersAfterFilter, setMembersAfterFilter] = useState<API.PageResult<API.Member>>({items: [], total: 0})
+  const {roleRank, roleList} = RBAC.GetRoleList()
 
   const {data, run: refreshMembers} = useRequest(() => {
     return onListMembers(resourceID);
   }, {
     refreshDeps: [memberFilter],
     onSuccess: () => {
-      console.log(memberFilter)
-      let latestCurrentRole = Utils.roles.NotExist
       if (!data.items) {
         data.items = []
-      }
-      for (let i = 0; i < data.items.length; i++) {
-        if (data.items[i].memberNameID === currentUser.id) {
-          latestCurrentRole = data.items[i].role;
-          break;
-        }
       }
       if (memberFilter === '') {
         setMembersAfterFilter({items: data.items, total: data.total})
@@ -87,7 +81,6 @@ export default (props: MemberProps) => {
         }
         setMembersAfterFilter({items: items, total: cnt});
       }
-      setCurrentRole(latestCurrentRole);
     }
   })
 
@@ -199,6 +192,8 @@ export default (props: MemberProps) => {
       cancelText: intl.formatMessage({id: 'pages.applicationDelete.confirm.cancel'}),
       onOk: () => {
         onRemoveMember(memberID).then(() => {
+          // 因为自身member发生改变，需要刷新initState以获取最新的member信息
+          refresh().then();
           notification.success(
             {
               message: intl.formatMessage({id: "pages.members.leave.success"}),
@@ -244,7 +239,7 @@ export default (props: MemberProps) => {
     className={styles.textBold}>{intl.formatMessage({id: 'pages.members.user.email.label'})}</span>
   const chooseRoleLabel = <span
     className={styles.textBold}>{intl.formatMessage({id: 'pages.members.user.role.label'})}</span>
-  const roleOptions = Utils.rolePermissions[currentRole][Utils.actions.ManageMember].map(function (role) {
+  const roleOptions = roleList.slice(roleRank.get(currentUser.role)).map(function (role) {
     return <Option key={role} value={role}>{role}</Option>
   })
   const userOptions = users.items.map(function (user) {
@@ -287,16 +282,17 @@ export default (props: MemberProps) => {
     <Detail>
       <h1>{title}</h1>
       <Divider/>
-      {currentRole === Utils.roles.NotExist ? <Alert
-        message={intl.formatMessage({id: "pages.members.user.notExist.alert"})}
-      /> : null}
-      <Card
-        hidden={currentRole === Utils.roles.NotExist}
-        tabList={inviteTabList}
-        activeTabKey={inviteMemberKey}
-      >
-        {inviteTabsContents[inviteMemberKey]}
-      </Card>
+      {currentUser.role === RBAC.AnonymousRole && <Alert
+        message={intl.formatMessage({id: "pages.members.user.anonymous.alert"})}
+      />}
+      {
+        RBAC.Permissions.createMember.allowed && <Card
+          tabList={inviteTabList}
+          activeTabKey={inviteMemberKey}
+        >
+          {inviteTabsContents[inviteMemberKey]}
+        </Card>
+      }
       <Card
         bodyStyle={{padding: "0px"}}
         bordered={false}
@@ -313,9 +309,6 @@ export default (props: MemberProps) => {
         </div>
         <List
           pagination={{
-            // onChange: (page, pageSize) => {
-            //   onMemberPageChange(page, pageSize as number)
-            // },
             pageSize: defaultMemberPageSize,
             total: membersAfterFilter.total,
           }}
@@ -324,20 +317,34 @@ export default (props: MemberProps) => {
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                title={<span>{item.memberName}<span hidden={item.resourceID === resourceID}>·</span><a
-                  hidden={item.resourceID === resourceID}
-                  href={"/groups" + item.resourcePath + "/-/members"}>{item.resourceName}</a>
-                  <span hidden={currentUser.id !== item.memberNameID}
-                        className={styles.textSelfAnnotation}>It's you</span>
+                title={<span>{item.memberName}<span hidden={item.resourceID === resourceID}></span>
+                  {(currentUser.id === item.memberNameID) ?
+                    <span className={styles.textSelfAnnotation}>It's you</span> : null}
                 </span>}
                 className={styles.memberListPadding}
                 description={(
-                  <span>{intl.formatMessage({id: "pages.members.remove.givenAccess"}, {
-                    grantorName: item.grantorName,
-                    grantedTime: Utils.timeFromNow(item.grantTime)
-                  })}</span>)}
+                  <div>
+                    <span
+                      hidden={resourceID === item.resourceID}
+                    >
+                    {intl.formatMessage({id: "pages.members.list.sourceFrom"}, {
+                      resourceName: <a
+                        href={`/${item.resourceType}${item.resourcePath}/-/members`}
+                      >
+                        {item.resourceName}
+                      </a>
+                    })}
+                      </span>
+                    <span>
+                    {intl.formatMessage({id: "pages.members.list.givenAccess"}, {
+                      grantorName: item.grantorName,
+                      grantedTime: Utils.timeFromNow(item.grantTime)
+                    })}
+                  </span>
+                  </div>
+                )}
               />
-              {currentUser.id !== item.memberNameID && Utils.permissionAllowed(currentRole, Utils.actions.ManageMember, item.role)
+              {currentUser.id !== item.memberNameID && roleRank.get(currentUser.role) <= roleRank.get(item.role)
               && item.resourceID === resourceID ?
                 <Select
                   dropdownMatchSelectWidth={false}
@@ -345,7 +352,7 @@ export default (props: MemberProps) => {
                     onRoleSelect(role, item.id)
                   }}
                   defaultValue={item.role}>
-                  {Utils.rolePermissions[currentRole][Utils.actions.ManageMember].map(function (role) {
+                  {roleList.slice(roleRank.get(currentUser.role)).map(function (role) {
                     return <Option key={role} value={role}>{role}</Option>
                   })}
                 </Select> : <span
@@ -362,7 +369,7 @@ export default (props: MemberProps) => {
                                                             <ExportOutlined/>}>
                 {intl.formatMessage({id: 'pages.members.list.leave'})}
               </Button> : null}
-              {currentUser.id !== item.memberNameID && Utils.permissionAllowed(currentRole, Utils.actions.ManageMember, item.role)
+              {currentUser.id !== item.memberNameID && roleRank.get(currentUser.role) <= roleRank.get(item.role)
               && item.resourceID === resourceID ?
                 <Button type="primary" danger
                         className={styles.buttonRightSide}
