@@ -9,7 +9,7 @@ const {Search} = Input;
 
 export default (props: { data: CLUSTER.PodInTable[], theCluster: CLUSTER.Cluster }) => {
   const {data, theCluster} = props;
-  data.push({podName: 'argocd-redis-ha-server-0', status: '2', ip: '3', onlineStatus: 'online', namespace: 'argocd', containerName: "111"})
+  data.push({podName: 'logstash-logstash-0', status: '2', ip: '3', onlineStatus: 'online', namespace: 'logstash', containerName: "111"})
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');

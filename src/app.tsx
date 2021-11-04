@@ -250,7 +250,7 @@ function formatGroupMenu(fullPath: string) {
       ],
     },
     {
-      path: `/groups${fullPath}/-/newgroup`,
+      path: `/groups${fullPath}/-/newsubgroup`,
       menuRender: false,
     },
     {

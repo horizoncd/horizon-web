@@ -13,7 +13,7 @@ export default () => {
 
   const {initialState} = useModel('@@initialState');
   const {id, name = '', fullPath} = initialState?.resource || {};
-  const newGroup = `/groups${fullPath}/-/newgroup`
+  const newGroup = `/groups${fullPath}/-/newsubgroup`
   const newApplication = `/groups${fullPath}/-/newapplication`
   // const editGroup = `/groups${fullPath}/-/edit`
 

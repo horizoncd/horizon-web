@@ -4,7 +4,7 @@ import {DatePicker, Form, Input, Select} from 'antd';
 import moment from 'moment';
 
 // @ts-ignore
-const MonitorSearchForm = ({onSubmit, formData}) => {
+const MonitorSearchForm = ({onSubmit, formData, pods}) => {
   const [form] = Form.useForm();
 
   const submitForm = () => {
@@ -73,6 +73,15 @@ const MonitorSearchForm = ({onSubmit, formData}) => {
           <Select.Option value="5m">5 分钟</Select.Option>
           <Select.Option value="15m">15 分钟</Select.Option>
           <Select.Option value="30m">30 分钟</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="Pods" name="podName">
+        <Select style={{width: 300}} mode="multiple">
+          {
+            pods.map((item: string) => (
+              <Select.Option value={item}>{item}</Select.Option>
+            ))
+          }
         </Select>
       </Form.Item>
     </Form>

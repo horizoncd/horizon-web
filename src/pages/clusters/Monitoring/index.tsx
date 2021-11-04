@@ -8,10 +8,10 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 
 // @ts-ignore
 const TaskDetailMonitor = ({location, history}) => {
+
   const {query} = location;
   const {namespace, podName, environment} = query
-  // const url = 'http://grafana.yf-onlinetest.netease.com/d/pBhIGKznz/serverless-han-shu-shu-ju-liu?orgId=1'
-  const url = 'http://grafana.yf-onlinetest.netease.com/d/6581e46e4e5c7ba40a07646395ef7b23/kubernetes-compute-resources-pod?orgId=1'
+  const url = 'http://grafana.yf-onlinetest.netease.com/d/R3l8AsF7z/kubernetes-compute-resources-pod-copy?orgId=1'
 
   const formData = useMemo(() => formatQueryParam(mergeDefaultValue(query, {
     type: 'now-1h',
@@ -21,7 +21,8 @@ const TaskDetailMonitor = ({location, history}) => {
     ],
     refresh: '10s',
   }), {
-    timeRange: ['array', 'moment']
+    timeRange: ['array', 'moment'],
+    podName: ['array']
   }), [query]);
 
   const onSearch = (data: { timeRange: any[]; }) => {
@@ -52,7 +53,7 @@ const TaskDetailMonitor = ({location, history}) => {
 
   return (
     <PageWithBreadcrumb>
-      <MonitorSearchForm formData={formData} onSubmit={onSearch}/>
+      <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={['logstash-logstash-0']}/>
       <iframe
         src={src}
         style={{

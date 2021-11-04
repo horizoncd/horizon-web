@@ -17,7 +17,7 @@
   {
     path: '/groups/new',
     menuRender: false,
-    component: 'groups/New',
+    component: 'groups/NewGroup',
   },
 ];
 
@@ -39,9 +39,9 @@ const groupRoutes = [
     component: 'groups/Activity',
   },
   {
-    path: '/groups/*/-/newgroup',
+    path: '/groups/*/-/newsubgroup',
     menuRender: false,
-    component: 'groups/New',
+    component: 'groups/NewSubGroup',
   },
   {
     path: '/groups/*/-/newapplication',

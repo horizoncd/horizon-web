@@ -2,19 +2,13 @@ import {Button, Col, Divider, Form, Input, notification, Row} from 'antd';
 import {history} from 'umi';
 import type {Rule} from 'rc-field-form/lib/interface';
 import './index.less';
-import {createGroup, createSubGroup} from '@/services/groups/groups';
-import {useModel} from "@@/plugin-model/useModel";
+import {createGroup} from '@/services/groups/groups';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 
 const {TextArea} = Input;
 
 export default () => {
   const [form] = Form.useForm();
-  console.log(history.location.pathname)
-  const createRootGroup = history.location.pathname === '/groups/new'
-
-  const {initialState} = useModel('@@initialState');
-  const {id, fullPath} = initialState?.resource || {};
 
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
 
@@ -22,7 +16,7 @@ export default () => {
   const groupPathLabel = formatLabel('Group URL');
   const groupDescLabel = formatLabel('Group description');
 
-  const getURLPrefix = () => `${window.location.origin + (createRootGroup ? '' : fullPath)}/`;
+  const getURLPrefix = () => `${window.location.origin}/`;
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -47,24 +41,15 @@ export default () => {
       notification.info({
         message: 'Group新建成功',
       });
-      window.location.href = `${createRootGroup ? '' : fullPath}/${values.path}`;
+      window.location.href = `/${values.path}`;
     }
 
-    if (id) {
-      createSubGroup(id, {
-        ...values,
-        visibilityLevel: 'private',
-      }).then(() => {
-        hook()
-      })
-    } else {
-      createGroup({
-        ...values,
-        visibilityLevel: 'private',
-      }).then(() => {
-        hook()
-      });
-    }
+    createGroup({
+      ...values,
+      visibilityLevel: 'private',
+    }).then(() => {
+      hook()
+    });
   };
 
   const nameRules: Rule[] = [
