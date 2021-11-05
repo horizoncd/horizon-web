@@ -1,10 +1,10 @@
-import {Button, Col, Dropdown, Menu, notification, Row, Steps, Tabs} from "antd";
+import {Button, Col, Dropdown, Menu, Modal, notification, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
-import {getCluster, getClusterStatus, next} from "@/services/clusters/clusters";
+import {getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
@@ -85,13 +85,13 @@ export default () => {
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true
   })
-  const {data: clusterStatus} = useRequest(() => getClusterStatus(id), {
+  const {data: statusData} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
-      if (clusterStatus) {
-        const {task: t, taskStatus} = clusterStatus.runningTask;
-        const {step} = clusterStatus.clusterStatus;
-        setPipelinerunID(clusterStatus.runningTask.pipelinerunID)
+      if (statusData) {
+        const {task: t, taskStatus} = statusData.runningTask;
+        const {step} = statusData.clusterStatus;
+        setPipelinerunID(statusData.runningTask.pipelinerunID)
         const tt = t as RunningTask
         setTask(tt)
 
@@ -196,51 +196,54 @@ export default () => {
   const notHealthyPods: CLUSTER.PodInTable[] = []
   const images = new Set<string>()
 
-  if (clusterStatus) {
-    const {podTemplateHash, versions} = clusterStatus.clusterStatus;
+  if (statusData) {
+    const {podTemplateHash, versions} = statusData.clusterStatus;
+    if (versions) {
+      Object.keys(versions).forEach(version => {
+        // filter new/old pods
+        const versionObj = versions[version]
+        Object.keys(versionObj.pods).forEach(podName => {
+          const podObj = versionObj.pods[podName]
+          const {status, spec, metadata} = podObj
+          const {containers, initContainers} = spec
+          const {namespace} = metadata
+          const {containerStatuses} = status
+          const {state} = containerStatuses[0].state
 
-    Object.keys(versions).forEach(version => {
-      // filter new/old pods
-      const versionObj = versions[version]
-      Object.keys(versionObj.pods).forEach(podName => {
-        const podObj = versionObj.pods[podName]
-        const {status, spec, metadata} = podObj
-        const {containers, initContainers} = spec
-        const {namespace} = metadata
-        const {containerStatuses} = status
-        const {state} = containerStatuses[0].state
-
-        const podInTable: CLUSTER.PodInTable = {
-          podName,
-          status: state,
-          createTime: "",
-          ip: status.podIP,
-          onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
-          restartCount: 0,
-          containerName: containers[0].name,
-          namespace
-        };
-        if (state === 'Running') {
-          healthyPods.push(podInTable)
-        } else {
-          notHealthyPods.push(podInTable)
-        }
-        if (podTemplateHash === version) {
-          newPods.push(podInTable)
-          containers.forEach(item => images.add(item.image))
-          initContainers.forEach(item => images.add(item.image))
-        } else {
-          oldPods.push(podInTable)
-        }
-        return podInTable;
-      })
-    })
+          const podInTable: CLUSTER.PodInTable = {
+            podName,
+            status: state,
+            createTime: "",
+            ip: status.podIP,
+            onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
+            restartCount: 0,
+            containerName: containers[0].name,
+            namespace
+          };
+          if (state === 'Running') {
+            healthyPods.push(podInTable)
+          } else {
+            notHealthyPods.push(podInTable)
+          }
+          if (podTemplateHash === version) {
+            newPods.push(podInTable)
+            containers.forEach(item => images.add(item.image))
+            initContainers.forEach(item => images.add(item.image))
+          } else {
+            oldPods.push(podInTable)
+          }
+          return podInTable;
+        })
+      });
+    }
   }
 
   const currentPodsTabTitle = oldPods.length === 0 ? 'New Pods' : 'Pods'
   const oldPodsTitle = 'Old Pods';
   const formatTabTitle = (title: string, pods: CLUSTER.PodInTable[]) => {
-    return `${title} (${pods.length})`
+    return <div>
+      {title}<span className={styles.tabNumber}>{pods.length}</span>
+    </div>
   };
 
   const baseInfo: Param[][] = [
@@ -256,7 +259,7 @@ export default () => {
     [
       {
         key: '集群状态',
-        value: clusterStatus?.clusterStatus.status || 'Running',
+        value: statusData?.clusterStatus.status || 'Running',
       },
     ],
     [
@@ -296,7 +299,14 @@ export default () => {
         })
         break;
       case '3':
-
+        Modal.info({
+          title: 'Are you sure to restart all pods?',
+          onOk() {
+            restart(id).then(() => {
+              notification.success({message: "Restart Succeed"})
+            })
+          },
+        });
         break;
       default:
 
@@ -342,14 +352,14 @@ export default () => {
 
       <Tabs size={'large'}>
         <TabPane tab={formatTabTitle(currentPodsTabTitle, newPods)}>
-          <PodsTable data={newPods} theCluster={cluster!}/>
+          <PodsTable data={newPods} cluster={cluster!}/>
         </TabPane>
       </Tabs>
 
       {
         <Tabs size={'large'}>
           <TabPane tab={formatTabTitle(oldPodsTitle, oldPods)}>
-            <PodsTable data={oldPods} theCluster={cluster!}/>
+            <PodsTable data={oldPods} cluster={cluster!}/>
           </TabPane>
         </Tabs>
       }

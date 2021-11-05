@@ -15,7 +15,7 @@ export default (props: any) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const {initialState} = useModel('@@initialState');
-  const {name, fullPath} = initialState?.resource || {};
+  const {id, name, fullPath} = initialState?.resource || {};
   const {location} = props;
   const {query} = location;
   const {type = 'deploy'} = query;
@@ -146,7 +146,7 @@ export default (props: any) => {
       message: formatMessage('submit', 'Submit succeed'),
     });
     // jump to pods' url
-    history.push(`${fullPath}/-/pods`)
+    history.push(`/cluster${fullPath}/-/pods`)
   }
 
   const onSubmit = () => {
@@ -156,7 +156,7 @@ export default (props: any) => {
     }
     if (type === PublishType.BUILD_DEPLOY) {
       form.validateFields(['name', 'branch']).then(() => {
-        buildDeploy(name!, {
+        buildDeploy(id!, {
           ...info,
           git: {
             branch: form.getFieldValue('branch'),
@@ -167,7 +167,7 @@ export default (props: any) => {
       })
     } else {
       form.validateFields(['name']).then(() => {
-        deploy(name!, info).then(() => {
+        deploy(id!, info).then(() => {
           hookAfterSubmit()
         })
       });
@@ -207,7 +207,7 @@ export default (props: any) => {
         </Card>
       </Card>
 
-      <SubmitCancelButton onSubmit={onSubmit}/>
+      <SubmitCancelButton onSubmit={onSubmit} onCancel={() => history.goBack()}/>
     </PageWithBreadcrumb>
   )
 }

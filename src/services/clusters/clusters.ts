@@ -42,23 +42,23 @@ export async function updateCluster(clusterID: number, data: CLUSTER.UpdateClust
   });
 }
 
-export async function buildDeploy(cluster: string, data: CLUSTER.ClusterBuildDeploy) {
+export async function buildDeploy(clusterID: number, data: CLUSTER.ClusterBuildDeploy) {
   return request<{
     data: {
       id: string
     };
-  }>(`/apis/core/v1/clusters/${cluster}/builddeploy`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/builddeploy`, {
     method: 'POST',
     data
   });
 }
 
-export async function deploy(cluster: string, data: CLUSTER.ClusterDeploy) {
+export async function deploy(clusterID: number, data: CLUSTER.ClusterDeploy) {
   return request<{
     data: {
       id: string
     };
-  }>(`/apis/core/v1/clusters/${cluster}/deploy`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/deploy`, {
     method: 'POST',
     data
   });
@@ -75,12 +75,12 @@ export async function rollback(clusterID: number, data: CLUSTER.ClusterRollback)
   });
 }
 
-export async function restart(cluster: string) {
+export async function restart(clusterID: number) {
   return request<{
     data: {
       id: string
     };
-  }>(`/apis/core/v1/clusters/${cluster}/restart`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/restart`, {
     method: 'POST',
   });
 }
