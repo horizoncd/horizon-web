@@ -288,8 +288,15 @@ export default () => {
         })
         break;
       case '2':
+        history.push({
+          pathname: `/clusters${fullPath}/-/pipelines/new`,
+          search: stringify({
+            type: PublishType.DEPLOY,
+          })
+        })
         break;
       case '3':
+
         break;
       default:
 

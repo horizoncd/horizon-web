@@ -27,6 +27,14 @@ export default (props: any) => {
     },
   ];
 
+  const gitURLRules: Rule[] = [
+    {
+      pattern: new RegExp('^ssh://.+[.]git$'),
+      required: true,
+      message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
+    },
+  ];
+
   const requiredRule: Rule[] = [
     {
       required: true,
@@ -93,7 +101,7 @@ export default (props: any) => {
         </Card>
 
         <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>
-          <Form.Item label={formatMessage('url')} name={'url'} rules={requiredRule}>
+          <Form.Item label={formatMessage('url')} name={'url'} rules={gitURLRules}>
             <Input
               placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
               disabled={readonly}
