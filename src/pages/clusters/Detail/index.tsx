@@ -55,15 +55,15 @@ export default () => {
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''},
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.priority'}), value: cluster.priority},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.url'}), value: cluster.git.url},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.subfolder'}), value: cluster.git.subfolder},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.branch'}), value: cluster.git.branch},
     ],
     [
       {
         key: intl.formatMessage({id: 'pages.clusterDetail.basic.release'}),
         value: cluster.template.name + '-' + cluster.template.release
       },
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.url'}), value: cluster.git.url},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.subfolder'}), value: cluster.git.subfolder},
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.branch'}), value: cluster.git.branch},
     ],
     [
       {

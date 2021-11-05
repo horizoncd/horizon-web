@@ -1,6 +1,6 @@
 import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
 import {PageLoading} from '@ant-design/pro-layout';
-import {notification} from 'antd';
+import {Menu, notification} from 'antd';
 import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history} from 'umi';
 import RBAC from '@/rbac';
@@ -168,6 +168,13 @@ export const request: RequestConfig = {
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
+    headerContentRender: () => {
+      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}}>
+        <Menu.Item key="1">
+          <a style={{fontWeight: 'bold'}} href={"/dashboard/groups"}>Groups</a>
+        </Menu.Item>
+      </Menu>
+    },
     rightContentRender: () => <RightContent/>,
     footerRender: () => <Footer/>,
     onPageChange: () => {

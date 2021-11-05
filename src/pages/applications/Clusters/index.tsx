@@ -10,6 +10,7 @@ import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
 import RBAC from '@/rbac'
+import Utils from '@/utils'
 
 const {TabPane} = Tabs;
 const {Search} = Input;
@@ -119,7 +120,7 @@ export default () => {
       name: name,
       regionDisplayName: scope.regionDisplayName,
       template: `${template.name}-${template.release}`,
-      updatedTime: updatedAt
+      updatedTime: Utils.timeToLocal(updatedAt)
     }
   })
 
