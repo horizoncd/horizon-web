@@ -65,7 +65,7 @@ export default {
   'pages.clusterNew.basic.url': '地址',
   'pages.clusterNew.basic.subfolder': '代码目录',
   'pages.clusterNew.basic.branch': '分支',
-  'pages.clusterNew.basic.env': '环境',
+  'pages.clusterNew.basic.environment': '环境',
   'pages.clusterNew.basic.region': '区域',
   'pages.clusterEdit.header': '正在编辑【 {cluster} 】，请按步骤填写信息',
   'pages.clusterEdit.success': '集群更新成功',

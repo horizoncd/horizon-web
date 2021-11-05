@@ -11,12 +11,12 @@ const {Option} = Select;
 export default (props: any) => {
   const intl = useIntl();
 
-  const {data: regions, run: refreshRegions} = useRequest((env) => queryRegions(env), {
+  const {data: regions, run: refreshRegions} = useRequest((environment) => queryRegions(environment), {
     manual: true,
   });
   const {data: environments} = useRequest(() => queryEnvironments(), {
     onSuccess: () => {
-      refreshRegions(props.form.getFieldValue('env'))
+      refreshRegions(props.form.getFieldValue('environment'))
     }
   });
 
@@ -41,15 +41,24 @@ export default (props: any) => {
 
   const {readonly = false, editing = false} = props;
 
-  const name = editing ? <Input disabled/> : <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}  disabled={readonly}/>;
+  const name = editing ? <Input disabled/> :
+    <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}
+           disabled={readonly}/>;
 
   return (
     <div>
       <Form layout={'vertical'} form={props.form}
             onFieldsChange={(a, b) => {
-              // query regions when env selected
-              if (a[0].name[0] === 'env') {
+              // query regions when environment selected
+              if (a[0].name[0] === 'environment') {
                 refreshRegions(a[0].value)
+                // clear region form data
+                console.log(b)
+                for (let i = 0; i < b.length; i++) {
+                  if (b[i].name[0] === 'region') {
+                    b[i].value = undefined
+                  }
+                }
               }
               props.setFormData(a, b)
             }}
@@ -69,7 +78,7 @@ export default (props: any) => {
           <Form.Item label={formatMessage('release', 'release')}>
             <Input disabled={true} value={props.template?.release}/>
           </Form.Item>
-          <Form.Item label={formatMessage('env')} name={'env'} rules={requiredRule}>
+          <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
             <Select disabled={readonly}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>

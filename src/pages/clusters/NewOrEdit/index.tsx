@@ -28,10 +28,10 @@ export default (props: any) => {
   const branch = 'branch'
   const description = 'description'
   const subfolder = 'subfolder'
-  const env = 'env'
+  const environment = 'environment'
   const region = 'region'
   const basicNeedValidFields = [
-    name, branch, env, region
+    name, branch, environment, region
   ]
 
   const {initialState} = useModel('@@initialState');
@@ -47,7 +47,7 @@ export default (props: any) => {
   const [current, setCurrent] = useState(0);
   const [template, setTemplate] = useState<{ name: string, release: string }>({release: "", name: ""});
   const [basic, setBasic] = useState<FieldData[]>([{
-    name: env, value: envFromQuery
+    name: environment, value: envFromQuery
   }]);
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
@@ -89,7 +89,7 @@ export default (props: any) => {
             {name, value: n},
             {name: description, value: d},
             {name: branch, value: b},
-            {name: env, value: e},
+            {name: environment, value: e},
             {name: region, value: r},
             {name: url, value: u},
             {name: branch, value: b},
@@ -194,7 +194,7 @@ export default (props: any) => {
       templateInput: config,
     }
     if (creating) {
-      return createCluster(id, `${envFromQuery}/${form.getFieldValue(region)}`, info)
+      return createCluster(id, `${form.getFieldValue(environment)}/${form.getFieldValue(region)}`, info)
     }
     return updateCluster(id, info)
   }, {
