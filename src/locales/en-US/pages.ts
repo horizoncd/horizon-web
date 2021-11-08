@@ -100,6 +100,8 @@ export default {
   'pages.cluster.podsTable.offline': 'Offline',
   'pages.cluster.podsTable.restartPod': 'Restart',
 
+  'pages.pipelineNew.submit': 'Pipeline Started',
+
   'pages.application.members.title': 'Application Members',
   'pages.groups.members.title': 'Group Members',
   'pages.cluster.members.title': 'Application Cluster members',

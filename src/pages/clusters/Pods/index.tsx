@@ -16,6 +16,7 @@ import type {Param} from "@/components/DetailCard";
 import DetailCard from "@/components/DetailCard";
 import {history} from 'umi';
 import {stringify} from "querystring";
+import Utils from '@/utils'
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -72,7 +73,7 @@ export default () => {
   const [steps, setSteps] = useState([
     {
       title: '构建中',
-      content: <BuildPage log={'This a test\n1\n2\n3\n4\n1\n2\n3\n4\n5'}/>,
+      content: <div/>,
       icon: loading
     },
     {
@@ -98,7 +99,10 @@ export default () => {
 
   const {data: cluster} = useRequest(() => getCluster(id));
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
-    manual: true
+    manual: true,
+    formatResult: (res) => {
+      return res
+    }
   })
   const refreshPodsInfo = (data: CLUSTER.ClusterStatus) => {
     const oldPods: CLUSTER.PodInTable[] = []
@@ -118,7 +122,7 @@ export default () => {
             const podObj = versionObj.pods[podName]
             const {status, spec, metadata} = podObj
             const {containers, initContainers} = spec
-            const {namespace} = metadata
+            const {namespace, creationTimestamp} = metadata
             const {containerStatuses} = status
             const {state} = containerStatuses[0].state
 
@@ -126,10 +130,10 @@ export default () => {
               key: podName,
               podName,
               status: state,
-              createTime: "",
+              createTime: Utils.timeToLocal(creationTimestamp),
               ip: status.podIP,
               onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
-              restartCount: 0,
+              restartCount: containerStatuses[0].restartCount,
               containerName: containers[0].name,
               namespace
             };
@@ -166,28 +170,30 @@ export default () => {
         refreshPodsInfo(statusData)
 
         const {task: t, taskStatus} = statusData.runningTask;
-        const {step} = statusData.clusterStatus;
         const tt = t as RunningTask
+        setTask(tt)
         if (tt === RunningTask.NONE) {
           return
         }
 
+        const {step} = statusData.clusterStatus;
         const tStatus = taskStatus as TaskStatus;
         const entity = taskStatus2Entity.get(tStatus)
+        setPipelinerunID(statusData.runningTask.pipelinerunID)
         if (tt === RunningTask.BUILD) {
+          // refresh build log when in build task
+          refreshBuildLog()
           steps[0] = {
             title: entity!.buildTitle,
             content: <BuildPage log={buildLog}/>,
             icon: entity!.icon,
           }
-          // refresh build log when in build task
-          refreshBuildLog()
         }
         if (tt === RunningTask.DEPLOY) {
           const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
           steps[0] = {
             title: succeed!.buildTitle,
-            content: <div/>,
+            content: <BuildPage log={buildLog}/>,
             icon: smile,
           }
           steps[1] = {
@@ -213,8 +219,6 @@ export default () => {
         }
         setSteps(steps)
         setStepStatus(entity!.stepStatus);
-        setPipelinerunID(statusData.runningTask.pipelinerunID)
-        setTask(tt)
       }
     }
   });
@@ -235,7 +239,7 @@ export default () => {
         title: `阶段${i + 1}`
       })
     }
-    return <Steps current={index - 1}>
+    return <Steps current={index + 1}>
       {s.map((item, idx) => {
         let icon;
         if (idx < index) {

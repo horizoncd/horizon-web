@@ -143,10 +143,10 @@ export default (props: any) => {
 
   const hookAfterSubmit = () => {
     notification.success({
-      message: formatMessage('submit', 'Submit succeed'),
+      message: formatMessage('submit', 'Pipeline Started'),
     });
     // jump to pods' url
-    history.push(`/cluster${fullPath}/-/pods`)
+    history.push(`/clusters${fullPath}/-/pods`)
   }
 
   const onSubmit = () => {

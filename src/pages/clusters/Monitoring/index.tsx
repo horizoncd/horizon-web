@@ -10,8 +10,8 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 const TaskDetailMonitor = ({location, history}) => {
 
   const {query} = location;
-  const {namespace, podName, environment} = query
-  const url = 'http://grafana.yf-onlinetest.netease.com/d/R3l8AsF7z/kubernetes-compute-resources-pod-copy?orgId=1'
+  const {namespace, podName} = query
+  const url = 'http://grafana.yf-dev.netease.com/d/R3l8AsF7z/kubernetes-compute-resources-pod-copy?orgId=1'
 
   const formData = useMemo(() => formatQueryParam(mergeDefaultValue(query, {
     type: 'now-1h',
@@ -48,7 +48,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
     return `${url}&kiosk&theme=light&${queryString.stringify({
       from, to, refresh
-    })}&var-namespace=${namespace}&var-pod=${podName}`;
+    })}&var-namespace=${namespace}&var-pod=${podName}&var-datasource=compute-1`;
   }, [url, formData]);
 
   return (

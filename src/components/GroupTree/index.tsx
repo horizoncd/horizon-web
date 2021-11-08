@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Divider, Input, Pagination, Tabs, Tree } from 'antd';
-import { DownOutlined, FileOutlined, FolderOutlined } from '@ant-design/icons';
+import {BookOutlined, DownOutlined, FolderOutlined} from '@ant-design/icons';
 import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
@@ -159,7 +159,7 @@ export default (props: any) => {
         key: id,
         title: name,
         childrenCount,
-        icon: type === 'group' ? <FolderOutlined/> : <FileOutlined/>,
+        icon: type === 'group' ? <FolderOutlined/> : <BookOutlined />,
         isLeaf: childrenCount === 0,
         children: children && formatTreeData(children),
       }

@@ -101,6 +101,8 @@ export default {
   'pages.cluster.podsTable.offline': '下线',
   'pages.cluster.podsTable.restartPod': '重启Pod',
 
+  'pages.pipelineNew.submit': '流水线创建成功，开始发布',
+
   'pages.application.members.title': '应用成员',
   'pages.groups.members.title': '分组成员',
   'pages.cluster.members.title': '集群成员',

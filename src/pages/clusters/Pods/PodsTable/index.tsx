@@ -9,7 +9,6 @@ const {Search} = Input;
 
 export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster }) => {
   const {data, cluster} = props;
-  // data.push({podName: 'logstash-logstash-0', status: '2', ip: '3', onlineStatus: 'online', namespace: 'logstash', containerName: "111"})
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
@@ -23,7 +22,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
   }
 
   const formatConsoleURL = (pod: CLUSTER.PodInTable) => {
-    // const {environment} = theCluster.scope
+    // const {environment} = cluster.scope
     return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
     containerName=${pod.containerName}&environment=123`
   }
@@ -33,7 +32,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
   }
 
   const formatMonitorURL = (pod: CLUSTER.PodInTable) => {
-    return `/clusters${fullPath}/-/monitoring?namespace=${pod.namespace}&podName=${pod.podName}&environment=123`
+    return `/clusters${fullPath}/-/monitoring?namespace=${pod.namespace}&podName=${pod.podName}`
   }
 
   const columns = [

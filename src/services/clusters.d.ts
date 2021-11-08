@@ -129,6 +129,7 @@ declare namespace CLUSTER {
   type PodFromBackend = {
     metadata: {
       namespace: string
+      creationTimestamp: string
     }
     spec: {
       nodeName: string,
@@ -148,6 +149,7 @@ declare namespace CLUSTER {
       containerStatuses: [{
         name: string
         ready: boolean
+        restartCount: number
         state: {
           state: string
           reason: string
