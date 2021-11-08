@@ -7,4 +7,6 @@ export default {
   'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
   'menu.Cluster overview': '集群主页',
+  'menu.Pods': 'Pods',
+  'menu.Monitoring': '监控',
 };

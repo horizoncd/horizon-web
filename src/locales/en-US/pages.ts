@@ -90,6 +90,16 @@ export default {
   'pages.clusterDetail.basic.operate': 'Operate',
   'pages.clusterDetail.basic.delete': 'Delete',
 
+  'pages.cluster.podsTable.podName': 'PodName',
+  'pages.cluster.podsTable.status': 'Status',
+  'pages.cluster.podsTable.onlineStatus': 'OnlineStatus',
+  'pages.cluster.podsTable.restartCount': 'RestartCount',
+  'pages.cluster.podsTable.createTime': 'CreateTime',
+  'pages.cluster.podsTable.action': 'Action',
+  'pages.cluster.podsTable.online': 'Online',
+  'pages.cluster.podsTable.offline': 'Offline',
+  'pages.cluster.podsTable.restartPod': 'Restart',
+
   'pages.application.members.title': 'Application Members',
   'pages.groups.members.title': 'Group Members',
   'pages.cluster.members.title': 'Application Cluster members',

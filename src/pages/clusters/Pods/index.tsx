@@ -44,7 +44,15 @@ interface DeployPageProps {
   onCancel: () => void
 }
 
-const pollingInterval = 0;
+interface PodsInfo {
+  oldPods: CLUSTER.PodInTable[],
+  newPods: CLUSTER.PodInTable[],
+  healthyPods: CLUSTER.PodInTable[],
+  notHealthyPods: CLUSTER.PodInTable[],
+  images: Set<string>
+}
+
+const pollingInterval = 5000;
 export default () => {
 
   const intl = useIntl();
@@ -54,6 +62,13 @@ export default () => {
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [task, setTask] = useState(RunningTask.NONE);
   const [pipelinerunID, setPipelinerunID] = useState<number>();
+  const [podsInfo, setPodsInfo] = useState<PodsInfo>({
+    newPods: [],
+    oldPods: [],
+    healthyPods: [],
+    notHealthyPods: [],
+    images: new Set<string>()
+  })
   const [steps, setSteps] = useState([
     {
       title: '构建中',
@@ -85,17 +100,79 @@ export default () => {
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true
   })
+  const refreshPodsInfo = (data: CLUSTER.ClusterStatus) => {
+    const oldPods: CLUSTER.PodInTable[] = []
+    const newPods: CLUSTER.PodInTable[] = []
+    const healthyPods: CLUSTER.PodInTable[] = []
+    const notHealthyPods: CLUSTER.PodInTable[] = []
+    const images = new Set<string>()
+
+    const {podTemplateHash, versions} = data.clusterStatus;
+    if (versions) {
+      Object.keys(versions).forEach(version => {
+        // filter new/old pods
+        const versionObj = versions[version]
+        const {pods} = versionObj
+        if (pods) {
+          Object.keys(pods).forEach(podName => {
+            const podObj = versionObj.pods[podName]
+            const {status, spec, metadata} = podObj
+            const {containers, initContainers} = spec
+            const {namespace} = metadata
+            const {containerStatuses} = status
+            const {state} = containerStatuses[0].state
+
+            const podInTable: CLUSTER.PodInTable = {
+              key: podName,
+              podName,
+              status: state,
+              createTime: "",
+              ip: status.podIP,
+              onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
+              restartCount: 0,
+              containerName: containers[0].name,
+              namespace
+            };
+            if (state === 'running') {
+              healthyPods.push(podInTable)
+            } else {
+              notHealthyPods.push(podInTable)
+            }
+            if (podTemplateHash === version) {
+              newPods.push(podInTable)
+              containers.forEach(item => images.add(item.image))
+              initContainers.forEach(item => images.add(item.image))
+            } else {
+              oldPods.push(podInTable)
+            }
+            return podInTable;
+          });
+        }
+      });
+    }
+
+    setPodsInfo({
+      newPods,
+      oldPods,
+      healthyPods,
+      notHealthyPods,
+      images
+    })
+  }
   const {data: statusData} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
       if (statusData) {
+        refreshPodsInfo(statusData)
+
         const {task: t, taskStatus} = statusData.runningTask;
         const {step} = statusData.clusterStatus;
-        setPipelinerunID(statusData.runningTask.pipelinerunID)
         const tt = t as RunningTask
-        setTask(tt)
+        if (tt === RunningTask.NONE) {
+          return
+        }
 
-        const tStatus = taskStatus as TaskStatus
+        const tStatus = taskStatus as TaskStatus;
         const entity = taskStatus2Entity.get(tStatus)
         if (tt === RunningTask.BUILD) {
           steps[0] = {
@@ -135,7 +212,9 @@ export default () => {
           setCurrent(1)
         }
         setSteps(steps)
-        setStepStatus(entity!.stepStatus)
+        setStepStatus(entity!.stepStatus);
+        setPipelinerunID(statusData.runningTask.pipelinerunID)
+        setTask(tt)
       }
     }
   });
@@ -190,59 +269,12 @@ export default () => {
     </div>
   }
 
-  const oldPods: CLUSTER.PodInTable[] = []
-  const newPods: CLUSTER.PodInTable[] = []
-  const healthyPods: CLUSTER.PodInTable[] = []
-  const notHealthyPods: CLUSTER.PodInTable[] = []
-  const images = new Set<string>()
-
-  if (statusData) {
-    const {podTemplateHash, versions} = statusData.clusterStatus;
-    if (versions) {
-      Object.keys(versions).forEach(version => {
-        // filter new/old pods
-        const versionObj = versions[version]
-        Object.keys(versionObj.pods).forEach(podName => {
-          const podObj = versionObj.pods[podName]
-          const {status, spec, metadata} = podObj
-          const {containers, initContainers} = spec
-          const {namespace} = metadata
-          const {containerStatuses} = status
-          const {state} = containerStatuses[0].state
-
-          const podInTable: CLUSTER.PodInTable = {
-            podName,
-            status: state,
-            createTime: "",
-            ip: status.podIP,
-            onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
-            restartCount: 0,
-            containerName: containers[0].name,
-            namespace
-          };
-          if (state === 'Running') {
-            healthyPods.push(podInTable)
-          } else {
-            notHealthyPods.push(podInTable)
-          }
-          if (podTemplateHash === version) {
-            newPods.push(podInTable)
-            containers.forEach(item => images.add(item.image))
-            initContainers.forEach(item => images.add(item.image))
-          } else {
-            oldPods.push(podInTable)
-          }
-          return podInTable;
-        })
-      });
-    }
-  }
-
-  const currentPodsTabTitle = oldPods.length === 0 ? 'New Pods' : 'Pods'
+  const inPublishing = task !== RunningTask.NONE
+  const currentPodsTabTitle = inPublishing ? 'New Pods' : 'Pods'
   const oldPodsTitle = 'Old Pods';
-  const formatTabTitle = (title: string, pods: CLUSTER.PodInTable[]) => {
+  const formatTabTitle = (title: string, length: number) => {
     return <div>
-      {title}<span className={styles.tabNumber}>{pods.length}</span>
+      {title}<span className={styles.tabNumber}>{length}</span>
     </div>
   };
 
@@ -251,8 +283,8 @@ export default () => {
       {
         key: 'Pods数量',
         value: {
-          Health: healthyPods.length,
-          NotHealth: notHealthyPods.length,
+          Health: podsInfo.healthyPods.length,
+          NotHealth: podsInfo.notHealthyPods.length,
         }
       }
     ],
@@ -275,7 +307,7 @@ export default () => {
     [
       {
         key: 'Images',
-        value: Array.from(images)
+        value: Array.from(podsInfo.images)
       }
     ]
   ]
@@ -313,14 +345,12 @@ export default () => {
     }
   }
 
-  const operateDropdown = (
-    <Menu onClick={onClickOperation}>
-      <Menu.Item key="1">构建发布</Menu.Item>
-      <Menu.Item key="2">直接发布</Menu.Item>
-      <Menu.Item key="3">重新启动</Menu.Item>
-      <Menu.Item key="4">回滚</Menu.Item>
-    </Menu>
-  );
+  const operateDropdown = <Menu onClick={onClickOperation}>
+    <Menu.Item key="1">构建发布</Menu.Item>
+    <Menu.Item key="2">直接发布</Menu.Item>
+    <Menu.Item key="3">重新启动</Menu.Item>
+    <Menu.Item key="4">回滚</Menu.Item>
+  </Menu>;
 
   return (
     <PageWithBreadcrumb>
@@ -338,7 +368,7 @@ export default () => {
       />
 
       {
-        (
+        inPublishing && (
           <Row>
             <Col span={4}>
               <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
@@ -351,15 +381,15 @@ export default () => {
       }
 
       <Tabs size={'large'}>
-        <TabPane tab={formatTabTitle(currentPodsTabTitle, newPods)}>
-          <PodsTable data={newPods} cluster={cluster!}/>
+        <TabPane tab={formatTabTitle(currentPodsTabTitle, podsInfo.newPods.length)}>
+          <PodsTable data={podsInfo.newPods} cluster={cluster!}/>
         </TabPane>
       </Tabs>
 
       {
-        <Tabs size={'large'}>
-          <TabPane tab={formatTabTitle(oldPodsTitle, oldPods)}>
-            <PodsTable data={oldPods} cluster={cluster!}/>
+        inPublishing && <Tabs size={'large'}>
+          <TabPane tab={formatTabTitle(oldPodsTitle, podsInfo.oldPods.length)}>
+            <PodsTable data={podsInfo.oldPods} cluster={cluster!}/>
           </TabPane>
         </Tabs>
       }

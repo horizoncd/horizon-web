@@ -186,6 +186,7 @@ declare namespace CLUSTER {
   }
 
   type PodInTable = {
+    key: string
     podName: string
     status: string
     ip: string

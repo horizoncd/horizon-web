@@ -6,4 +6,6 @@ export default {
   'menu.Application overview': 'Application overview',
   'menu.Clusters': 'Clusters',
   'menu.Pipelines': 'Pipelines',
+  'menu.Pods': 'Pods',
+  'menu.Monitoring': 'Monitoring',
 };

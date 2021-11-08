@@ -91,6 +91,16 @@ export default {
   'pages.clusterDetail.basic.operate': '操作',
   'pages.clusterDetail.basic.delete': '删除',
 
+  'pages.cluster.podsTable.podName': '副本',
+  'pages.cluster.podsTable.status': '状态',
+  'pages.cluster.podsTable.onlineStatus': '上线状态',
+  'pages.cluster.podsTable.restartCount': '重启次数',
+  'pages.cluster.podsTable.createTime': '创建时间',
+  'pages.cluster.podsTable.action': '操作',
+  'pages.cluster.podsTable.online': '上线',
+  'pages.cluster.podsTable.offline': '下线',
+  'pages.cluster.podsTable.restartPod': '重启Pod',
+
   'pages.application.members.title': '应用成员',
   'pages.groups.members.title': '分组成员',
   'pages.cluster.members.title': '集群成员',
