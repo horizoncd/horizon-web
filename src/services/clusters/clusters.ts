@@ -91,10 +91,10 @@ export async function next(clusterID: number) {
   });
 }
 
-export async function diffsOfCode(cluster: string, targetBranch: string) {
+export async function diffsOfCode(clusterID: number, targetBranch: string) {
   return request<{
     data: CLUSTER.ClusterDiffs
-  }>(`/apis/core/v1/clusters/${cluster}/diffs`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/diffs`, {
     method: 'GET',
     params: {
       targetBranch
@@ -118,4 +118,14 @@ export async function getClusterStatus(clusterID: number) {
     method: 'GET',
   });
 }
+
+export async function searchClusters(params: API.PageParam) {
+  return request<{
+    data: API.PageResult<CLUSTER.Cluster>;
+  }>('/apis/front/v1/clusters/searchclusters', {
+    method: 'GET',
+    params
+  });
+}
+
 

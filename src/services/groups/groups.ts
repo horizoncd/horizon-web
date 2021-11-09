@@ -26,12 +26,15 @@ export async function querySubGroups(groupID: number, pageNumber: number, pageSi
   });
 }
 
-export async function searchGroups(params: API.GroupFilterParam) {
+export async function searchGroups(params: API.PageParam) {
   return request<{
-    data: API.PageResult<API.GroupChild>;
+    data: API.PageResult<API.GroupChild>
   }>('/apis/front/v1/groups/searchgroups', {
     method: 'GET',
-    params
+    params: {
+      ...params,
+      groupID: 0
+    }
   });
 }
 

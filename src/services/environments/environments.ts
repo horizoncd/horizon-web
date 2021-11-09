@@ -2,7 +2,7 @@ import {request} from 'umi';
 
 export async function queryEnvironments() {
   return request<{
-    data: API.Environment[];
+    data: CLUSTER.Environment[];
   }>(`/apis/core/v1/environments`, {
     method: 'GET',
   });
@@ -10,7 +10,7 @@ export async function queryEnvironments() {
 
 export async function queryRegions(environment: string) {
   return request<{
-    data: API.Region[];
+    data: CLUSTER.Region[];
   }>(`/apis/core/v1/environments/${environment}/regions`, {
     method: 'GET',
   });

@@ -37,3 +37,12 @@ export async function deleteApplication(id: number) {
     method: 'DELETE',
   });
 }
+
+export async function searchApplications(params: API.PageParam) {
+  return request<{
+    data: API.PageResult<API.Application>;
+  }>('/apis/front/v1/applications/searchapplications', {
+    method: 'GET',
+    params
+  });
+}

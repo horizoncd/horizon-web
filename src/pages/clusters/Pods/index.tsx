@@ -8,7 +8,7 @@ import {getCluster, getClusterStatus, next, restart} from "@/services/clusters/c
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
-import {PublishType, RunningTask, TaskStatus} from "@/const";
+import {ClusterStatus, PublishType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
@@ -239,13 +239,17 @@ export default () => {
         title: `阶段${i + 1}`
       })
     }
-    return <Steps current={index + 1}>
+    return <Steps current={index}>
       {s.map((item, idx) => {
         let icon;
         if (idx < index) {
           icon = smile
         } else if (idx === index) {
-          icon = loading
+          if (statusData?.clusterStatus.status === ClusterStatus.SUSPENDED) {
+            icon = waiting;
+          } else {
+            icon = loading
+          }
         } else {
           icon = waiting
         }
@@ -260,7 +264,7 @@ export default () => {
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
         {
-          index < total &&
+          index < total && statusData?.clusterStatus.status === ClusterStatus.SUSPENDED &&
           <Button style={{margin: '0 8px'}} onClick={onNext}>
             下一步
           </Button>
@@ -295,7 +299,7 @@ export default () => {
     [
       {
         key: '集群状态',
-        value: statusData?.clusterStatus.status || 'Running',
+        value: statusData?.clusterStatus.status || ClusterStatus.NOTFOUND,
       },
     ],
     [
@@ -318,7 +322,7 @@ export default () => {
 
   const onClickOperation = ({key}: { key: string }) => {
     switch (key) {
-      case '1':
+      case 'builddeploy':
         history.push({
           pathname: `/clusters${fullPath}/-/pipelines/new`,
           search: stringify({
@@ -326,7 +330,7 @@ export default () => {
           })
         })
         break;
-      case '2':
+      case 'deploy':
         history.push({
           pathname: `/clusters${fullPath}/-/pipelines/new`,
           search: stringify({
@@ -334,7 +338,7 @@ export default () => {
           })
         })
         break;
-      case '3':
+      case 'restart':
         Modal.info({
           title: 'Are you sure to restart all pods?',
           onOk() {
@@ -350,10 +354,10 @@ export default () => {
   }
 
   const operateDropdown = <Menu onClick={onClickOperation}>
-    <Menu.Item key="1">构建发布</Menu.Item>
-    <Menu.Item key="2">直接发布</Menu.Item>
-    <Menu.Item key="3">重新启动</Menu.Item>
-    <Menu.Item key="4">回滚</Menu.Item>
+    <Menu.Item key="builddeploy">构建发布</Menu.Item>
+    <Menu.Item key="deploy">直接发布</Menu.Item>
+    <Menu.Item key="restart">重新启动</Menu.Item>
+    <Menu.Item key="rollback">回滚</Menu.Item>
   </Menu>;
 
   return (

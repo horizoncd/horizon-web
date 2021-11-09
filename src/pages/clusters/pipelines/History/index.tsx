@@ -45,11 +45,6 @@ export default () => {
 
   const columns = [
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-    },
-    {
       title: 'Pipeline',
       dataIndex: 'id',
       key: 'id',
@@ -58,6 +53,16 @@ export default () => {
           <a href={`/clusters${fullPath}/-/pipelines/${text}`}>{text}</a>
         </Space>
       ),
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: 'Trigger',
@@ -83,7 +88,7 @@ export default () => {
         </Space>
       ),
     },
-  ]
+  ];
 
   const onChange = (e: any) => {
     const {value} = e.target;

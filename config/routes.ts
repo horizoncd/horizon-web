@@ -7,12 +7,22 @@
   {
     path: '/',
     menuRender: false,
-    redirect: '/dashboard/groups',
+    redirect: '/dashboard/clusters',
   },
   {
     path: '/dashboard/groups',
     menuRender: false,
-    component: 'dashboard/Groups',
+    component: 'dashboard',
+  },
+  {
+    path: '/dashboard/applications',
+    menuRender: false,
+    component: 'dashboard',
+  },
+  {
+    path: '/dashboard/clusters',
+    menuRender: false,
+    component: 'dashboard',
   },
   {
     path: '/groups/new',

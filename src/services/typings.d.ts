@@ -94,6 +94,7 @@ declare namespace API {
     id: number;
     groupID: number;
     fullPath: string
+    fullName?: string
     name: string;
     priority: string;
     description?: string;
@@ -151,7 +152,7 @@ declare namespace API {
   };
 
   type GroupFilterParam = {
-    groupID: number;
+    groupID?: number;
     filter?: string;
     pageNumber: number;
     pageSize: number;

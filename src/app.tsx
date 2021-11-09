@@ -170,7 +170,13 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     headerContentRender: () => {
       return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}}>
-        <Menu.Item key="1">
+        <Menu.Item key="/dashboard/clusters">
+          <a style={{fontWeight: 'bold'}} href={"/dashboard/clusters"}>Clusters</a>
+        </Menu.Item>
+        <Menu.Item key="/dashboard/applications">
+          <a style={{fontWeight: 'bold'}} href={"/dashboard/applications"}>Applications</a>
+        </Menu.Item>
+        <Menu.Item key="/dashboard/groups">
           <a style={{fontWeight: 'bold'}} href={"/dashboard/groups"}>Groups</a>
         </Menu.Item>
       </Menu>

@@ -43,6 +43,7 @@ declare namespace CLUSTER {
 
   type Cluster = {
     fullPath: string,
+    fullName?: string,
     application: {
       id: number,
       name: string
@@ -102,28 +103,12 @@ declare namespace CLUSTER {
   }
 
   type ClusterDiffs = {
-    codeDiff: {
-      commit: {
-        source: {
-          id: string
-        };
-        target: {
-          id: string;
-          log: string;
-        }
-      },
+    codeInfo: {
+      commitMsg: string
+      commitID: string
       link: string
     }
-    configDiff: [{
-      oldPath: string
-      newPath: string
-      aMode: string
-      bMode: string
-      newFile: boolean
-      renamedFile: boolean
-      deletedFile: boolean
-      diff: string
-    }]
+    configDiff: string
   }
 
   type PodFromBackend = {
