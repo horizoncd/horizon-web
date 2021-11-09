@@ -59,14 +59,21 @@ export default (props: MemberProps) => {
   const defaultMemberPageSize = 6;
   const [membersAfterFilter, setMembersAfterFilter] = useState<API.PageResult<API.Member>>({items: [], total: 0})
   const {roleRank, roleList} = RBAC.GetRoleList()
+  const [needAlert, setNeedAlert] = useState(true);
 
-  const {data, run: refreshMembers} = useRequest(() => {
+  const {data, run: refreshMembers, loading: loddingMembers} = useRequest(() => {
     return onListMembers(resourceID);
   }, {
     refreshDeps: [memberFilter],
     onSuccess: () => {
       if (!data.items) {
         data.items = []
+      }
+      for (let i = 0; i < data.items.length; i++) {
+        if (data.items[i].memberNameID === currentUser.id) {
+          setNeedAlert(false);
+          break;
+        }
       }
       if (memberFilter === '') {
         setMembersAfterFilter({items: data.items, total: data.total})
@@ -283,7 +290,7 @@ export default (props: MemberProps) => {
     <Detail>
       <h1>{title}</h1>
       <Divider/>
-      {currentUser.role === RBAC.AnonymousRole && <Alert
+      {!loddingMembers && needAlert && <Alert
         message={intl.formatMessage({id: "pages.members.user.anonymous.alert"})}
       />}
       {
