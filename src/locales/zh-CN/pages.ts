@@ -102,6 +102,12 @@ export default {
   'pages.cluster.podsTable.restartPod': '重启Pod',
 
   'pages.pipelineNew.submit': '流水线创建成功，开始发布',
+  'pages.pipelineNew.title': '标题',
+  'pages.pipelineNew.description': '描述',
+  'pages.pipelineNew.branch': '分之',
+  'pages.pipelineNew.changes': '变更',
+  'pages.pipelineNew.codeChange': '代码变更',
+  'pages.pipelineNew.configChange': '配置变更',
 
   'pages.application.members.title': '应用成员',
   'pages.groups.members.title': '分组成员',

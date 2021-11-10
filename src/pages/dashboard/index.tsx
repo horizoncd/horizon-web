@@ -11,7 +11,6 @@ import Utils from "@/utils";
 import {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
 import {BookOutlined, CloudOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
-import {PageContainer} from "@ant-design/pro-layout";
 import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 
@@ -154,7 +153,7 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath} = node;
 
-    return <span onClick={() => {
+    return <span style={{padding: '10px 0'}} onClick={() => {
       if (pathname === applicationsURL) {
         window.location.href = `/applications${fullPath}/-/clusters`
       }
@@ -246,8 +245,9 @@ export default (props: any) => {
   };
 
   const queryInput = <div>
-    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch}
+    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} style={{width: '60%', marginRight: '10px'}}
             onChange={onChange}/>
+    {header()}
   </div>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
@@ -293,80 +293,76 @@ export default (props: any) => {
     <Row id="dashboard">
       <Col span={2}/>
       <Col span={20}>
-        <PageContainer title={'---'} header={{extra: groupsDashboard && header()}} breadcrumbRender={false}>
-          <Divider className={'group-divider'}/>
-          <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange}
-                animated={false}
-          >
-            <TabPane tab={'Clusters'} key="/dashboard/clusters">
-              {clusters.map((item: CLUSTER.Cluster) => {
-                const treeData: DataNode[] = [{
-                  key: item.id,
-                  title: item.fullName?.split("/").join("  /  "),
-                  isLeaf: true,
-                  icon: <CloudOutlined/>,
-                  ...item
-                }];
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectCluster}
-                    />
-                    <Divider style={{margin: '0 0 0 0'}}/>
-                  </div>
-                );
-              })}
-            </TabPane>
-            <TabPane tab={'Applications'} key="/dashboard/applications">
-              {applications.map((item: API.Application) => {
-                const treeData: DataNode[] = [{
-                  key: item.id,
-                  title: item.fullName?.split("/").join("  /  "),
-                  isLeaf: true,
-                  icon: <BookOutlined/>,
-                  ...item
-                }];
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectApplication}
-                    />
-                    <Divider style={{margin: '0 0 0 0'}}/>
-                  </div>
-                );
-              })}
-            </TabPane>
-            <TabPane tab={'Groups'} key="/dashboard/groups">
-              {groups.map((item: API.GroupChild) => {
-                const treeData = formatTreeData([item]);
-                const hasChildren = item.childrenCount > 0;
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      onExpand={onExpand}
-                      showLine={hasChildren ? {showLeafIcon: false} : false}
-                      switcherIcon={<DownOutlined/>}
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectGroup}
-                      expandedKeys={expandedKeys}
-                    />
-                    <Divider style={{margin: '0 0 0 0'}}/>
-                  </div>
-                );
-              })}
-            </TabPane>
-          </Tabs>
-          <br/>
-          <div style={{textAlign: 'center'}}>
-            <Pagination current={pageNumber} hideOnSinglePage pageSize={pageSize} total={total}
-                        onChange={(page) => setPageNumber(page)}/>
-          </div>
-        </PageContainer>
+        <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange} animated={false} style={{marginTop: '15px'}}
+        >
+          <TabPane tab={'Clusters'} key="/dashboard/clusters">
+            {clusters.map((item: CLUSTER.Cluster) => {
+              const treeData: DataNode[] = [{
+                key: item.id,
+                title: item.fullName?.split("/").join("  /  "),
+                isLeaf: true,
+                icon: <CloudOutlined/>,
+                ...item
+              }];
+              return (
+                <div key={item.id} style={{padding: '10px 0'}}>
+                  <DirectoryTree
+                    treeData={treeData}
+                    titleRender={titleRender}
+                    onSelect={onSelectCluster}
+                  />
+                  <Divider style={{margin: '0 0 0 0'}}/>
+                </div>
+              );
+            })}
+          </TabPane>
+          <TabPane tab={'Applications'} key="/dashboard/applications">
+            {applications.map((item: API.Application) => {
+              const treeData: DataNode[] = [{
+                key: item.id,
+                title: item.fullName?.split("/").join("  /  "),
+                isLeaf: true,
+                icon: <BookOutlined/>,
+                ...item
+              }];
+              return (
+                <div key={item.id} style={{padding: '10px 0'}}>
+                  <DirectoryTree
+                    treeData={treeData}
+                    titleRender={titleRender}
+                    onSelect={onSelectApplication}
+                  />
+                  <Divider style={{margin: '0 0 0 0'}}/>
+                </div>
+              );
+            })}
+          </TabPane>
+          <TabPane tab={'Groups'} key="/dashboard/groups">
+            {groups.map((item: API.GroupChild) => {
+              const treeData = formatTreeData([item]);
+              const hasChildren = item.childrenCount > 0;
+              return (
+                <div key={item.id} style={{padding: '10px 0'}}>
+                  <DirectoryTree
+                    onExpand={onExpand}
+                    showLine={hasChildren ? {showLeafIcon: false} : false}
+                    switcherIcon={<DownOutlined/>}
+                    treeData={treeData}
+                    titleRender={titleRender}
+                    onSelect={onSelectGroup}
+                    expandedKeys={expandedKeys}
+                  />
+                  <Divider style={{margin: '0 0 0 0'}}/>
+                </div>
+              );
+            })}
+          </TabPane>
+        </Tabs>
+        <br/>
+        <div style={{textAlign: 'center'}}>
+          <Pagination current={pageNumber} hideOnSinglePage pageSize={pageSize} total={total}
+                      onChange={(page) => setPageNumber(page)}/>
+        </div>
       </Col>
     </Row>
   );

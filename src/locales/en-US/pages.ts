@@ -101,6 +101,12 @@ export default {
   'pages.cluster.podsTable.restartPod': 'Restart',
 
   'pages.pipelineNew.submit': 'Pipeline Started',
+  'pages.pipelineNew.title': 'Title',
+  'pages.pipelineNew.description': 'Description',
+  'pages.pipelineNew.branch': 'Branch',
+  'pages.pipelineNew.changes': 'Changes',
+  'pages.pipelineNew.codeChange': 'Code Change',
+  'pages.pipelineNew.configChange': 'Config change',
 
   'pages.application.members.title': 'Application Members',
   'pages.groups.members.title': 'Group Members',

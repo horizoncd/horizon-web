@@ -19,7 +19,7 @@ export default (props: any) => {
   const {id, fullPath} = initialState?.resource || {};
   const {location} = props;
   const {query} = location;
-  const {type = 'deploy'} = query;
+  const {type} = query;
   if (!type) {
     return <NotFount/>;
   }
@@ -42,11 +42,11 @@ export default (props: any) => {
 
   const onSubmit = () => {
     const info = {
-      title: form.getFieldValue('name'),
-      description: form.getFieldValue('description'),
+      title: form.getFieldValue('title'),
+      description: form.getFieldValue('description') || '',
     }
     if (type === PublishType.BUILD_DEPLOY) {
-      form.validateFields(['name', 'branch']).then(() => {
+      form.validateFields(['title', 'branch']).then(() => {
         buildDeploy(id!, {
           ...info,
           git: {
@@ -57,7 +57,7 @@ export default (props: any) => {
         })
       })
     } else {
-      form.validateFields(['name']).then(() => {
+      form.validateFields(['title']).then(() => {
         deploy(id!, info).then(() => {
           hookAfterSubmit()
         })
@@ -84,8 +84,8 @@ export default (props: any) => {
           </Form.Item>
           {
             type === PublishType.BUILD_DEPLOY && (
-              <Form.Item label={ formatMessage('branch', 'branch') } name={ 'branch' } required>
-                <Input placeholder="master" />
+              <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} required>
+                <Input placeholder="master"/>
               </Form.Item>
             )
           }
@@ -93,14 +93,14 @@ export default (props: any) => {
       </Card>
 
       <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>
-        <Card title={formatMessage('config', '代码变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
           <b>Commit ID</b>: {data?.codeInfo.commitID}
           <br/>
           <b>Commit Log</b>: {data?.codeInfo.commitMsg}
           <br/>
           <b>Commit History</b>: <a href={data?.codeInfo.link}>History</a>
         </Card>
-        <Card title={formatMessage('config', '配置变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
           <CodeDiff diff={data?.configDiff || ''}/>
         </Card>
       </Card>
