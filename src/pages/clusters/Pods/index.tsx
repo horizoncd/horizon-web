@@ -78,21 +78,7 @@ export default () => {
     },
     {
       title: '待发布',
-      content: <DeployPage step={{total: 4, index: 1}} onNext={() => {
-        next(id).then(() => {
-          notification.success({
-            message: '下一批次开始发布',
-          });
-        })
-      }
-      } onCancel={() => {
-        cancelPipeline(pipelinerunID!).then(() => {
-          notification.success({
-            message: '取消发布成功',
-          });
-        })
-      }
-      }/>,
+      content: <div/>,
       icon: waiting
     },
   ]);

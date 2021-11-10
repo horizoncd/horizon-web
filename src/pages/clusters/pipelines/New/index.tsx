@@ -8,7 +8,7 @@ import SubmitCancelButton from '@/components/SubmitCancelButton';
 import {useModel} from "@@/plugin-model/useModel";
 import NotFount from "@/pages/404";
 import {PublishType} from "@/const";
-import {buildDeploy, deploy, diffsOfCode} from "@/services/clusters/clusters";
+import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/clusters";
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
 
@@ -31,6 +31,13 @@ export default (props: any) => {
   const {data, run: refreshDiff} = useRequest((branch) => diffsOfCode(id!, branch), {
     manual: true,
   })
+
+  const {data: cluster} = useRequest(() => getCluster(id!), {
+    onSuccess: () => {
+      form.setFieldsValue({branch: cluster!.git.branch})
+      refreshDiff(cluster!.git.branch)
+    }
+  });
 
   const hookAfterSubmit = () => {
     notification.success({
@@ -70,10 +77,9 @@ export default (props: any) => {
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
         <Form layout={'vertical'} form={form}
               onFieldsChange={(a) => {
-                // query regions when environment selected
-                if (a[0].name[0] === 'branch') {
-                  refreshDiff(a[0].value)
-                }
+                // if (a[0].name[0] === 'branch') {
+                //   refreshDiff(a[0].value)
+                // }
               }}
         >
           <Form.Item label={formatMessage('title', 'Title')} name={'title'} required>
@@ -94,11 +100,19 @@ export default (props: any) => {
 
       <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>
         <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
-          <b>Commit ID</b>: {data?.codeInfo.commitID}
+          <b>Commit ID</b>
           <br/>
-          <b>Commit Log</b>: {data?.codeInfo.commitMsg}
+          {data?.codeInfo.commitID}
           <br/>
-          <b>Commit History</b>: <a href={data?.codeInfo.link}>History</a>
+          <br/>
+          <b>Commit Log</b>
+          <br/>
+          {data?.codeInfo.commitMsg}
+          <br/>
+          <br/>
+          <b>Commit History</b>
+          <br/>
+          <a href={data?.codeInfo.link}>Link</a>
         </Card>
         <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
           <CodeDiff diff={data?.configDiff || ''}/>

@@ -244,11 +244,11 @@ export default (props: any) => {
     window.location.href = `/clusters${fullPath}/-/pods`
   };
 
-  const queryInput = <div>
-    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} style={{width: '60%', marginRight: '10px'}}
-            onChange={onChange}/>
+  const queryInput = groupsDashboard ? <div>
+    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch}
+            style={{width: '60%', marginRight: '10px'}} onChange={onChange}/>
     {header()}
-  </div>;
+  </div> : <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
     return items.map(({id, name, type, childrenCount, children, ...item}) => {
@@ -293,7 +293,8 @@ export default (props: any) => {
     <Row id="dashboard">
       <Col span={2}/>
       <Col span={20}>
-        <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange} animated={false} style={{marginTop: '15px'}}
+        <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange}
+              animated={false} style={{marginTop: '15px'}}
         >
           <TabPane tab={'Clusters'} key="/dashboard/clusters">
             {clusters.map((item: CLUSTER.Cluster) => {

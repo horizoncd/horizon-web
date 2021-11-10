@@ -32,7 +32,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
   }
 
   const formatMonitorURL = (pod: CLUSTER.PodInTable) => {
-    return `/clusters${fullPath}/-/monitoring?namespace=${pod.namespace}&podName=${pod.podName}`
+    return `/clusters${fullPath}/-/monitoring?podName=${pod.podName}`
   }
 
   const columns = [
@@ -71,8 +71,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
-          <a href={formatConsoleURL(record)} target="_blank">登录Terminal</a>
-          <a onClick={() => onClickStdout(record)}>查看容器日志</a>
+          <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
+          <a onClick={() => onClickStdout(record)}>查看日志</a>
           <a href={formatMonitorURL(record)}>Monitor</a>
         </Space>
       ),

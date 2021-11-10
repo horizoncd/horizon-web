@@ -104,7 +104,7 @@ export default {
   'pages.pipelineNew.submit': '流水线创建成功，开始发布',
   'pages.pipelineNew.title': '标题',
   'pages.pipelineNew.description': '描述',
-  'pages.pipelineNew.branch': '分之',
+  'pages.pipelineNew.branch': '分支',
   'pages.pipelineNew.changes': '变更',
   'pages.pipelineNew.codeChange': '代码变更',
   'pages.pipelineNew.configChange': '配置变更',
