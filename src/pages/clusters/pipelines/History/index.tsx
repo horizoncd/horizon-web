@@ -2,30 +2,26 @@ import {Input, Modal, notification, Space, Table, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
-import styles from './index.less'
 import {useRequest} from "@@/plugin-request/request";
 import {getPipelines, rollback} from "@/services/clusters/clusters";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
+import Utils from '@/utils'
 
 const {TabPane} = Tabs;
-const {Search} = Input;
 
 export default () => {
   const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState!.resource;
 
   const pageSize = 10;
-
-  const [filter, setFilter] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [query, setQuery] = useState(0);
 
   const {data: pipelines, run} = useRequest(() => {
     return getPipelines(id, {
-      filter, pageNumber, pageSize,
+      pageNumber, pageSize,
     });
   }, {
-    refreshDeps: [query, pageNumber],
+    refreshDeps: [pageNumber],
   });
 
   const onRetry = (pipeline: PIPELINES.Pipeline) => {
@@ -46,8 +42,8 @@ export default () => {
   const columns = [
     {
       title: 'Pipeline',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'key',
+      key: 'key',
       render: (text: any) => (
         <Space size="middle">
           <a href={`/clusters${fullPath}/-/pipelines/${text}`}>{text}</a>
@@ -71,8 +67,8 @@ export default () => {
     },
     {
       title: 'CreateTime',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'startedAt',
+      key: 'startedAt',
     },
     {
       title: 'Action',
@@ -90,46 +86,20 @@ export default () => {
     },
   ];
 
-  const onChange = (e: any) => {
-    const {value} = e.target;
-    setFilter(value);
-  };
-
-  const onPressEnter = () => {
-    setQuery(prev => prev + 1)
-  }
-
-  const onSearch = () => {
-    setQuery(prev => prev + 1)
-  }
-  const queryInput = (
-    <div>
-      <Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter}
-              onSearch={onSearch}
-              onChange={onChange}/>
-    </div>
-  )
-
-  // const data = pipelines?.items.map(item => {
-  //   return item
-  // })
+  const datasource = pipelines?.items.map(item => ({
+    ...item,
+    key: item.id,
+    trigger: item.createBy.userName,
+    startedAt: Utils.timeToLocal(item.startedAt)
+  }))
 
   return (
     <PageWithBreadcrumb>
-      <Tabs defaultActiveKey={'pipelines'} size={'large'} tabBarExtraContent={queryInput}>
+      <Tabs defaultActiveKey={'pipelines'} size={'large'}>
         <TabPane tab={'Pipelines'} key={'pipelines'}>
           <Table
             columns={columns}
-            dataSource={[
-              {
-                status: 'ok',
-                id: 123,
-                createdBy: 'tony',
-                startedAt: '2021-11-02',
-                action: 'Deploy',
-                title: 'publish',
-              }
-            ]}
+            dataSource={datasource}
             pagination={{
               position: ['bottomCenter'],
               current: pageNumber,

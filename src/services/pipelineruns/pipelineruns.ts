@@ -12,3 +12,11 @@ export async function queryPipelineLog(pipelinerunID: number) {
     responseType: 'text',
   });
 }
+
+export async function getPipeline(pipelinerunID: number) {
+  return request<{
+    data: PIPELINES.Pipeline
+  }>(`/apis/core/v1/pipelineruns/${pipelinerunID}`, {
+    method: 'GET',
+  });
+}

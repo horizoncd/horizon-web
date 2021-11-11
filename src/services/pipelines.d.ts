@@ -5,11 +5,14 @@ declare namespace PIPELINES {
     action: string,
     title: string,
     description?: string,
-    codeBranch?: string,
-    codeCommit?: string,
+    gitBranch: string,
+    gitCommit: string,
     configCommit?: string,
     rollbackFrom?: number,
-    createdBy: string,
+    createBy: {
+      userID: number,
+      userName: string
+    },
     startedAt: string,
     finishedAt?: string,
   }

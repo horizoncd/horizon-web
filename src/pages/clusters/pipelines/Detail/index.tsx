@@ -16,19 +16,39 @@ import copy from "copy-to-clipboard";
 import FullscreenModal from '@/components/FullscreenModal'
 import {useState} from "react";
 import CodeDiff from '@/components/CodeDiff'
-
+import {useParams} from 'umi';
+import {useRequest} from "@@/plugin-request/request";
+import {getPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
+import Utils from '@/utils'
+import {diffsOfCode} from "@/services/clusters/clusters";
+import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
-  console.log(props.match.params.id)
+  const params = useParams();
+  const {initialState} = useModel('@@initialState');
+  const {id} = initialState?.resource || {};
+
+  // @ts-ignore
+  const {data: pipeline} = useRequest(() => getPipeline(params.id))
+  const {data: diff} = useRequest(() => diffsOfCode(id!, pipeline!.gitBranch), {
+    ready: !!pipeline
+  })
+  // @ts-ignore
+  const {data: buildLog} = useRequest(() => queryPipelineLog(params.id), {
+    formatResult: (res) => {
+      return res
+    }
+  })
+
   const data: Param[][] = [
     [
       {
         key: '状态/Status',
-        value: 'Running',
+        value: pipeline?.status || 'Unknown',
       },
       {
         key: '启动时间/Started',
-        value: '2021-10-14T08:08:44+08:00',
+        value: Utils.timeToLocal(pipeline?.startedAt || ''),
       },
       {
         key: '持续时间/Duration',
@@ -38,13 +58,12 @@ export default (props: any) => {
     [
       {
         key: '触发者/Trigger',
-        value: 'shepenghui',
+        value: pipeline?.createBy.userName || '',
       },
       {
         key: 'Git info',
         value: {
-          'commit id': 'f3d91920',
-          'message': 'add api for application member',
+          'commit id': pipeline?.gitCommit || '',
         }
       }
     ]
@@ -52,211 +71,14 @@ export default (props: any) => {
 
   const cardTab = [
     {
-      key: "日志",
-      tab: "日志"
+      key: "BuildLog",
+      tab: "构建日志"
     },
     {
-      key: "变更内容",
+      key: "Changes",
       tab: "变更内容"
     }
   ]
-
-  const buildLog = 'Build Server: hzajd-music-ndp-build1.v1.music.jd1.vpc, ip = 10.199.4.135, port = 8181\n' +
-    '[2021-10-01 00:40:33] [git] start to download source code\n' +
-    '[2021-10-01 00:40:33] [git] fetch source code\n' +
-    '[2021-10-01 00:40:33] Git: start to clone code from ssh://git@g.hz.netease.com:22222/music-cloud-native/middle-gift-account.git\n' +
-    '[2021-10-01 00:40:33] [git] successfully cloned code\n' +
-    '[2021-10-01 00:40:33] [git] start to checkout to branch master\n' +
-    '[2021-10-01 00:40:33] [git] checkout to the version: 3aa1944369918ba8a695dc600bbf400e6dc4bd7a\n' +
-    '[2021-10-01 00:40:33] [git] successfully downloaded source code\n' +
-    'repo: The project module generate build xml success.\n' +
-    '[2021-10-01 00:40:33 taskId:5109044] use default build.xml...\n' +
-    'exec ant build command... taskId =5109044\n' +
-    'Buildfile: /home/appops/ndp/source/yufeng-cicd-demo_regression/build.xml\n' +
-    'deploy:\n' +
-    '     [echo] begin auto deploy......\n' +
-    'clean:\n' +
-    'parentInstall:\n' +
-    '     [exec] [INFO] Scanning for projects...\n' +
-    '     [exec] Downloading from hz_repo: http://mvn.hz.netease.com/artifactory/repo/com/netease/music/music-server-parent/2.5.7.32/music-server-parent-2.5.7.32.pom\n' +
-    '[exec] Progress (1): 3.7/5.9 kB\n' +
-    '     [exec] Progress (1): 5.9 kB                        Downloaded from hz_repo: http://mvn.hz.netease.com/artifactory/repo/com/netease/music/music-server-parent/2.5.7.32/music-server-parent-2.5.7.32.pom (5.9 kB at 60 kB/s)[WARNING] \n' +
-    '     [exec] [WARNING] Some problems were encountered while building the effective model for com.netease.music:middle-gift-account-manager:jar:1.0.0\n' +
-    '     [exec] [WARNING] \'build.plugins.plugin.version\' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ com.netease.music:music-server-parent:2.5.7.32, /home/appops/.m2/repository/com/netease/music/music-server-parent/2.5.7.32/music-server-parent-2.5.7.32.pom, line 112, column 21\n' +
-    '     [exec] [WARNING] \n' +
-    '     [exec] [WARNING] Some problems were encountered while building the effective model for com.netease.music:middle-gift-account-api:jar:1.0.5\n' +
-    '     [exec] [WARNING] \'parent.relativePath\' of POM com.netease.music:middle-gift-account-api:1.0.5 (/data/ndp/source/yufeng-cicd-demo_regression/api/pom.xml) points at com.netease.music:middle-gift-account instead of com.netease.music:music-server-parent-api, please verify your project structure @ line 5, column 13\n' +
-    '     [exec] [WARNING] \'build.plugins.plugin.version\' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ com.netease.music:music-server-parent-api:2.5.4.1, /home/appops/.m2/repository/com/netease/music/music-server-parent-api/2.5.4.1/music-server-parent-api-2.5.4.1.pom, line 25, column 21\n' +
-    '     [exec] [WARNING] \n' +
-    '     [exec] [WARNING] Some problems were encountered while building the effective model for com.netease.music:middle-gift-account-service:jar:1.0.0'
-
-  const deployLog = '2021-10-08 16:10:59 [NDP_CLIENT_BEGIN]\n' +
-    '2021-10-08 16:10:59 ndpclient / v2.7.0 (2021-07-13)\n' +
-    '2021-10-08 16:10:59 set env: NDP_DEPLOY_BATCH=1 NDP_CLUSTER_PROFILE=reg NDP_INSTANCE_TEMPLATE=97 NDP_DEPLOY_PATH=/home/appops/yufeng-cicd-demo/yufeng-cicd-demo_regression/default/ NDP_CLUSTER_NAME=yufeng-cicd-demo_regression NDP_INSTANCE_VERSION=yufeng-cicd-demo_regression_2021-10-01_00_40_33-master-3aa1944369918ba8a695dc600bbf400e6dc4bd7a NDP_DEPLOY_VERSION=yufeng-cicd-demo_regression_2021-10-01_00_40_33-master-3aa1944369918ba8a695dc600bbf400e6dc4bd7a NDP_APPLICATION_NAME=yufeng-cicd-demo NDP_INSTANCE_NAME=default NDP_HOST_SN=7024418 NDP_DEPLOY_BATCH_COUNT=1 NDP_DEPLOY_TEMPLATE=97 \n' +
-    '2021-10-08 16:10:59 do deploy...\n' +
-    '2021-10-08 16:10:59 lock deploy...\n' +
-    '2021-10-08 16:11:15 deploy yufeng-cicd-demo_regression begin...\n' +
-    '2021-10-08 16:11:15 download http://nos2-i.service.163.org/ndp/t.ctrl.py.62f98b3ee163f5a9383dc7549752eaaa begin...\n' +
-    '2021-10-08 16:11:15 size: 21.45 KB\n' +
-    '2021-10-08 16:11:15 get: 21.45 KB, left: 0 B (100.00%)\n' +
-    '2021-10-08 16:11:15 download ok\n' +
-    '2021-10-08 16:11:15 download http://nos2-i.service.163.org/ndp/a.yufeng-cicd-demo_regression_2021-10-01_00_40_33.tar.gz begin...\n' +
-    '2021-10-08 16:11:16 size: 101.70 MB\n' +
-    '2021-10-08 16:11:17 get: 9.24 MB, left: 92.46 MB (9.09%)\n' +
-    '2021-10-08 16:11:18 get: 24.52 MB, left: 77.18 MB (24.11%)\n' +
-    '2021-10-08 16:11:19 get: 35.81 MB, left: 65.90 MB (35.21%)\n' +
-    '2021-10-08 16:11:20 get: 50.17 MB, left: 51.53 MB (49.33%)\n' +
-    '2021-10-08 16:11:21 get: 63.41 MB, left: 38.29 MB (62.35%)\n' +
-    '2021-10-08 16:11:22 get: 75.94 MB, left: 25.76 MB (74.67%)\n' +
-    '2021-10-08 16:11:23 get: 82.89 MB, left: 18.81 MB (81.50%)\n' +
-    '2021-10-08 16:11:24 get: 95.27 MB, left: 6.43 MB (93.68%)\n' +
-    '2021-10-08 16:11:25 get: 101.70 MB, left: 0 B (100.00%)\n' +
-    '2021-10-08 16:11:25 download ok\n' +
-    '2021-10-08 16:11:25 extract file a.yufeng-cicd-demo_regression_2021-10-01_00_40_33.tar.gz begin...\n' +
-    '2021-10-08 16:11:26 extract file ok\n' +
-    '2021-10-08 16:11:26 unlock deploy\n' +
-    '2021-10-08 16:11:26,630 - 102 - INFO : Current ctrl.py version:1\n' +
-    '2021-10-08 16:11:26,631 - 439 - INFO : do offline\n' +
-    '2021-10-08 16:11:31,641 - 445 - INFO : ----offline sucess\n' +
-    'do stop\n' +
-    '200000\n' +
-    'stopping app server.\n' +
-    'stop success.\n' +
-    '2021-10-08 16:11:43,692 - 451 - INFO : ----stop success\n' +
-    'do deploy\n' +
-    '2021-10-08 16:11:44,621 - 455 - INFO : ----deploy sucess\n' +
-    'do start\n' +
-    '200000\n' +
-    'starting app server.\n' +
-    'process start success.\n' +
-    '2021-10-08 16:11:49,198 - 459 - INFO : ----start sucess\n' +
-    'do check\n' +
-    '2021-10-08 16:11:59,206 - 463 - INFO : ----check sucess\n' +
-    'do online\n' +
-    '2021-10-08 16:11:59,207 - 416 - ERROR : online failed ：<urlopen error [Errno 111] Connection refused>\n' +
-    '2021-10-08 16:12:19,226 - 416 - ERROR : online failed ：<urlopen error [Errno 111] Connection refused>\n' +
-    '2021-10-08 16:12:39,246 - 416 - ERROR : online failed ：<urlopen error [Errno 111] Connection refused>\n' +
-    '2021-10-08 16:13:20,006 - 467 - INFO : ----online sucess\n' +
-    '1\n' +
-    '2021-10-08 16:13:20 lock deploy...\n' +
-    '2021-10-08 16:13:20 delete biz packages...\n' +
-    'remove file: a.yufeng-cicd-demo_regression_2021-10-01_00_40_33.tar.gz\n' +
-    'remove dir: yufeng-cicd-demo_regression/yufeng-cicd-demo_regression_2021-10-01_00_40_33\n' +
-    '2021-10-08 16:13:20 unlock deploy\n' +
-    '2021-10-08 16:13:20 [NDP_CLIENT_END]'
-
-  const diff = "-- a/core/controller/cluster/models.go\n" +
-    "+++ b/core/controller/cluster/models.go\n" +
-    "@@ -1 +1,11 @@\n" +
-    " package cluster\n" +
-    "+\n" +
-    "+type Base struct {\n" +
-    "+   Description string `json:\"description\"`\n" +
-    "+   Git         *Git   `json:\"git\"`\n" +
-    "+}\n" +
-    "+\n" +
-    "+// Git struct about git\n" +
-    "+type Git struct {\n" +
-    "+   Branch string `json:\"branch\"`\n" +
-    "+}\n" +
-    "--- a/lib/gitlab/gitlab.go\n" +
-    "+++ b/lib/gitlab/gitlab.go\n" +
-    "@@ -93,6 +93,11 @@ type Interface interface {\n" +
-    "    // EditNameAndPathForProject update name and path for a specified project.\n" +
-    "    // The pid can be the project's ID or relative path such as fist/second.\n" +
-    "    EditNameAndPathForProject(ctx context.Context, pid interface{}, newName, newPath *string) error\n" +
-    "+\n" +
-    "+   // Compare branches, tags or commits.\n" +
-    "+   // The pid can be the project's ID or relative path such as fist/second.\n" +
-    "+   // See https://docs.gitlab.com/ee/api/repositories.html#compare-branches-tags-or-commits for more information.\n" +
-    "+   Compare(ctx context.Context, pid interface{}, from, to string, straight *bool) (*gitlab.Compare, error)\n" +
-    " }\n" +
-    " \n" +
-    " var _ Interface = (*helper)(nil)\n" +
-    "@@ -360,6 +365,23 @@ func (h *helper) EditNameAndPathForProject(ctx context.Context, pid interface{},\n" +
-    "    return nil\n" +
-    " }\n" +
-    " \n" +
-    "+func (h *helper) Compare(ctx context.Context, pid interface{}, from, to string,\n" +
-    "+   straight *bool) (_ *gitlab.Compare, err error) {\n" +
-    "+   const op = \"gitlab: compare branchs\"\n" +
-    "+   defer wlog.Start(ctx, op).Stop(func() string { return wlog.ByErr(err) })\n" +
-    "+\n" +
-    "+   compare, resp, err := h.client.Repositories.Compare(pid, &gitlab.CompareOptions{\n" +
-    "+       From:     &from,\n" +
-    "+       To:       &to,\n" +
-    "+       Straight: straight,\n" +
-    "+   }, gitlab.WithContext(ctx))\n" +
-    "+   if err != nil {\n" +
-    "+       return nil, parseError(op, resp, err)\n" +
-    "+   }\n" +
-    "+\n" +
-    "+   return compare, nil\n" +
-    "+}\n" +
-    "+\n" +
-    " func parseError(op errors.Op, resp *gitlab.Response, err error) error {\n" +
-    "    if err == nil {\n" +
-    "        return nil\n" +
-    "--- a/pkg/cluster/dao/dao.go\n" +
-    "+++ b/pkg/cluster/dao/dao.go\n" +
-    "@@ -1 +1,57 @@\n" +
-    " package dao\n" +
-    "+\n" +
-    "+import (\n" +
-    "+   \"context\"\n" +
-    "+\n" +
-    "+   \"g.hz.netease.com/horizon/lib/orm\"\n" +
-    "+   \"g.hz.netease.com/horizon/pkg/cluster/models\"\n" +
-    "+   \"g.hz.netease.com/horizon/pkg/common\"\n" +
-    "+)\n" +
-    "+\n" +
-    "+type DAO interface {\n" +
-    "+   Create(ctx context.Context, cluster *models.Cluster) (*models.Cluster, error)\n" +
-    "+   GetByName(ctx context.Context, name string) (*models.Cluster, error)\n" +
-    "+   ListByApplication(ctx context.Context, application string) ([]*models.Cluster, error)\n" +
-    "+}\n" +
-    "+\n" +
-    "+type dao struct {\n" +
-    "+}\n" +
-    "+\n" +
-    "+func NewDAO() DAO {\n" +
-    "+   return &dao{}\n" +
-    "+}\n" +
-    "+\n" +
-    "+func (d *dao) Create(ctx context.Context, cluster *models.Cluster) (*models.Cluster, error) {\n" +
-    "+   db, err := orm.FromContext(ctx)\n" +
-    "+   if err != nil {\n" +
-    "+       return nil, err\n" +
-    "+   }\n" +
-    "+\n" +
-    "+   result := db.Create(cluster)\n" +
-    "+\n" +
-    "+   return cluster, result.Error\n" +
-    "+}\n" +
-    "+\n" +
-    "+func (d *dao) GetByName(ctx context.Context, name string) (*models.Cluster, error) {\n" +
-    "+   db, err := orm.FromContext(ctx)\n" +
-    "+   if err != nil {\n" +
-    "+       return nil, err\n" +
-    "+   }\n" +
-    "+\n" +
-    "+   var cluster models.Cluster\n" +
-    "+   result := db.Raw(common.ClusterQueryByName, name).First(&cluster)\n" +
-    "+\n" +
-    "+   return &cluster, result.Error\n" +
-    "+}\n" +
-    "+\n" +
-    "+func (d *dao) ListByApplication(ctx context.Context, application string) ([]*models.Cluster, error) {\n" +
-    "+   db, err := orm.FromContext(ctx)\n" +
-    "+   if err != nil {\n" +
-    "+       return nil, err\n" +
-    "+   }\n" +
-    "+\n" +
-    "+   var clusters []*models.Cluster\n" +
-    "+   result := db.Raw(common.ClusterQueryByApplication, application).Scan(&clusters)\n" +
-    "+\n" +
-    "+   return clusters, result.Error\n" +
-    "+}"
 
   const [fullscreen, setFullscreen] = useState(false)
   const onFullscreenClick = () => {
@@ -276,13 +98,13 @@ export default (props: any) => {
   }
 
   const content = {
-    '日志': <CodeEditor
-      content={buildLog + deployLog}
+    'BuildLog': <CodeEditor
+      content={buildLog}
     />,
-    '变更内容': <CodeDiff diff={diff}></CodeDiff>
+    'Changes': <CodeDiff diff={diff?.configDiff || ''}/>
   }
 
-  const [activeTabKey, setActiveTabKey] = useState('日志')
+  const [activeTabKey, setActiveTabKey] = useState('BuildLog')
 
   return <PageWithBreadcrumb>
     <DetailCard
@@ -307,7 +129,7 @@ export default (props: any) => {
       {content[activeTabKey]}
     </Card>
     <FullscreenModal
-      title={'应用sph-test的流水线1日志'}
+      title={''}
       visible={fullscreen}
       onClose={onClose}
       fullscreen={true}
