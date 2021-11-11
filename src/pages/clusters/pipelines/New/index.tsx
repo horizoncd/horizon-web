@@ -99,7 +99,7 @@ export default (props: any) => {
       </Card>
 
       <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>
-        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards} hidden={type === PublishType.DEPLOY}>
           <b>Commit ID</b>
           <br/>
           {data?.codeInfo.commitID}

@@ -73,6 +73,11 @@ function timeFromNow(oldTime: string) {
   return moment(oldTime).local().locale(getLocale()).fromNow()
 }
 
+// 计算出两个时间点之间的间隔
+function timeSecondsDuration(startedAt: string, finishedAt: string) {
+  return moment(finishedAt).diff(moment(startedAt), "seconds")
+}
+
 // 将日期转为浏览器当前时区
 function timeToLocal(time: string) {
   return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString()
@@ -232,4 +237,5 @@ export default {
   getAvatarColorIndex,
   timeFromNow,
   timeToLocal,
+  timeSecondsDuration,
 };

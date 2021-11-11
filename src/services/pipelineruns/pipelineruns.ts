@@ -20,3 +20,11 @@ export async function getPipeline(pipelinerunID: number) {
     method: 'GET',
   });
 }
+
+export async function getPipelineDiffs(pipelinerunID: number) {
+  return request<{
+    data: PIPELINES.Diffs
+  }>(`/apis/core/v1/pipelineruns/${pipelinerunID}/diffs`, {
+    method: 'GET',
+  });
+}

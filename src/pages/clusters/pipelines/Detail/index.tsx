@@ -18,21 +18,16 @@ import {useState} from "react";
 import CodeDiff from '@/components/CodeDiff'
 import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
-import {getPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
+import {getPipeline, getPipelineDiffs, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import Utils from '@/utils'
-import {diffsOfCode} from "@/services/clusters/clusters";
-import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
   const params = useParams();
-  const {initialState} = useModel('@@initialState');
-  const {id} = initialState?.resource || {};
 
   // @ts-ignore
   const {data: pipeline} = useRequest(() => getPipeline(params.id))
-  const {data: diff} = useRequest(() => diffsOfCode(id!, pipeline!.gitBranch), {
-    ready: !!pipeline
-  })
+  // @ts-ignore
+  const {data: diff} = useRequest(() => getPipelineDiffs(params.id))
   // @ts-ignore
   const {data: buildLog} = useRequest(() => queryPipelineLog(params.id), {
     formatResult: (res) => {
@@ -52,13 +47,13 @@ export default (props: any) => {
       },
       {
         key: '持续时间/Duration',
-        value: '3min',
+        value: pipeline ? `${Utils.timeSecondsDuration(pipeline!.startedAt, pipeline!.finishedAt)}s` : '',
       },
     ],
     [
       {
         key: '触发者/Trigger',
-        value: pipeline?.createBy.userName || '',
+        value: pipeline?.createdBy.userName || '',
       },
       {
         key: 'Git info',
@@ -101,7 +96,7 @@ export default (props: any) => {
     'BuildLog': <CodeEditor
       content={buildLog}
     />,
-    'Changes': <CodeDiff diff={diff?.configDiff || ''}/>
+    'Changes': <CodeDiff diff={diff?.configDiff.diff || ''}/>
   }
 
   const [activeTabKey, setActiveTabKey] = useState('BuildLog')

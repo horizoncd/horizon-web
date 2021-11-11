@@ -65,12 +65,7 @@ export async function createSubGroup(id: number, data: API.NewGroup) {
   });
 }
 
-export async function getGroupByID(
-  params: {
-    id: number;
-  }
-) {
-  const {id} = params;
+export async function getGroupByID(id: number) {
   return request<{
     data: API.Group
   }>(`/apis/core/v1/groups/${id}`, {
@@ -78,21 +73,15 @@ export async function getGroupByID(
   });
 }
 
-export async function updateGroupDetail(
-  params: {
-    id: number;
-  },
+export async function updateGroupDetail(id: number,
   body: API.Group,
-  options?: { [key: string]: any },
 ) {
-  const {id} = params;
   return request(`/apis/core/v1/groups/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     data: body,
-    ...(options || {}),
   });
 }
 

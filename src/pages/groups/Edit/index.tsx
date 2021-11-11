@@ -6,26 +6,23 @@ import {deleteGroup, getGroupByID, updateGroupDetail} from "@/services/groups/gr
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
 import {QuestionCircleOutlined} from "@ant-design/icons";
-import NotFount from "@/pages/404";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 
 const {TextArea} = Input;
 
 export default () => {
   const [form] = Form.useForm();
+  const {successAlert} = useModel('alert');
 
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const {id} = initialState?.resource || {};
-  if (!id) {
-    return <NotFount/>;
-  }
 
   const defaultDetail: API.Group = {fullName: "", fullPath: "", id: 0, name: "", path: ""}
   const [detail, setDetail] = useState<API.Group>(defaultDetail)
 
   useEffect(() => {
     const updateDetail = async () => {
-      const {data} = await getGroupByID({id});
+      const {data} = await getGroupByID(id!);
       setDetail(data)
       form.setFieldsValue(data)
     }
@@ -62,12 +59,11 @@ export default () => {
   const getURLPrefix = () => window.location.origin + detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)
 
   const onFinish = (values: API.Group) => {
-    updateGroupDetail({id}, values).then(() => {
-      notification.info({
-        message: '修改成功',
-      })
+    updateGroupDetail(id!, values).then(() => {
+      successAlert('Group修改成功');
       const newFullPath = `${detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)}${values.path}`;
-      window.location.href = `/groups${newFullPath}/-/edit`
+      history.push(`/groups${newFullPath}/-/edit`)
+      refresh()
     })
   }
 

@@ -29,7 +29,7 @@ export default (props: any) => {
   const groupsDashboard = pathname === groupsURL
 
   const intl = useIntl();
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const newGroup = '/groups/new';
 
   const header = () => {
@@ -155,12 +155,13 @@ export default (props: any) => {
 
     return <span style={{padding: '10px 0'}} onClick={() => {
       if (pathname === applicationsURL) {
-        window.location.href = `/applications${fullPath}/-/clusters`
+        history.push(`/applications${fullPath}/-/clusters`)
+      } else if (pathname === clustersURL) {
+        history.push(`/clusters${fullPath}/-/pods`)
+      } else {
+        history.push(fullPath)
       }
-      if (pathname === clustersURL) {
-        window.location.href = `/clusters${fullPath}/-/pods`
-      }
-      window.location.href = fullPath
+      refresh()
     }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
@@ -204,15 +205,12 @@ export default (props: any) => {
     },
   ) => {
     const {node} = info;
-    const {key, expanded, fullPath, childrenCount, type} = node;
+    const {key, expanded, fullPath, childrenCount} = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      let targetPath = fullPath
-      if (type === 'application') {
-        targetPath = `/applications${fullPath}/-/clusters`
-      }
-      window.location.href = targetPath
+      history.push(fullPath)
+      refresh()
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {
@@ -229,7 +227,8 @@ export default (props: any) => {
   ) => {
     const {node} = info;
     const {fullPath} = node;
-    window.location.href = `/applications${fullPath}/-/clusters`
+    history.push(`/applications${fullPath}/-/clusters`)
+    refresh()
   };
 
   // select cluster
@@ -241,7 +240,8 @@ export default (props: any) => {
   ) => {
     const {node} = info;
     const {fullPath} = node;
-    window.location.href = `/clusters${fullPath}/-/pods`
+    history.push(`/clusters${fullPath}/-/pods`)
+    refresh()
   };
 
   const queryInput = groupsDashboard ? <div>

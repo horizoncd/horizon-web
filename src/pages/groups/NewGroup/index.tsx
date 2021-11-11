@@ -1,16 +1,18 @@
-import {Button, Col, Divider, Form, Input, notification, Row} from 'antd';
+import {Button, Col, Divider, Form, Input, Row} from 'antd';
 import {history} from 'umi';
 import type {Rule} from 'rc-field-form/lib/interface';
 import './index.less';
 import {createGroup} from '@/services/groups/groups';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import {useModel} from "@@/plugin-model/useModel";
 
 const {TextArea} = Input;
 
 export default () => {
   const [form] = Form.useForm();
-
+  const {successAlert} = useModel('alert');
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
+  const {refresh} = useModel('@@initialState');
 
   const groupNameLabel = formatLabel('Group name');
   const groupPathLabel = formatLabel('Group URL');
@@ -38,10 +40,9 @@ export default () => {
 
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
-      notification.info({
-        message: 'Group新建成功',
-      });
-      window.location.href = `/${values.path}`;
+      successAlert('Group新建成功')
+      history.push(`/${values.path}`);
+      refresh()
     }
 
     createGroup({

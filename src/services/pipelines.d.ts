@@ -9,11 +9,22 @@ declare namespace PIPELINES {
     gitCommit: string,
     configCommit?: string,
     rollbackFrom?: number,
-    createBy: {
+    createdBy: {
       userID: number,
       userName: string
     },
     startedAt: string,
-    finishedAt?: string,
+    finishedAt: string,
+  }
+
+  type Diffs = {
+    codeInfo: {
+      commitMsg: string
+      commitID: string
+      link: string
+    }
+    configDiff: {
+      diff: string
+    }
   }
 }

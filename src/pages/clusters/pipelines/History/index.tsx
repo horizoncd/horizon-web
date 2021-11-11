@@ -89,7 +89,7 @@ export default () => {
   const datasource = pipelines?.items.map(item => ({
     ...item,
     key: item.id,
-    trigger: item.createBy.userName,
+    trigger: item.createdBy.userName,
     startedAt: Utils.timeToLocal(item.startedAt)
   }))
 
