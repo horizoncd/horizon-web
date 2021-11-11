@@ -7,6 +7,12 @@ declare namespace CLUSTER {
     environment: string
   }
 
+  type SessionQuery = {
+    // podName=&containerName=
+    podName: string
+    containerName: string
+  }
+
   type Environment = {
     name: string;
     displayName: string;

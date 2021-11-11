@@ -61,7 +61,7 @@ export default (props: MemberProps) => {
   const {roleRank, roleList} = RBAC.GetRoleList()
   const [needAlert, setNeedAlert] = useState(true);
 
-  const {data, run: refreshMembers, loading: loddingMembers} = useRequest(() => {
+  const {data, run: refreshMembers, loading: loadingMembers} = useRequest(() => {
     return onListMembers(resourceID);
   }, {
     refreshDeps: [memberFilter],
@@ -290,7 +290,7 @@ export default (props: MemberProps) => {
     <Detail>
       <h1>{title}</h1>
       <Divider/>
-      {!loddingMembers && needAlert && <Alert
+      {!loadingMembers && needAlert && <Alert
         message={intl.formatMessage({id: "pages.members.user.anonymous.alert"})}
       />}
       {

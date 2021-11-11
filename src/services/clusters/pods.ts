@@ -1,12 +1,12 @@
 import {request} from 'umi';
 
-export async function queryTerminalSessionID(applicationID: number, clusterID: number, params: CLUSTER.PodQuery) {
+export async function queryTerminalSessionID(clusterID: number, params: CLUSTER.SessionQuery) {
   return request<{
     data: {
       id: string
     }
-  }>(`/api/v1/applications/${applicationID}/clusters/${clusterID}/sessionid`, {
-    method: 'GET',
+  }>(`/apis/core/v1/clusters/${clusterID}/terminal`, {
+    method: 'POST',
     params
   });
 }
