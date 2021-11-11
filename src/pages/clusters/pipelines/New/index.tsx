@@ -98,21 +98,24 @@ export default (props: any) => {
       </Card>
 
       <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>
-        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards} hidden={type === PublishType.DEPLOY}>
-          <b>Commit ID</b>
-          <br/>
-          {data?.codeInfo.commitID}
-          <br/>
-          <br/>
-          <b>Commit Log</b>
-          <br/>
-          {data?.codeInfo.commitMsg}
-          <br/>
-          <br/>
-          <b>Commit History</b>
-          <br/>
-          <a href={data?.codeInfo.link}>Link</a>
-        </Card>
+        {
+          type === PublishType.BUILD_DEPLOY &&
+          <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+            <b>Commit ID</b>
+            <br/>
+            {data?.codeInfo.commitID}
+            <br/>
+            <br/>
+            <b>Commit Log</b>
+            <br/>
+            {data?.codeInfo.commitMsg}
+            <br/>
+            <br/>
+            <b>Commit History</b>
+            <br/>
+            <a href={data?.codeInfo.link}>Link</a>
+          </Card>
+        }
         <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
           <CodeDiff diff={data?.configDiff || ''}/>
         </Card>

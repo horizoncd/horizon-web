@@ -106,21 +106,24 @@ export default (props: any) => {
       content={buildLog}
     />,
     'Changes': <div>
-      <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards} hidden={pipeline?.action === PublishType.DEPLOY}>
-        <b>Commit ID</b>
-        <br/>
-        {diff?.codeInfo.commitID}
-        <br/>
-        <br/>
-        <b>Commit Log</b>
-        <br/>
-        {diff?.codeInfo.commitMsg}
-        <br/>
-        <br/>
-        <b>Commit History</b>
-        <br/>
-        <a href={diff?.codeInfo.link}>Link</a>
-      </Card>
+      {
+        pipeline?.action === PublishType.BUILD_DEPLOY &&
+        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+          <b>Commit ID</b>
+          <br/>
+          {diff?.codeInfo.commitID}
+          <br/>
+          <br/>
+          <b>Commit Log</b>
+          <br/>
+          {diff?.codeInfo.commitMsg}
+          <br/>
+          <br/>
+          <b>Commit History</b>
+          <br/>
+          <a href={diff?.codeInfo.link}>Link</a>
+        </Card>
+      }
       <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
         <CodeDiff diff={diff?.configDiff.diff || ''}/>
       </Card>
