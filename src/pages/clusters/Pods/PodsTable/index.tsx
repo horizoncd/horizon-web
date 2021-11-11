@@ -64,7 +64,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'restartCount',
     },
     {
-      title: 'createTime',
+      title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
     },

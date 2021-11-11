@@ -85,7 +85,8 @@ export default () => {
   ]);
 
   const {data: cluster} = useRequest(() => getCluster(id), {
-    refreshDeps: [id]
+    refreshDeps: [id],
+    ready: !!id,
   });
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true,
@@ -155,6 +156,8 @@ export default () => {
   }
   const {data: statusData} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
+    refreshDeps: [id],
+    ready: !!id,
     onSuccess: () => {
       if (statusData) {
         refreshPodsInfo(statusData)
@@ -329,7 +332,7 @@ export default () => {
           title: 'Are you sure to restart all pods?',
           onOk() {
             restart(id).then(() => {
-              successAlert('Restart Succeed')
+              successAlert('Restart All Pods Succeed')
             })
           },
         });
