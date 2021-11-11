@@ -8,7 +8,7 @@ import {getCluster, getClusterStatus, next, restart} from "@/services/clusters/c
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
-import {ClusterStatus, PublishType, RunningTask, TaskStatus} from "@/const";
+import {ClusterStatus, PublishType, ResourceType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
@@ -59,7 +59,7 @@ export default () => {
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
-  const {id, fullPath} = initialState!.resource;
+  const {id, fullPath, type} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [task, setTask] = useState(RunningTask.NONE);
@@ -86,7 +86,7 @@ export default () => {
 
   const {data: cluster} = useRequest(() => getCluster(id), {
     refreshDeps: [id],
-    ready: !!id,
+    ready: !!id && type === ResourceType.CLUSTER,
   });
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true,
@@ -157,7 +157,7 @@ export default () => {
   const {data: statusData} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     refreshDeps: [id],
-    ready: !!id,
+    ready: !!id && type === ResourceType.CLUSTER,
     onSuccess: () => {
       if (statusData) {
         refreshPodsInfo(statusData)

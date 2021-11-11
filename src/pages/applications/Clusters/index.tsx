@@ -11,6 +11,7 @@ import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
 import RBAC from '@/rbac'
 import Utils from '@/utils'
+import {ResourceType} from "@/const";
 
 const {TabPane} = Tabs;
 const {Search} = Input;
@@ -18,7 +19,7 @@ const {Search} = Input;
 export default () => {
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
-  const {id, name: application, fullPath} = initialState!.resource;
+  const {id, name: application, fullPath, type} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
 
   const pageSize = 10;
@@ -68,7 +69,7 @@ export default () => {
       }
     )
   }, {
-    ready: !!environment,
+    ready: !!environment && !!id && type === ResourceType.APPLICATION,
     refreshDeps: [query, environment, pageNumber, id],
   });
 
