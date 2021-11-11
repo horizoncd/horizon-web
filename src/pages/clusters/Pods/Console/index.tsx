@@ -5,24 +5,23 @@ import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
   const {initialState} = useModel('@@initialState');
-  const {id, parentID} = initialState!.resource;
+  const {id} = initialState!.resource;
 
   const {location} = props;
   const {query} = location;
-  const {namespace, podName, containerName, environment} = query;
+  const {podName, containerName} = query;
 
-  const {data} = useRequest(() => queryTerminalSessionID(parentID, id, {
-    namespace, podName, containerName, environment
+  const backend = 'horizon.yf-dev.netease.com'
+
+  const {data} = useRequest(() => queryTerminalSessionID(id, {
+    podName, containerName
   }))
 
   const {id: sessionID} = data || {};
 
-  const backend = 'horizon.yf-dev.netease.com'
-
-  const url = `ws://${backend}/api/v1/sockjs/556/jsjljngo/websocket?${sessionID}`;
-
+  const url = `ws://${backend}/apis/front/v1/terminal/${sessionID}/websocket`
   return (
-    <Terminal
+    sessionID ? <Terminal
       url={url}
       onSocketOpen={(socketRef) => {
         if (socketRef.current) {
@@ -63,6 +62,6 @@ export default (props: any) => {
         const msg = JSON.parse(JSON.parse(event.data.slice(1))[0]);
         return msg.Data;
       }}
-    />
+    /> : <div/>
   );
 }
