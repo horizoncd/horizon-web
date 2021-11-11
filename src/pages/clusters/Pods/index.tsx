@@ -83,9 +83,12 @@ export default () => {
     },
   ]);
 
-  const {data: cluster} = useRequest(() => getCluster(id));
+  const {data: cluster} = useRequest(() => getCluster(id), {
+    refreshDeps: [id]
+  });
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true,
+    refreshDeps: [pipelinerunID],
     formatResult: (res) => {
       return res
     }

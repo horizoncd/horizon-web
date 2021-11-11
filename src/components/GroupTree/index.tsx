@@ -5,6 +5,8 @@ import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
 import { queryChildren, querySubGroups, searchChildren, searchGroups } from "@/services/groups/groups";
+import {history} from 'umi';
+import {useModel} from "@@/plugin-model/useModel";
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -17,12 +19,12 @@ export default (props: any) => {
   const searchFunc = groupID ? searchChildren : searchGroups
   const queryFunc = groupID ? queryChildren : querySubGroups
 
+  const {refresh} = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
   const [ total, setTotal ] = useState(0);
   const [ pageNumber, setPageNumber ] = useState(1);
   const [ query, setQuery ] = useState(0);
   const [ groups, setGroups ] = useState<API.GroupChild[]>([]);
-  // const [ autoExpandParent, setAutoExpandParent ] = useState(true);
   const defaultExpandedKeys: (string|number)[] = [];
   const [ expandedKeys, setExpandedKeys ] = useState(defaultExpandedKeys);
 
@@ -45,7 +47,7 @@ export default (props: any) => {
   }
 
   useEffect(() => {
-    const refresh = async () => {
+    const refreshGroups = async () => {
       const { data } = await searchFunc({
         groupID,
         filter: searchValue,
@@ -57,7 +59,7 @@ export default (props: any) => {
       setTotal(t)
       updateExpandedKeys(items);
     }
-    refresh();
+    refreshGroups();
   }, [ query, groupID, pageNumber ]);
 
   const titleRender = (node: any): React.ReactNode => {
@@ -83,7 +85,8 @@ export default (props: any) => {
       if (type === 'application') {
         targetPath = `/applications${ fullPath }/-/clusters`
       }
-      window.location.href = targetPath
+      history.push(targetPath)
+      refresh()
     } }>
       <span className={ `avatar-32 identicon bg${ Utils.getAvatarColorIndex(title) }` }>
         { firstLetter }
@@ -138,7 +141,8 @@ export default (props: any) => {
       if (type === 'application') {
         targetPath = `/applications${ fullPath }/-/clusters`
       }
-      window.location.href = targetPath
+      history.push(targetPath)
+      refresh()
     } else if (!expanded) {
       setExpandedKeys([ ...expandedKeys, key ]);
     } else {
@@ -200,7 +204,6 @@ export default (props: any) => {
                   treeData={ treeData }
                   titleRender={ titleRender }
                   onSelect={ onSelect }
-                  // autoExpandParent={autoExpandParent}
                   expandedKeys={ expandedKeys }
                 />
                 <Divider style={ { margin: '0 0 0 0' } }/>

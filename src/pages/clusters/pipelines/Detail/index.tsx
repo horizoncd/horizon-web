@@ -20,9 +20,12 @@ import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import {getPipeline, getPipelineDiffs, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import Utils from '@/utils'
+import {PublishType} from "@/const";
+import {useIntl} from "@@/plugin-locale/localeExports";
 
 export default (props: any) => {
   const params = useParams();
+  const intl = useIntl();
 
   // @ts-ignore
   const {data: pipeline} = useRequest(() => getPipeline(params.id))
@@ -34,6 +37,10 @@ export default (props: any) => {
       return res
     }
   })
+
+  const formatMessage = (suffix: string, defaultMsg: string) => {
+    return intl.formatMessage({id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg})
+  }
 
   const data: Param[][] = [
     [
@@ -96,7 +103,26 @@ export default (props: any) => {
     'BuildLog': <CodeEditor
       content={buildLog}
     />,
-    'Changes': <CodeDiff diff={diff?.configDiff.diff || ''}/>
+    'Changes': <div>
+      <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards} hidden={pipeline?.action === PublishType.DEPLOY}>
+        <b>Commit ID</b>
+        <br/>
+        {diff?.codeInfo.commitID}
+        <br/>
+        <br/>
+        <b>Commit Log</b>
+        <br/>
+        {diff?.codeInfo.commitMsg}
+        <br/>
+        <br/>
+        <b>Commit History</b>
+        <br/>
+        <a href={diff?.codeInfo.link}>Link</a>
+      </Card>
+      <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
+        <CodeDiff diff={diff?.configDiff.diff || ''}/>
+      </Card>
+    </div>
   }
 
   const [activeTabKey, setActiveTabKey] = useState('BuildLog')

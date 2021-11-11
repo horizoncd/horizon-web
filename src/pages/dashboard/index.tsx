@@ -306,13 +306,13 @@ export default (props: any) => {
                 ...item
               }];
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     treeData={treeData}
                     titleRender={titleRender}
                     onSelect={onSelectCluster}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}
@@ -327,13 +327,13 @@ export default (props: any) => {
                 ...item
               }];
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     treeData={treeData}
                     titleRender={titleRender}
                     onSelect={onSelectApplication}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}
@@ -343,7 +343,7 @@ export default (props: any) => {
               const treeData = formatTreeData([item]);
               const hasChildren = item.childrenCount > 0;
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     onExpand={onExpand}
                     showLine={hasChildren ? {showLeafIcon: false} : false}
@@ -353,7 +353,7 @@ export default (props: any) => {
                     onSelect={onSelectGroup}
                     expandedKeys={expandedKeys}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}

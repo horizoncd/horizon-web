@@ -69,7 +69,7 @@ export default () => {
     )
   }, {
     ready: !!environment,
-    refreshDeps: [query, environment, pageNumber],
+    refreshDeps: [query, environment, pageNumber, id],
   });
 
   const onChange = (e: any) => {
