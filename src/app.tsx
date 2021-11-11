@@ -22,7 +22,6 @@ import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
 
-
 const loginPath = '/user/login';
 
 const IconMap = {
@@ -169,14 +168,14 @@ export const request: RequestConfig = {
 export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     headerContentRender: () => {
-      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}}>
-        <Menu.Item key="/dashboard/clusters">
+      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
+        <Menu.Item key="1">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
         </Menu.Item>
-        <Menu.Item key="/dashboard/applications">
+        <Menu.Item key="2">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
         </Menu.Item>
-        <Menu.Item key="/dashboard/groups">
+        <Menu.Item key="3">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/groups")}>Groups</a>
         </Menu.Item>
       </Menu>

@@ -1,4 +1,4 @@
-import {Button, Col, Form, notification, Row} from 'antd';
+import {Button, Col, Form, Row} from 'antd';
 import Basic from './Basic';
 import Config from '../../applications/NewOrEdit/Config';
 import Audit from './Audit';
@@ -43,6 +43,7 @@ export default (props: any) => {
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
 
+  const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
   const [template, setTemplate] = useState<{ name: string, release: string }>({release: "", name: ""});
@@ -200,9 +201,7 @@ export default (props: any) => {
   }, {
     manual: true,
     onSuccess: (res: CLUSTER.Cluster) => {
-      notification.success({
-        message: creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}),
-      });
+      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}))
       // jump to cluster's home page
       window.location.href = res.fullPath;
     }

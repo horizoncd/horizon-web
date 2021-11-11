@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Form, Input, notification, Row} from 'antd';
+import {Button, Col, Divider, Form, Input, Row} from 'antd';
 import {history} from 'umi';
 import type {Rule} from 'rc-field-form/lib/interface';
 import './index.less';
@@ -11,8 +11,9 @@ const {TextArea} = Input;
 export default () => {
   const [form] = Form.useForm();
 
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const {id, fullPath} = initialState?.resource || {};
+  const {successAlert} = useModel('alert')
 
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
 
@@ -42,10 +43,9 @@ export default () => {
 
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
-      notification.info({
-        message: 'Group新建成功',
-      });
-      window.location.href = `${fullPath}/${values.path}`;
+      successAlert('SubGroup新建成功')
+      history.push(`${fullPath}/${values.path}`)
+      refresh()
     }
 
     createSubGroup(id!, {

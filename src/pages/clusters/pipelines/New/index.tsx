@@ -1,5 +1,5 @@
 import styles from "@/pages/clusters/NewOrEdit/index.less";
-import {Card, Form, Input, notification} from "antd";
+import {Card, Form, Input} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import TextArea from "antd/es/input/TextArea";
 import CodeDiff from '@/components/CodeDiff'
@@ -16,6 +16,7 @@ export default (props: any) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const {initialState} = useModel('@@initialState');
+  const {successAlert} = useModel('alert')
   const {id, fullPath} = initialState?.resource || {};
   const {location} = props;
   const {query} = location;
@@ -40,9 +41,7 @@ export default (props: any) => {
   });
 
   const hookAfterSubmit = () => {
-    notification.success({
-      message: formatMessage('submit', 'Pipeline Started'),
-    });
+    successAlert(formatMessage('submit', 'Pipeline Started'))
     // jump to pods' url
     history.push(`/clusters${fullPath}/-/pods`)
   }

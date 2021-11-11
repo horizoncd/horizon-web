@@ -1,6 +1,6 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import {useEffect, useState} from "react";
-import {Avatar, Button, Card, Divider, notification} from 'antd';
+import {Avatar, Button, Card, Divider} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -17,7 +17,7 @@ import RBAC from '@/rbac';
 export default () => {
   const intl = useIntl();
   const history = useHistory();
-  const {initialState} = useModel("@@initialState")
+  const {initialState, refresh} = useModel("@@initialState")
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath} = initialState!.resource
   const defaultCluster: CLUSTER.Cluster = {
     id: 0,
@@ -48,6 +48,7 @@ export default () => {
     createdAt: '',
     updatedAt: '',
   }
+  const {successAlert} = useModel('alert')
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
@@ -85,14 +86,16 @@ export default () => {
         setTemplate(data);
       });
     });
-  }, {manual: true})
+  }, {
+    manual: true,
+    refreshDeps: [clusterID]
+  })
 
   const {run: delCluster} = useRequest(() => {
     return deleteCluster(clusterID).then(() => {
-      notification.success({
-        message: intl.formatMessage({id: "pages.clusterDelete.success"}),
-      });
-      window.location.href = clusterFullPath.substring(0, clusterFullPath.lastIndexOf('/'));
+      successAlert(intl.formatMessage({id: "pages.clusterDelete.success"}))
+      history.push(clusterFullPath.substring(0, clusterFullPath.lastIndexOf('/')));
+      refresh()
     });
   }, {manual: true})
 

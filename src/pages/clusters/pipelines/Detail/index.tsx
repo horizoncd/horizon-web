@@ -9,7 +9,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import './index.less'
 import 'codemirror/addon/display/fullscreen.css'
 import 'codemirror/addon/display/fullscreen'
-import {Button, Card, notification} from "antd";
+import {Button, Card} from "antd";
 import {CopyOutlined, FullscreenOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import copy from "copy-to-clipboard";
@@ -22,6 +22,7 @@ import {getPipeline, getPipelineDiffs, queryPipelineLog} from "@/services/pipeli
 import Utils from '@/utils'
 import {PublishType} from "@/const";
 import {useIntl} from "@@/plugin-locale/localeExports";
+import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
   const params = useParams();
@@ -83,15 +84,16 @@ export default (props: any) => {
   ]
 
   const [fullscreen, setFullscreen] = useState(false)
+  const {successAlert} = useModel('alert')
   const onFullscreenClick = () => {
     setFullscreen(true)
   }
 
   const onCopyClick = () => {
     if (copy(props.content)) {
-      notification.success({message: "复制成功"})
+      successAlert('复制成功')
     } else {
-      notification.success({message: "复制失败"})
+      successAlert('复制失败')
     }
   }
 

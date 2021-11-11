@@ -1,4 +1,4 @@
-import {Input, Modal, notification, Space, Table, Tabs} from "antd";
+import {Modal, Space, Table, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -12,6 +12,7 @@ const {TabPane} = Tabs;
 export default () => {
   const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState!.resource;
+  const {successAlert} = useModel('alert')
 
   const pageSize = 10;
   const [pageNumber, setPageNumber] = useState(1);
@@ -30,9 +31,7 @@ export default () => {
       icon: <ExclamationCircleOutlined/>,
       onOk: () => {
         rollback(id, {pipelinerunID: pipeline.id}).then(() => {
-          notification.success({
-            message: '提交成功'
-          })
+          successAlert('提交成功')
           run()
         });
       }

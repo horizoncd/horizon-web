@@ -1,4 +1,4 @@
-import {Button, Col, Form, notification, Row} from 'antd';
+import {Button, Col, Form, Row} from 'antd';
 import HSteps from '@/components/HSteps'
 import Template from './Template';
 import Basic from './Basic';
@@ -35,6 +35,7 @@ export default (props: any) => {
   ]
 
   const {initialState} = useModel('@@initialState');
+  const {successAlert} = useModel('alert')
   const {id} = initialState!.resource;
 
   const {location} = props;
@@ -201,9 +202,7 @@ export default (props: any) => {
   }, {
     manual: true,
     onSuccess: (res: API.Application) => {
-      notification.success({
-        message: creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}),
-      });
+      successAlert(creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}))
       // jump to application's home page
       window.location.href = res.fullPath;
     }

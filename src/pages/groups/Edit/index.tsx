@@ -1,4 +1,4 @@
-import {Button, Card, Col, Divider, Form, Input, notification, Popconfirm, Row} from 'antd';
+import {Button, Card, Col, Divider, Form, Input, Popconfirm, Row} from 'antd';
 import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";
@@ -81,9 +81,7 @@ export default () => {
 
   const onDelete = () => {
     deleteGroup({id: detail.id}).then(() => {
-      notification.info({
-        message: '删除成功',
-      })
+      successAlert('删除成功')
       history.push('/');
     });
   }

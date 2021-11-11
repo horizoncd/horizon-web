@@ -1,4 +1,4 @@
-import {Button, Col, Dropdown, Menu, Modal, notification, Row, Steps, Tabs} from "antd";
+import {Button, Col, Dropdown, Menu, Modal, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
@@ -58,6 +58,7 @@ export default () => {
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
+  const {successAlert} = useModel('alert')
   const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
@@ -189,16 +190,12 @@ export default () => {
             title: entity!.deployTitle,
             content: <DeployPage step={step} onNext={() => {
               next(id).then(() => {
-                notification.success({
-                  message: '下一批次开始发布',
-                });
+                successAlert('下一批次开始发布')
               })
             }
             } onCancel={() => {
               cancelPipeline(pipelinerunID!).then(() => {
-                notification.success({
-                  message: '取消发布成功',
-                });
+                successAlert('取消发布成功')
               })
             }
             }/>,
@@ -332,7 +329,7 @@ export default () => {
           title: 'Are you sure to restart all pods?',
           onOk() {
             restart(id).then(() => {
-              notification.success({message: "Restart Succeed"})
+              successAlert('Restart Succeed')
             })
           },
         });

@@ -1,9 +1,10 @@
 import {CloseOutlined, CopyOutlined, FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons';
-import {Button, Modal, notification} from 'antd';
+import {Button, Modal} from 'antd';
 import './index.less'
 import styles from './index.less'
 import {useState} from "react";
 import copy from 'copy-to-clipboard'
+import {useModel} from "@@/plugin-model/useModel";
 
 
 interface Props {
@@ -17,14 +18,15 @@ interface Props {
 
 export default (props: Props) => {
   const [fullscreen, setFullscreen] = useState(props.fullscreen)
+  const {successAlert, errorAlert} = useModel("alert")
   const onToggleClick = () => {
     setFullscreen(!fullscreen)
   }
   const onCopyClick = () => {
     if (copy(props.children.props.content)) {
-      notification.success({message: "复制成功"})
+      successAlert('复制成功')
     } else {
-      notification.success({message: "复制失败"})
+      errorAlert('复制失败')
     }
   }
 
