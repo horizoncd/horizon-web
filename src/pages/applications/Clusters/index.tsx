@@ -26,7 +26,7 @@ export default () => {
 
   const columns = [
     {
-      title: 'name',
+      title: '集群名',
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => {
@@ -39,17 +39,17 @@ export default () => {
       }
     },
     {
-      title: 'region',
+      title: '区域',
       dataIndex: 'regionDisplayName',
       key: 'region',
     },
     {
-      title: 'template',
+      title: '模版',
       dataIndex: 'template',
       key: 'template',
     },
     {
-      title: 'updatedTime',
+      title: '更新时间',
       dataIndex: 'updatedTime',
       key: 'updatedTime',
     },

@@ -121,7 +121,7 @@ export async function getInitialState(): Promise<{
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (response.headers.get('X-OIDC-Redirect-To')) {
+      if (response.headers.get('X-OIDC-Redirect-To') && !history.location.pathname.startsWith(loginPath)) {
         history.push({
           pathname: loginPath,
           search: stringify({

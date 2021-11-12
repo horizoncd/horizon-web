@@ -54,6 +54,8 @@ interface PodsInfo {
 }
 
 const pollingInterval = 5000;
+const pendingState = 'pending'
+
 export default () => {
 
   const intl = useIntl();
@@ -115,7 +117,7 @@ export default () => {
             const {containers, initContainers} = spec
             const {namespace, creationTimestamp} = metadata
             const {containerStatuses} = status
-            const {state} = containerStatuses[0].state
+            const state = (containerStatuses && containerStatuses.length > 0) ? containerStatuses[0].state.state : pendingState
 
             const podInTable: CLUSTER.PodInTable = {
               key: podName,

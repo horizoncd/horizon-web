@@ -100,7 +100,7 @@ export default () => {
               <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
             </Form.Item>
             <Form.Item label={groupDescLabel} name={'description'}>
-              <TextArea style={getGroupPathAndDescStyle()} allowClear/>
+              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}} maxLength={255}/>
             </Form.Item>
             <Form.Item label={groupURLLabel} name={'path'} rules={pathRules}>
               <Input addonBefore={getURLPrefix()} style={{width: '100%'}}/>

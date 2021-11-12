@@ -43,7 +43,7 @@ export default () => {
 
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
-      successAlert('SubGroup新建成功')
+      successAlert('子分组新建成功')
       history.push(`${fullPath}/${values.path}`)
       refresh()
     }
@@ -94,7 +94,7 @@ export default () => {
               />
             </Form.Item>
             <Form.Item label={groupDescLabel} name={'description'}>
-              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}} maxLength={256}/>
+              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}} maxLength={255}/>
             </Form.Item>
             <Form.Item style={getSubmitBtnStyle()}>
               <div className={'form-actions'}>

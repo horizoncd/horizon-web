@@ -17,7 +17,9 @@ export default (props: any) => {
   const {data: environments} = useRequest(() => queryEnvironments(), {
     onSuccess: () => {
       refreshRegions(props.form.getFieldValue('environment'))
-    }
+    },
+    ready: !!props.form.getFieldValue('environment'),
+    refreshDeps: [props.form]
   });
 
   const formatMessage = (suffix: string, defaultMsg?: string) => {
@@ -27,7 +29,7 @@ export default (props: any) => {
   const nameRules: Rule[] = [
     {
       required: true,
-      pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
+      pattern: new RegExp('^(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
       message: formatMessage('name.ruleMessage'),
       max: 40,
     },
@@ -53,7 +55,6 @@ export default (props: any) => {
               if (a[0].name[0] === 'environment') {
                 refreshRegions(a[0].value)
                 // clear region form data
-                console.log(b)
                 for (let i = 0; i < b.length; i++) {
                   if (b[i].name[0] === 'region') {
                     b[i].value = undefined
@@ -69,17 +70,16 @@ export default (props: any) => {
             {name}
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
-                      autoSize/>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize={{minRows: 3}} />
           </Form.Item>
-          <Form.Item label={formatMessage('template', 'template')}>
+          <Form.Item label={formatMessage('template', '模版')}>
             <Input disabled={true} value={props.template?.name}/>
           </Form.Item>
-          <Form.Item label={formatMessage('release', 'release')}>
+          <Form.Item label={formatMessage('release', '模版版本')}>
             <Input disabled={true} value={props.template?.release}/>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={readonly}>
+            <Select disabled={readonly || editing}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -88,7 +88,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
-            <Select disabled={readonly}>
+            <Select disabled={readonly || editing}>
               {regions?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -106,7 +106,7 @@ export default (props: any) => {
             <Input disabled/>
           </Form.Item>
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
-            <Input placeholder="master" disabled={readonly}/>
+            <Input disabled={readonly}/>
           </Form.Item>
         </Card>
       </Form>

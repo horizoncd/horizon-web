@@ -1,5 +1,5 @@
 import DetailCard, {Param} from '@/components/DetailCard'
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Avatar, Button, Card, Divider} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
@@ -11,14 +11,15 @@ import {ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {deleteCluster, getCluster} from "@/services/clusters/clusters";
+import {getCluster} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
+import {ResourceType} from "@/const";
 
 export default () => {
   const intl = useIntl();
   const history = useHistory();
-  const {initialState, refresh} = useModel("@@initialState")
-  const {id: clusterID, name: clusterName, fullPath: clusterFullPath} = initialState!.resource
+  const {initialState} = useModel("@@initialState")
+  const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
   const defaultCluster: CLUSTER.Cluster = {
     id: 0,
     application: {
@@ -48,7 +49,6 @@ export default () => {
     createdAt: '',
     updatedAt: '',
   }
-  const {successAlert} = useModel('alert')
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
@@ -87,22 +87,9 @@ export default () => {
       });
     });
   }, {
-    manual: true,
+    ready: type === ResourceType.CLUSTER && !!clusterID,
     refreshDeps: [clusterID]
   })
-
-  const {run: delCluster} = useRequest(() => {
-    return deleteCluster(clusterID).then(() => {
-      successAlert(intl.formatMessage({id: "pages.clusterDelete.success"}))
-      history.push(clusterFullPath.substring(0, clusterFullPath.lastIndexOf('/')));
-      refresh()
-    });
-  }, {manual: true})
-
-  useEffect(() => {
-    refreshCluster().then();
-  }, []);
-
 
   const firstLetter = clusterName.substring(0, 1).toUpperCase();
 

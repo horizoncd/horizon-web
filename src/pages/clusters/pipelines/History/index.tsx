@@ -86,7 +86,7 @@ export default () => {
     },
   ];
 
-  const datasource = pipelines?.items.map(item => ({
+  const datasource = pipelines?.items?.map(item => ({
     ...item,
     key: item.id,
     trigger: item.createdBy.userName,

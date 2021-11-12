@@ -11,6 +11,7 @@ import {PublishType} from "@/const";
 import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/clusters";
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
+import {Rule} from "rc-field-form/lib/interface";
 
 export default (props: any) => {
   const intl = useIntl();
@@ -45,6 +46,12 @@ export default (props: any) => {
     // jump to pods' url
     history.push(`/clusters${fullPath}/-/pods`)
   }
+
+  const requiredRule: Rule[] = [
+    {
+      required: true,
+    },
+  ];
 
   const onSubmit = () => {
     const info = {
@@ -81,15 +88,15 @@ export default (props: any) => {
                 // }
               }}
         >
-          <Form.Item label={formatMessage('title', 'Title')} name={'title'} required>
+          <Form.Item label={formatMessage('title', 'Title')} name={'title'} rules={requiredRule}>
             <Input/>
           </Form.Item>
           <Form.Item label={formatMessage('description', '描述')} name={'description'}>
-            <TextArea maxLength={255}/>
+            <TextArea maxLength={255} autoSize={{minRows: 3}}/>
           </Form.Item>
           {
             type === PublishType.BUILD_DEPLOY && (
-              <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} required>
+              <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} rules={requiredRule}>
                 <Input placeholder="master"/>
               </Form.Item>
             )

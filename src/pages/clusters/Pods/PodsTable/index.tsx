@@ -10,7 +10,6 @@ const {Search} = Input;
 
 export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
   const {data, cluster} = props;
-  console.log(cluster)
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');

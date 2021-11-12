@@ -11,6 +11,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
+import {history} from "@@/core/history";
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -34,7 +35,7 @@ export default (props: any) => {
     name, branch, environment, region
   ]
 
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const {id} = initialState!.resource;
 
   const {location} = props;
@@ -60,10 +61,11 @@ export default (props: any) => {
       onSuccess: () => {
         const {template: t, git, templateInput, name: n} = data!
         setTemplate(t)
-        const {url: u, subfolder: s} = git
+        const {url: u, subfolder: s, branch: b} = git
         setBasic([
             {name: url, value: u},
             {name: subfolder, value: s},
+            {name: branch, value: b}
           ]
         )
         setConfig(templateInput)
@@ -203,7 +205,8 @@ export default (props: any) => {
     onSuccess: (res: CLUSTER.Cluster) => {
       successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}))
       // jump to cluster's home page
-      window.location.href = res.fullPath;
+      history.push(res.fullPath);
+      refresh()
     }
   });
 
