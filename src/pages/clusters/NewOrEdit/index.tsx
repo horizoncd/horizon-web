@@ -1,4 +1,4 @@
-import {Button, Col, Form, notification, Row} from 'antd';
+import {Button, Col, Form, Row} from 'antd';
 import Basic from './Basic';
 import Config from '../../applications/NewOrEdit/Config';
 import Audit from './Audit';
@@ -11,6 +11,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
+import {history} from "@@/core/history";
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -34,7 +35,7 @@ export default (props: any) => {
     name, branch, environment, region
   ]
 
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const {id} = initialState!.resource;
 
   const {location} = props;
@@ -43,6 +44,7 @@ export default (props: any) => {
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
 
+  const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
   const [template, setTemplate] = useState<{ name: string, release: string }>({release: "", name: ""});
@@ -59,10 +61,11 @@ export default (props: any) => {
       onSuccess: () => {
         const {template: t, git, templateInput, name: n} = data!
         setTemplate(t)
-        const {url: u, subfolder: s} = git
+        const {url: u, subfolder: s, branch: b} = git
         setBasic([
             {name: url, value: u},
             {name: subfolder, value: s},
+            {name: branch, value: b}
           ]
         )
         setConfig(templateInput)
@@ -200,11 +203,10 @@ export default (props: any) => {
   }, {
     manual: true,
     onSuccess: (res: CLUSTER.Cluster) => {
-      notification.success({
-        message: creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}),
-      });
+      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}))
       // jump to cluster's home page
-      window.location.href = res.fullPath;
+      history.push(res.fullPath);
+      refresh()
     }
   });
 

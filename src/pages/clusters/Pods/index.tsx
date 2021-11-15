@@ -1,4 +1,4 @@
-import {Button, Col, Dropdown, Menu, Modal, notification, Row, Steps, Tabs} from "antd";
+import {Button, Col, Dropdown, Menu, Modal, Row, Steps, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
@@ -8,7 +8,7 @@ import {getCluster, getClusterStatus, next, restart} from "@/services/clusters/c
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
-import {ClusterStatus, PublishType, RunningTask, TaskStatus} from "@/const";
+import {ClusterStatus, PublishType, ResourceType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
@@ -54,11 +54,14 @@ interface PodsInfo {
 }
 
 const pollingInterval = 5000;
+const pendingState = 'pending'
+
 export default () => {
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
-  const {id, fullPath} = initialState!.resource;
+  const {successAlert} = useModel('alert')
+  const {id, fullPath, type} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [task, setTask] = useState(RunningTask.NONE);
@@ -83,9 +86,13 @@ export default () => {
     },
   ]);
 
-  const {data: cluster} = useRequest(() => getCluster(id));
+  const {data: cluster} = useRequest(() => getCluster(id), {
+    refreshDeps: [id],
+    ready: !!id && type === ResourceType.CLUSTER,
+  });
   const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     manual: true,
+    refreshDeps: [pipelinerunID],
     formatResult: (res) => {
       return res
     }
@@ -110,7 +117,7 @@ export default () => {
             const {containers, initContainers} = spec
             const {namespace, creationTimestamp} = metadata
             const {containerStatuses} = status
-            const {state} = containerStatuses[0].state
+            const state = (containerStatuses && containerStatuses.length > 0) ? containerStatuses[0].state.state : pendingState
 
             const podInTable: CLUSTER.PodInTable = {
               key: podName,
@@ -151,6 +158,8 @@ export default () => {
   }
   const {data: statusData} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
+    refreshDeps: [id],
+    ready: !!id && type === ResourceType.CLUSTER,
     onSuccess: () => {
       if (statusData) {
         refreshPodsInfo(statusData)
@@ -186,16 +195,12 @@ export default () => {
             title: entity!.deployTitle,
             content: <DeployPage step={step} onNext={() => {
               next(id).then(() => {
-                notification.success({
-                  message: '下一批次开始发布',
-                });
+                successAlert('下一批次开始发布')
               })
             }
             } onCancel={() => {
               cancelPipeline(pipelinerunID!).then(() => {
-                notification.success({
-                  message: '取消发布成功',
-                });
+                successAlert('取消发布成功')
               })
             }
             }/>,
@@ -329,7 +334,7 @@ export default () => {
           title: 'Are you sure to restart all pods?',
           onOk() {
             restart(id).then(() => {
-              notification.success({message: "Restart Succeed"})
+              successAlert('Restart All Pods Succeed')
             })
           },
         });

@@ -4,13 +4,18 @@ import type {Route} from "antd/lib/breadcrumb/Breadcrumb";
 import {useModel} from "@@/plugin-model/useModel";
 import {Alert, Divider} from "antd";
 import styles from './index.less'
+import './index.less'
+import {history} from 'umi';
 
 export default (props: any) => {
-  const {initialState} = useModel('@@initialState');
+  const {initialState, refresh} = useModel('@@initialState');
   const {alert, clearAlert} = useModel('alert');
 
   const itemRender = (route: Route) => {
-    return <a href={route.path}>{route.breadcrumbName}
+    return <a onClick={() => {
+      history.push(route.path)
+      refresh()
+    }}>{route.breadcrumbName}
     </a>
   }
   const {fullName} = initialState!.resource
@@ -19,8 +24,10 @@ export default (props: any) => {
   return (
     <div>
       {
-        // @ts-ignore
-        alert.message &&  <Alert type={alert.type} message={alert.message} banner closable onClose={clearAlert}/>
+        alert.message &&
+        <Alert style={{position: 'sticky', top: 48, left: 0, zIndex: 999, background: alert.background}}
+          // @ts-ignore
+               type={alert.type} message={alert.message} banner closable onClose={clearAlert}/>
       }
       <div className={styles.pageContainer}>
         <PageContainer

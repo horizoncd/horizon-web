@@ -9,7 +9,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import './index.less'
 import 'codemirror/addon/display/fullscreen.css'
 import 'codemirror/addon/display/fullscreen'
-import {Button, Card, notification} from "antd";
+import {Button, Card} from "antd";
 import {CopyOutlined, FullscreenOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import copy from "copy-to-clipboard";
@@ -20,9 +20,13 @@ import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import {getPipeline, getPipelineDiffs, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import Utils from '@/utils'
+import {PublishType} from "@/const";
+import {useIntl} from "@@/plugin-locale/localeExports";
+import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
   const params = useParams();
+  const intl = useIntl();
 
   // @ts-ignore
   const {data: pipeline} = useRequest(() => getPipeline(params.id))
@@ -34,6 +38,10 @@ export default (props: any) => {
       return res
     }
   })
+
+  const formatMessage = (suffix: string, defaultMsg: string) => {
+    return intl.formatMessage({id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg})
+  }
 
   const data: Param[][] = [
     [
@@ -76,15 +84,16 @@ export default (props: any) => {
   ]
 
   const [fullscreen, setFullscreen] = useState(false)
+  const {successAlert} = useModel('alert')
   const onFullscreenClick = () => {
     setFullscreen(true)
   }
 
   const onCopyClick = () => {
     if (copy(props.content)) {
-      notification.success({message: "复制成功"})
+      successAlert('复制成功')
     } else {
-      notification.success({message: "复制失败"})
+      successAlert('复制失败')
     }
   }
 
@@ -96,7 +105,29 @@ export default (props: any) => {
     'BuildLog': <CodeEditor
       content={buildLog}
     />,
-    'Changes': <CodeDiff diff={diff?.configDiff.diff || ''}/>
+    'Changes': <div>
+      {
+        pipeline?.action === PublishType.BUILD_DEPLOY &&
+        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+          <b>Commit ID</b>
+          <br/>
+          {diff?.codeInfo.commitID}
+          <br/>
+          <br/>
+          <b>Commit Log</b>
+          <br/>
+          {diff?.codeInfo.commitMsg}
+          <br/>
+          <br/>
+          <b>Commit History</b>
+          <br/>
+          <a href={diff?.codeInfo.link}>Link</a>
+        </Card>
+      }
+      <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
+        <CodeDiff diff={diff?.configDiff.diff || ''}/>
+      </Card>
+    </div>
   }
 
   const [activeTabKey, setActiveTabKey] = useState('BuildLog')

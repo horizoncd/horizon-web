@@ -22,7 +22,6 @@ import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
 
-
 const loginPath = '/user/login';
 
 const IconMap = {
@@ -122,7 +121,7 @@ export async function getInitialState(): Promise<{
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (response.headers.get('X-OIDC-Redirect-To')) {
+      if (response.headers.get('X-OIDC-Redirect-To') && !history.location.pathname.startsWith(loginPath)) {
         history.push({
           pathname: loginPath,
           search: stringify({
@@ -169,15 +168,15 @@ export const request: RequestConfig = {
 export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     headerContentRender: () => {
-      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}}>
-        <Menu.Item key="/dashboard/clusters">
-          <a style={{fontWeight: 'bold'}} href={"/dashboard/clusters"}>Clusters</a>
+      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
+        <Menu.Item key="1">
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
         </Menu.Item>
-        <Menu.Item key="/dashboard/applications">
-          <a style={{fontWeight: 'bold'}} href={"/dashboard/applications"}>Applications</a>
+        <Menu.Item key="2">
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
         </Menu.Item>
-        <Menu.Item key="/dashboard/groups">
-          <a style={{fontWeight: 'bold'}} href={"/dashboard/groups"}>Groups</a>
+        <Menu.Item key="3">
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/groups")}>Groups</a>
         </Menu.Item>
       </Menu>
     },

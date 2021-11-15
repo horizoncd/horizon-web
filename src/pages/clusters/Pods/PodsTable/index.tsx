@@ -10,7 +10,7 @@ import CodeEditor from '@/components/CodeEditor'
 
 const {Search} = Input;
 
-export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster }) => {
+export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
   const {data, cluster} = props;
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
@@ -41,9 +41,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
   }
 
   const formatConsoleURL = (pod: CLUSTER.PodInTable) => {
-    // const {environment} = cluster.scope
+    const {environment} = cluster?.scope || {}
     return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
-    containerName=${pod.containerName}&environment=123`
+    containerName=${pod.containerName}&environment=${environment}`
   }
 
   const onClickStdout = (pod: CLUSTER.PodInTable) => {
@@ -83,7 +83,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
       key: 'restartCount',
     },
     {
-      title: 'createTime',
+      title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
     },
@@ -94,7 +94,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
         <Space size="middle">
           <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
           <a onClick={() => onClickStdout(record)}>查看日志</a>
-          <a href={formatMonitorURL(record)}>Monitor</a>
+          <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
         </Space>
       ),
     },
@@ -141,7 +141,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster: CLUSTER.Cluster })
     </div>
   }
   const filteredData = data.filter((item: any) => {
-    return !filter || item.podName.contains(filter)
+    return !filter || item.podName.indexOf(filter) > -1
   })
 
   const onPodSelected = (selectedRowKeys: React.Key[], selectedRows: CLUSTER.PodInTable[]) => {

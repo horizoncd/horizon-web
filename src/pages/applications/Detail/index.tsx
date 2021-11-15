@@ -2,7 +2,7 @@ import type {Param} from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard'
 import {useEffect, useState} from "react";
 import {deleteApplication, getApplication} from '@/services/applications/applications';
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, notification} from 'antd';
+import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -18,7 +18,7 @@ import RBAC from '@/rbac'
 export default () => {
   const intl = useIntl();
   const history = useHistory();
-  const {initialState} = useModel("@@initialState")
+  const {initialState, refresh} = useModel("@@initialState")
   const {id, name: applicationName, fullPath: applicationFullPath} = initialState!.resource
   const defaultApplication: API.Application = {
     fullPath: "",
@@ -41,6 +41,7 @@ export default () => {
     createdAt: '',
     updatedAt: ''
   }
+  const {successAlert} = useModel('alert')
   const [application, setApplication] = useState<API.Application>(defaultApplication)
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
@@ -90,10 +91,9 @@ export default () => {
 
   const {run: delApplication} = useRequest(() => {
     return deleteApplication(id).then(() => {
-      notification.success({
-        message: intl.formatMessage({id: "pages.applicationDelete.success"}),
-      });
-      window.location.href = applicationFullPath.substring(0, applicationFullPath.lastIndexOf('/'));
+      successAlert(intl.formatMessage({id: "pages.applicationDelete.success"}))
+      history.push(applicationFullPath.substring(0, applicationFullPath.lastIndexOf('/')))
+      refresh()
     });
   }, {manual: true})
 

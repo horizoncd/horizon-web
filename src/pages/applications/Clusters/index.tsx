@@ -11,41 +11,45 @@ import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
 import RBAC from '@/rbac'
 import Utils from '@/utils'
+import {ResourceType} from "@/const";
 
 const {TabPane} = Tabs;
 const {Search} = Input;
 
 export default () => {
   const intl = useIntl();
-  const {initialState} = useModel('@@initialState');
-  const {id, name: application, fullPath} = initialState!.resource;
+  const {initialState, refresh} = useModel('@@initialState');
+  const {id, name: application, fullPath, type} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
 
   const pageSize = 10;
 
   const columns = [
     {
-      title: 'name',
+      title: '集群名',
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => {
-        return <a href={`/clusters${fullPath}/${text}/-/pods`}>
+        return <a onClick={() => {
+          history.push(`/clusters${fullPath}/${text}/-/pods`)
+          refresh()
+        }}>
           {text}
         </a>
       }
     },
     {
-      title: 'region',
+      title: '区域',
       dataIndex: 'regionDisplayName',
       key: 'region',
     },
     {
-      title: 'template',
+      title: '模版',
       dataIndex: 'template',
       key: 'template',
     },
     {
-      title: 'updatedTime',
+      title: '更新时间',
       dataIndex: 'updatedTime',
       key: 'updatedTime',
     },
@@ -68,8 +72,8 @@ export default () => {
       }
     )
   }, {
-    ready: !!environment,
-    refreshDeps: [query, environment, pageNumber],
+    ready: !!environment && !!id && type === ResourceType.APPLICATION,
+    refreshDeps: [query, environment, pageNumber, id],
   });
 
   const onChange = (e: any) => {

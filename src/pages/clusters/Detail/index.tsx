@@ -1,6 +1,6 @@
 import DetailCard, {Param} from '@/components/DetailCard'
-import {useEffect, useState} from "react";
-import {Avatar, Button, Card, Divider, notification} from 'antd';
+import {useState} from "react";
+import {Avatar, Button, Card, Divider} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -11,14 +11,15 @@ import {ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {deleteCluster, getCluster} from "@/services/clusters/clusters";
+import {getCluster} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
+import {ResourceType} from "@/const";
 
 export default () => {
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
-  const {id: clusterID, name: clusterName, fullPath: clusterFullPath} = initialState!.resource
+  const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
   const defaultCluster: CLUSTER.Cluster = {
     id: 0,
     application: {
@@ -85,21 +86,10 @@ export default () => {
         setTemplate(data);
       });
     });
-  }, {manual: true})
-
-  const {run: delCluster} = useRequest(() => {
-    return deleteCluster(clusterID).then(() => {
-      notification.success({
-        message: intl.formatMessage({id: "pages.clusterDelete.success"}),
-      });
-      window.location.href = clusterFullPath.substring(0, clusterFullPath.lastIndexOf('/'));
-    });
-  }, {manual: true})
-
-  useEffect(() => {
-    refreshCluster().then();
-  }, []);
-
+  }, {
+    ready: type === ResourceType.CLUSTER && !!clusterID,
+    refreshDeps: [clusterID]
+  })
 
   const firstLetter = clusterName.substring(0, 1).toUpperCase();
 

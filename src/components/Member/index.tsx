@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {Alert, Button, Card, Divider, Form, Input, List, Modal, notification, Select} from 'antd';
+import {Alert, Button, Card, Divider, Form, Input, List, Modal, Select} from 'antd';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {queryUsers} from "@/services/members/members";
@@ -51,6 +51,7 @@ export default (props: MemberProps) => {
     onRemoveMember
   } = props;
   const {initialState, refresh} = useModel('@@initialState');
+  const {successAlert} = useModel('alert')
   const currentUser = initialState?.currentUser as API.CurrentUser;
   // const roles = initialState?.;
   const [memberFilter, setMemberFilter] = useState<string>('');
@@ -149,9 +150,7 @@ export default (props: MemberProps) => {
       memberNameID: values.userID,
       role: values.role,
     }).then(() => {
-      notification.success({
-        message: intl.formatMessage({id: "pages.members.add.success"}),
-      })
+      successAlert(intl.formatMessage({id: "pages.members.add.success"}))
       refreshMembers().then();
     })
   }
@@ -180,11 +179,7 @@ export default (props: MemberProps) => {
       cancelText: intl.formatMessage({id: 'pages.applicationDelete.confirm.cancel'}),
       onOk: () => {
         onRemoveMember(memberID).then(() => {
-          notification.success(
-            {
-              message: intl.formatMessage({id: "pages.members.remove.success"}),
-            }
-          );
+          successAlert(intl.formatMessage({id: "pages.members.remove.success"}))
           refreshMembers().then();
         });
       },
@@ -202,11 +197,7 @@ export default (props: MemberProps) => {
         onRemoveMember(memberID).then(() => {
           // 因为自身member发生改变，需要刷新initState以获取最新的member信息
           refresh().then();
-          notification.success(
-            {
-              message: intl.formatMessage({id: "pages.members.leave.success"}),
-            }
-          );
+          successAlert(intl.formatMessage({id: "pages.members.leave.success"}))
           refreshMembers().then();
         });
       },
@@ -219,11 +210,7 @@ export default (props: MemberProps) => {
       id: memberID,
       role: role,
     }).then(() => {
-      notification.success(
-        {
-          message: intl.formatMessage({id: "pages.members.update.success"}),
-        }
-      )
+      successAlert(intl.formatMessage({id: "pages.members.update.success"}))
       refreshMembers().then();
     })
   }
@@ -325,7 +312,7 @@ export default (props: MemberProps) => {
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                title={<span>{item.memberName}<span hidden={item.resourceID === resourceID}></span>
+                title={<span>{item.memberName}<span hidden={item.resourceID === resourceID}/>
                   {(currentUser.id === item.memberNameID) ?
                     <span className={styles.textSelfAnnotation}>It's you</span> : null}
                 </span>}

@@ -32,22 +32,7 @@ export default (props: any) => {
   const {initialState, refresh} = useModel('@@initialState');
   const newGroup = '/groups/new';
 
-  const header = () => {
-    return (
-      <Button
-        hidden={!initialState!.currentUser!.isAdmin}
-        type="primary"
-        onClick={() =>
-          history.push({
-            pathname: newGroup,
-          })
-        }
-        style={{backgroundColor: '#1f75cb'}}
-      >
-        {intl.formatMessage({id: 'pages.groups.New group'})}
-      </Button>
-    );
-  };
+  const isAdmin = initialState?.currentUser?.isAdmin || false
 
   const pageSize = 10;
 
@@ -244,10 +229,20 @@ export default (props: any) => {
     refresh()
   };
 
-  const queryInput = groupsDashboard ? <div>
+  const queryInput = (groupsDashboard && isAdmin) ? <div>
     <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch}
-            style={{width: '60%', marginRight: '10px'}} onChange={onChange}/>
-    {header()}
+            style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
+    <Button
+      type="primary"
+      onClick={() =>
+        history.push({
+          pathname: newGroup,
+        })
+      }
+      style={{backgroundColor: '#1f75cb'}}
+    >
+      {intl.formatMessage({id: 'pages.groups.New group'})}
+    </Button>
   </div> : <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
@@ -306,13 +301,13 @@ export default (props: any) => {
                 ...item
               }];
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     treeData={treeData}
                     titleRender={titleRender}
                     onSelect={onSelectCluster}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}
@@ -327,13 +322,13 @@ export default (props: any) => {
                 ...item
               }];
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     treeData={treeData}
                     titleRender={titleRender}
                     onSelect={onSelectApplication}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}
@@ -343,7 +338,7 @@ export default (props: any) => {
               const treeData = formatTreeData([item]);
               const hasChildren = item.childrenCount > 0;
               return (
-                <div key={item.id} style={{padding: '10px 0'}}>
+                <div key={item.id}>
                   <DirectoryTree
                     onExpand={onExpand}
                     showLine={hasChildren ? {showLeafIcon: false} : false}
@@ -353,7 +348,7 @@ export default (props: any) => {
                     onSelect={onSelectGroup}
                     expandedKeys={expandedKeys}
                   />
-                  <Divider style={{margin: '0 0 0 0'}}/>
+                  <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
             })}

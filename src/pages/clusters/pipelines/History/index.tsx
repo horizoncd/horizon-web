@@ -1,4 +1,4 @@
-import {Input, Modal, notification, Space, Table, Tabs} from "antd";
+import {Modal, Space, Table, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -6,12 +6,14 @@ import {useRequest} from "@@/plugin-request/request";
 import {getPipelines, rollback} from "@/services/clusters/clusters";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
+import {history} from "@@/core/history";
 
 const {TabPane} = Tabs;
 
 export default () => {
   const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState!.resource;
+  const {successAlert} = useModel('alert')
 
   const pageSize = 10;
   const [pageNumber, setPageNumber] = useState(1);
@@ -30,9 +32,7 @@ export default () => {
       icon: <ExclamationCircleOutlined/>,
       onOk: () => {
         rollback(id, {pipelinerunID: pipeline.id}).then(() => {
-          notification.success({
-            message: '提交成功'
-          })
+          successAlert('提交成功')
           run()
         });
       }
@@ -41,42 +41,42 @@ export default () => {
 
   const columns = [
     {
-      title: 'Pipeline',
+      title: 'ID',
       dataIndex: 'key',
       key: 'key',
       render: (text: any) => (
         <Space size="middle">
-          <a href={`/clusters${fullPath}/-/pipelines/${text}`}>{text}</a>
+          <a onClick={() => history.push(`/clusters${fullPath}/-/pipelines/${text}`)}>{text}</a>
         </Space>
       ),
     },
     {
-      title: 'Title',
+      title: '标题',
       dataIndex: 'title',
       key: 'title',
     },
     {
-      title: 'Status',
+      title: '状态',
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Trigger',
+      title: '触发者',
       dataIndex: 'trigger',
       key: 'trigger',
     },
     {
-      title: 'CreateTime',
-      dataIndex: 'startedAt',
-      key: 'startedAt',
-    },
-    {
-      title: 'Action',
+      title: '触发类型',
       dataIndex: 'action',
       key: 'action',
     },
     {
-      title: 'Operations',
+      title: '创建时间',
+      dataIndex: 'startedAt',
+      key: 'startedAt',
+    },
+    {
+      title: '操作',
       key: 'operations',
       render: (text: any, record: PIPELINES.Pipeline) => (
         <Space size="middle">
@@ -86,7 +86,7 @@ export default () => {
     },
   ];
 
-  const datasource = pipelines?.items.map(item => ({
+  const datasource = pipelines?.items?.map(item => ({
     ...item,
     key: item.id,
     trigger: item.createdBy.userName,

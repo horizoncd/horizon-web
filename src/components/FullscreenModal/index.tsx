@@ -22,6 +22,7 @@ interface Props {
 export default (props: Props) => {
   const intl = useIntl();
   const [fullscreen, setFullscreen] = useState(props.fullscreen)
+  const {successAlert, errorAlert} = useModel("alert")
   const onToggleClick = () => {
     setFullscreen(!fullscreen)
   }
