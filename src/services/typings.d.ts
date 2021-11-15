@@ -179,4 +179,11 @@ declare namespace API {
     name: string,
     rules: RoleRule[]
   }
+
+  type CodeBranchSearchParam = {
+    giturl: string,
+    pageNumber: number,
+    pageSize: number,
+    filter?: string,
+  }
 }

@@ -1,10 +1,8 @@
 declare namespace CLUSTER {
   type PodQuery = {
-    // namespace=&podName=&containerName=&environment=
-    namespace: string
+    // podName=&containerName=(&tailLine=)
     podName: string
     containerName: string
-    environment: string
   }
 
   type SessionQuery = {
@@ -189,6 +187,17 @@ declare namespace CLUSTER {
     restartCount?: number
     containerName?: string
     namespace?: string
+  }
+
+  type PodOnlineOfflineResult = {
+    result: boolean,
+    stdout: string,
+    stderr: string,
+    error: {
+      ErrStatus: {
+        message: string
+      }
+    }
   }
 
 }

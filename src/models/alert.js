@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 export default function useAlertModel() {
   const [alert, setAlert] = useState({
     type: 'success',
-    message: '',
+    message: null,
     background: 'forestgreen',
   });
 
@@ -16,7 +16,7 @@ export default function useAlertModel() {
   }, [])
 
   const clearAlert = useCallback(() => {
-    setAlert({type: '', message: '', background: ''})
+    setAlert({type: '', message: null, background: ''})
   }, [])
 
   return {

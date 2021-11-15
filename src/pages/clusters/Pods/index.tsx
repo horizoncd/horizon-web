@@ -31,6 +31,7 @@ const taskStatus2Entity = new Map<TaskStatus, {
   deployTitle: string,
   stepStatus: 'wait' | 'process' | 'finish' | 'error',
 }>([
+  [TaskStatus.PENDING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
   [TaskStatus.FAILED, {icon: frown, buildTitle: '构建失败', deployTitle: '发布失败', stepStatus: 'error'}]
@@ -42,7 +43,6 @@ interface DeployPageProps {
     total: number
   },
   onNext: () => void,
-  onCancel: () => void
 }
 
 interface PodsInfo {
@@ -64,7 +64,7 @@ export default () => {
   const {id, fullPath, type} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
-  const [task, setTask] = useState(RunningTask.NONE);
+  const [taskStatus, setTaskStatus] = useState(TaskStatus.SUCCEEDED);
   const [pipelinerunID, setPipelinerunID] = useState<number>();
   const [podsInfo, setPodsInfo] = useState<PodsInfo>({
     newPods: [],
@@ -73,6 +73,7 @@ export default () => {
     notHealthyPods: [],
     images: new Set<string>()
   })
+  const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING
   const [steps, setSteps] = useState([
     {
       title: '构建中',
@@ -107,7 +108,6 @@ export default () => {
     const {podTemplateHash, versions} = data.clusterStatus;
     if (versions) {
       Object.keys(versions).forEach(version => {
-        // filter new/old pods
         const versionObj = versions[version]
         const {pods} = versionObj
         if (pods) {
@@ -156,7 +156,7 @@ export default () => {
       images
     })
   }
-  const {data: statusData} = useRequest(() => getClusterStatus(id), {
+  const {data: statusData, run: refreshStatus} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     refreshDeps: [id],
     ready: !!id && type === ResourceType.CLUSTER,
@@ -164,16 +164,17 @@ export default () => {
       if (statusData) {
         refreshPodsInfo(statusData)
 
-        const {task: t, taskStatus} = statusData.runningTask;
+        const {task: t, taskStatus: tStatus} = statusData.runningTask;
         const tt = t as RunningTask
-        setTask(tt)
-        if (tt === RunningTask.NONE) {
+        const ttStatus = tStatus as TaskStatus
+        setTaskStatus(ttStatus)
+        // not in publish state
+        if (!(ttStatus === TaskStatus.RUNNING || ttStatus === TaskStatus.PENDING)) {
           return
         }
 
         const {step} = statusData.clusterStatus;
-        const tStatus = taskStatus as TaskStatus;
-        const entity = taskStatus2Entity.get(tStatus)
+        const entity = taskStatus2Entity.get(ttStatus)
         setPipelinerunID(statusData.runningTask.pipelinerunID)
         if (tt === RunningTask.BUILD) {
           // refresh build log when in build task
@@ -195,12 +196,8 @@ export default () => {
             title: entity!.deployTitle,
             content: <DeployPage step={step} onNext={() => {
               next(id).then(() => {
-                successAlert('下一批次开始发布')
-              })
-            }
-            } onCancel={() => {
-              cancelPipeline(pipelinerunID!).then(() => {
-                successAlert('取消发布成功')
+                successAlert(`第${step.index + 1}批次开始发布`)
+                refreshStatus()
               })
             }
             }/>,
@@ -215,11 +212,18 @@ export default () => {
   });
 
   function BuildPage({log}: { log: string }) {
-    return <div>
-      <div style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</div>
-      <CodeEditor
-        content={log}
-      />
+    return <div style={{height: '500px'}}>
+      <div>
+        <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
+        <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
+          cancelPipeline(pipelinerunID!).then(() => {
+            successAlert('取消发布成功')
+          })
+        }}>
+          取消发布
+        </Button>
+      </div>
+      <CodeEditor content={log}/>
     </div>
   }
 
@@ -249,7 +253,7 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, onCancel}: DeployPageProps) {
+  function DeployPage({step, onNext}: DeployPageProps) {
     const {index, total} = step
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
@@ -260,17 +264,12 @@ export default () => {
             下一步
           </Button>
         }
-
-        <Button danger style={{margin: '0 8px'}} onClick={onCancel}>
-          取消发布
-        </Button>
       </div>
     </div>
   }
 
-  const inPublishing = task !== RunningTask.NONE
-  const currentPodsTabTitle = inPublishing ? 'New Pods' : 'Pods'
-  const oldPodsTitle = 'Old Pods';
+  const currentPodsTabTitle = inPublishing ? '新Pods' : 'Pods'
+  const oldPodsTitle = '旧Pods';
   const formatTabTitle = (title: string, length: number) => {
     return <div>
       {title}<span className={styles.tabNumber}>{length}</span>
@@ -342,22 +341,32 @@ export default () => {
           },
         });
         break;
+      case 'editCluster':
+        history.push(`/clusters${fullPath}/-/edit`)
+        break;
       default:
 
     }
   }
 
   const operateDropdown = <Menu onClick={onClickOperation}>
-    <Menu.Item key="builddeploy">构建发布</Menu.Item>
-    <Menu.Item key="deploy">直接发布</Menu.Item>
-    <Menu.Item key="restart">重新启动</Menu.Item>
     <Menu.Item key="rollback">回滚</Menu.Item>
+    <Menu.Item key="editCluster">修改集群</Menu.Item>
   </Menu>;
 
   return (
     <PageWithBreadcrumb>
       <div>
         <div style={{marginBottom: '5px', textAlign: 'right'}}>
+          <Button type="primary" onClick={() => onClickOperation({key: 'builddeploy'})} style={{marginRight: '10px'}}>
+            构建发布
+          </Button>
+          <Button onClick={() => onClickOperation({key: 'deploy'})} style={{marginRight: '10px'}}>
+            直接发布
+          </Button>
+          <Button onClick={() => onClickOperation({key: 'restart'})} style={{marginRight: '10px'}}>
+            重新启动
+          </Button>
           <Dropdown overlay={operateDropdown} trigger={["click"]} overlayStyle={{}}>
             <Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button>
           </Dropdown>

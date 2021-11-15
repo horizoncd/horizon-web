@@ -1,5 +1,5 @@
 import styles from "@/pages/clusters/NewOrEdit/index.less";
-import {Card, Form, Input} from "antd";
+import {Card, Form, Input, Select} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import TextArea from "antd/es/input/TextArea";
 import CodeDiff from '@/components/CodeDiff'
@@ -12,6 +12,9 @@ import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
 import {Rule} from "rc-field-form/lib/interface";
+import {listBranch} from "@/services/code/code";
+
+const {Option} = Select;
 
 export default (props: any) => {
   const intl = useIntl();
@@ -31,6 +34,14 @@ export default (props: any) => {
   }
 
   const {data, run: refreshDiff} = useRequest((branch) => diffsOfCode(id!, branch), {
+    manual: true,
+  })
+  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
+    giturl,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
     manual: true,
   })
 
@@ -82,11 +93,6 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
         <Form layout={'vertical'} form={form}
-              onFieldsChange={(a) => {
-                // if (a[0].name[0] === 'branch') {
-                //   refreshDiff(a[0].value)
-                // }
-              }}
         >
           <Form.Item label={formatMessage('title', 'Title')} name={'title'} rules={requiredRule}>
             <Input/>
@@ -97,7 +103,18 @@ export default (props: any) => {
           {
             type === PublishType.BUILD_DEPLOY && (
               <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} rules={requiredRule}>
-                <Input placeholder="master"/>
+                <Select placeholder="master" showSearch
+                        onSearch={(item) => {
+                          if (item) {
+                            refreshBranchList(cluster!.git.url, item);
+                          }
+                        }}>
+                  {
+                    branchList.map((item: string) => {
+                      return <Option value={item}>{item}</Option>
+                    })
+                  }
+                </Select>
               </Form.Item>
             )
           }
