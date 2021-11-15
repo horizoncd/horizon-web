@@ -11,6 +11,7 @@ imagebuild:
   script:
     - |
       # build
+      rm -rf /root/.npm
       set -x
       npm config set user 0
       npm config set unsafe-perm true

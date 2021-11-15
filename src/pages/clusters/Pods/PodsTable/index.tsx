@@ -5,7 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
 import {useRequest} from "@@/plugin-request/request";
-import {queryPodStdout, online, offline} from "@/services/clusters/pods";
+import {offline, online, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 
@@ -27,11 +27,12 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     data: podLog,
     run: refreshPodLog,
     cancel: cancelPodLog,
-  } = useRequest((podName, containerName) => queryPodStdout(cluster.id, {
+  } = useRequest((podName, containerName) => queryPodStdout(cluster!.id, {
     podName: podName,
     containerName: containerName
   }), {
     manual: true,
+    ready: !!cluster,
     formatResult: (res) => {
       return res
     },
@@ -138,17 +139,36 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const hookAfterOnlineOffline = (ops: string, res: any) => {
     const succeedList: string[] = []
-    const failedList: string[] = []
+    const failedList: {
+      name: string,
+      err: string,
+    }[] = []
     Object.keys(res).forEach(item => {
-      const obj = res[item]
+      const obj: CLUSTER.PodOnlineOfflineResult = res[item]
       if (obj.result) {
         succeedList.push(item)
       } else {
-        failedList.push(item)
+        const errMsg = obj.error?.ErrStatus?.message || obj.stderr || obj.stdout
+        failedList.push({
+          name: item,
+          err: errMsg
+        })
       }
     })
     if (failedList.length > 0) {
-      errorAlert(`${ops}操作执行结果\n成功列表: [ ${succeedList.join(",")} ]\n失败列表: [ ${failedList.join(",")} ]`)
+      errorAlert(<span>{ops}操作执行结果
+                  <br/>
+                  成功列表:  [ {succeedList.join(",")} ]
+                  <br/>
+                  失败列表:
+                  <br/>
+        {failedList.map(item => <div>Pod: {item.name}  Error: {item.err}<br/></div>)}
+      </span>)
+    } else {
+      successAlert(<span>{ops}操作执行结果
+                  <br/>
+                  成功列表: [ {succeedList.join(",")} ]
+      </span>)
     }
   }
 

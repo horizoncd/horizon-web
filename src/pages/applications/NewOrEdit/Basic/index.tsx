@@ -4,6 +4,7 @@ import {useRequest} from 'umi';
 import {queryReleases} from '@/services/templates/templates';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
+import {listBranch} from '@/services/code/code'
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -13,6 +14,14 @@ export default (props: any) => {
 
   // query release version
   const {data} = useRequest(() => queryReleases(props.template?.name));
+  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
+    giturl,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
+    manual: true,
+  })
 
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -70,7 +79,8 @@ export default (props: any) => {
             <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize={{minRows: 3}}/>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
+                      autoSize={{minRows: 3}}/>
           </Form.Item>
           <Form.Item label={formatMessage('template', 'template')}>
             <Input disabled={true} value={props.template?.name}/>
@@ -110,7 +120,18 @@ export default (props: any) => {
             <Input disabled={readonly} placeholder={"非必填，默认为项目根目录"}/>
           </Form.Item>
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
-            <Input placeholder="master" disabled={readonly}/>
+            <Select placeholder="master" disabled={readonly} showSearch
+                    onSearch={(item) => {
+                      if (props.form.getFieldValue('url') && item) {
+                        refreshBranchList(props.form.getFieldValue('url'), item);
+                      }
+                    }}>
+              {
+                branchList.map((item: string) => {
+                  return <Option value={item}>{item}</Option>
+                })
+              }
+            </Select>
           </Form.Item>
         </Card>
       </Form>

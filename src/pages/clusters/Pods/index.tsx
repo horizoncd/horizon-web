@@ -168,7 +168,8 @@ export default () => {
         const tt = t as RunningTask
         const ttStatus = tStatus as TaskStatus
         setTaskStatus(ttStatus)
-        if (!inPublishing) {
+        // not in publish state
+        if (!(ttStatus === TaskStatus.RUNNING || ttStatus === TaskStatus.PENDING)) {
           return
         }
 

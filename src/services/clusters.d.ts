@@ -188,4 +188,15 @@ declare namespace CLUSTER {
     namespace?: string
   }
 
+  type PodOnlineOfflineResult = {
+    result: boolean,
+    stdout: string,
+    stderr: string,
+    error: {
+      ErrStatus: {
+        message: string
+      }
+    }
+  }
+
 }

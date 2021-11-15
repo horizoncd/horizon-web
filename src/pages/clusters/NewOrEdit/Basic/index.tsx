@@ -4,6 +4,7 @@ import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import {listBranch} from "@/services/code/code";
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -21,7 +22,14 @@ export default (props: any) => {
     ready: !!props.form.getFieldValue('environment'),
     refreshDeps: [props.form]
   });
-
+  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
+    giturl,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
+    manual: true,
+  })
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
   }
@@ -29,7 +37,7 @@ export default (props: any) => {
   const nameRules: Rule[] = [
     {
       required: true,
-      pattern: new RegExp('^(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
+      pattern: new RegExp('^[A-Za-z0-9]+$'),
       message: formatMessage('name.ruleMessage'),
       max: 40,
     },
@@ -106,7 +114,18 @@ export default (props: any) => {
             <Input disabled/>
           </Form.Item>
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
-            <Input disabled={readonly}/>
+            <Select disabled={readonly} showSearch
+                    onSearch={(item) => {
+                      if (props.form.getFieldValue('url') && item) {
+                        refreshBranchList(props.form.getFieldValue('url'), item);
+                      }
+                    }}>
+              {
+                branchList.map((item: string) => {
+                  return <Option value={item}>{item}</Option>
+                })
+              }
+            </Select>
           </Form.Item>
         </Card>
       </Form>
