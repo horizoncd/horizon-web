@@ -102,6 +102,9 @@ export async function getInitialState(): Promise<{
       } else {
         currentUser!.role = RBAC.AnonymousRole;
       }
+      if (currentUser!.isAdmin) {
+        currentUser!.role = RBAC.AdminRole
+      }
 
       RBAC.RefreshPermissions(roles, currentUser!);
 

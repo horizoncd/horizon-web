@@ -56,7 +56,9 @@ export default (props: Props) => {
               const keys = Object.keys(param.value)
               for (let key = 0; key < keys.length; key += 1) {
                 const i = keys[key];
-                itemContents.push(<div key={col2++} className={styles.textValue}>{i}: {param.value[i]} </div>)
+                itemContents.push(<div key={col2++} className={styles.textValue}><span
+                  className={styles.textValueKey}>{i}</span>: <span
+                  className={styles.textValueValue}>{param.value[i]}</span></div>)
               }
             }
             return <div key={param.key} className={styles.dataColumnItem}>
@@ -72,7 +74,7 @@ export default (props: Props) => {
 
   return (
     <div className={styles.card}>
-      <Card title={title} type={"inner"}>
+      <Card title={title} type={"inner"} bodyStyle={{paddingInline: 0}}>
         <div className={styles.cardBody}>
           {contents}
         </div>

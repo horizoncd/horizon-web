@@ -299,17 +299,20 @@ export default () => {
         value: {
           URL: cluster?.git.url || '',
           branch: cluster?.git.branch || '',
-          commit: cluster?.git.commit || '',
         }
       }
     ],
     [
       {
         key: 'Images',
-        value: Array.from(podsInfo.images)
+        value: Array.from(podsInfo.images),
       }
     ]
   ]
+
+  if (cluster?.latestDeployedCommit) {
+    baseInfo[2][0]['value']['commit'] = cluster!.latestDeployedCommit
+  }
 
   const onClickOperation = ({key}: { key: string }) => {
     switch (key) {

@@ -70,7 +70,8 @@ export default (props: any) => {
             <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize={{minRows: 3}}/>
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255}
+                      disabled={readonly} autoSize={{minRows: 3}}/>
           </Form.Item>
           <Form.Item label={formatMessage('template', 'template')}>
             <Input disabled={true} value={props.template?.name}/>

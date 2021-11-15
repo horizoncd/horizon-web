@@ -1,6 +1,7 @@
 import {useModel} from "@@/plugin-model/useModel";
 
 const AnonymousRole = 'anonymous';
+const AdminRole = 'administrator';
 const AllowAll = '*';
 
 
@@ -201,6 +202,8 @@ const GetRoleList = () => {
   const {initialState} = useModel('@@initialState');
   const roleRank = new Map();
   let roleList: string[] = [];
+
+  roleRank.set(AdminRole, 0);
   for (let i = 0; i < initialState!.roles!.length; i++) {
     const role = initialState!.roles![i]
     roleRank.set(role.name, i)
@@ -211,6 +214,7 @@ const GetRoleList = () => {
 
 export default {
   AnonymousRole,
+  AdminRole,
   GetRoleList,
   Permissions,
   AllowAll,

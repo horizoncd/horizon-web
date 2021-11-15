@@ -53,6 +53,7 @@ export default (props: MemberProps) => {
   const {initialState, refresh} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
   const currentUser = initialState?.currentUser as API.CurrentUser;
+  const allRoles = initialState?.roles as API.Role[];
   // const roles = initialState?.;
   const [memberFilter, setMemberFilter] = useState<string>('');
 
@@ -278,7 +279,9 @@ export default (props: MemberProps) => {
       <h1>{title}</h1>
       <Divider/>
       {!loadingMembers && needAlert && <Alert
-        message={intl.formatMessage({id: "pages.members.user.anonymous.alert"})}
+        className={styles.alert}
+        message={(
+          <span className={styles.alertSpan}>{intl.formatMessage({id: "pages.members.user.anonymous.alert"})}</span>)}
       />}
       {
         RBAC.Permissions.createMember.allowed && <Card

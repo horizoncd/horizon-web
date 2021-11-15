@@ -7,6 +7,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
 import {QuestionCircleOutlined} from "@ant-design/icons";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
+import RBAC from '@/rbac'
 
 const {TextArea} = Input;
 
@@ -97,27 +98,34 @@ export default () => {
             onFinish={onFinish}
           >
             <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
-              <Input style={getGroupNameLabelStyle()} placeholder="My awesome group"/>
+              <Input disabled={!RBAC.Permissions.updateGroup.allowed} style={getGroupNameLabelStyle()}
+                     placeholder="My awesome group"/>
             </Form.Item>
             <Form.Item label={groupDescLabel} name={'description'}>
-              <TextArea style={getGroupPathAndDescStyle()} allowClear autoSize={{minRows: 3}} maxLength={255}/>
+              <TextArea disabled={!RBAC.Permissions.updateGroup.allowed} style={getGroupPathAndDescStyle()} allowClear
+                        autoSize={{minRows: 3}} maxLength={255}/>
             </Form.Item>
             <Form.Item label={groupURLLabel} name={'path'} rules={pathRules}>
-              <Input addonBefore={getURLPrefix()} style={{width: '100%'}}/>
+              <Input disabled={!RBAC.Permissions.updateGroup.allowed} addonBefore={getURLPrefix()}
+                     style={{width: '100%'}}/>
             </Form.Item>
-            <Form.Item style={getSubmitBtnStyle()}>
-              <Button type="primary" htmlType={'submit'}>Save changes</Button>
-            </Form.Item>
+            {
+              RBAC.Permissions.updateGroup.allowed && <Form.Item style={getSubmitBtnStyle()}>
+                <Button type="primary" htmlType={'submit'}>Save changes</Button>
+              </Form.Item>
+            }
           </Form>
-          <Divider/>
-          <Card className={'card'}>
-            <h3 style={{color: '#dd2b0e', fontSize: 'bold'}}>Remove group</h3>
-            <h4 style={{fontSize: 'bold'}}>Removed group can not be restored!</h4>
-            <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
-                        onConfirm={onDelete}>
-              <Button style={{backgroundColor: '#dd2b0e', color: 'white'}}>Remove group</Button>
-            </Popconfirm>
-          </Card>
+          {RBAC.Permissions.updateGroup.allowed && <Divider/>}
+          {
+            RBAC.Permissions.updateGroup.allowed && <Card className={'card'}>
+              <h3 style={{color: '#dd2b0e', fontSize: 'bold'}}>Remove group</h3>
+              <h4 style={{fontSize: 'bold'}}>Removed group can not be restored!</h4>
+              <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
+                          onConfirm={onDelete}>
+                <Button style={{backgroundColor: '#dd2b0e', color: 'white'}}>Remove group</Button>
+              </Popconfirm>
+            </Card>
+          }
         </Col>
       </Row>
     </PageWithBreadcrumb>
