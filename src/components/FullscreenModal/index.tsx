@@ -1,12 +1,11 @@
 import {CloseOutlined, CopyOutlined, FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons';
-import {Button, Modal, notification, Switch} from 'antd';
+import {Button, Modal, Switch} from 'antd';
 import './index.less'
 import styles from './index.less'
-import * as React from "react";
 import {useState} from "react";
 import copy from 'copy-to-clipboard'
 import {useIntl} from "@@/plugin-locale/localeExports";
-
+import {useModel} from "@@/plugin-model/useModel";
 
 interface Props {
   title: string
@@ -28,9 +27,9 @@ export default (props: Props) => {
   }
   const onCopyClick = () => {
     if (copy(props.children.props.content)) {
-      notification.success({message: intl.formatMessage({id: "component.FullscreenModal.copySuccess"})})
+      successAlert(intl.formatMessage({id: "component.FullscreenModal.copySuccess"}))
     } else {
-      notification.error({message: intl.formatMessage({id: "component.FullscreenModal.copyFailed"})})
+      errorAlert(intl.formatMessage({id: "component.FullscreenModal.copyFailed"}))
     }
   }
 

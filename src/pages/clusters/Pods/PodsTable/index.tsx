@@ -5,8 +5,9 @@ import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
 import {useRequest} from "@@/plugin-request/request";
-import {queryPodStdout} from "@/services/clusters/pods";
+import {queryPodStdout, online, offline} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
+import {history} from 'umi';
 
 const {Search} = Input;
 
@@ -20,6 +21,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const [fullscreen, setFullscreen] = useState(false)
   const [pod, setPod] = useState<CLUSTER.PodInTable>()
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
+  const {successAlert, errorAlert} = useModel('alert')
 
   const {
     data: podLog,
@@ -134,6 +136,22 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setFilter(value);
   };
 
+  const hookAfterOnlineOffline = (ops: string, res: any) => {
+    const succeedList: string[] = []
+    const failedList: string[] = []
+    Object.keys(res).forEach(item => {
+      const obj = res[item]
+      if (obj.result) {
+        succeedList.push(item)
+      } else {
+        failedList.push(item)
+      }
+    })
+    if (failedList.length > 0) {
+      errorAlert(`${ops}操作执行结果\n成功列表: [ ${succeedList.join(",")} ]\n失败列表: [ ${failedList.join(",")} ]`)
+    }
+  }
+
   const renderTile = () => {
     return <div>
       <Search placeholder="Search" onChange={onChange} style={{width: '300px'}}/>
@@ -142,7 +160,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         <Button
           type="primary"
           onClick={() => {
-
+            online(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
+              hookAfterOnlineOffline("Online", d)
+            });
           }}
           disabled={!selectedPods.length}
         >
@@ -151,7 +171,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         <Button
           style={{marginLeft: '10px'}}
           onClick={() => {
-
+            offline(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
+              hookAfterOnlineOffline("Offline", d)
+            });
           }}
           disabled={!selectedPods.length}
         >

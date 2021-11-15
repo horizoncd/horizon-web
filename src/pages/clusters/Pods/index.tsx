@@ -211,7 +211,7 @@ export default () => {
   });
 
   function BuildPage({log}: { log: string }) {
-    return <div>
+    return <div style={{height: '500px'}}>
       <div>
         <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
         <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {

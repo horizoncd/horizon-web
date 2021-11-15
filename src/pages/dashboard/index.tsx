@@ -139,14 +139,10 @@ export default (props: any) => {
     const {fullPath} = node;
 
     return <span style={{padding: '10px 0'}} onClick={() => {
-      if (pathname === applicationsURL) {
-        history.push(`/applications${fullPath}/-/clusters`)
-      } else if (pathname === clustersURL) {
-        history.push(`/clusters${fullPath}/-/pods`)
-      } else {
+      if (groupsDashboard) {
         history.push(fullPath)
+        refresh()
       }
-      refresh()
     }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
