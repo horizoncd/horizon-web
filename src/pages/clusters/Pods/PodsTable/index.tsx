@@ -1,6 +1,6 @@
 import {Button, Input, Space, Table} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
-import {useState} from "react";
+import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
@@ -36,21 +36,50 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     return `/clusters${fullPath}/-/monitoring?podName=${pod.podName}`
   }
 
+  const renderPodNameAndIP = (text: string) => {
+    if (filter && text.indexOf(filter) > -1) {
+      const index = text.indexOf(filter);
+      const beforeStr = text.substr(0, index);
+      const afterStr = text.substr(index + filter.length);
+
+      return <span>
+          {beforeStr}
+        <span style={{color: '#f50'}}>{filter}</span>
+        {afterStr}
+        </span>
+    }
+
+    return text
+  }
+
   const columns = [
     {
       title: formatMessage('podName', '副本'),
       dataIndex: 'podName',
       key: 'podName',
+      render: (text: any) => renderPodNameAndIP(text)
     },
     {
       title: formatMessage('status', '状态'),
       dataIndex: 'status',
       key: 'status',
+      filters: [
+        {
+          text: 'running',
+          value: 'running',
+        },
+        {
+          text: 'pending',
+          value: 'pending',
+        },
+      ],
+      onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
     },
     {
       title: 'IP',
       dataIndex: 'ip',
       key: 'ip',
+      render: (text: any) => renderPodNameAndIP(text)
     },
     {
       title: formatMessage('onlineStatus', '上线状态'),
@@ -120,8 +149,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       </div>
     </div>
   }
-  const filteredData = data.filter((item: any) => {
-    return !filter || item.podName.indexOf(filter) > -1
+  const filteredData = data.filter((item: CLUSTER.PodInTable) => {
+    return !filter || item.podName.indexOf(filter) > -1 || item.ip.indexOf(filter) > -1
   })
 
   const onPodSelected = (selectedRowKeys: React.Key[], selectedRows: CLUSTER.PodInTable[]) => {
@@ -134,6 +163,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         type: 'checkbox',
         onChange: onPodSelected
       }}
+      // @ts-ignore
       columns={columns}
       dataSource={filteredData}
       pagination={{

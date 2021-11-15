@@ -203,7 +203,7 @@ export default (props: any) => {
   }, {
     manual: true,
     onSuccess: (res: CLUSTER.Cluster) => {
-      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterNew.success'}))
+      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterEdit.success'}))
       // jump to cluster's home page
       history.push(res.fullPath);
       refresh()

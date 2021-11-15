@@ -1,7 +1,7 @@
 import { request } from 'umi';
 
 export async function cancelPipeline(pipelinerunID: number) {
-  return request(`/apis/core/v1/pipelineruns/${pipelinerunID}/next`, {
+  return request(`/apis/core/v1/pipelineruns/${pipelinerunID}/stop`, {
     method: 'POST',
   });
 }

@@ -76,7 +76,7 @@ export default () => {
         {header()}
       </div>
       <Divider className={'group-divider'}/>
-      <GroupTree groupID={id} tabPane={'Subgroups and applications'}/>
+      <GroupTree groupID={id} tabPane={'子分组和应用'}/>
     </PageWithBreadcrumb>
   );
 };

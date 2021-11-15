@@ -4,12 +4,12 @@ import styles from './index.less'
 export default (props: { onSubmit: any, onCancel?: any }) => {
   return <div className={styles.formActions}>
     <Button type="primary" onClick={props.onSubmit}>
-      Submit
+      提交
     </Button>
     {
       props.onCancel && (
         <Button style={{float: "right"}} onClick={props.onCancel}>
-          Cancel
+          取消
         </Button>
       )
     }
