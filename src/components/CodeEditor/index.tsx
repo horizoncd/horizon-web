@@ -6,8 +6,6 @@ import 'codemirror/theme/material.css';
 import 'codemirror/mode/sql/sql'
 import 'codemirror/addon/hint/show-hint.css'
 import './index.less'
-import 'codemirror/addon/display/fullscreen.css'
-import 'codemirror/addon/display/fullscreen'
 
 interface Props {
   content: string
@@ -15,14 +13,23 @@ interface Props {
 
 export default (props: Props) => {
   return <CodeMirror
-    value={props.content}
+    value={
+      props.content
+    }
+    // 首次滚动
+    editorDidMount={(editor) => {
+      editor.execCommand('goDocEnd')
+    }}
+    // 数据变化时滚动
+    onChange={(editor) => {
+      editor.execCommand('goDocEnd')
+    }}
     options={{
       mode: 'text/x-mysql',
       theme: 'material',
       lineWrapping: true,
-      lineNumbers: true,
+      lineNumbers: false,   // todo(sph): 显示行号偶现卡顿问题待确认
       readOnly: true,
-      // fullScreen: true,
     }}
   />
 }
