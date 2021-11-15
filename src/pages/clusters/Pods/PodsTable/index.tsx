@@ -4,7 +4,9 @@ import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
-import {history} from 'umi';
+import {useRequest} from "@@/plugin-request/request";
+import {queryPodStdout} from "@/services/clusters/pods";
+import CodeEditor from '@/components/CodeEditor'
 
 const {Search} = Input;
 
@@ -16,7 +18,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const {initialState} = useModel('@@initialState');
   const {fullPath} = initialState!.resource;
   const [fullscreen, setFullscreen] = useState(false)
+  const [pod, setPod] = useState<CLUSTER.PodInTable>()
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
+
+  const {
+    data: podLog,
+    run: refreshPodLog,
+    cancel: cancelPodLog,
+  } = useRequest((podName, containerName) => queryPodStdout(cluster.id, {
+    podName: podName,
+    containerName: containerName
+  }), {
+    manual: true,
+    formatResult: (res) => {
+      return res
+    },
+    pollingInterval: 5000,
+  })
 
   const formatMessage = (suffix: string, defaultMsg: string) => {
     return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
@@ -29,7 +47,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   }
 
   const onClickStdout = (pod: CLUSTER.PodInTable) => {
-    setFullscreen(true)
+    setFullscreen(true);
+    setPod(pod)
+    refreshPodLog(pod.podName, pod.containerName).then();
   }
 
   const formatMonitorURL = (pod: CLUSTER.PodInTable) => {
@@ -157,6 +177,14 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setSelectedPods(selectedRows)
   };
 
+  const onRefreshButtonToggle = (checked: boolean) => {
+    if (checked) {
+      refreshPodLog(pod?.podName, pod?.containerName).then();
+    } else {
+      cancelPodLog();
+    }
+  }
+
   return <div>
     <Table
       rowSelection={{
@@ -178,13 +206,20 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     <FullscreenModal
       title={'Stdout信息'}
       visible={fullscreen}
-      onClose={() => setFullscreen(false)}
+      onClose={
+        () => {
+          setFullscreen(false);
+          cancelPodLog();
+        }
+      }
       fullscreen={false}
-      allowToggle={true}
+      supportFullscreenToggle={true}
+      supportRefresh={true}
+      onRefreshButtonToggle={onRefreshButtonToggle}
     >
-      <div>
-        kkk
-      </div>
+      <CodeEditor
+        content={podLog}
+      />
     </FullscreenModal>
   </div>
 }
