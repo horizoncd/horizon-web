@@ -1,4 +1,4 @@
-import {Button, Input, Space, Table, Tooltip} from "antd";
+import {Button, Input, Space, Table, Tooltip, message} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -10,6 +10,7 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
+import {Running} from '@/components/State'
 
 const {Search} = Input;
 
@@ -79,7 +80,14 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       </Tooltip>
     }
 
-    return text
+    return <Tooltip title="单击可复制" >
+        <span onClick={() => {
+          copy(text)
+          successAlert('复制成功')
+        }}>
+          {text}
+        </span>
+    </Tooltip>
   }
 
   const onChange = (e: any) => {
@@ -175,6 +183,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'status',
       filters: statusList,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
+      render: (text: string) => <Running />
     },
     {
       title: 'IP',

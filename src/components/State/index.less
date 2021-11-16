@@ -1,13 +1,13 @@
-.ci-status.ci-success {
-  color: var(--green-500, #108548);
-  border-color: var(--green-500, #108548);
-}
-
 .ci-status {
   padding: 2px 7px 4px;
   //border: 1px solid var(--border-color, #dbdbdb);
   white-space: nowrap;
   //border-radius: 4px;
+}
+
+.ci-status.ci-success {
+  color: var(--green-500, #108548);
+  border-color: var(--green-500, #108548);
 }
 
 .ci-status.ci-failed {
@@ -28,4 +28,15 @@
 .ci-status.ci-notfound {
   color: var(--green-500, #734704);
   border-color: var(--green-500, #734704);
+}
+
+.awsui-badge-content {
+  display: inline-block;
+  border-radius: 1.6rem;
+  padding: 0 0.75rem;
+  color: #fafafa
+}
+
+.awsui-badge-color-green {
+  background-color: #108548;
 }
