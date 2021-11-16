@@ -1,4 +1,4 @@
-import {Button, Input, Space, Table, Tooltip, message} from "antd";
+import {Button, Input, Space, Table, Tooltip} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -10,9 +10,16 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Running} from '@/components/State'
+import {Running, Online} from '@/components/State'
 
 const {Search} = Input;
+
+const status2StateNode = new Map(
+  [
+    ['running', <Running/>],
+    ['online', <Online/>],
+  ]
+)
 
 export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
   const {data, cluster} = props;
@@ -183,7 +190,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'status',
       filters: statusList,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
-      render: (text: string) => <Running />
+      render: (text: string) => status2StateNode.get(text)
     },
     {
       title: 'IP',
@@ -195,6 +202,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: formatMessage('onlineStatus', '上线状态'),
       dataIndex: 'onlineStatus',
       key: 'onlineStatus',
+      render: (text: string) => status2StateNode.get(text)
     },
     {
       title: formatMessage('restartCount', '重启次数'),

@@ -52,8 +52,15 @@ const NotFount = (props: StatusProps) => {
 
 const Running = (props: StatusProps) => {
   const {text} = props;
-  return <span className="awsui-badge-color-green awsui-badge-content">
+  return <span className="badge-color-green badge-content">
     {text || 'Running'}
+  </span>
+}
+
+const Online = (props: StatusProps) => {
+  const {text} = props;
+  return <span className="badge-color-blue badge-content">
+    {text || 'Online'}
   </span>
 }
 
@@ -63,5 +70,6 @@ export {
   Progressing,
   Suspended,
   NotFount,
-  Running
+  Running,
+  Online
 }
