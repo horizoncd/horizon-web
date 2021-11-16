@@ -4,5 +4,5 @@ export default {
   'component.tagSelect.all': 'All',
   'component.FullscreenModal.copySuccess': 'copy success',
   'component.FullscreenModal.copyFailed': 'copy failed',
-  'component.FullscreenModal.autoRefresh': 'auto refresh: ',
+  'component.FullscreenModal.autoRefresh': 'auto refresh',
 };
