@@ -43,7 +43,7 @@ export default (props: Props) => {
     title={<div style={{display: 'flex', alignItems: 'center'}}>{props.title}
       <div style={{flex: 1}}/>
       {props.supportRefresh && <span
-        style={{fontSize: '13px', marginRight: '-12px', fontWeight: 'bold'}}
+        style={{fontSize: '13px', fontWeight: 'bold'}}
       >{intl.formatMessage({id: "component.FullscreenModal.autoRefresh"})}</span>}
       {props.supportRefresh && <Switch
         className={styles.buttonClass}

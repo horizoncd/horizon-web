@@ -1,17 +1,17 @@
-import ProForm from '@ant-design/pro-form';
-import { history, Link } from 'umi';
+import {history} from 'umi';
 import Footer from '@/components/Footer';
-import { login } from '@/services/login/login';
+import {login} from '@/services/login/login';
 import styles from './index.less';
-import { Col, Row } from 'antd';
+import './index.less'
+import {Button} from "antd";
 
 const Login = () => {
   const handleSubmit = async () => {
-    const { query } = history.location;
-    const { redirect } = query as {
+    const {query} = history.location;
+    const {redirect} = query as {
       redirect: string;
     };
-    const { data } = await login({
+    const {data} = await login({
       redirectUrl: redirect || '/',
       fromHost: window.location.host,
     });
@@ -19,48 +19,26 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{backgroundColor: "black"}}>
       <div className={styles.content}>
-        <Row>
-          <Col span={10}>
-            <div className={styles.top}>
-              <div className={styles.header}>
-                <Link to="/">
-                  <h1 className={styles.title}>HORIZON</h1>
-                </Link>
-              </div>
+        <div className={styles.contentBlock}>
+          <div className={styles.textBlock}>
+            <div className={styles.title}>Horizon ready for you</div>
+            <div className={styles.description}>The platform for your cloudnative application delivery for
+              any kind of work
             </div>
-
-            <div className={styles.main}>
-              <ProForm
-                initialValues={{
-                  autoLogin: true,
-                }}
-                submitter={{
-                  searchConfig: {
-                    submitText: 'OpenID 登录',
-                  },
-                  render: (_, dom) => dom.pop(),
-                  submitButtonProps: {
-                    size: 'large',
-                    style: {
-                      width: '100%',
-                    },
-                  },
-                }}
-                onFinish={async () => {
-                  handleSubmit();
-                }}
-              />
-            </div>
-          </Col>
-          <Col span={13}>
-            <img width="100%" src="/home_page.jpeg" />
-          </Col>
-        </Row>
+            <div className={styles.description}>webserver serverless middleware...</div>
+            <Button className={styles.signInButton} onClick={async () => {
+              handleSubmit();
+            }}>Sign in for Horizon</Button>
+          </div>
+          <img
+            className={styles.imgBlock}
+            src="/The_Earth_seen_from_Apollo_17.jpg"/>
+        </div>
       </div>
-      <div style={{ backgroundColor: 'transparent' }}>
-        <Footer className="ant-layout-footer-login" />
+      <div>
+        <Footer className="ant-layout-footer-login"/>
       </div>
     </div>
   );
