@@ -11,7 +11,6 @@ import {createApplication, getApplication, updateApplication} from '@/services/a
 import {useIntl} from "@@/plugin-locale/localeExports";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-import {history} from "@@/core/history";
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -35,7 +34,7 @@ export default (props: any) => {
     name, release, priority, url, branch
   ]
 
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
   const {id} = initialState!.resource;
 
@@ -206,8 +205,6 @@ export default (props: any) => {
       successAlert(creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}))
       // jump to application's home page
       window.location.href = res.fullPath;
-      history.push(res.fullPath);
-      refresh()
     }
   });
 

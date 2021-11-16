@@ -12,7 +12,6 @@ export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert');
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
-  const {refresh} = useModel('@@initialState');
 
   const groupNameLabel = formatLabel('Group name');
   const groupPathLabel = formatLabel('Group URL');
@@ -41,8 +40,7 @@ export default () => {
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
       successAlert('分组新建成功')
-      history.push(`/${values.path}`);
-      refresh()
+      window.location.href = `/${values.path}`
     }
 
     createGroup({

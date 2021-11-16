@@ -29,7 +29,7 @@ export default (props: any) => {
   const groupsDashboard = pathname === groupsURL
 
   const intl = useIntl();
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const newGroup = '/groups/new';
 
   const isAdmin = initialState?.currentUser?.isAdmin || false
@@ -140,8 +140,7 @@ export default (props: any) => {
 
     return <span style={{padding: '10px 0'}} onClick={() => {
       if (groupsDashboard) {
-        history.push(fullPath)
-        refresh()
+        window.location.href = fullPath
       }
     }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
@@ -190,8 +189,7 @@ export default (props: any) => {
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      history.push(fullPath)
-      refresh()
+      window.location.href = fullPath
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {
@@ -208,8 +206,7 @@ export default (props: any) => {
   ) => {
     const {node} = info;
     const {fullPath} = node;
-    history.push(`/applications${fullPath}/-/clusters`)
-    refresh()
+    window.location.href = `/applications${fullPath}/-/clusters`;
   };
 
   // select cluster
@@ -221,8 +218,7 @@ export default (props: any) => {
   ) => {
     const {node} = info;
     const {fullPath} = node;
-    history.push(`/clusters${fullPath}/-/pods`)
-    refresh()
+    window.location.href = `/clusters${fullPath}/-/pods`
   };
 
   const queryInput = (groupsDashboard && isAdmin) ? <div>

@@ -15,7 +15,7 @@ export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert');
 
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const {id} = initialState?.resource || {};
 
   const defaultDetail: API.Group = {fullName: "", fullPath: "", id: 0, name: "", path: ""}
@@ -63,8 +63,7 @@ export default () => {
     updateGroupDetail(id!, values).then(() => {
       successAlert('Group修改成功');
       const newFullPath = `${detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)}${values.path}`;
-      history.push(`/groups${newFullPath}/-/edit`)
-      refresh()
+      window.location.href = `/groups${newFullPath}/-/edit`
     })
   }
 

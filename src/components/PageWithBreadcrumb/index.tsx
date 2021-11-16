@@ -5,17 +5,13 @@ import {useModel} from "@@/plugin-model/useModel";
 import {Alert, Divider} from "antd";
 import styles from './index.less'
 import './index.less'
-import {history} from 'umi';
 
 export default (props: any) => {
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const {alert, clearAlert} = useModel('alert');
 
   const itemRender = (route: Route) => {
-    return <a onClick={() => {
-      history.push(route.path)
-      refresh()
-    }}>{route.breadcrumbName}
+    return <a href={route.path}>{route.breadcrumbName}
     </a>
   }
   const {fullName} = initialState!.resource

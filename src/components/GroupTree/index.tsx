@@ -5,8 +5,6 @@ import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
 import Utils from '@/utils'
 import './index.less';
 import { queryChildren, querySubGroups, searchChildren, searchGroups } from "@/services/groups/groups";
-import {history} from 'umi';
-import {useModel} from "@@/plugin-model/useModel";
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -19,7 +17,6 @@ export default (props: any) => {
   const searchFunc = groupID ? searchChildren : searchGroups
   const queryFunc = groupID ? queryChildren : querySubGroups
 
-  const {refresh} = useModel('@@initialState');
   const [ searchValue, setSearchValue ] = useState('');
   const [ total, setTotal ] = useState(0);
   const [ pageNumber, setPageNumber ] = useState(1);
@@ -85,8 +82,7 @@ export default (props: any) => {
       if (type === 'application') {
         targetPath = `/applications${ fullPath }/-/clusters`
       }
-      history.push(targetPath)
-      refresh()
+      window.location.href = targetPath
     } }>
       <span className={ `avatar-32 identicon bg${ Utils.getAvatarColorIndex(title) }` }>
         { firstLetter }
@@ -141,8 +137,7 @@ export default (props: any) => {
       if (type === 'application') {
         targetPath = `/applications${ fullPath }/-/clusters`
       }
-      history.push(targetPath)
-      refresh()
+      window.location.href = targetPath
     } else if (!expanded) {
       setExpandedKeys([ ...expandedKeys, key ]);
     } else {

@@ -11,7 +11,7 @@ const {TextArea} = Input;
 export default () => {
   const [form] = Form.useForm();
 
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState?.resource || {};
   const {successAlert} = useModel('alert')
 
@@ -44,8 +44,7 @@ export default () => {
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
       successAlert('子分组新建成功')
-      history.push(`${fullPath}/${values.path}`)
-      refresh()
+      window.location.href = `${fullPath}/${values.path}`
     }
 
     createSubGroup(id!, {

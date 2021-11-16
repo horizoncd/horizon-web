@@ -18,7 +18,7 @@ const {Search} = Input;
 
 export default () => {
   const intl = useIntl();
-  const {initialState, refresh} = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const {id, name: application, fullPath, type} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
 
@@ -30,10 +30,7 @@ export default () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => {
-        return <a onClick={() => {
-          history.push(`/clusters${fullPath}/${text}/-/pods`)
-          refresh()
-        }}>
+        return <a href={`/clusters${fullPath}/${text}/-/pods`}>
           {text}
         </a>
       }

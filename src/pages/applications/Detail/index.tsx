@@ -18,7 +18,7 @@ import RBAC from '@/rbac'
 export default () => {
   const intl = useIntl();
   const history = useHistory();
-  const {initialState, refresh} = useModel("@@initialState")
+  const {initialState} = useModel("@@initialState")
   const {id, name: applicationName, fullPath: applicationFullPath} = initialState!.resource
   const defaultApplication: API.Application = {
     fullPath: "",
@@ -92,8 +92,7 @@ export default () => {
   const {run: delApplication} = useRequest(() => {
     return deleteApplication(id).then(() => {
       successAlert(intl.formatMessage({id: "pages.applicationDelete.success"}))
-      history.push(applicationFullPath.substring(0, applicationFullPath.lastIndexOf('/')))
-      refresh()
+      window.location.href = applicationFullPath.substring(0, applicationFullPath.lastIndexOf('/'))
     });
   }, {manual: true})
 

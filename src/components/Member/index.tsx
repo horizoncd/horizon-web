@@ -53,7 +53,6 @@ export default (props: MemberProps) => {
   const {initialState, refresh} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
   const currentUser = initialState?.currentUser as API.CurrentUser;
-  const allRoles = initialState?.roles as API.Role[];
   // const roles = initialState?.;
   const [memberFilter, setMemberFilter] = useState<string>('');
 
