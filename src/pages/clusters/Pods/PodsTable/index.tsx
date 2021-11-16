@@ -8,6 +8,7 @@ import {useRequest} from "@@/plugin-request/request";
 import {offline, online, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
+import NoData from "@/components/NoData";
 
 const {Search} = Input;
 
@@ -227,6 +228,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     }
   }
 
+  const locale = {
+    emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
+    '比如查看日志，查看基础资源监控、登陆Pod、杀死一个POD等操作'}/>
+  }
+
   return <div>
     <Table
       rowSelection={{
@@ -236,6 +242,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       // @ts-ignore
       columns={columns}
       dataSource={filteredData}
+      locale={locale}
       pagination={{
         position: ['bottomCenter'],
         current: pageNumber,

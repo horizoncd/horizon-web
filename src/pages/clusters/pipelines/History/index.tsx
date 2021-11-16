@@ -124,10 +124,10 @@ export default (props: any) => {
         history.replace(`/clusters${fullPath}/-/pipelines?category=${key}`)
         setTabKey(key)
       }} animated={false}>
-        <TabPane tab={'All'} key={'all'}>
+        <TabPane tab={'所有'} key={'all'}>
           {table}
         </TabPane>
-        <TabPane tab={'Rollback'} key={'rollback'}>
+        <TabPane tab={'可回滚'} key={'rollback'}>
           {table}
         </TabPane>
       </Tabs>
