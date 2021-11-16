@@ -32,16 +32,21 @@ const Login = () => {
               handleSubmit();
             }}>Sign in for Horizon</Button>
           </div>
-          <img
-            className={styles.imgBlock}
-            src="/The_Earth_seen_from_Apollo_17.jpg"/>
+          <div style={{textAlign: "center", alignSelf: "center"}}>
+            <div>
+              <img
+                className={styles.imgBlock}
+                src="/The_Earth_seen_from_Apollo_17.jpg"/>
+            </div>
+            <div className={styles.comment}>Blue Marble, taken by the Apollo 17, December 7, 1972</div>
+          </div>
         </div>
       </div>
       <div>
         <Footer className="ant-layout-footer-login"/>
       </div>
     </div>
-  );
+);
 };
 
 export default Login;

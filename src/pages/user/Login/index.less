@@ -19,9 +19,8 @@
 }
 
 .content {
+  padding: 0;
   flex: 1;
-  padding: 32px 0;
-  margin-top: 50px;
 }
 
 @media (min-width: @screen-md-min) {
@@ -32,7 +31,7 @@
   }
 
   .content {
-    padding: 32px 0 24px;
+    padding: 0px;
   }
 }
 
@@ -119,19 +118,24 @@
 }
 
 .description {
-  color: white;
+  color: #8193b2;
   font-size: 20px;
+}
+
+.comment {
+  color: #8193b2;
+  font-size: 10px;
 }
 
 .title {
   color: white;
-  font-size: 50px;
+  font-size: 75px;
+  font-weight: bold;
 }
 
 .text-block {
   display: inline-block;
   align-self: center;
-  margin: 0 100px 100px 200px;
   text-align: center;
 }
 
@@ -139,13 +143,11 @@
   background-color: black;
   height: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 .img-block {
-  max-height: 500px;
-  max-width: 500px;
+  max-width: 600px;
   float: right;
-  margin: 0 100px 0 100px;
   align-self: center;
 }
