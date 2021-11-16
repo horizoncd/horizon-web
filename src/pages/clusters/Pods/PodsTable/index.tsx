@@ -1,4 +1,4 @@
-import {Button, Input, Space, Table} from "antd";
+import {Button, Input, Space, Table, Tooltip} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -9,6 +9,7 @@ import {offline, online, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
+import copy from "copy-to-clipboard";
 
 const {Search} = Input;
 
@@ -44,20 +45,20 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
   }
 
-  const formatConsoleURL = (pod: CLUSTER.PodInTable) => {
+  const formatConsoleURL = (p: CLUSTER.PodInTable) => {
     const {environment} = cluster?.scope || {}
-    return `/clusters${fullPath}/-/webconsole?namespace=${pod.namespace}&podName=${pod.podName}&
-    containerName=${pod.containerName}&environment=${environment}`
+    return `/clusters${fullPath}/-/webconsole?namespace=${p.namespace}&podName=${p.podName}&
+    containerName=${p.containerName}&environment=${environment}`
   }
 
-  const onClickStdout = (pod: CLUSTER.PodInTable) => {
+  const onClickStdout = (p: CLUSTER.PodInTable) => {
     setFullscreen(true);
-    setPod(pod)
-    refreshPodLog(pod.podName, pod.containerName).then();
+    setPod(p)
+    refreshPodLog(p.podName, p.containerName).then();
   }
 
-  const formatMonitorURL = (pod: CLUSTER.PodInTable) => {
-    return `/clusters${fullPath}/-/monitoring?podName=${pod.podName}`
+  const formatMonitorURL = (p: CLUSTER.PodInTable) => {
+    return `/clusters${fullPath}/-/monitoring?podName=${p.podName}`
   }
 
   const renderPodNameAndIP = (text: string) => {
@@ -66,72 +67,20 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       const beforeStr = text.substr(0, index);
       const afterStr = text.substr(index + filter.length);
 
-      return <span>
+      return <Tooltip title="单击可复制" >
+        <span onClick={() => {
+          copy(text)
+          successAlert('复制成功')
+        }}>
           {beforeStr}
-        <span style={{color: '#f50'}}>{filter}</span>
-        {afterStr}
+          <span style={{color: '#f50'}}>{filter}</span>
+          {afterStr}
         </span>
+      </Tooltip>
     }
 
     return text
   }
-
-  const columns = [
-    {
-      title: formatMessage('podName', '副本'),
-      dataIndex: 'podName',
-      key: 'podName',
-      render: (text: any) => renderPodNameAndIP(text)
-    },
-    {
-      title: formatMessage('status', '状态'),
-      dataIndex: 'status',
-      key: 'status',
-      filters: [
-        {
-          text: 'running',
-          value: 'running',
-        },
-        {
-          text: 'pending',
-          value: 'pending',
-        },
-      ],
-      onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
-    },
-    {
-      title: 'IP',
-      dataIndex: 'ip',
-      key: 'ip',
-      render: (text: any) => renderPodNameAndIP(text)
-    },
-    {
-      title: formatMessage('onlineStatus', '上线状态'),
-      dataIndex: 'onlineStatus',
-      key: 'onlineStatus',
-    },
-    {
-      title: formatMessage('restartCount', '重启次数'),
-      dataIndex: 'restartCount',
-      key: 'restartCount',
-    },
-    {
-      title: '启动时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
-      title: formatMessage('action', '操作'),
-      key: 'action',
-      render: (text: any, record: CLUSTER.PodInTable) => (
-        <Space size="middle">
-          <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
-          <a onClick={() => onClickStdout(record)}>查看日志</a>
-          <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
-        </Space>
-      ),
-    },
-  ]
 
   const onChange = (e: any) => {
     const {value} = e.target;
@@ -163,7 +112,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   <br/>
                   失败列表:
                   <br/>
-        {failedList.map(item => <div>Pod: {item.name}  Error: {item.err}<br/></div>)}
+        {failedList.map(item => <div>Pod: {item.name} Error: {item.err}<br/></div>)}
       </span>)
     } else {
       successAlert(<span>{ops}操作执行结果
@@ -200,21 +149,66 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         >
           {formatMessage('offline', '下线')}
         </Button>
-        <Button
-          style={{marginLeft: '10px'}}
-          onClick={() => {
-
-          }}
-          disabled={!selectedPods.length}
-        >
-          {formatMessage('restartPod', '重启Pod')}
-        </Button>
       </div>
     </div>
   }
+
   const filteredData = data.filter((item: CLUSTER.PodInTable) => {
     return !filter || item.podName.indexOf(filter) > -1 || item.ip.indexOf(filter) > -1
   })
+
+  const statusList = Array.from(new Set(filteredData.map(item => item.status))).map(item => ({
+    text: item,
+    value: item,
+  }));
+
+  const columns = [
+    {
+      title: formatMessage('podName', '副本'),
+      dataIndex: 'podName',
+      key: 'podName',
+      render: (text: any) => renderPodNameAndIP(text)
+    },
+    {
+      title: formatMessage('status', '状态'),
+      dataIndex: 'status',
+      key: 'status',
+      filters: statusList,
+      onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
+    },
+    {
+      title: 'IP',
+      dataIndex: 'ip',
+      key: 'ip',
+      render: (text: any) => renderPodNameAndIP(text)
+    },
+    {
+      title: formatMessage('onlineStatus', '上线状态'),
+      dataIndex: 'onlineStatus',
+      key: 'onlineStatus',
+    },
+    {
+      title: formatMessage('restartCount', '重启次数'),
+      dataIndex: 'restartCount',
+      key: 'restartCount',
+    },
+    {
+      title: '启动时间',
+      dataIndex: 'createTime',
+      key: 'createTime',
+    },
+    {
+      title: formatMessage('action', '操作'),
+      key: 'action',
+      render: (text: any, record: CLUSTER.PodInTable) => (
+        <Space size="middle">
+          <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
+          <a onClick={() => onClickStdout(record)}>查看日志</a>
+          <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
+        </Space>
+      ),
+    },
+  ]
 
   const onPodSelected = (selectedRowKeys: React.Key[], selectedRows: CLUSTER.PodInTable[]) => {
     setSelectedPods(selectedRows)

@@ -277,7 +277,7 @@ export default () => {
     </div>
   }
 
-  const currentPodsTabTitle = inPublishing ? '新Pods' : 'Pods'
+  const currentPodsTabTitle = podsInfo.oldPods.length > 0 ? '新Pods' : 'Pods'
   const oldPodsTitle = '旧Pods';
   const formatTabTitle = (title: string, length: number) => {
     return <div>
@@ -412,7 +412,7 @@ export default () => {
       </Tabs>
 
       {
-        inPublishing && <Tabs size={'large'}>
+        podsInfo.oldPods.length > 0 && <Tabs size={'large'}>
           <TabPane tab={formatTabTitle(oldPodsTitle, podsInfo.oldPods.length)}>
             <PodsTable data={podsInfo.oldPods} cluster={cluster!}/>
           </TabPane>

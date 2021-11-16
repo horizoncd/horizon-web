@@ -84,7 +84,7 @@ export default (props: any) => {
   ];
 
   const [fullscreen, setFullscreen] = useState(false)
-  const {successAlert} = useModel('alert')
+  const {successAlert, errorAlert} = useModel('alert')
   const onFullscreenClick = () => {
     setFullscreen(true)
   }
@@ -93,7 +93,7 @@ export default (props: any) => {
     if (copy(props.content)) {
       successAlert('复制成功')
     } else {
-      successAlert('复制失败')
+      errorAlert('复制失败')
     }
   }
 
