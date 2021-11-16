@@ -32,7 +32,7 @@ export default (props: any) => {
       required: true,
       pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
       message: formatMessage('name.ruleMessage'),
-      max: 40,
+      max: 64,
     },
   ];
 

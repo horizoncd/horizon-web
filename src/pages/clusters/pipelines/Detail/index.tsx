@@ -66,7 +66,7 @@ export default (props: any) => {
       {
         key: 'Git info',
         value: {
-          'commit id': pipeline?.gitCommit || '',
+          'Commit ID': pipeline?.gitCommit || '',
         }
       }
     ]
@@ -74,14 +74,14 @@ export default (props: any) => {
 
   const cardTab = [
     {
+      key: "Changes",
+      tab: "变更内容"
+    },
+    {
       key: "BuildLog",
       tab: "构建日志"
     },
-    {
-      key: "Changes",
-      tab: "变更内容"
-    }
-  ]
+  ];
 
   const [fullscreen, setFullscreen] = useState(false)
   const {successAlert} = useModel('alert')
@@ -130,7 +130,7 @@ export default (props: any) => {
     </div>
   }
 
-  const [activeTabKey, setActiveTabKey] = useState('BuildLog')
+  const [activeTabKey, setActiveTabKey] = useState('Changes')
 
   return <PageWithBreadcrumb>
     <DetailCard
@@ -159,7 +159,7 @@ export default (props: any) => {
       visible={fullscreen}
       onClose={onClose}
       fullscreen={true}
-      allowToggle={false}
+      supportFullscreenToggle={false}
     >
       {content[activeTabKey]}
     </FullscreenModal>

@@ -37,9 +37,9 @@ export default (props: any) => {
   const nameRules: Rule[] = [
     {
       required: true,
-      pattern: new RegExp('^[A-Za-z0-9]+$'),
+      pattern: new RegExp('^(?=[a-z0-9])(([a-z0-9][-a-z0-9]*)?[a-z0-9])?$'),
       message: formatMessage('name.ruleMessage'),
-      max: 40,
+      max: 64,
     },
   ];
 

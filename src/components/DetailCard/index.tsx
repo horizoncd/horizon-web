@@ -18,7 +18,7 @@ interface Props {
 
 export type Param = {
   key: string,
-  value: string | string[] | Record<string, string | number>;
+  value: string | string[] | Record<string, string | number> | React.ReactNode;
 }
 
 export default (props: Props) => {
@@ -41,26 +41,37 @@ export default (props: Props) => {
           {params.map((param) => {
             let col2 = 0
             const itemContents: any = []
-            // 获取参数类型，string/array/object
-            const valueType = getType(param.value)
-            // 根据参数类型返回不同的格式
-            if (valueType === ValueType.String) {
-              itemContents.push(<div key={col2++} className={styles.textValue}>{param.value}</div>)
-            } else if (valueType === ValueType.Array) {
-              itemContents.push((param.value as string[]).map((v) => {
-                return <div key={col2++} className={styles.textValue}>
-                  {v}
-                </div>
-              }))
-            } else if (valueType === ValueType.Object) {
-              const keys = Object.keys(param.value)
-              for (let key = 0; key < keys.length; key += 1) {
-                const i = keys[key];
-                itemContents.push(<div key={col2++} className={styles.textValue}><span
-                  className={styles.textValueKey}>{i}</span>: <span
-                  className={styles.textValueValue}>{param.value[i]}</span></div>)
+            if (React.isValidElement(param.value)) {
+              itemContents.push(<div key={col2++}>{
+                param.value
+              }
+              </div>)
+            } else {
+              // 获取参数类型，string/array/object
+              const valueType = getType(param.value);
+              // 根据参数类型返回不同的格式
+              if (valueType === ValueType.String) {
+                itemContents.push(<div key={col2++} className={styles.textValue}>{param.value}</div>)
+              } else if (valueType === ValueType.Array) {
+                itemContents.push((param.value as string[]).map((v) => {
+                  return <div key={col2++} className={styles.textValue}>
+                    {v}
+                  </div>
+                }))
+
+              } else if (valueType === ValueType.Object) {
+                // @ts-ignore
+                const keys = Object.keys(param.value)
+                for (let key = 0; key < keys.length; key += 1) {
+                  const i = keys[key];
+                  itemContents.push(<div key={col2++} className={styles.textValue}><span
+                    className={styles.textValueKey}>{i}</span>: <span
+                    // @ts-ignore
+                    className={styles.textValueValue}>{param.value[i]}</span></div>)
+                }
               }
             }
+
             return <div key={param.key} className={styles.dataColumnItem}>
               <div className={styles.textKey}>{param.key}</div>
               {itemContents}

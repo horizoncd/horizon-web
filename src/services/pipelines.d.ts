@@ -15,6 +15,7 @@ declare namespace PIPELINES {
     },
     startedAt: string,
     finishedAt: string,
+    canRollback: true,
   }
 
   type Diffs = {
@@ -26,5 +27,11 @@ declare namespace PIPELINES {
     configDiff: {
       diff: string
     }
+  }
+
+  type ListPipelineParam = {
+    pageNumber: number,
+    pageSize: number,
+    canRollback: boolean
   }
 }

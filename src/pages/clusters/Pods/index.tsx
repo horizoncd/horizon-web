@@ -17,6 +17,7 @@ import DetailCard from "@/components/DetailCard";
 import {history} from 'umi';
 import {stringify} from "querystring";
 import Utils from '@/utils'
+import {Failed, Progressing, Succeeded, Suspended, NotFount} from "@/components/State";
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -37,12 +38,20 @@ const taskStatus2Entity = new Map<TaskStatus, {
   [TaskStatus.FAILED, {icon: frown, buildTitle: '构建失败', deployTitle: '发布失败', stepStatus: 'error'}]
 ]);
 
+const clusterStatus2StateNode = new Map([
+  ['Progressing', <Progressing/>],
+  ['Healthy', <Succeeded text={'Healthy'}/>],
+  ['Degraded', <Failed text={'NotHealthy'}/>],
+  ['Suspended', <Suspended/>],
+]);
+
 interface DeployPageProps {
   step: {
     index: number,
     total: number
   },
   onNext: () => void,
+  status: CLUSTER.ClusterStatus
 }
 
 interface PodsInfo {
@@ -194,7 +203,7 @@ export default () => {
           }
           steps[1] = {
             title: entity!.deployTitle,
-            content: <DeployPage step={step} onNext={() => {
+            content: <DeployPage status={statusData} step={step} onNext={() => {
               next(id).then(() => {
                 successAlert(`第${step.index + 1}批次开始发布`)
                 refreshStatus()
@@ -253,13 +262,13 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext}: DeployPageProps) {
+  function DeployPage({step, onNext, status}: DeployPageProps) {
     const {index, total} = step
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
         {
-          index < total && statusData?.clusterStatus.status === ClusterStatus.SUSPENDED &&
+          index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
           <Button style={{margin: '0 8px'}} onClick={onNext}>
             下一步
           </Button>
@@ -289,7 +298,7 @@ export default () => {
     [
       {
         key: '集群状态',
-        value: statusData?.clusterStatus.status || ClusterStatus.NOTFOUND,
+        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount />
       },
     ],
     [
@@ -310,7 +319,8 @@ export default () => {
   ]
 
   if (cluster?.latestDeployedCommit) {
-    baseInfo[2][0]['value']['commit'] = cluster!.latestDeployedCommit
+    // @ts-ignore
+    baseInfo[2][0].value['Commit ID'] = cluster!.latestDeployedCommit
   }
 
   const onClickOperation = ({key}: { key: string }) => {
@@ -333,13 +343,17 @@ export default () => {
         break;
       case 'restart':
         Modal.info({
-          title: 'Are you sure to restart all pods?',
+          title: '确定重启所有Pods?',
           onOk() {
             restart(id).then(() => {
               successAlert('Restart All Pods Succeed')
             })
           },
         });
+        break;
+      case 'rollback':
+        history.push(`/clusters${fullPath}/-/pipelines?category=rollback`)
+        successAlert('请选择流水线进行回滚')
         break;
       case 'editCluster':
         history.push(`/clusters${fullPath}/-/edit`)

@@ -102,7 +102,7 @@ export async function diffsOfCode(clusterID: number, targetBranch: string) {
   });
 }
 
-export async function getPipelines(clusterID: number, params: API.PageParam) {
+export async function getPipelines(clusterID: number, params: PIPELINES.ListPipelineParam) {
   return request<{
     data: API.PageResult<PIPELINES.Pipeline>
   }>(`/apis/core/v1/clusters/${clusterID}/pipelineruns`, {
