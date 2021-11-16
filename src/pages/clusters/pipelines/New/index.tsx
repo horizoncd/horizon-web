@@ -93,6 +93,11 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
         <Form layout={'vertical'} form={form}
+              onFieldsChange={(a) => {
+                if (a[0].name[0] === 'branch') {
+                  refreshDiff(a[0].value)
+                }
+              }}
         >
           <Form.Item label={formatMessage('title', 'Title')} name={'title'} rules={requiredRule}>
             <Input/>

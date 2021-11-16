@@ -207,7 +207,7 @@ export default (props: any) => {
             );
           }) : <NoData title={'分组用于高效管理你的应用'} desc={'比如统一的权限管理，为分组下的\n' +
           '不用应用设置不同的权限。赋予不同的角色以应有的权限\n' +
-          '比如只读guest只能查看、项目owner、maintainer可以进行发布的修改'}/>
+          '比如只读guest只能查看、项目owner、maintainer可以进行发布和修改'}/>
           }
         </TabPane>
       </Tabs>
