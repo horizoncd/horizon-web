@@ -5,6 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {Alert, Divider} from "antd";
 import styles from './index.less'
 import './index.less'
+import {useEffect} from "react";
 
 export default (props: any) => {
   const {initialState} = useModel('@@initialState');
@@ -16,6 +17,16 @@ export default (props: any) => {
   }
   const {fullName} = initialState!.resource
   const staticRoute = pathnameInStaticRoutes()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (alert.message) {
+        clearAlert()
+      }
+    }, 5000);
+
+    return () => timer && clearTimeout(timer);
+  });
 
   return (
     <div>
