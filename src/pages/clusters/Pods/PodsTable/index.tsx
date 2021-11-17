@@ -9,6 +9,7 @@ import {offline, online, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
+import RBAC from '@/rbac'
 
 const {Search} = Input;
 
@@ -125,8 +126,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
-          <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
-          <a onClick={() => onClickStdout(record)}>查看日志</a>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed} href={formatConsoleURL(record)}
+                  target="_blank">Terminal</Button>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
+                  onClick={() => onClickStdout(record)}>查看日志</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
         </Space>
       ),
@@ -163,7 +166,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   <br/>
                   失败列表:
                   <br/>
-        {failedList.map(item => <div>Pod: {item.name}  Error: {item.err}<br/></div>)}
+        {failedList.map(item => <div>Pod: {item.name} Error: {item.err}<br/></div>)}
       </span>)
     } else {
       successAlert(<span>{ops}操作执行结果
@@ -185,7 +188,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               hookAfterOnlineOffline("Online", d)
             });
           }}
-          disabled={!selectedPods.length}
+          disabled={!selectedPods.length || !RBAC.Permissions.onlineCluster.allowed}
         >
           {formatMessage('online', '上线')}
         </Button>
@@ -196,7 +199,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               hookAfterOnlineOffline("Offline", d)
             });
           }}
-          disabled={!selectedPods.length}
+          disabled={!selectedPods.length || !RBAC.Permissions.offlineCluster.allowed}
         >
           {formatMessage('offline', '下线')}
         </Button>

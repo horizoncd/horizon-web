@@ -93,11 +93,9 @@ export default () => {
               onChange={onChange}/>
 
       {
-        (RBAC.Permissions.createCluster.allowed
-          && (RBAC.Permissions.createCluster.allowedEnv.includes(environment)
-            || RBAC.Permissions.createCluster.allowedEnv.includes(RBAC.AllowAll))) &&
         <Button
           type="primary"
+          disabled={!RBAC.Permissions.createCluster.allowedEnv(environment)}
           className={styles.createClusterBtn}
           onClick={() => {
             history.push({

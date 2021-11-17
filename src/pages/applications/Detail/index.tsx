@@ -104,7 +104,7 @@ export default () => {
   const firstLetter = applicationName.substring(0, 1).toUpperCase();
   const operateDropdown = (
     <Menu>
-      <Menu.Item onClick={() => {
+      <Menu.Item disabled={!RBAC.Permissions.deleteApplication.allowed} onClick={() => {
         Modal.confirm({
           title: intl.formatMessage({id: 'pages.applicationDelete.confirm.title'}, {
             application: <span className={styles.bold}> {applicationName}</span>
@@ -138,9 +138,9 @@ export default () => {
           <div className={styles.flex}/>
           <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button>
           {
-            RBAC.Permissions.updateApplication.allowed &&
             <Button
               type="primary" className={styles.button}
+              disabled={!RBAC.Permissions.updateApplication.allowed}
               onClick={() =>
                 history.push({
                   pathname: editApplicationRoute,
@@ -151,10 +151,10 @@ export default () => {
             </Button>
           }
           {
-            RBAC.Permissions.deleteApplication.allowed &&
             <Dropdown className={styles.button} overlay={operateDropdown}
                       trigger={["click"]}>
-              <Button>{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
+              <Button
+              >{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
           }
         </div>
       </div>

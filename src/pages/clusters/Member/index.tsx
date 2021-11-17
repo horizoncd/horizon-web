@@ -9,6 +9,7 @@ import {
 import Member from '@/components/Member'
 import {ResourceType} from '@/const'
 import {useIntl} from "@@/plugin-locale/localeExports";
+import RBAC from "@/rbac";
 
 export default (): React.ReactNode => {
   const intl = useIntl();
@@ -33,6 +34,7 @@ export default (): React.ReactNode => {
       onRemoveMember={(id) => {
         return removeMember(id)
       }}
+      allowInvite={RBAC.Permissions.createClusterMember.allowed}
     />
   );
 };

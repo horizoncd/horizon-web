@@ -17,7 +17,8 @@ import DetailCard from "@/components/DetailCard";
 import {history} from 'umi';
 import {stringify} from "querystring";
 import Utils from '@/utils'
-import {Failed, Progressing, Succeeded, Suspended, NotFount} from "@/components/State";
+import {Failed, NotFount, Progressing, Succeeded, Suspended} from "@/components/State";
+import RBAC from '@/rbac'
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -298,7 +299,7 @@ export default () => {
     [
       {
         key: '集群状态',
-        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount />
+        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount/>
       },
     ],
     [
@@ -364,21 +365,25 @@ export default () => {
   }
 
   const operateDropdown = <Menu onClick={onClickOperation}>
-    <Menu.Item key="rollback">回滚</Menu.Item>
-    <Menu.Item key="editCluster">修改集群</Menu.Item>
+    <Menu.Item disabled={!RBAC.Permissions.rollbackCluster.allowed} key="rollback">回滚</Menu.Item>
+    <Menu.Item disabled={!RBAC.Permissions.updateCluster.allowed} key="editCluster">修改集群</Menu.Item>
   </Menu>;
 
   return (
     <PageWithBreadcrumb>
       <div>
         <div style={{marginBottom: '5px', textAlign: 'right'}}>
-          <Button type="primary" onClick={() => onClickOperation({key: 'builddeploy'})} style={{marginRight: '10px'}}>
+          <Button disabled={!RBAC.Permissions.buildAndDeployCluster.allowed}
+                  type="primary" onClick={() => onClickOperation({key: 'builddeploy'})}
+                  style={{marginRight: '10px'}}>
             构建发布
           </Button>
-          <Button onClick={() => onClickOperation({key: 'deploy'})} style={{marginRight: '10px'}}>
+          <Button disabled={!RBAC.Permissions.deployCluster.allowed} onClick={() => onClickOperation({key: 'deploy'})}
+                  style={{marginRight: '10px'}}>
             直接发布
           </Button>
-          <Button onClick={() => onClickOperation({key: 'restart'})} style={{marginRight: '10px'}}>
+          <Button disabled={!RBAC.Permissions.restartCluster.allowed} onClick={() => onClickOperation({key: 'restart'})}
+                  style={{marginRight: '10px'}}>
             重新启动
           </Button>
           <Dropdown overlay={operateDropdown} trigger={["click"]} overlayStyle={{}}>
