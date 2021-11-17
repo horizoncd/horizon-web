@@ -8,6 +8,7 @@ import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
 import {history} from "@@/core/history";
 import {Failed, Succeeded} from "@/components/State";
+import {DeployTypeMap} from '@/const'
 
 const {TabPane} = Tabs;
 
@@ -81,6 +82,7 @@ export default (props: any) => {
       title: '触发类型',
       dataIndex: 'action',
       key: 'action',
+      render: (text: any) => DeployTypeMap.get(text)
     },
     {
       title: '创建时间',

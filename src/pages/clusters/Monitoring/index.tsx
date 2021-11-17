@@ -15,7 +15,7 @@ const TaskDetailMonitor = ({location, history}) => {
   const {id} = initialState!.resource;
   const {query} = location;
   const {podName} = query
-  const url = 'http://grafana.yf-dev.netease.com/d/R3l8AsF7z/kubernetes-compute-resources-pod-copy?orgId=1'
+  const url = 'http://grafana.yf-dev.netease.com/d/R3l8AsF7z/pod-resources?orgId=1'
   const [pods, setPods] = useState<CLUSTER.PodFromBackend[]>([]);
   const [podNames, setPodNames] = useState<string[]>([]);
 
@@ -24,14 +24,16 @@ const TaskDetailMonitor = ({location, history}) => {
       const {versions} = statusData!.clusterStatus;
       const allPods: CLUSTER.PodFromBackend[] = []
       const allPodNames: string[] = []
-      Object.keys(versions).forEach(version => {
-        const versionObj = versions[version]
-        const {pods: p} = versionObj
-        if (p) {
-          allPods.push(...Object.values(p))
-          allPodNames.push(...Object.keys(p))
-        }
-      });
+      if (versions) {
+        Object.keys(versions).forEach(version => {
+          const versionObj = versions[version]
+          const {pods: p} = versionObj
+          if (p) {
+            allPods.push(...Object.values(p))
+            allPodNames.push(...Object.keys(p))
+          }
+        });
+      }
       setPods(allPods)
       setPodNames(allPodNames)
     }
@@ -87,10 +89,9 @@ const TaskDetailMonitor = ({location, history}) => {
         podNamesQuery = podName.reduce((pre: string, cur: string) => `&var-pod=${pre}&var-pod=${cur}`);
       }
     }
-
     return `${url}&kiosk&theme=light&${queryString.stringify({
       from, to, refresh
-    })}&var-namespace=${pods.length > 0 ? pods[0].metadata.namespace : 'default'}&var-datasource=compute-1${podNamesQuery}`;
+    })}&var-namespace=${pods.length > 0 ? pods[0].metadata.namespace : 'noData'}&var-datasource=compute-1${podNamesQuery}`;
   }, [url, formData, pods, podNames]);
 
   return (

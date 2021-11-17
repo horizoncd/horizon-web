@@ -35,3 +35,14 @@ export enum ClusterStatus {
   DEGRADED = 'Degraded',
   NOTFOUND = 'NotFound',
 }
+
+const DeployTypeMap = new Map([
+  ['builddeploy', '构建发布'],
+  ['deploy', '直接发布'],
+  ['rollback', '回滚'],
+  ['restart', '重新启动'],
+])
+
+export {
+  DeployTypeMap
+}

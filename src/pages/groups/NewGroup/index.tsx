@@ -69,7 +69,7 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <div style={{fontSize: "20px"}}>New group</div>
+      <div style={{fontSize: "20px"}}>创建分组</div>
       <Divider/>
       <Row>
         <Col span={5}/>
@@ -94,10 +94,10 @@ export default () => {
             <Form.Item style={getSubmitBtnStyle()}>
               <div className={'form-actions'}>
                 <Button type="primary" htmlType={'submit'}>
-                  Create group
+                  提交
                 </Button>
                 <Button style={{float: 'right'}} onClick={cancel}>
-                  Cancel
+                  取消
                 </Button>
               </div>
             </Form.Item>
