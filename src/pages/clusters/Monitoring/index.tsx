@@ -15,7 +15,7 @@ const TaskDetailMonitor = ({location, history}) => {
   const {id} = initialState!.resource;
   const {query} = location;
   const {podName} = query
-  const url = 'http://grafana.yf-dev.netease.com/d/R3l8AsF7z/pod-resources?orgId=1'
+  const url = 'http://grafana.yf-onlinetest.netease.com/d/R3l8AsF7z/pod-resources?orgId=1'
   const [pods, setPods] = useState<CLUSTER.PodFromBackend[]>([]);
   const [podNames, setPodNames] = useState<string[]>([]);
 
@@ -29,7 +29,7 @@ const TaskDetailMonitor = ({location, history}) => {
           const versionObj = versions[version]
           const {pods: p} = versionObj
           if (p) {
-            allPods.push(...Object.values(p))
+            allPods.push(...Object.values<CLUSTER.PodFromBackend>(p))
             allPodNames.push(...Object.keys(p))
           }
         });

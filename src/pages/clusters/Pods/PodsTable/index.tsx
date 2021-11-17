@@ -148,7 +148,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
       <div style={{float: 'right'}}>
         <Button
-          type="primary"
           onClick={() => {
             online(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
               hookAfterOnlineOffline("Online", d)

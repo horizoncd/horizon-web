@@ -193,6 +193,7 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
         return false;
       }
       const firstLetter = title.substring(0, 1).toUpperCase();
+      const titleContent = title.length <= 15 ? title : title.substr(0, 12) + '...'
       return (
         <span
           style={{alignItems: 'center', lineHeight: '40px'}}
@@ -204,7 +205,7 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
             {firstLetter}
           </span>
           <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>
-            {title}
+            {titleContent}
           </span>
         </span>
       );

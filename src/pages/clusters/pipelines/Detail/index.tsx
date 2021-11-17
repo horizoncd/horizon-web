@@ -72,7 +72,7 @@ export default (props: any) => {
     ]
   ]
 
-  const cardTab = [
+  const cardTab = (pipeline && pipeline.action === PublishType.BUILD_DEPLOY) ? [
     {
       key: "Changes",
       tab: "变更内容"
@@ -80,6 +80,11 @@ export default (props: any) => {
     {
       key: "BuildLog",
       tab: "构建日志"
+    },
+  ] : [
+    {
+      key: "Changes",
+      tab: "变更内容"
     },
   ];
 

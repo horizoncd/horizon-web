@@ -43,6 +43,7 @@ export default (props: any) => {
     pageSize: 50,
   }), {
     manual: true,
+    ready: type === PublishType.BUILD_DEPLOY
   })
 
   const {data: cluster} = useRequest(() => getCluster(id!), {

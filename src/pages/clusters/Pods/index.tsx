@@ -299,18 +299,18 @@ export default () => {
   const baseInfo: Param[][] = [
     [
       {
+        key: '集群状态',
+        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount/>
+      },
+    ],
+    [
+      {
         key: 'Pods数量',
         value: {
           Health: podsInfo.healthyPods.length,
           NotHealth: podsInfo.notHealthyPods.length,
         }
       }
-    ],
-    [
-      {
-        key: '集群状态',
-        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount/>
-      },
     ],
     [
       {
