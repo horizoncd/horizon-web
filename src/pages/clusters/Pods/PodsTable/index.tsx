@@ -241,7 +241,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志，查看基础资源监控、登陆Pod、杀死一个POD等操作'}/>
+    '比如查看日志、查看基础资源监控、登陆Pod、杀死一个Pod等操作'}/>
   }
 
   return <div>
