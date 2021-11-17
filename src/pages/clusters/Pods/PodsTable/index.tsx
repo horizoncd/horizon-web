@@ -10,7 +10,7 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Running, Online, Waiting, Terminated, Offline} from '@/components/State'
+import {Running, Online, Waiting, Terminated, Offline, Pending} from '@/components/State'
 
 const {Search} = Input;
 
@@ -21,6 +21,7 @@ const status2StateNode = new Map(
     ['terminated', <Terminated/>],
     ['online', <Online/>],
     ['offline', <Offline/>],
+    ['pending', <Pending/>],
   ]
 )
 

@@ -64,6 +64,13 @@ const Waiting = (props: StatusProps) => {
   </span>
 }
 
+const Pending = (props: StatusProps) => {
+  const {text} = props;
+  return <span className="badge-color-yellow badge-content">
+    {text || 'Pending'}
+  </span>
+}
+
 const Terminated = (props: StatusProps) => {
   const {text} = props;
   return <span className="badge-color-red badge-content">
@@ -95,5 +102,6 @@ export {
   Online,
   Waiting,
   Offline,
-  Terminated
+  Terminated,
+  Pending
 }
