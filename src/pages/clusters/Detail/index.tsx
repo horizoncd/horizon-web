@@ -107,7 +107,8 @@ export default () => {
           <div className={styles.flex}/>
           <Button className={styles.button} onClick={refreshCluster}><ReloadOutlined/></Button>
           {
-            RBAC.Permissions.updateCluster.allowed && <Button
+            <Button
+              disabled={!RBAC.Permissions.updateCluster.allowed}
               type="primary" className={styles.button}
               onClick={() =>
                 history.push({

@@ -11,6 +11,7 @@ import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
 import {Running, Online, Waiting, Terminated, Offline, Pending} from '@/components/State'
+import RBAC from '@/rbac'
 
 const {Search} = Input;
 
@@ -153,7 +154,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               hookAfterOnlineOffline("Online", d)
             });
           }}
-          disabled={!selectedPods.length}
+          disabled={!selectedPods.length || !RBAC.Permissions.onlineCluster.allowed}
         >
           {formatMessage('online', '上线')}
         </Button>
@@ -164,7 +165,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               hookAfterOnlineOffline("Offline", d)
             });
           }}
-          disabled={!selectedPods.length}
+          disabled={!selectedPods.length || !RBAC.Permissions.offlineCluster.allowed}
         >
           {formatMessage('offline', '下线')}
         </Button>
@@ -223,8 +224,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
-          <a href={formatConsoleURL(record)} target="_blank">Terminal</a>
-          <a onClick={() => onClickStdout(record)}>查看日志</a>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed} href={formatConsoleURL(record)}
+                  target="_blank">Terminal</Button>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
+                  onClick={() => onClickStdout(record)}>查看日志</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
         </Space>
       ),

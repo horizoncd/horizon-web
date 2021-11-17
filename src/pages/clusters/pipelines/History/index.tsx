@@ -1,4 +1,4 @@
-import {Modal, Space, Table, Tabs} from "antd";
+import {Button, Modal, Space, Table, Tabs} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -9,6 +9,7 @@ import Utils from '@/utils'
 import {history} from "@@/core/history";
 import {Failed, Succeeded} from "@/components/State";
 import {DeployTypeMap} from '@/const'
+import RBAC from '@/rbac'
 
 const {TabPane} = Tabs;
 
@@ -94,7 +95,9 @@ export default (props: any) => {
       key: 'operations',
       render: (text: string, record: PIPELINES.Pipeline) => (
         record.canRollback && <Space size="middle">
-          <a onClick={() => onRetry(record)}>Retry</a>
+          <Button type={'link'} style={{padding: 0}}
+                  disabled={!RBAC.Permissions.rollbackCluster.allowed}
+                  onClick={() => onRetry(record)}>Retry</Button>
         </Space>
       ),
     },

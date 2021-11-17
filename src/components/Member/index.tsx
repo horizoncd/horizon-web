@@ -36,6 +36,8 @@ interface MemberProps {
   onUpdateMember: (id: number, member: API.UpdateMember) => Promise<any>;
   // 移除member
   onRemoveMember: (id: number) => Promise<any>;
+  // 是否显示添加member功能
+  allowInvite: boolean
 }
 
 export default (props: MemberProps) => {
@@ -48,7 +50,8 @@ export default (props: MemberProps) => {
     onInviteMember,
     onListMembers,
     onUpdateMember,
-    onRemoveMember
+    onRemoveMember,
+    allowInvite
   } = props;
   const {initialState, refresh} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
@@ -283,7 +286,7 @@ export default (props: MemberProps) => {
           <span className={styles.alertSpan}>{intl.formatMessage({id: "pages.members.user.anonymous.alert"})}</span>)}
       />}
       {
-        RBAC.Permissions.createMember.allowed && <Card
+        props.allowInvite && <Card
           tabList={inviteTabList}
           activeTabKey={inviteMemberKey}
         >

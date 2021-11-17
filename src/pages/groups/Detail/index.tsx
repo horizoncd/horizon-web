@@ -21,7 +21,8 @@ export default () => {
     return (
       <div>
         {
-          RBAC.Permissions.createGroup.allowed && <Button
+          <Button
+            disabled={!RBAC.Permissions.createGroup.allowed}
             style={{marginRight: 15}}
             onClick={() =>
               history.push({
@@ -33,9 +34,9 @@ export default () => {
           </Button>
         }
         {
-          RBAC.Permissions.createApplication.allowed && <Button
+          <Button
             type="primary"
-            style={{backgroundColor: '#1f75cb'}}
+            disabled={!RBAC.Permissions.createApplication.allowed}
             onClick={() => {
               history.push({
                 pathname: newApplication,
