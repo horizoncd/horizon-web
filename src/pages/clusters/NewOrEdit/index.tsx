@@ -1,4 +1,4 @@
-import {Button, Col, Form, Row} from 'antd';
+import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
 import Config from '../../applications/NewOrEdit/Config';
 import Audit from './Audit';
@@ -11,6 +11,9 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
+import {history} from "@@/core/history";
+import {stringify} from "querystring";
+import {PublishType} from "@/const";
 
 interface FieldData {
   name: string | number | (string | number)[];
@@ -53,6 +56,9 @@ export default (props: any) => {
   const [config, setConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
   const [applicationName, setApplicationName] = useState('');
+  const [cluster, setCluster] = useState<CLUSTER.Cluster>()
+  const [showBuildDeployModal, setShowBuildDeployModal] = useState(false)
+  const [showDeployModal, setShowDeployModal] = useState(false)
 
   // query application if creating
   if (creating) {
@@ -203,8 +209,13 @@ export default (props: any) => {
     manual: true,
     onSuccess: (res: CLUSTER.Cluster) => {
       successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterEdit.success'}))
-      // jump to cluster's home page
-      window.location.href = res.fullPath
+      setCluster(res);
+      if (creating) {
+        setShowBuildDeployModal(true);
+      }
+      if (editing) {
+        setShowDeployModal(true);
+      }
     }
   });
 
@@ -218,6 +229,34 @@ export default (props: any) => {
     setBasic(allFields)
   }
 
+  const onBuildAndDeployButtonOK = () => {
+    history.push({
+      pathname: `/clusters${cluster!.fullPath}/-/pipelines/new`,
+      search: stringify({
+        type: PublishType.BUILD_DEPLOY,
+      })
+    });
+  }
+
+  const onBuildAndDeployButtonCancel = () => {
+    // jump to cluster's home page
+    window.location.href = cluster!.fullPath
+  }
+
+  const onDeployButtonOK = () => {
+    history.push({
+      pathname: `/clusters${cluster!.fullPath}/-/pipelines/new`,
+      search: stringify({
+        type: PublishType.DEPLOY,
+      })
+    });
+  }
+
+  const onDeployButtonCancel = () => {
+    // jump to cluster's home page
+    window.location.href = cluster!.fullPath
+  }
+
   return (
     <PageWithBreadcrumb>
       <Row>
@@ -229,8 +268,9 @@ export default (props: any) => {
         <Col span={20}>
           <div className={styles.stepsContent}>
             {
-              current === 0 && <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
-                                      editing={editing} template={template}/>
+              current === 0 &&
+              <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
+                     editing={editing} template={template}/>
             }
             {
               current === 1 && <Config template={template} release={template.release} config={config}
@@ -239,7 +279,8 @@ export default (props: any) => {
             }
             {
               current === 2 &&
-              <Audit template={template} editing={editing} form={form} applicationName={applicationName} release={template.release} config={config}/>
+              <Audit template={template} editing={editing} form={form} applicationName={applicationName}
+                     release={template.release} config={config}/>
             }
           </div>
           <div className={styles.stepsAction}>
@@ -258,6 +299,27 @@ export default (props: any) => {
                 {intl.formatMessage({id: 'pages.common.next'})}
               </Button>
             )}
+            <Modal
+              title={<span
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
+              // visible={showBuildDeployModal}
+              visible={showBuildDeployModal}
+              onOk={onBuildAndDeployButtonOK}
+              onCancel={onBuildAndDeployButtonCancel}
+            >
+              <div
+                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>
+            </Modal>
+            <Modal
+              title={<span
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
+              visible={showDeployModal}
+              onOk={onDeployButtonOK}
+              onCancel={onDeployButtonCancel}
+            >
+              <div
+                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.content'})}</div>
+            </Modal>
           </div>
         </Col>
       </Row>

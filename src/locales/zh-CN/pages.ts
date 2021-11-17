@@ -69,6 +69,10 @@ export default {
   'pages.clusterNew.basic.region': '区域',
   'pages.clusterEdit.header': '正在编辑【 {cluster} 】，请按步骤填写信息',
   'pages.clusterEdit.success': '集群更新成功',
+  'pages.clusterEdit.prompt.buildDeploy.title': '是否进行构建发布？',
+  'pages.clusterEdit.prompt.buildDeploy.content': '新建的集群需要发布完成后才可使用。\n若取消，后续可在该集群主页重新执行构建发布。',
+  'pages.clusterEdit.prompt.deploy.title': '是否进行直接发布？',
+  'pages.clusterEdit.prompt.deploy.content': '修改后的配置，需要发布完成才生效。\n若取消，后续可在该集群主页重新执行直接发布。',
 
   'pages.clusterDetail.basic.detail': '集群详情',
   'pages.clusterDetail.basic.config': '集群配置',
