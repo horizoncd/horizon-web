@@ -21,6 +21,7 @@ export default () => {
   const {initialState} = useModel("@@initialState")
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
   const defaultCluster: CLUSTER.Cluster = {
+    latestDeployedCommit: "",
     id: 0,
     application: {
       id: 0,
@@ -47,7 +48,7 @@ export default () => {
     templateInput: undefined,
     fullPath: '',
     createdAt: '',
-    updatedAt: '',
+    updatedAt: ''
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])

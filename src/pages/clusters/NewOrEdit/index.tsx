@@ -11,8 +11,6 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
-import {history} from "@@/core/history";
-import {stringify} from "querystring";
 import {PublishType} from "@/const";
 
 interface FieldData {
@@ -235,12 +233,7 @@ export default (props: any) => {
   }
 
   const onBuildAndDeployButtonOK = () => {
-    history.push({
-      pathname: `/clusters${cluster!.fullPath}/-/pipelines/new`,
-      search: stringify({
-        type: PublishType.BUILD_DEPLOY,
-      })
-    });
+    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`
   }
 
   const onBuildAndDeployButtonCancel = () => {
@@ -249,12 +242,7 @@ export default (props: any) => {
   }
 
   const onDeployButtonOK = () => {
-    history.push({
-      pathname: `/clusters${cluster!.fullPath}/-/pipelines/new`,
-      search: stringify({
-        type: PublishType.DEPLOY,
-      })
-    });
+    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`
   }
 
   const onDeployButtonCancel = () => {

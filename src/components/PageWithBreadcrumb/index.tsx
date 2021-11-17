@@ -23,7 +23,7 @@ export default (props: any) => {
       if (alert.message) {
         clearAlert()
       }
-    }, 5000);
+    }, 4000);
 
     return () => timer && clearTimeout(timer);
   });

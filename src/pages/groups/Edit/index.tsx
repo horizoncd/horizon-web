@@ -70,15 +70,19 @@ export default () => {
 
   const nameRules: Rule[] = [{
     required: true,
-    message: 'name required, max length: 128',
-    max: 128,
+    message: 'name required, max length: 64',
+    max: 64,
   }];
 
-  const pathRules: Rule[] = [{
-    required: true,
-    pattern: new RegExp('^[a-z][a-z0-9-]*$'),
-    message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头'
-  }];
+  const pathRegx = new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$')
+
+  const pathRules: Rule[] = [
+    {
+      required: true,
+      pattern: pathRegx,
+      message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
+    },
+  ];
 
   const onDelete = () => {
     deleteGroup({id: detail.id}).then(() => {
@@ -96,6 +100,20 @@ export default () => {
             layout={'vertical'}
             form={form}
             onFinish={onFinish}
+            onFieldsChange={(a, b) => {
+              // query regions when environment selected
+              if (a[0].name[0] === 'name') {
+                if (pathRegx.test(a[0].value)) {
+                  for (let i = 0; i < b.length; i++) {
+                    if (b[i].name[0] === 'path') {
+                      b[i].value = a[0].value
+                    }
+                  }
+                  form.setFields(b)
+                  form.validateFields(['path'])
+                }
+              }
+            }}
           >
             <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
               <Input disabled={!RBAC.Permissions.updateGroup.allowed} style={getGroupNameLabelStyle()}

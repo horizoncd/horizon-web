@@ -85,10 +85,21 @@ export default () => {
     images: new Set<string>()
   })
   const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING
+  const {data: cluster} = useRequest(() => getCluster(id), {
+    refreshDeps: [id],
+    ready: !!id && type === ResourceType.CLUSTER,
+  });
+  const {data: buildLog, run: refreshLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
+    refreshDeps: [pipelinerunID],
+    ready: !!pipelinerunID && inPublishing,
+    formatResult: (res) => {
+      return res
+    },
+  })
   const [steps, setSteps] = useState([
     {
       title: '构建中',
-      content: <div/>,
+      content: <BuildPage log={buildLog}/>,
       icon: loading
     },
     {
@@ -97,18 +108,6 @@ export default () => {
       icon: waiting
     },
   ]);
-
-  const {data: cluster} = useRequest(() => getCluster(id), {
-    refreshDeps: [id],
-    ready: !!id && type === ResourceType.CLUSTER,
-  });
-  const {data: buildLog, run: refreshBuildLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
-    manual: true,
-    refreshDeps: [pipelinerunID],
-    formatResult: (res) => {
-      return res
-    }
-  })
   const refreshPodsInfo = (data: CLUSTER.ClusterStatus) => {
     const oldPods: CLUSTER.PodInTable[] = []
     const newPods: CLUSTER.PodInTable[] = []
@@ -193,19 +192,18 @@ export default () => {
           return
         }
 
-        const {step} = statusData.clusterStatus;
+        const {step, status} = statusData.clusterStatus;
         const entity = taskStatus2Entity.get(ttStatus)
         setPipelinerunID(statusData.runningTask.pipelinerunID)
         if (tt === RunningTask.BUILD) {
           // refresh build log when in build task
-          refreshBuildLog()
           steps[0] = {
             title: entity!.buildTitle,
             content: <BuildPage log={buildLog}/>,
             icon: entity!.icon,
           }
         }
-        if (tt === RunningTask.DEPLOY) {
+        if (tt === RunningTask.DEPLOY && status != ClusterStatus.NOTFOUND) {
           const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
           steps[0] = {
             title: succeed!.buildTitle,
@@ -227,6 +225,8 @@ export default () => {
         }
         setSteps(steps)
         setStepStatus(entity!.stepStatus);
+
+        refreshLog()
       }
     }
   });
@@ -251,7 +251,7 @@ export default () => {
     const s = []
     for (let i = 0; i < total; i += 1) {
       s.push({
-        title: `阶段${i + 1}`
+        title: `批次${i + 1}`
       })
     }
     return <Steps current={index}>
@@ -317,7 +317,7 @@ export default () => {
         key: 'Git Repo',
         value: {
           URL: cluster?.git.url || '',
-          branch: cluster?.git.branch || '',
+          Branch: cluster?.git.branch || '',
         }
       }
     ],

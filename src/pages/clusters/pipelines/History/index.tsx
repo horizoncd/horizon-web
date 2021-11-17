@@ -97,7 +97,7 @@ export default (props: any) => {
         record.canRollback && <Space size="middle">
           <Button type={'link'} style={{padding: 0}}
                   disabled={!RBAC.Permissions.rollbackCluster.allowed}
-                  onClick={() => onRetry(record)}>Retry</Button>
+                  onClick={() => onRetry(record)}>回滚到此版本</Button>
         </Space>
       ),
     },
