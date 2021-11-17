@@ -215,10 +215,6 @@ export default (props: any) => {
   }
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
-    // clear config if release has been changed
-    if (changingFiled[0].name[0] === release) {
-      setConfig({})
-    }
     setBasic(allFields)
   }
 

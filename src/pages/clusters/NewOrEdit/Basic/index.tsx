@@ -5,12 +5,17 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments, queryRegions} from "@/services/environments/environments";
 import {listBranch} from "@/services/code/code";
+import {queryReleases} from "@/services/templates/templates";
 
 const {TextArea} = Input;
 const {Option} = Select;
 
 export default (props: any) => {
   const intl = useIntl();
+
+  const {data: releases} = useRequest(() => queryReleases(props.template?.name), {
+    ready: !!props.template.name
+  });
 
   const {data: regions, run: refreshRegions} = useRequest((environment) => queryRegions(environment), {
     manual: true,
@@ -49,6 +54,18 @@ export default (props: any) => {
     },
   ];
 
+  const formatReleaseOption = (item: API.Release) => {
+    if (item.recommended) {
+      return (
+        <div>
+          {item.name} <span style={{color: 'red'}}>(推荐)</span>
+        </div>
+      );
+    }
+
+    return item.name;
+  };
+
   const {readonly = false, editing = false} = props;
 
   const name = editing ? <Input disabled/> :
@@ -83,8 +100,16 @@ export default (props: any) => {
           <Form.Item label={formatMessage('template', '模版')}>
             <Input disabled={true} value={props.template?.name}/>
           </Form.Item>
-          <Form.Item label={formatMessage('release', '模版版本')}>
-            <Input disabled={true} value={props.template?.release}/>
+          <Form.Item label={formatMessage('release', '模版版本')} name={'release'}>
+            <Select disabled={readonly}>
+              {releases?.map((item) => {
+                return (
+                  <Option key={item.name} value={item.name}>
+                    {formatReleaseOption(item)}
+                  </Option>
+                );
+              })}
+            </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
             <Select disabled={readonly || editing}>

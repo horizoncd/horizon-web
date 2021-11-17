@@ -13,7 +13,7 @@ export default (props: any) => {
   const intl = useIntl();
 
   // query release version
-  const {data} = useRequest(() => queryReleases(props.template?.name));
+  const {data: releases} = useRequest(() => queryReleases(props.template?.name));
   const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
     giturl,
     filter,
@@ -87,7 +87,7 @@ export default (props: any) => {
           </Form.Item>
           <Form.Item label={formatMessage('release')} name={'release'} rules={requiredRule}>
             <Select disabled={readonly}>
-              {data?.map((item) => {
+              {releases?.map((item) => {
                 return (
                   <Option key={item.name} value={item.name}>
                     {formatReleaseOption(item)}

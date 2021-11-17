@@ -10,14 +10,18 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Running, Online} from '@/components/State'
+import {Running, Online, Waiting, Terminated, Offline, Pending} from '@/components/State'
 
 const {Search} = Input;
 
 const status2StateNode = new Map(
   [
     ['running', <Running/>],
+    ['waiting', <Waiting/>],
+    ['terminated', <Terminated/>],
     ['online', <Online/>],
+    ['offline', <Offline/>],
+    ['pending', <Pending/>],
   ]
 )
 
@@ -173,7 +177,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   })
 
   const statusList = Array.from(new Set(filteredData.map(item => item.status))).map(item => ({
-    text: item,
+    text: item.slice(0,1).toUpperCase() + item.slice(1),
     value: item,
   }));
 
@@ -241,7 +245,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志，查看基础资源监控、登陆Pod、杀死一个POD等操作'}/>
+    '比如查看日志、查看基础资源监控、登陆Pod、杀死一个Pod等操作'}/>
   }
 
   return <div>

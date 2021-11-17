@@ -43,6 +43,7 @@ const clusterStatus2StateNode = new Map([
   ['Healthy', <Succeeded text={'Healthy'}/>],
   ['Degraded', <Failed text={'NotHealthy'}/>],
   ['Suspended', <Suspended/>],
+  ['NotFound', <NotFount/>],
 ]);
 
 interface DeployPageProps {
@@ -126,7 +127,16 @@ export default () => {
             const {containers, initContainers} = spec
             const {namespace, creationTimestamp} = metadata
             const {containerStatuses} = status
-            const state = (containerStatuses && containerStatuses.length > 0) ? containerStatuses[0].state.state : pendingState
+            let state = ''
+            let restartCount = 0
+            let onlineStatus = 'offline'
+            if (containerStatuses && containerStatuses.length > 0) {
+              state = containerStatuses[0].state.state
+              restartCount = containerStatuses[0].restartCount
+              onlineStatus = containerStatuses[0].ready ? 'online' : 'offline'
+            } else {
+              state = pendingState
+            }
 
             const podInTable: CLUSTER.PodInTable = {
               key: podName,
@@ -134,8 +144,8 @@ export default () => {
               status: state,
               createTime: Utils.timeToLocal(creationTimestamp),
               ip: status.podIP,
-              onlineStatus: containerStatuses[0].ready ? 'online' : 'offline',
-              restartCount: containerStatuses[0].restartCount,
+              onlineStatus,
+              restartCount,
               containerName: containers[0].name,
               namespace
             };

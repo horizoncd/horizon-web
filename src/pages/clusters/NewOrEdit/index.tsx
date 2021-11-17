@@ -30,6 +30,7 @@ export default (props: any) => {
   const subfolder = 'subfolder'
   const environment = 'environment'
   const region = 'region'
+  const release = 'release'
   const basicNeedValidFields = [
     name, branch, environment, region
   ]
@@ -61,10 +62,12 @@ export default (props: any) => {
         const {template: t, git, templateInput, name: n} = data!
         setTemplate(t)
         const {url: u, subfolder: s, branch: b} = git
+        const {release: r} = t
         setBasic([
             {name: url, value: u},
             {name: subfolder, value: s},
-            {name: branch, value: b}
+            {name: branch, value: b},
+            {name: release, value: r},
           ]
         )
         setConfig(templateInput)
@@ -87,6 +90,7 @@ export default (props: any) => {
         } = clusterData!
         const {url: u, branch: b, subfolder: s} = git
         const {environment: e, region: r} = scope
+        const {release: rel} = t
         setBasic([
             {name, value: n},
             {name: description, value: d},
@@ -96,6 +100,7 @@ export default (props: any) => {
             {name: url, value: u},
             {name: branch, value: b},
             {name: subfolder, value: s},
+            {name: release, value: rel},
           ]
         )
         setConfig(templateInput)
