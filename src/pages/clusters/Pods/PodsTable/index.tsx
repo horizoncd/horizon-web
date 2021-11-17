@@ -10,14 +10,17 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Running, Online} from '@/components/State'
+import {Running, Online, Waiting, Terminated, Offline} from '@/components/State'
 
 const {Search} = Input;
 
 const status2StateNode = new Map(
   [
     ['running', <Running/>],
+    ['waiting', <Waiting/>],
+    ['terminated', <Terminated/>],
     ['online', <Online/>],
+    ['offline', <Offline/>],
   ]
 )
 
@@ -173,7 +176,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   })
 
   const statusList = Array.from(new Set(filteredData.map(item => item.status))).map(item => ({
-    text: item,
+    text: item.slice(0,1).toUpperCase() + item.slice(1),
     value: item,
   }));
 

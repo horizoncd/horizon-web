@@ -57,10 +57,31 @@ const Running = (props: StatusProps) => {
   </span>
 }
 
+const Waiting = (props: StatusProps) => {
+  const {text} = props;
+  return <span className="badge-color-yellow badge-content">
+    {text || 'Waiting'}
+  </span>
+}
+
+const Terminated = (props: StatusProps) => {
+  const {text} = props;
+  return <span className="badge-color-red badge-content">
+    {text || 'Terminated'}
+  </span>
+}
+
 const Online = (props: StatusProps) => {
   const {text} = props;
   return <span className="badge-color-blue badge-content">
     {text || 'Online'}
+  </span>
+}
+
+const Offline = (props: StatusProps) => {
+  const {text} = props;
+  return <span className="badge-color-brown badge-content">
+    {text || 'Offline'}
   </span>
 }
 
@@ -71,5 +92,8 @@ export {
   Suspended,
   NotFount,
   Running,
-  Online
+  Online,
+  Waiting,
+  Offline,
+  Terminated
 }
