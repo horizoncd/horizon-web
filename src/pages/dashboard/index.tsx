@@ -13,9 +13,11 @@ import {BookOutlined, CloudOutlined, DownOutlined, FolderOutlined} from "@ant-de
 import '@/components/GroupTree/index.less'
 import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
+import withTrim from "@/components/WithTrim";
 
 const {DirectoryTree} = Tree;
-const {Search} = Input;
+const Search = withTrim(Input.Search);
+
 const {TabPane} = Tabs;
 
 const groupsURL = '/dashboard/groups'
@@ -221,8 +223,8 @@ export default (props: any) => {
     window.location.href = `/clusters${fullPath}/-/pods`
   };
 
-  const queryInput = (groupsDashboard && isAdmin) ? <div>
-    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch}
+  // @ts-ignore
+  const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={searchValue}
             style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
     <Button
       type="primary"
@@ -235,7 +237,8 @@ export default (props: any) => {
     >
       {intl.formatMessage({id: 'pages.groups.New group'})}
     </Button>
-  </div> : <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange}/>;
+  </div> : // @ts-ignore
+    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={searchValue}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
     return items.map(({id, name, type, childrenCount, children, ...item}) => {
