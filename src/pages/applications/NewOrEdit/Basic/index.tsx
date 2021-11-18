@@ -5,6 +5,8 @@ import {queryReleases} from '@/services/templates/templates';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {listBranch} from '@/services/code/code'
+import HForm from '@/components/HForm'
+import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -41,6 +43,13 @@ export default (props: any) => {
       pattern: new RegExp('^ssh://.+[.]git$'),
       required: true,
       message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
+      max: 128,
+    },
+  ];
+
+  const gitBranchRules: Rule[] = [
+    {
+      max: 128,
     },
   ];
 
@@ -68,11 +77,11 @@ export default (props: any) => {
 
   return (
     <div>
-      <Form layout={'vertical'} form={props.form}
-            onFieldsChange={(a, b) => {
+      <HForm layout={'vertical'} form={props.form}
+             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
               props.setFormData(a, b)
             }}
-            fields={props.formData}
+             fields={props.formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
@@ -116,11 +125,8 @@ export default (props: any) => {
               disabled={readonly}
             />
           </Form.Item>
-          <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
-            <Input disabled={readonly} placeholder={"非必填，默认为项目根目录"}/>
-          </Form.Item>
-          <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
-            <Select placeholder="master" disabled={readonly} showSearch
+          <Form.Item label={formatMessage('branch')} name={'branch'} rules={gitBranchRules}>
+            <Select disabled={readonly} showSearch
                     onSearch={(item) => {
                       if (props.form.getFieldValue('url') && item) {
                         refreshBranchList(props.form.getFieldValue('url'), item);
@@ -133,8 +139,11 @@ export default (props: any) => {
               }
             </Select>
           </Form.Item>
+          <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
+            <Input disabled={readonly} placeholder={"非必填，默认为项目根目录"}/>
+          </Form.Item>
         </Card>
-      </Form>
+      </HForm>
     </div>
   );
 };

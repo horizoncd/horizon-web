@@ -51,7 +51,6 @@ export default (props: MemberProps) => {
     onListMembers,
     onUpdateMember,
     onRemoveMember,
-    allowInvite
   } = props;
   const {initialState, refresh} = useModel('@@initialState');
   const {successAlert} = useModel('alert')

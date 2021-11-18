@@ -6,6 +6,8 @@ import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments, queryRegions} from "@/services/environments/environments";
 import {listBranch} from "@/services/code/code";
 import {queryReleases} from "@/services/templates/templates";
+import HForm from '@/components/HForm'
+import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -74,8 +76,8 @@ export default (props: any) => {
 
   return (
     <div>
-      <Form layout={'vertical'} form={props.form}
-            onFieldsChange={(a, b) => {
+      <HForm layout={'vertical'} form={props.form}
+            onFieldsChange={(a: FieldData[], b: FieldData[]) => {
               // query regions when environment selected
               if (a[0].name[0] === 'environment') {
                 refreshRegions(a[0].value)
@@ -153,7 +155,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
         </Card>
-      </Form>
+      </HForm>
     </div>
   );
 };

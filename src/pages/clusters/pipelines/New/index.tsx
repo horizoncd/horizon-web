@@ -13,6 +13,8 @@ import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
 import {Rule} from "rc-field-form/lib/interface";
 import {listBranch} from "@/services/code/code";
+import HForm from '@/components/HForm'
+import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {Option} = Select;
 
@@ -93,8 +95,8 @@ export default (props: any) => {
   return (
     <PageWithBreadcrumb>
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
-        <Form layout={'vertical'} form={form}
-              onFieldsChange={(a) => {
+        <HForm layout={'vertical'} form={form}
+              onFieldsChange={(a: FieldData[]) => {
                 if (a[0].name[0] === 'branch') {
                   refreshDiff(a[0].value)
                 }
@@ -124,7 +126,7 @@ export default (props: any) => {
               </Form.Item>
             )
           }
-        </Form>
+        </HForm>
       </Card>
 
       <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>

@@ -29,6 +29,7 @@ export default {
   'pages.applicationNew.basic.url': '地址',
   'pages.applicationNew.basic.subfolder': '代码目录',
   'pages.applicationNew.basic.branch': '分支',
+  'pages.applicationNew.basic.template': '模版',
   'pages.applicationEdit.success': '更新应用成功',
   'pages.applicationEdit.header': '正在编辑【 {application} 】，请按步骤填写信息',
 

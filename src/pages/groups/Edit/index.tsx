@@ -1,11 +1,11 @@
-import {Button, Card, Col, Divider, Form, Input, Popconfirm, Row} from 'antd';
+import {Button, Card, Col, Divider, Form, Input, Modal, Row} from 'antd';
 import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";
 import {deleteGroup, getGroupByID, updateGroupDetail} from "@/services/groups/groups";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
-import {QuestionCircleOutlined} from "@ant-design/icons";
+import {ExclamationCircleOutlined} from "@ant-design/icons";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import RBAC from '@/rbac'
 
@@ -86,7 +86,7 @@ export default () => {
 
   const onDelete = () => {
     deleteGroup({id: detail.id}).then(() => {
-      successAlert('删除成功')
+      successAlert('分组删除成功')
       history.push('/');
     });
   }
@@ -136,12 +136,16 @@ export default () => {
           {RBAC.Permissions.updateGroup.allowed && <Divider/>}
           {
             RBAC.Permissions.updateGroup.allowed && <Card className={'card'}>
-              <h3 style={{color: '#dd2b0e', fontSize: 'bold'}}>Remove group</h3>
-              <h4 style={{fontSize: 'bold'}}>Removed group can not be restored!</h4>
-              <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
-                          onConfirm={onDelete}>
-                <Button style={{backgroundColor: '#dd2b0e', color: 'white'}}>Remove group</Button>
-              </Popconfirm>
+              <Button style={{backgroundColor: '#dd2b0e', color: 'white'}} onClick={() => {
+                Modal.confirm({
+                  title: '删除分组前，请确认子分组和应用已全被删除',
+                  icon: <ExclamationCircleOutlined/>,
+                  okText: '删除',
+                  cancelText: '取消',
+                  onOk: onDelete,
+                });
+              }}>删除分组</Button>
+              <span style={{fontWeight: 'bold', marginLeft: '20px'}}>分组删除后，将无法恢复!</span>
             </Card>
           }
         </Col>

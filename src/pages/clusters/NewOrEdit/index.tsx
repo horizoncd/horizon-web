@@ -12,14 +12,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {getApplication} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
-
-interface FieldData {
-  name: string | number | (string | number)[];
-  value?: any;
-  touched?: boolean;
-  validating?: boolean;
-  errors?: string[];
-}
+import type {FieldData} from 'rc-field-form/lib/interface'
 
 export default (props: any) => {
   const intl = useIntl();

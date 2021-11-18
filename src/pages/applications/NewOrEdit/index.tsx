@@ -11,14 +11,7 @@ import {createApplication, getApplication, updateApplication} from '@/services/a
 import {useIntl} from "@@/plugin-locale/localeExports";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-
-interface FieldData {
-  name: string | number | (string | number)[];
-  value?: any;
-  touched?: boolean;
-  validating?: boolean;
-  errors?: string[];
-}
+import type {FieldData} from 'rc-field-form/lib/interface'
 
 export default (props: any) => {
   const intl = useIntl();

@@ -5,6 +5,8 @@ import './index.less';
 import {createSubGroup} from '@/services/groups/groups';
 import {useModel} from "@@/plugin-model/useModel";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import type {FieldData} from 'rc-field-form/lib/interface'
+import HForm from '@/components/HForm'
 
 const {TextArea} = Input;
 
@@ -80,11 +82,11 @@ export default () => {
       <Row>
         <Col span={5}/>
         <Col span={18}>
-          <Form
+          <HForm
             layout={'vertical'}
             form={form}
             onFinish={onFinish}
-            onFieldsChange={(a, b) => {
+            onFieldsChange={(a: FieldData[], b: FieldData[]) => {
               // query regions when environment selected
               if (a[0].name[0] === 'name') {
                 if (pathRegx.test(a[0].value)) {
@@ -121,7 +123,7 @@ export default () => {
                 </Button>
               </div>
             </Form.Item>
-          </Form>
+          </HForm>
         </Col>
       </Row>
     </PageWithBreadcrumb>
