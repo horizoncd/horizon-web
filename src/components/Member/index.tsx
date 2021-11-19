@@ -41,6 +41,7 @@ interface MemberProps {
 }
 
 export default (props: MemberProps) => {
+  const [form] = Form.useForm();
   const intl = useIntl();
   const {
     title,
@@ -59,7 +60,7 @@ export default (props: MemberProps) => {
   const [memberFilter, setMemberFilter] = useState<string>('');
 
   // member翻页监听：重新获取member列表
-  const defaultMemberPageSize = 6;
+  const defaultMemberPageSize = 10;
   const [membersAfterFilter, setMembersAfterFilter] = useState<API.PageResult<API.Member>>({items: [], total: 0})
   const {roleRank, roleList} = RBAC.GetRoleList()
   const [needAlert, setNeedAlert] = useState(true);
@@ -153,6 +154,7 @@ export default (props: MemberProps) => {
       role: values.role,
     }).then(() => {
       successAlert(intl.formatMessage({id: "pages.members.add.success"}))
+      form.resetFields();
       refreshMembers().then();
     })
   }
@@ -247,7 +249,11 @@ export default (props: MemberProps) => {
   })
 
   const inviteTabsContents = {
-    inviteMember: <Form layout="vertical" onFinish={onInviteClick}>
+    inviteMember: <Form
+      layout="vertical"
+      onFinish={onInviteClick}
+      form={form}
+    >
       <Form.Item name="userID"
                  rules={[{required: true, message: intl.formatMessage({id: "pages.members.user.email.message"})}]}
                  label={searchMemberLabel}>

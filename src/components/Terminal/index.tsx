@@ -34,8 +34,11 @@ const Index: React.FC<IProps> = ({
   // 初始化terminal
   useEffect(() => {
     terminalRef.current = new Terminal({
-      rows: Math.round(document.body.clientHeight / DEFAULT_CHAR_HEIGHT),
-      cols: Math.round(document.body.clientWidth / DEFAULT_CHAR_WIDTH),
+      rows: Math.round(containerRef.current.clientHeight / DEFAULT_CHAR_HEIGHT),
+      cols: Math.round(containerRef.current?.clientWidth / DEFAULT_CHAR_WIDTH),
+      // windowOptions: {
+      //   fullscreenWin: true,
+      // },
       cursorBlink: true,
       cursorStyle: 'block',
       scrollback: 800,
@@ -127,7 +130,7 @@ const Index: React.FC<IProps> = ({
     };
   }, []);
 
-  return <div ref={containerRef as React.RefObject<HTMLDivElement>} />;
+  return <div className={"full-screen"} ref={containerRef as React.RefObject<HTMLDivElement>} />;
 };
 
 export default Index

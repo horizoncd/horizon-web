@@ -119,7 +119,12 @@ const clusterRoutes = [
   {
     path: '/clusters/*/-/monitoring',
     component: 'clusters/Monitoring',
-  }
+  },
+  {
+    path: '/clusters/*/-/tags',
+    menuRender: false,
+    component: 'clusters/Tag',
+  },
 ];
 
 const allRoute = [];

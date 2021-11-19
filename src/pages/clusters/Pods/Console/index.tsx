@@ -11,7 +11,7 @@ export default (props: any) => {
   const {query} = location;
   const {podName, containerName} = query;
 
-  const backend = 'horizon.yf-dev.netease.com'
+  const backend = window.location.host
 
   const {data} = useRequest(() => queryTerminalSessionID(id, {
     podName, containerName

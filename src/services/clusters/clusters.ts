@@ -1,4 +1,4 @@
-import { request } from 'umi';
+import {request} from 'umi';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
   return request<{
@@ -136,5 +136,22 @@ export async function getDashboards(clusterID: number) {
     }
   }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
     method: 'GET',
+  });
+}
+
+export async function getClusterTags(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterTags
+  }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
+    method: 'GET',
+  });
+}
+
+export async function updateClusterTags(clusterID: number, data: CLUSTER.ClusterTags) {
+  return request<{
+    data: CLUSTER.ClusterTags
+  }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
+    method: 'POST',
+    data,
   });
 }
