@@ -1,6 +1,6 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import {useState} from "react";
-import {Avatar, Button, Card, Divider} from 'antd';
+import {Avatar, Button, Card, Divider, Table} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -11,7 +11,7 @@ import {ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {getCluster} from "@/services/clusters/clusters";
+import {getCluster, getClusterTags} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
 import {ResourceType} from "@/const";
 
@@ -50,6 +50,7 @@ export default () => {
     updatedAt: '',
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
+  const [tags, setTags] = useState<CLUSTER.ClusterTag[]>()
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
     [
@@ -91,9 +92,31 @@ export default () => {
     refreshDeps: [clusterID]
   })
 
+  const {run: refreshTags} = useRequest(() => {
+    return getClusterTags(clusterID).then(({data: result}) => {
+      setTags(result.tags);
+    });
+  }, {
+    ready: type === ResourceType.CLUSTER && !!clusterID,
+    refreshDeps: [clusterID]
+  })
+
   const firstLetter = clusterName.substring(0, 1).toUpperCase();
 
   const editClusterRoute = `/clusters${clusterFullPath}/-/edit`;
+  const manageTagsRoute = `/clusters${clusterFullPath}/-/tags`;
+  const tagColumns = [
+    {
+      title: '键',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: '值',
+      dataIndex: 'value',
+      key: 'value',
+    }
+  ]
 
   return (
     <Detail>
@@ -139,6 +162,29 @@ export default () => {
               />)
           })
         }
+      </Card>
+      <Card
+        style={{marginTop: '20px'}}
+        title={(
+          <div style={{display: "flex"}}>
+            <span className={styles.cardTitle}>标签</span>
+            <div style={{flex: 1}}/>
+            <Button
+              onClick={
+                () =>
+                  history.push({
+                    pathname: manageTagsRoute,
+                  })
+              }
+            >管理标签</Button>
+          </div>
+        )}
+        type={"inner"}>
+        <Table
+          dataSource={tags}
+          columns={tagColumns}
+        />
+
       </Card>
     </Detail>
   )
