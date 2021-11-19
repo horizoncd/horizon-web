@@ -171,14 +171,16 @@ export default () => {
           <div style={{display: "flex"}}>
             <span className={styles.cardTitle}>标签</span>
             <div style={{flex: 1}}/>
-            <Button
-              onClick={
-                () =>
-                  history.push({
-                    pathname: manageTagsRoute,
-                  })
-              }
-            >管理标签</Button>
+            {
+              initialState!.currentUser!.isAdmin && <Button
+                onClick={
+                  () =>
+                    history.push({
+                      pathname: manageTagsRoute,
+                    })
+                }
+              >管理标签</Button>
+            }
           </div>
         )}
         type={"inner"}>
