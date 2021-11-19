@@ -5,7 +5,7 @@ export enum ResourceType {
 }
 
 export enum PublishType {
-  BUILD_DEPLOY = 'buildDeploy',
+  BUILD_DEPLOY = 'builddeploy',
   DEPLOY = 'deploy',
 }
 
