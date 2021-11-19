@@ -13,9 +13,10 @@ import RBAC from '@/rbac'
 import Utils from '@/utils'
 import {ResourceType} from "@/const";
 import NoData from "@/components/NoData";
+import withTrim from "@/components/WithTrim";
 
 const {TabPane} = Tabs;
-const {Search} = Input;
+const Search = withTrim(Input.Search);
 
 export default () => {
   const intl = useIntl();
@@ -87,11 +88,11 @@ export default () => {
     setQuery(prev => prev + 1)
   }
   const queryInput = (
-    <div>
-      <Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter}
+    // @ts-ignore
+    <div><Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter} value={filter}
               onSearch={onSearch}
-              onChange={onChange}/>
-
+              onChange={onChange}
+    />
       {
         <Button
           type="primary"

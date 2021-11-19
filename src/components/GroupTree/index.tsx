@@ -6,9 +6,10 @@ import Utils from '@/utils'
 import './index.less';
 import {queryChildren, querySubGroups, searchChildren, searchGroups} from "@/services/groups/groups";
 import NoData from '@/components/NoData'
+import withTrim from "@/components/WithTrim";
 
 const {DirectoryTree} = Tree;
-const {Search} = Input;
+const Search = withTrim(Input.Search);
 const {TabPane} = Tabs;
 
 export default (props: any) => {
@@ -146,7 +147,8 @@ export default (props: any) => {
     }
   };
 
-  const queryInput = <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch}
+  // @ts-ignore
+  const queryInput = <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={searchValue}
                              onChange={onChange}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {

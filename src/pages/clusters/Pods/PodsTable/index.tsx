@@ -12,8 +12,9 @@ import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
 import {Running, Online, Waiting, Terminated, Offline, Pending} from '@/components/State'
 import RBAC from '@/rbac'
+import withTrim from "@/components/WithTrim";
 
-const {Search} = Input;
+const Search = withTrim(Input.Search);
 
 const status2StateNode = new Map(
   [
@@ -143,9 +144,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   }
 
   const renderTile = () => {
-    return <div>
-      <Search placeholder="Search" onChange={onChange} style={{width: '300px'}}/>
-
+    // @ts-ignore
+    return <div><Search placeholder="Search" onChange={onChange} style={{width: '300px'}} value={filter}/>
       <div style={{float: 'right'}}>
         <Button
           onClick={() => {

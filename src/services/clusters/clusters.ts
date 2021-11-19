@@ -128,4 +128,13 @@ export async function searchClusters(params: API.PageParam) {
   });
 }
 
-
+export async function getDashboards(clusterID: number) {
+  return request<{
+    data: {
+      basic: string,
+      serverless?: string,
+    }
+  }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
+    method: 'GET',
+  });
+}
