@@ -110,11 +110,13 @@ const TaskDetailMonitor = ({location, history}) => {
       <Tabs activeKey={tabKey} size={'large'} onChange={setTabKey}>
         <TabPane tab={'基础监控'} key="basic">
           <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'basic'}/>
-          <iframe
-            src={src}
-            style={{
-              border: 0, width: '100%', height: '90vh', marginTop: 10
-            }}/>
+          {
+            dashboards?.basic && <iframe
+              src={src}
+              style={{
+                border: 0, width: '100%', height: '90vh', marginTop: 10
+              }}/>
+          }
         </TabPane>
         {
           dashboards?.serverless && <TabPane tab={'Serverless'} key="serverless">
