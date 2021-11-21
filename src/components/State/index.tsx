@@ -6,6 +6,7 @@ interface StatusProps {
   link?: string
 }
 
+// state for clusterStatus and pipeline status
 const Succeeded = (props: StatusProps) => {
   const {text, link} = props;
   const txt = <span className="ci-status ci-success"><CheckCircleOutlined /> {text || 'Succeeded'}</span>
@@ -26,11 +27,23 @@ const Failed = (props: StatusProps) => {
   </div>
 }
 
+const Cancelled = (props: StatusProps) => {
+  const {text, link} = props;
+  const txt = <span className="ci-status ci-cancelled"><LoadingOutlined/> {text || 'Cancelled'}</span>
+  return <div>
+    {
+      link ? <a href={link} className="ci-status ci-cancelled">{txt}</a> : txt
+    }
+  </div>
+}
+
 const Progressing = (props: StatusProps) => {
-  const {text} = props;
+  const {text, link} = props;
   const txt = <span className="ci-status ci-progressing"><LoadingOutlined/> {text || 'Progressing'}</span>
   return <div>
-    {txt}
+    {
+      link ? <a href={link} className="ci-status ci-progressing">{txt}</a> : txt
+    }
   </div>
 }
 
@@ -50,6 +63,7 @@ const NotFount = (props: StatusProps) => {
   </div>
 }
 
+// state for pods
 const Running = (props: StatusProps) => {
   const {text} = props;
   return <span className="badge-color-green badge-content">
@@ -78,6 +92,7 @@ const Terminated = (props: StatusProps) => {
   </span>
 }
 
+// state for oline status
 const Online = (props: StatusProps) => {
   const {text} = props;
   return <span className="badge-color-blue badge-content">
@@ -103,5 +118,6 @@ export {
   Waiting,
   Offline,
   Terminated,
-  Pending
+  Pending,
+  Cancelled
 }

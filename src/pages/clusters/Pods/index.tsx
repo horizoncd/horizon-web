@@ -156,8 +156,10 @@ export default () => {
             }
             if (podTemplateHash === version) {
               newPods.push(podInTable)
-              containers.forEach(item => images.add(item.image))
-              initContainers.forEach(item => images.add(item.image))
+              if (initContainers) {
+                initContainers.forEach(item => images.add(item.image))
+              }
+              containers.forEach(item => images.add(item.image));
             } else {
               oldPods.push(podInTable)
             }
