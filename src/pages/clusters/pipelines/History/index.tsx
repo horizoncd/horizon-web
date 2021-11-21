@@ -7,7 +7,7 @@ import {getPipelines, rollback} from "@/services/clusters/clusters";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
 import {history} from "@@/core/history";
-import {Failed, Succeeded} from "@/components/State";
+import {Failed, NotFount, Progressing, Succeeded, Cancelled} from "@/components/State";
 import {DeployTypeMap} from '@/const'
 import RBAC from '@/rbac'
 
@@ -55,8 +55,19 @@ export default (props: any) => {
       dataIndex: 'status',
       key: 'status',
       render: (text: string, record: PIPELINES.Pipeline) => {
-        return text === 'ok' ? <Succeeded link={`/clusters${fullPath}/-/pipelines/${record.id}`} text="Passed"/> :
-          <Failed link={`/clusters${fullPath}/-/pipelines/${record.id}`}/>
+        const link = `/clusters${fullPath}/-/pipelines/${record.id}`
+        switch (text) {
+          case 'ok':
+            return <Succeeded link={link} text="Passed"/>
+          case 'failed':
+            return <Failed link={link}/>
+          case 'created':
+            return  <Progressing link={link} text={'Created'}/>
+          case 'cancelled':
+            return <Cancelled link={link}/>
+          default:
+            return <NotFount link={link}/>
+        }
       }
     },
     {

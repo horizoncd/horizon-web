@@ -175,7 +175,7 @@ export default (props: any) => {
   const {loading, run: onSubmit} = useRequest(() => {
     const info = {
       name: form.getFieldValue(name),
-      description: form.getFieldValue(description),
+      description: form.getFieldValue(description) || '',
       priority: form.getFieldValue(priority),
       template: {
         name: template.name,
@@ -183,7 +183,7 @@ export default (props: any) => {
       },
       git: {
         url: form.getFieldValue(url),
-        subfolder: form.getFieldValue(subfolder),
+        subfolder: form.getFieldValue(subfolder) || '',
         branch: form.getFieldValue(branch),
       },
       templateInput: config,

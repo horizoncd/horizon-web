@@ -229,11 +229,6 @@ export default (props: any) => {
     window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`
   }
 
-  const onBuildAndDeployButtonCancel = () => {
-    // jump to cluster's home page
-    window.location.href = cluster!.fullPath
-  }
-
   const onDeployButtonOK = () => {
     window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`
   }
@@ -287,24 +282,36 @@ export default (props: any) => {
             )}
             <Modal
               title={<span
-                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
-              // visible={showBuildDeployModal}
-              visible={showBuildDeployModal}
-              onOk={onBuildAndDeployButtonOK}
-              onCancel={onBuildAndDeployButtonCancel}
-            >
-              <div
-                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>
-            </Modal>
-            <Modal
-              title={<span
                 className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
               visible={showDeployModal}
-              onOk={onDeployButtonOK}
+              footer={[
+                <Button
+                  onClick={onBuildAndDeployButtonOK}
+                  type={'primary'}
+                >
+                  构建发布
+                </Button>,
+                <Button
+                  onClick={onDeployButtonOK}
+                  type={'primary'}
+                >
+                  直接发布
+                </Button>
+              ]}
               onCancel={onDeployButtonCancel}
             >
               <div
                 className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.content'})}</div>
+            </Modal>
+            <Modal
+              title={<span
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
+              visible={showBuildDeployModal}
+              onOk={onBuildAndDeployButtonOK}
+              onCancel={onDeployButtonCancel}
+            >
+              <div
+                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>
             </Modal>
           </div>
         </Col>

@@ -156,8 +156,10 @@ export default () => {
             }
             if (podTemplateHash === version) {
               newPods.push(podInTable)
-              containers.forEach(item => images.add(item.image))
-              initContainers.forEach(item => images.add(item.image))
+              if (initContainers) {
+                initContainers.forEach(item => images.add(item.image))
+              }
+              containers.forEach(item => images.add(item.image));
             } else {
               oldPods.push(podInTable)
             }
@@ -355,6 +357,7 @@ export default () => {
       case 'restart':
         Modal.info({
           title: '确定重启所有Pods?',
+          okText: '确定',
           onOk() {
             restart(id).then(() => {
               successAlert('Restart All Pods Succeed')
