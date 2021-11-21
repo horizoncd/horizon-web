@@ -69,9 +69,9 @@ export default {
   'pages.clusterEdit.success': 'update cluster succeed',
   'pages.clusterEdit.header': 'Editing [ {cluster} ], please fill in the information step by step',
   'pages.clusterEdit.prompt.buildDeploy.title': 'Do you want to build and deploy？',
-  'pages.clusterEdit.prompt.buildDeploy.content': 'Newly created cluster should be deployed to be available.\nIf canceled, you could find this operation in cluster home page.',
+  'pages.clusterEdit.prompt.buildDeploy.content': 'Build and Deploy: rebuild and deploy with latest settings.',
   'pages.clusterEdit.prompt.deploy.title': 'Do you want to deploy？',
-  'pages.clusterEdit.prompt.deploy.content': 'New config will take effect after this cluster deployed.\nIf canceled, you could find this operation in cluster home page.',
+  'pages.clusterEdit.prompt.deploy.content': 'Build and Deploy: rebuild and deploy with latest settings.\nDeploy: deploy with latest settings.',
 
   'pages.clusterDetail.basic.detail': 'Application Cluster Detail',
   'pages.clusterDetail.basic.config': 'Application Cluster Config',

@@ -1,12 +1,11 @@
 import {Card, Form, Input, Select} from 'antd';
-import type {Rule} from 'rc-field-form/lib/interface';
+import type {FieldData, Rule} from 'rc-field-form/lib/interface';
 import {useRequest} from 'umi';
 import {queryReleases} from '@/services/templates/templates';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {listBranch} from '@/services/code/code'
 import HForm from '@/components/HForm'
-import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -79,8 +78,8 @@ export default (props: any) => {
     <div>
       <HForm layout={'vertical'} form={props.form}
              onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-              props.setFormData(a, b)
-            }}
+               props.setFormData(a, b)
+             }}
              fields={props.formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
@@ -88,7 +87,7 @@ export default (props: any) => {
             <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255}
+            <TextArea placeholder={readonly ? '' : formatMessage('description.ruleMessage')} maxLength={255}
                       disabled={readonly} autoSize={{minRows: 3}}/>
           </Form.Item>
           <Form.Item label={formatMessage('template', 'template')}>
@@ -140,7 +139,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
-            <Input disabled={readonly} placeholder={"非必填，默认为项目根目录"}/>
+            <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'}/>
           </Form.Item>
         </Card>
       </HForm>
