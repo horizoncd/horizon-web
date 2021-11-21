@@ -35,8 +35,8 @@ imagebuild:
 
       # patch image in dev cluster
       # harbor.musiconline-dev.service.163.org/cloudnative/library/horizon-web:develop-r889445
-      # newImage='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'${IMAGES}'"}]'
-      # kubectl patch deploy horizon-web -n horizon --type='json' -p="$newImage"
+      newImage='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"'${IMAGES}'"}]'
+      kubectl patch deploy horizon-web -n horizon --type='json' -p="$newImage"
   only:
     - develop
     - tags
