@@ -355,6 +355,7 @@ export default () => {
       case 'restart':
         Modal.info({
           title: '确定重启所有Pods?',
+          okText: '确定',
           onOk() {
             restart(id).then(() => {
               successAlert('Restart All Pods Succeed')
