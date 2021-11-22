@@ -62,7 +62,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const formatConsoleURL = (p: CLUSTER.PodInTable) => {
     const {environment} = cluster?.scope || {}
     return `/clusters${fullPath}/-/webconsole?namespace=${p.namespace}&podName=${p.podName}&
-    containerName=${p.containerName}&environment=${environment}`
+containerName=${p.containerName}&environment=${environment}`
   }
 
   const onClickStdout = (p: CLUSTER.PodInTable) => {
