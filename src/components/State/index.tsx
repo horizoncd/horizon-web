@@ -1,4 +1,5 @@
 import {CheckCircleOutlined, CloseCircleOutlined, HourglassOutlined, LoadingOutlined, QuestionOutlined} from "@ant-design/icons";
+import {history} from 'umi';
 import './index.less'
 
 interface StatusProps {
@@ -12,7 +13,7 @@ const Succeeded = (props: StatusProps) => {
   const txt = <span className="ci-status ci-success"><CheckCircleOutlined /> {text || 'Succeeded'}</span>
     return <div>
       {
-        link ? <a href={link} className="ci-status ci-success">{txt}</a> : txt
+        link ? <a onClick={() => history.push(link)} className="ci-status ci-success">{txt}</a> : txt
       }
   </div>
 }
@@ -22,7 +23,7 @@ const Failed = (props: StatusProps) => {
   const txt = <span className="ci-status ci-failed"><CloseCircleOutlined /> {text || 'Failed'}</span>
   return <div>
     {
-      link ? <a href={link} className="ci-status ci-failed">{txt}</a> : txt
+      link ? <a onClick={() => history.push(link)} className="ci-status ci-failed">{txt}</a> : txt
     }
   </div>
 }
@@ -32,7 +33,7 @@ const Cancelled = (props: StatusProps) => {
   const txt = <span className="ci-status ci-cancelled"><LoadingOutlined/> {text || 'Cancelled'}</span>
   return <div>
     {
-      link ? <a href={link} className="ci-status ci-cancelled">{txt}</a> : txt
+      link ? <a onClick={() => history.push(link)} className="ci-status ci-cancelled">{txt}</a> : txt
     }
   </div>
 }
@@ -42,7 +43,7 @@ const Progressing = (props: StatusProps) => {
   const txt = <span className="ci-status ci-progressing"><LoadingOutlined/> {text || 'Progressing'}</span>
   return <div>
     {
-      link ? <a href={link} className="ci-status ci-progressing">{txt}</a> : txt
+      link ? <a onClick={() => history.push(link)} className="ci-status ci-progressing">{txt}</a> : txt
     }
   </div>
 }

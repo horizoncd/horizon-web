@@ -27,6 +27,10 @@ import {useModel} from "@@/plugin-model/useModel";
 export default (props: any) => {
   const params = useParams();
   const intl = useIntl();
+  const {location} = props;
+  const {query} = location;
+  // 1. true 2. false
+  const {rollback = false} = query
 
   // @ts-ignore
   const {data: pipeline} = useRequest(() => getPipeline(params.id))
@@ -141,6 +145,9 @@ export default (props: any) => {
     <DetailCard
       title={<span>基础信息</span>}
       data={data}
+      extra={rollback ? <Button>
+        确认回滚
+      </Button> : null}
     />
     <Card
       tabList={cardTab}

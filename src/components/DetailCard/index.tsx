@@ -14,6 +14,8 @@ interface Props {
   title: React.ReactNode;
   // 数据[列][行]
   data: Param[][];
+  // extra
+  extra: React.ReactNode;
 }
 
 export type Param = {
@@ -22,7 +24,7 @@ export type Param = {
 }
 
 export default (props: Props) => {
-  const {title, data} = props;
+  const {title, data, extra} = props;
   const contents: any = []
   let col = 0
   const columnSeparator = <div className={styles.separator}/>
@@ -85,7 +87,7 @@ export default (props: Props) => {
 
   return (
     <div className={styles.card}>
-      <Card title={title} type={"inner"} bodyStyle={{paddingInline: 0}}>
+      <Card title={title} type={"inner"} bodyStyle={{paddingInline: 0}} extra={extra}>
         <div className={styles.cardBody}>
           {contents}
         </div>
