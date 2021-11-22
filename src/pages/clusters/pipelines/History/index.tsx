@@ -3,7 +3,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
-import {getPipelines, rollback} from "@/services/clusters/clusters";
+import {getPipelines} from "@/services/clusters/clusters";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
 import {history} from 'umi';
@@ -39,9 +39,7 @@ export default (props: any) => {
       title: '确定要重新执行本次Pipeline？点击确定进入详情页进行二次确认',
       icon: <ExclamationCircleOutlined/>,
       onOk: () => {
-        rollback(id, {pipelinerunID: pipeline.id}).then(() => {
-          history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`)
-        });
+        history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`)
       }
     });
   }

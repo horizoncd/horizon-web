@@ -13,7 +13,8 @@ import {
   ContactsOutlined,
   SettingOutlined,
   SmileOutlined,
-  FundOutlined
+  FundOutlined,
+  TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
 import {queryResource} from '@/services/core';
@@ -30,7 +31,8 @@ const IconMap = {
   setting: <SettingOutlined/>,
   bank: <BankOutlined/>,
   appstore: <AppstoreOutlined/>,
-  fundout: <FundOutlined/>
+  fundout: <FundOutlined/>,
+  tags: <TagsOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -325,7 +327,7 @@ function formatClusterMenu(fullPath: string) {
     {
       path: `/clusters${fullPath}/-/pipelines`,
       name: 'Pipelines',
-      icon: 'contacts',
+      icon: 'tags',
     },
     {
       path: `/clusters${fullPath}/-/pipelines/new`,
