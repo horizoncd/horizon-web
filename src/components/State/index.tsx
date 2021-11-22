@@ -1,4 +1,4 @@
-import {CheckCircleOutlined, CloseCircleOutlined, HourglassOutlined, LoadingOutlined, QuestionOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, CloseCircleOutlined, HourglassOutlined, LoadingOutlined, QuestionOutlined, StopOutlined} from "@ant-design/icons";
 import {history} from 'umi';
 import './index.less'
 
@@ -30,7 +30,7 @@ const Failed = (props: StatusProps) => {
 
 const Cancelled = (props: StatusProps) => {
   const {text, link} = props;
-  const txt = <span className="ci-status ci-cancelled"><LoadingOutlined/> {text || 'Cancelled'}</span>
+  const txt = <span className="ci-status ci-cancelled"><StopOutlined /> {text || 'Cancelled'}</span>
   return <div>
     {
       link ? <a onClick={() => history.push(link)} className="ci-status ci-cancelled">{txt}</a> : txt
