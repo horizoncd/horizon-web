@@ -33,13 +33,13 @@ export default (props: any) => {
       refreshRegions(props.form.getFieldValue('environment'))
     },
   });
-  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
-    giturl,
+  const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
+    giturl: props.form.getFieldValue('url'),
     filter,
     pageNumber: 1,
     pageSize: 50,
   }), {
-    manual: true,
+    debounceInterval: 500,
   })
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -147,9 +147,7 @@ export default (props: any) => {
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
             <Select disabled={readonly} showSearch
                     onSearch={(item) => {
-                      if (props.form.getFieldValue('url') && item) {
-                        refreshBranchList(props.form.getFieldValue('url'), item);
-                      }
+                      refreshBranchList(item);
                     }}>
               {
                 branchList.map((item: string) => {

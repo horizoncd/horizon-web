@@ -22,6 +22,7 @@ export default (props: any) => {
     pageSize: 50,
   }), {
     manual: true,
+    debounceInterval: 500,
   })
 
   const formatMessage = (suffix: string, defaultMsg?: string) => {
@@ -37,9 +38,10 @@ export default (props: any) => {
     },
   ];
 
+  const gitURLRegExp = new RegExp('^ssh://.+[.]git$')
   const gitURLRules: Rule[] = [
     {
-      pattern: new RegExp('^ssh://.+[.]git$'),
+      pattern: gitURLRegExp,
       required: true,
       message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
       max: 128,
@@ -79,6 +81,9 @@ export default (props: any) => {
       <HForm layout={'vertical'} form={props.form}
              onFieldsChange={(a: FieldData[], b: FieldData[]) => {
                props.setFormData(a, b)
+               if (a[0].name[0] === 'url' && (gitURLRegExp.test(a[0].value))) {
+                 refreshBranchList(a[0].value, '')
+               }
              }}
              fields={props.formData}
       >
@@ -127,8 +132,9 @@ export default (props: any) => {
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={gitBranchRules}>
             <Select disabled={readonly} showSearch
                     onSearch={(item) => {
-                      if (props.form.getFieldValue('url') && item) {
-                        refreshBranchList(props.form.getFieldValue('url'), item);
+                      const url = props.form.getFieldValue('url')
+                      if (gitURLRegExp.test(url)) {
+                        refreshBranchList(url, item);
                       }
                     }}>
               {

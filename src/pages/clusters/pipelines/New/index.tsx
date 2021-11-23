@@ -38,15 +38,6 @@ export default (props: any) => {
   const {data, run: refreshDiff} = useRequest((branch) => diffsOfCode(id!, branch), {
     manual: true,
   })
-  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
-    giturl,
-    filter,
-    pageNumber: 1,
-    pageSize: 50,
-  }), {
-    manual: true,
-    ready: type === PublishType.BUILD_DEPLOY
-  })
 
   const {data: cluster} = useRequest(() => getCluster(id!), {
     onSuccess: () => {
@@ -54,6 +45,16 @@ export default (props: any) => {
       refreshDiff(cluster!.git.branch)
     }
   });
+
+  const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
+    giturl: cluster!.git.url,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
+    ready: type === PublishType.BUILD_DEPLOY && !!cluster,
+    debounceInterval: 500,
+  })
 
   const hookAfterSubmit = () => {
     successAlert(formatMessage('submit', 'Pipeline Started'))
@@ -113,13 +114,11 @@ export default (props: any) => {
               <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} rules={requiredRule}>
                 <Select placeholder="master" showSearch
                         onSearch={(item) => {
-                          if (item) {
-                            refreshBranchList(cluster!.git.url, item);
-                          }
+                          refreshBranchList(item);
                         }}>
                   {
                     branchList.map((item: string) => {
-                      return <Option value={item}>{item}</Option>
+                      return <Option key={item} value={item}>{item}</Option>
                     })
                   }
                 </Select>

@@ -286,7 +286,7 @@ export default () => {
         {
           index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
           <Button style={{margin: '0 8px'}} onClick={onNext}>
-            下一步
+            {intl.formatMessage({id: 'pages.pods.nextStep'})}
           </Button>
         }
       </div>

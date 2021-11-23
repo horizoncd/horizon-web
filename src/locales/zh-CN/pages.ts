@@ -3,6 +3,8 @@ export default {
   'pages.common.back': '上一步',
   'pages.common.submit': '提交',
 
+  'pages.pods.nextStep': '下一批次',
+
   'pages.groups.New subgroup': '创建子分组',
   'pages.groups.New application': '创建应用',
   'pages.groups.New group': '创建分组',
