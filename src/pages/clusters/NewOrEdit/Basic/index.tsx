@@ -8,11 +8,16 @@ import {listBranch} from "@/services/code/code";
 import {queryReleases} from "@/services/templates/templates";
 import HForm from '@/components/HForm'
 import type {FieldData} from 'rc-field-form/lib/interface'
+import {history} from "@@/core/history";
 
 const {TextArea} = Input;
 const {Option} = Select;
 
 export default (props: any) => {
+  const {query: q} = history.location;
+  // @ts-ignore
+  const {environment: envFromQuery} = q
+
   const intl = useIntl();
 
   const {data: releases} = useRequest(() => queryReleases(props.template?.name), {
@@ -21,13 +26,12 @@ export default (props: any) => {
 
   const {data: regions, run: refreshRegions} = useRequest((environment) => queryRegions(environment), {
     manual: true,
+    ready: !!props.form.getFieldValue('environment'),
   });
   const {data: environments} = useRequest(() => queryEnvironments(), {
     onSuccess: () => {
       refreshRegions(props.form.getFieldValue('environment'))
     },
-    ready: !!props.form.getFieldValue('environment'),
-    refreshDeps: [props.form]
   });
   const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
     giturl,
@@ -114,7 +118,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled>
+            <Select disabled={!!envFromQuery || readonly}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
