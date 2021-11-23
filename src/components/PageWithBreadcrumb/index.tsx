@@ -6,9 +6,15 @@ import styles from './index.less'
 import './index.less'
 import {useEffect} from "react";
 import {history} from 'umi';
+import NotFount from "@/pages/404";
 
 export default (props: any) => {
   const {initialState} = useModel('@@initialState');
+  const {fullName} = initialState!.resource
+  if (!fullName) {
+    return <NotFount/>;
+  }
+
   const {alert, clearAlert} = useModel('alert');
 
   const itemRender = (route: any) => {
@@ -20,7 +26,6 @@ export default (props: any) => {
     return <a href={path}>{breadcrumbName}
     </a>;
   }
-  const {fullName} = initialState!.resource
   const staticRoute = pathnameInStaticRoutes()
 
   useEffect(() => {
