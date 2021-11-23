@@ -15,7 +15,7 @@ interface Props {
   // 数据[列][行]
   data: Param[][];
   // extra
-  extra: React.ReactNode;
+  extra?: React.ReactNode;
 }
 
 export type Param = {

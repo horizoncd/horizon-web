@@ -185,10 +185,11 @@ export default () => {
       if (statusData) {
         refreshPodsInfo(statusData)
 
-        const {task: t, taskStatus: tStatus} = statusData.runningTask;
+        const {task: t, taskStatus: tStatus, pipelinerunID: pID} = statusData.runningTask;
         const tt = t as RunningTask
         const ttStatus = tStatus as TaskStatus
         setTaskStatus(ttStatus)
+        setPipelinerunID(pID)
         // not in publish state
         if (!(ttStatus === TaskStatus.RUNNING || ttStatus === TaskStatus.PENDING)) {
           return
@@ -196,7 +197,6 @@ export default () => {
 
         const {step, status} = statusData.clusterStatus;
         const entity = taskStatus2Entity.get(ttStatus)
-        setPipelinerunID(statusData.runningTask.pipelinerunID)
         if (tt === RunningTask.BUILD) {
           // refresh build log when in build task
           steps[0] = {
@@ -237,13 +237,16 @@ export default () => {
     return <div style={{height: '500px'}}>
       <div>
         <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
-        <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
-          cancelPipeline(pipelinerunID!).then(() => {
-            successAlert('取消发布成功')
-          })
-        }}>
-          取消发布
-        </Button>
+        {
+          statusData?.runningTask.task as RunningTask === RunningTask.BUILD &&
+          <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
+            cancelPipeline(pipelinerunID!).then(() => {
+              successAlert('取消发布成功')
+            })
+          }}>
+            取消发布
+          </Button>
+        }
       </div>
       <CodeEditor content={log}/>
     </div>
@@ -358,9 +361,10 @@ export default () => {
         Modal.info({
           title: '确定重启所有Pods?',
           okText: '确定',
+          cancelText: '取消',
           onOk() {
             restart(id).then(() => {
-              successAlert('Restart All Pods Succeed')
+              successAlert('重启操作提交成功')
             })
           },
         });
