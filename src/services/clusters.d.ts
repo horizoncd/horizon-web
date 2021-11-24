@@ -187,6 +187,14 @@ declare namespace CLUSTER {
     }
   }
 
+  type Event = {
+    type: string,
+    reason: string,
+    message: string,
+    count: number,
+    eventTimestamp: string,
+  }
+
   type PodInTable = {
     key: string
     podName: string
@@ -197,6 +205,7 @@ declare namespace CLUSTER {
     restartCount?: number
     containerName?: string
     namespace?: string
+    events: Event[]
   }
 
   type PodOnlineOfflineResult = {

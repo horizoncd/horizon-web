@@ -140,7 +140,8 @@ export default () => {
               onlineStatus,
               restartCount,
               containerName: containers[0].name,
-              namespace
+              namespace,
+              events: status.events,
             };
             if (state === 'running') {
               healthyPods.push(podInTable)

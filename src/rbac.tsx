@@ -173,6 +173,12 @@ const Permissions = {
     action: Action.get,
     allowed: false,
   },
+  // 查看集群状态
+  getClusterStatus: {
+    resource: `${Resource.cluster}/${Resource.status}`,
+    action: Action.get,
+    allowed: false,
+  },
   // 集群上线
   onlineCluster: {
     resource: `${Resource.cluster}/${Resource.online}`,
