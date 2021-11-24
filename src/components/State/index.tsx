@@ -1,4 +1,15 @@
-import {CheckCircleOutlined, CloseCircleOutlined, HourglassOutlined, LoadingOutlined, QuestionOutlined, StopOutlined} from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  DeleteOutlined,
+  DisconnectOutlined,
+  HourglassOutlined,
+  LoadingOutlined,
+  QuestionOutlined,
+  RetweetOutlined,
+  StopOutlined
+} from "@ant-design/icons";
+import {ClusterStatus} from "@/const";
 import {history} from 'umi';
 import './index.less'
 
@@ -10,17 +21,17 @@ interface StatusProps {
 // state for clusterStatus and pipeline status
 const Succeeded = (props: StatusProps) => {
   const {text, link} = props;
-  const txt = <span className="ci-status ci-success"><CheckCircleOutlined /> {text || 'Succeeded'}</span>
-    return <div>
-      {
-        link ? <a onClick={() => history.push(link)} className="ci-status ci-success">{txt}</a> : txt
-      }
+  const txt = <span className="ci-status ci-success"><CheckCircleOutlined/> {text || 'Succeeded'}</span>
+  return <div>
+    {
+      link ? <a onClick={() => history.push(link)} className="ci-status ci-success">{txt}</a> : txt
+    }
   </div>
 }
 
 const Failed = (props: StatusProps) => {
   const {text, link} = props;
-  const txt = <span className="ci-status ci-failed"><CloseCircleOutlined /> {text || 'Failed'}</span>
+  const txt = <span className="ci-status ci-failed"><CloseCircleOutlined/> {text || 'Failed'}</span>
   return <div>
     {
       link ? <a onClick={() => history.push(link)} className="ci-status ci-failed">{txt}</a> : txt
@@ -30,7 +41,7 @@ const Failed = (props: StatusProps) => {
 
 const Cancelled = (props: StatusProps) => {
   const {text, link} = props;
-  const txt = <span className="ci-status ci-cancelled"><StopOutlined /> {text || 'Cancelled'}</span>
+  const txt = <span className="ci-status ci-cancelled"><StopOutlined/> {text || 'Cancelled'}</span>
   return <div>
     {
       link ? <a onClick={() => history.push(link)} className="ci-status ci-cancelled">{txt}</a> : txt
@@ -58,7 +69,31 @@ const Suspended = (props: StatusProps) => {
 
 const NotFount = (props: StatusProps) => {
   const {text} = props;
-  const txt = <span className="ci-status ci-notfound"><QuestionOutlined /> {text || 'NotFound'}</span>
+  const txt = <span className="ci-status ci-notfound"><QuestionOutlined/> {text || 'NotFound'}</span>
+  return <div>
+    {txt}
+  </div>
+}
+
+const Freeing = (props: StatusProps) => {
+  const {text} = props;
+  const txt = <span className="ci-status ci-freeing"><RetweetOutlined/> {text || 'Freeing'}</span>
+  return <div>
+    {txt}
+  </div>
+}
+
+const Freed = (props: StatusProps) => {
+  const {text} = props;
+  const txt = <span className="ci-status ci-freed"><DisconnectOutlined/> {text || 'Freed'}</span>
+  return <div>
+    {txt}
+  </div>
+}
+
+const Deleting = (props: StatusProps) => {
+  const {text} = props;
+  const txt = <span className="ci-status ci-deleting"><DeleteOutlined/> {text || 'Deleting'}</span>
   return <div>
     {txt}
   </div>
@@ -108,6 +143,38 @@ const Offline = (props: StatusProps) => {
   </span>
 }
 
+// getStatusComponent returns the status component
+const getStatusComponent = (status: any) => {
+  switch (status) {
+    case ClusterStatus.PROGRESSING:
+      return <Progressing/>
+    case ClusterStatus.HEALTHY:
+      return <Succeeded text={'Healthy'}/>
+    case ClusterStatus.DEGRADED:
+      return <Failed text={'NotHealthy'}/>
+    case ClusterStatus.SUSPENDED:
+      return <Progressing/>
+    case ClusterStatus.FREEING:
+      return <Freeing/>
+    case ClusterStatus.FREED:
+      return <Freed/>
+    case ClusterStatus.DELETING:
+      return <Deleting/>
+    default:
+      return <NotFount/>
+  }
+}
+
+// isRestrictedStatus indicates if status is freeing or deleting
+const isRestrictedStatus = (status: string) => {
+  switch (status) {
+    case ClusterStatus.FREEING:
+    case ClusterStatus.DELETING:
+      return true
+  }
+  return false
+}
+
 export {
   Succeeded,
   Failed,
@@ -120,5 +187,10 @@ export {
   Offline,
   Terminated,
   Pending,
-  Cancelled
+  Cancelled,
+  Freeing,
+  Freed,
+  Deleting,
+  getStatusComponent,
+  isRestrictedStatus,
 }

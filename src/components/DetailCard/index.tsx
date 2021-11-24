@@ -1,7 +1,8 @@
 // 一个用于展示多列数据的卡片
-import {Card} from "antd";
+import {Card, Tooltip} from "antd";
 import styles from './index.less'
 import * as React from "react";
+import {QuestionCircleOutlined} from "@ant-design/icons";
 
 enum ValueType {
   String = 'string',
@@ -21,6 +22,7 @@ interface Props {
 export type Param = {
   key: string,
   value: string | string[] | Record<string, string | number> | React.ReactNode;
+  description?: string;
 }
 
 export default (props: Props) => {
@@ -76,6 +78,15 @@ export default (props: Props) => {
 
             return <div key={param.key} className={styles.dataColumnItem}>
               <div className={styles.textKey}>{param.key}</div>
+              {
+                param.description &&
+                <Tooltip overlayStyle={{minWidth: "290px"}} placement={"right"} className={styles.textDescription}
+                         title={<span style={{
+                           whiteSpace: "pre-line"
+                         }}>{param.description}</span>}>
+                  <QuestionCircleOutlined/>
+                </Tooltip>
+              }
               {itemContents}
             </div>
           })}
