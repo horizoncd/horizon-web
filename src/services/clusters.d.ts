@@ -69,6 +69,7 @@ declare namespace CLUSTER {
     scope: Scope
     templateInput: any;
     latestDeployedCommit: string;
+    status?: string;
     createdAt: string;
     updatedAt: string;
   };

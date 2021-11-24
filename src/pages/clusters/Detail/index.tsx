@@ -1,25 +1,27 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import {useState} from "react";
-import {Avatar, Button, Card, Divider, Table} from 'antd';
+import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, Table, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
 import 'antd/lib/form/style';
 import styles from './index.less'
 import utils from '@/utils';
-import {ReloadOutlined} from '@ant-design/icons';
+import {DownOutlined, ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {getCluster, getClusterTags} from "@/services/clusters/clusters";
+import {deleteCluster, getCluster, getClusterTags} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
-import {ResourceType} from "@/const";
+import {ClusterStatus, PublishType, ResourceType} from "@/const";
+import {application} from "express";
 
 export default () => {
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
+  const {successAlert} = useModel('alert')
   const defaultCluster: CLUSTER.Cluster = {
     latestDeployedCommit: "",
     id: 0,
@@ -119,6 +121,30 @@ export default () => {
     }
   ]
 
+  const onDeleteCluster = () => {
+    Modal.confirm({
+      title: '确定删除集群?',
+      content: '删除后，数据将无法恢复',
+      onOk() {
+        deleteCluster(cluster.id).then(() => {
+          successAlert('删除集群成功')
+          window.location.href = `/applications${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}/-/clusters`
+        })
+      },
+    });
+  }
+  const operateDropdown = <Menu>
+    <Tooltip title={cluster.status !== ClusterStatus.FREED && '请先至Pods页面释放集群后，再进行删除'}>
+      <div>
+        <Menu.Item disabled={!RBAC.Permissions.deleteCluster.allowed || cluster.status !== ClusterStatus.FREED}
+                   onClick={onDeleteCluster}
+                   key="deleteCluster">
+          删除集群
+        </Menu.Item>
+      </div>
+    </Tooltip>
+  </Menu>;
+
   return (
     <Detail>
       <div>
@@ -143,6 +169,9 @@ export default () => {
               {intl.formatMessage({id: 'pages.clusterDetail.basic.edit'})}
             </Button>
           }
+          <Dropdown overlay={operateDropdown} trigger={["click"]} overlayStyle={{}}>
+            <Button>操作<DownOutlined/></Button>
+          </Dropdown>
         </div>
       </div>
       <Divider className={styles.groupDivider}/>

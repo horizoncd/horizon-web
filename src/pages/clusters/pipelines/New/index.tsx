@@ -11,10 +11,10 @@ import {PublishType} from "@/const";
 import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/clusters";
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
+import type {FieldData} from 'rc-field-form/lib/interface'
 import {Rule} from "rc-field-form/lib/interface";
 import {listBranch} from "@/services/code/code";
 import HForm from '@/components/HForm'
-import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {Option} = Select;
 
@@ -93,15 +93,19 @@ export default (props: any) => {
     }
   }
 
+  const onCancel = () => {
+    history.goBack()
+  }
+
   return (
     <PageWithBreadcrumb>
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
         <HForm layout={'vertical'} form={form}
-              onFieldsChange={(a: FieldData[]) => {
-                if (a[0].name[0] === 'branch') {
-                  refreshDiff(a[0].value)
-                }
-              }}
+               onFieldsChange={(a: FieldData[]) => {
+                 if (a[0].name[0] === 'branch') {
+                   refreshDiff(a[0].value)
+                 }
+               }}
         >
           <Form.Item label={formatMessage('title', 'Title')} name={'title'} rules={requiredRule}>
             <Input/>
@@ -152,7 +156,7 @@ export default (props: any) => {
         </Card>
       </Card>
 
-      <SubmitCancelButton onSubmit={onSubmit} onCancel={() => history.goBack()}/>
+      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel}/>
     </PageWithBreadcrumb>
   )
 }

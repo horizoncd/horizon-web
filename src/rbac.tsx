@@ -23,6 +23,7 @@ const Resource = {
   containerLog: 'containerlog',
   online: 'online',
   offline: 'offline',
+  free: 'free',
 }
 
 // 操作
@@ -101,6 +102,12 @@ const Permissions = {
   updateCluster: {
     resource: Resource.cluster,
     action: Action.update,
+    allowed: false,
+  },
+  // 释放集群
+  freeCluster: {
+    resource: `${Resource.cluster}/${Resource.free}`,
+    action: Action.create,
     allowed: false,
   },
   // 添加group member
