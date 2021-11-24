@@ -23,6 +23,7 @@ const Resource = {
   containerLog: 'containerlog',
   online: 'online',
   offline: 'offline',
+  free: 'free',
 }
 
 // 操作
@@ -103,6 +104,12 @@ const Permissions = {
     action: Action.update,
     allowed: false,
   },
+  // 释放集群
+  freeCluster: {
+    resource: `${Resource.cluster}/${Resource.free}`,
+    action: Action.create,
+    allowed: false,
+  },
   // 添加group member
   createGroupMember: {
     resource: `${Resource.group}/${Resource.member}`,
@@ -163,6 +170,12 @@ const Permissions = {
   // 查看容器stdout日志
   getContainerLog: {
     resource: `${Resource.cluster}/${Resource.containerLog}`,
+    action: Action.get,
+    allowed: false,
+  },
+  // 查看集群状态
+  getClusterStatus: {
+    resource: `${Resource.cluster}/${Resource.status}`,
     action: Action.get,
     allowed: false,
   },

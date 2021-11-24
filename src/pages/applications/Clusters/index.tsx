@@ -11,17 +11,19 @@ import {queryEnvironments} from "@/services/environments/environments";
 import {queryClusters} from "@/services/clusters/clusters";
 import RBAC from '@/rbac'
 import Utils from '@/utils'
-import {ResourceType} from "@/const";
 import NoData from "@/components/NoData";
 import withTrim from "@/components/WithTrim";
 
 const {TabPane} = Tabs;
 const Search = withTrim(Input.Search);
 
-export default () => {
+export default (props: any) => {
+  const {query: q} = props.location;
+  const {environment = ''} = q
+
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
-  const {id, name: application, fullPath, type} = initialState!.resource;
+  const {id, name: application, fullPath} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
 
   const pageSize = 10;
@@ -36,6 +38,11 @@ export default () => {
           {text}
         </a>
       }
+    },
+    {
+      title: '环境',
+      dataIndex: 'environment',
+      key: 'environment',
     },
     {
       title: '区域',
@@ -57,22 +64,24 @@ export default () => {
   const [filter, setFilter] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [query, setQuery] = useState(0);
-  const [environment, setEnvironment] = useState('');
+  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
-      setEnvironment(envs![0].name)
+      const e = new Map<string, string>();
+      envs!.forEach(item => e.set(item.name, item.displayName))
+      setEnv2DisplayName(e)
     }
   });
-
   const {data: clusters} = useRequest(() => {
-    return queryClusters(id, {
-        filter, environment, pageNumber, pageSize,
+    return queryClusters(id, environment ? {
+        filter, pageNumber, pageSize, environment
+      } : {
+        filter, pageNumber, pageSize,
       }
     )
   }, {
-    ready: !!environment && !!id && type === ResourceType.APPLICATION,
-    refreshDeps: [query, environment, pageNumber, id],
+    refreshDeps: [query, environment, pageNumber],
   });
 
   const onChange = (e: any) => {
@@ -90,8 +99,8 @@ export default () => {
   const queryInput = (
     // @ts-ignore
     <div><Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter} value={filter}
-              onSearch={onSearch}
-              onChange={onChange}
+                 onSearch={onSearch}
+                 onChange={onChange}
     />
       {
         <Button
@@ -119,6 +128,7 @@ export default () => {
     return {
       key: name,
       name: name,
+      environment: env2DisplayName?.get(scope.environment),
       regionDisplayName: scope.regionDisplayName,
       template: `${template.name}-${template.release}`,
       updatedTime: Utils.timeToLocal(updatedAt)
@@ -126,32 +136,49 @@ export default () => {
   })
 
   const locale = {
-    emptyText: <NoData title={'集群为特定应用的部署实例'} desc={'你可以将你的cluster集群部署到各种不同的环境（测试线上）\n' +
-    '和区域（杭州、新加坡等），集群继承应用的各项配置，当然也可以对大多数配置进行修改。\n' +
-    '为不同人员赋予cluster的不同权限\n' +
-    '比如只读guest只能查看、项目owner、maintainer可以进行发布的修改'}/>
+    emptyText: <NoData title={'集群为特定应用的部署实例'} desc={
+      '你可以将你的cluster集群部署到各种不同的环境（测试线上）\n' +
+      '和区域（杭州、新加坡等），集群继承应用的各项配置，当然也可以对大多数配置进行修改。\n' +
+      '为不同人员赋予cluster的不同权限\n' +
+      '比如只读guest只能查看、项目owner、maintainer可以进行发布的修改'}
+    />
+  }
+
+  const table = <Table
+    columns={columns}
+    dataSource={data}
+    locale={locale}
+    pagination={{
+      position: ['bottomCenter'],
+      current: pageNumber,
+      hideOnSinglePage: true,
+      pageSize,
+      total: clusters?.total,
+      onChange: (page) => setPageNumber(page),
+    }}
+  />
+
+  const tabOnChange = (key: string) => {
+    history.replace({
+      pathname: `/applications${fullPath}/-/clusters`,
+      query: key ? {
+        environment: key
+      } : {}
+    })
   }
 
   return (
     <PageWithBreadcrumb>
-      <Tabs defaultActiveKey={environment} size={'large'} tabBarExtraContent={queryInput} onChange={setEnvironment}>
+      <Tabs activeKey={environment} size={'large'} tabBarExtraContent={queryInput} onChange={tabOnChange}
+            animated={false}>
+        <TabPane tab={'所有'} key={''}>
+          {table}
+        </TabPane>
         {
           envs?.map(item => {
             const {name, displayName} = item
             return <TabPane tab={displayName} key={name}>
-              <Table
-                columns={columns}
-                dataSource={data}
-                locale={locale}
-                pagination={{
-                  position: ['bottomCenter'],
-                  current: pageNumber,
-                  hideOnSinglePage: true,
-                  pageSize,
-                  total: clusters?.total,
-                  onChange: (page) => setPageNumber(page),
-                }}
-              />
+              {table}
             </TabPane>
           })
         }

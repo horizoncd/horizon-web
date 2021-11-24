@@ -3,6 +3,8 @@ export default {
   'pages.common.back': 'Back',
   'pages.common.submit': 'Submit',
 
+  'pages.pods.nextStep': 'Next batch',
+
   'pages.groups.New subgroup': 'New subgroup',
   'pages.groups.New application': 'New application',
   'pages.groups.New group': 'New group',

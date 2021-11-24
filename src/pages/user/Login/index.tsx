@@ -24,10 +24,9 @@ const Login = () => {
         <div className={styles.contentBlock}>
           <div className={styles.textBlock}>
             <div className={styles.title}>Horizon ready for you</div>
-            <div className={styles.description}>The platform for your cloudnative application delivery for
-              any kind of workload
+            <div className={styles.description}>The platform for your cloudnative application delivery
             </div>
-            <div className={styles.description}>webserver serverless middleware...</div>
+            <div className={styles.description}>for any kind of workload, webserver serverless middleware...</div>
             <Button className={styles.signInButton} onClick={async () => {
               handleSubmit();
             }}>Sign in for Horizon</Button>
@@ -46,7 +45,7 @@ const Login = () => {
         <Footer className="ant-layout-footer-login"/>
       </div>
     </div>
-);
+  );
 };
 
 export default Login;

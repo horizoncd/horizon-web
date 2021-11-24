@@ -57,16 +57,17 @@ export default (props: any) => {
         } = app!
         const {url: u, branch: b, subfolder: s} = git
         const {release: r, name: tn} = t
-        setBasic([
-            {name, value: n},
-            {name: description, value: d},
-            {name: release, value: r},
-            {name: priority, value: p},
-            {name: url, value: u},
-            {name: branch, value: b},
-            {name: subfolder, value: s},
-          ]
-        )
+        const bas = [
+          {name, value: n},
+          {name: description, value: d},
+          {name: release, value: r},
+          {name: priority, value: p},
+          {name: url, value: u},
+          {name: branch, value: b},
+          {name: subfolder, value: s},
+        ]
+        setBasic(bas)
+        form.setFields(bas)
         setTemplate({name: tn})
         setConfig(templateInput)
       }

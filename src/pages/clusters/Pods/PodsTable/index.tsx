@@ -1,4 +1,4 @@
-import {Button, Input, Space, Table, Tooltip} from "antd";
+import {Button, Input, Modal, Space, Table, Tooltip} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -10,9 +10,10 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Running, Online, Waiting, Terminated, Offline, Pending} from '@/components/State'
+import {Offline, Online, Pending, Running, Terminated, Waiting} from '@/components/State'
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
+import styles from './index.less'
 
 const Search = withTrim(Input.Search);
 
@@ -62,13 +63,66 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const formatConsoleURL = (p: CLUSTER.PodInTable) => {
     const {environment} = cluster?.scope || {}
     return `/clusters${fullPath}/-/webconsole?namespace=${p.namespace}&podName=${p.podName}&
-    containerName=${p.containerName}&environment=${environment}`
+containerName=${p.containerName}&environment=${environment}`
   }
 
   const onClickStdout = (p: CLUSTER.PodInTable) => {
     setFullscreen(true);
     setPod(p)
     refreshPodLog(p.podName, p.containerName).then();
+  }
+
+  const eventTableColumns = [
+    {
+      title: <span className={styles.tableColumnTitle}>类型</span>,
+      dataIndex: 'type',
+      key: 'type',
+      width: '70px'
+    },
+    {
+      title: <span className={styles.tableColumnTitle}>原因</span>,
+      dataIndex: 'reason',
+      key: 'reason',
+    },
+    {
+      title: <span className={styles.tableColumnTitle}>信息</span>,
+      dataIndex: 'message',
+      key: 'message',
+    },
+    {
+      title: <span className={styles.tableColumnTitle}>数量</span>,
+      dataIndex: 'count',
+      key: 'count',
+      width: '70px'
+    },
+    {
+      title: <span className={styles.tableColumnTitle}>时间</span>,
+      dataIndex: 'eventTimestamp',
+      key: 'eventTimestamp',
+      width: '200px'
+    },
+  ]
+
+  const onClickEvents = (p: CLUSTER.PodInTable) => {
+    Modal.confirm({
+      title: 'Events',
+      icon: <div/>,
+      closable: true,
+      cancelButtonProps: {style: {display: 'none'}},
+      okButtonProps: {style: {display: 'none'}},
+      width: '1200px',
+      bodyStyle: {overflow: 'auto'},
+      content: <Table
+        pagination={
+          {
+            pageSize: 8
+          }
+        }
+        columns={eventTableColumns}
+        dataSource={p.events}
+
+      />
+    });
   }
 
   const formatMonitorURL = (p: CLUSTER.PodInTable) => {
@@ -81,7 +135,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       const beforeStr = text.substr(0, index);
       const afterStr = text.substr(index + filter.length);
 
-      return <Tooltip title="单击可复制" >
+      return <Tooltip title="单击可复制">
         <span onClick={() => {
           copy(text)
           successAlert('复制成功')
@@ -93,7 +147,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       </Tooltip>
     }
 
-    return <Tooltip title="单击可复制" >
+    return <Tooltip title="单击可复制">
         <span onClick={() => {
           copy(text)
           successAlert('复制成功')
@@ -177,7 +231,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   })
 
   const statusList = Array.from(new Set(filteredData.map(item => item.status))).map(item => ({
-    text: item.slice(0,1).toUpperCase() + item.slice(1),
+    text: item.slice(0, 1).toUpperCase() + item.slice(1),
     value: item,
   }));
 
@@ -223,11 +277,14 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
-          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed} href={formatConsoleURL(record)}
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
+                  href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
                   onClick={() => onClickStdout(record)}>查看日志</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getClusterStatus.allowed}
+                  onClick={() => onClickEvents(record)}>查看events</Button>
         </Space>
       ),
     },

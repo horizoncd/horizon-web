@@ -103,7 +103,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
 
     return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}`;
-  }, [dashboards, formData, pods, podNames]);
+  }, [dashboards, formData, pods, podNames, tabKey]);
 
   return (
     <PageWithBreadcrumb>

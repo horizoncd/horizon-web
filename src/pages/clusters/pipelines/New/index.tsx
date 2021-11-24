@@ -11,10 +11,10 @@ import {PublishType} from "@/const";
 import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/clusters";
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
+import type {FieldData} from 'rc-field-form/lib/interface'
 import {Rule} from "rc-field-form/lib/interface";
 import {listBranch} from "@/services/code/code";
 import HForm from '@/components/HForm'
-import type {FieldData} from 'rc-field-form/lib/interface'
 
 const {Option} = Select;
 
@@ -38,15 +38,6 @@ export default (props: any) => {
   const {data, run: refreshDiff} = useRequest((branch) => diffsOfCode(id!, branch), {
     manual: true,
   })
-  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
-    giturl,
-    filter,
-    pageNumber: 1,
-    pageSize: 50,
-  }), {
-    manual: true,
-    ready: type === PublishType.BUILD_DEPLOY
-  })
 
   const {data: cluster} = useRequest(() => getCluster(id!), {
     onSuccess: () => {
@@ -54,6 +45,16 @@ export default (props: any) => {
       refreshDiff(cluster!.git.branch)
     }
   });
+
+  const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
+    giturl: cluster!.git.url,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
+    ready: type === PublishType.BUILD_DEPLOY && !!cluster,
+    debounceInterval: 500,
+  })
 
   const hookAfterSubmit = () => {
     successAlert(formatMessage('submit', 'Pipeline Started'))
@@ -92,15 +93,19 @@ export default (props: any) => {
     }
   }
 
+  const onCancel = () => {
+    history.goBack()
+  }
+
   return (
     <PageWithBreadcrumb>
       <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
         <HForm layout={'vertical'} form={form}
-              onFieldsChange={(a: FieldData[]) => {
-                if (a[0].name[0] === 'branch') {
-                  refreshDiff(a[0].value)
-                }
-              }}
+               onFieldsChange={(a: FieldData[]) => {
+                 if (a[0].name[0] === 'branch') {
+                   refreshDiff(a[0].value)
+                 }
+               }}
         >
           <Form.Item label={formatMessage('title', 'Title')} name={'title'} rules={requiredRule}>
             <Input/>
@@ -113,13 +118,11 @@ export default (props: any) => {
               <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} rules={requiredRule}>
                 <Select placeholder="master" showSearch
                         onSearch={(item) => {
-                          if (item) {
-                            refreshBranchList(cluster!.git.url, item);
-                          }
+                          refreshBranchList(item);
                         }}>
                   {
                     branchList.map((item: string) => {
-                      return <Option value={item}>{item}</Option>
+                      return <Option key={item} value={item}>{item}</Option>
                     })
                   }
                 </Select>
@@ -153,7 +156,7 @@ export default (props: any) => {
         </Card>
       </Card>
 
-      <SubmitCancelButton onSubmit={onSubmit} onCancel={() => history.goBack()}/>
+      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel}/>
     </PageWithBreadcrumb>
   )
 }

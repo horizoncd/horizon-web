@@ -85,6 +85,16 @@ export async function restart(clusterID: number) {
   });
 }
 
+export async function freeCluster(clusterID: number) {
+  return request<{
+    data: {
+      id: string
+    };
+  }>(`/apis/core/v1/clusters/${clusterID}/free`, {
+    method: 'POST',
+  });
+}
+
 export async function next(clusterID: number) {
   return request(`/apis/core/v1/clusters/${clusterID}/next`, {
     method: 'POST',

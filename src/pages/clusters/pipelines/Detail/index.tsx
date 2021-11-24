@@ -23,17 +23,26 @@ import Utils from '@/utils'
 import {PublishType} from "@/const";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
+import {rollback} from "@/services/clusters/clusters";
+import {history} from "@@/core/history";
 
 export default (props: any) => {
-  const params = useParams();
-  const intl = useIntl();
+  const params = useParams<{id: string}>();
+  const pipelineID = parseInt(params.id)
 
-  // @ts-ignore
-  const {data: pipeline} = useRequest(() => getPipeline(params.id))
-  // @ts-ignore
-  const {data: diff} = useRequest(() => getPipelineDiffs(params.id))
-  // @ts-ignore
-  const {data: buildLog} = useRequest(() => queryPipelineLog(params.id), {
+  const intl = useIntl();
+  const {location} = props;
+  const {query} = location;
+  // 1. true 2. false
+  const {rollback: showRollback = false} = query
+
+  const {initialState} = useModel('@@initialState');
+  const {id, fullPath} = initialState!.resource;
+  const [loading, setLoading] = useState(false)
+
+  const {data: pipeline} = useRequest(() => getPipeline(pipelineID))
+  const {data: diff} = useRequest(() => getPipelineDiffs(pipelineID))
+  const {data: buildLog} = useRequest(() => queryPipelineLog(pipelineID), {
     formatResult: (res) => {
       return res
     }
@@ -141,6 +150,15 @@ export default (props: any) => {
     <DetailCard
       title={<span>基础信息</span>}
       data={data}
+      extra={showRollback ? <Button loading={loading} onClick={() => {
+        setLoading(true)
+        rollback(id, {pipelinerunID: pipelineID}).then(() => {
+          successAlert('提交回滚成功')
+          history.push(`/clusters${fullPath}/-/pods`)
+        });
+      }}>
+        确认回滚
+      </Button> : null}
     />
     <Card
       tabList={cardTab}

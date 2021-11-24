@@ -1,4 +1,3 @@
-import type {Route} from 'antd/lib/breadcrumb/Breadcrumb';
 import {history} from 'umi';
 import {getLocale} from "@@/plugin-locale/localeExports";
 import moment, { isMoment } from 'moment';
@@ -20,7 +19,7 @@ const getResourcePath = () => {
 };
 
 const getBreadcrumbs = (fullName: string) => {
-  const result: Route[] = [];
+  const result = [];
   const {pathname} = history.location;
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');
@@ -50,6 +49,7 @@ const getBreadcrumbs = (fullName: string) => {
       result.push({
         path: `/${p[0]}${currentLink}`,
         breadcrumbName: item,
+        subResource: true,
       });
     }
   }

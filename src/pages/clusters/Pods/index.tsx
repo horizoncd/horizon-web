@@ -4,7 +4,7 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
-import {getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
+import {freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
@@ -17,7 +17,7 @@ import DetailCard from "@/components/DetailCard";
 import {history} from 'umi';
 import {stringify} from "querystring";
 import Utils from '@/utils'
-import {Failed, NotFount, Progressing, Succeeded, Suspended} from "@/components/State";
+import {getStatusComponent, isRestrictedStatus} from "@/components/State";
 import RBAC from '@/rbac'
 
 const {TabPane} = Tabs;
@@ -37,14 +37,6 @@ const taskStatus2Entity = new Map<TaskStatus, {
   [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
   [TaskStatus.FAILED, {icon: frown, buildTitle: '构建失败', deployTitle: '发布失败', stepStatus: 'error'}]
-]);
-
-const clusterStatus2StateNode = new Map([
-  ['Progressing', <Progressing/>],
-  ['Healthy', <Succeeded text={'Healthy'}/>],
-  ['Degraded', <Failed text={'NotHealthy'}/>],
-  ['Suspended', <Suspended/>],
-  ['NotFound', <NotFount/>],
 ]);
 
 interface DeployPageProps {
@@ -86,6 +78,7 @@ export default () => {
   })
   const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING
   const {data: cluster} = useRequest(() => getCluster(id), {
+    pollingInterval,
     refreshDeps: [id],
     ready: !!id && type === ResourceType.CLUSTER,
   });
@@ -147,7 +140,8 @@ export default () => {
               onlineStatus,
               restartCount,
               containerName: containers[0].name,
-              namespace
+              namespace,
+              events: status.events,
             };
             if (state === 'running') {
               healthyPods.push(podInTable)
@@ -185,10 +179,11 @@ export default () => {
       if (statusData) {
         refreshPodsInfo(statusData)
 
-        const {task: t, taskStatus: tStatus} = statusData.runningTask;
+        const {task: t, taskStatus: tStatus, pipelinerunID: pID} = statusData.runningTask;
         const tt = t as RunningTask
         const ttStatus = tStatus as TaskStatus
         setTaskStatus(ttStatus)
+        setPipelinerunID(pID)
         // not in publish state
         if (!(ttStatus === TaskStatus.RUNNING || ttStatus === TaskStatus.PENDING)) {
           return
@@ -196,7 +191,6 @@ export default () => {
 
         const {step, status} = statusData.clusterStatus;
         const entity = taskStatus2Entity.get(ttStatus)
-        setPipelinerunID(statusData.runningTask.pipelinerunID)
         if (tt === RunningTask.BUILD) {
           // refresh build log when in build task
           steps[0] = {
@@ -237,13 +231,16 @@ export default () => {
     return <div style={{height: '500px'}}>
       <div>
         <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
-        <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
-          cancelPipeline(pipelinerunID!).then(() => {
-            successAlert('取消发布成功')
-          })
-        }}>
-          取消发布
-        </Button>
+        {
+          statusData?.runningTask.task as RunningTask === RunningTask.BUILD &&
+          <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
+            cancelPipeline(pipelinerunID!).then(() => {
+              successAlert('取消发布成功')
+            })
+          }}>
+            取消发布
+          </Button>
+        }
       </div>
       <CodeEditor content={log}/>
     </div>
@@ -283,7 +280,7 @@ export default () => {
         {
           index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
           <Button style={{margin: '0 8px'}} onClick={onNext}>
-            下一步
+            {intl.formatMessage({id: 'pages.pods.nextStep'})}
           </Button>
         }
       </div>
@@ -298,11 +295,21 @@ export default () => {
     </div>
   };
 
+  const clusterStatus = cluster?.status ? cluster?.status : statusData?.clusterStatus.status || ''
+
   const baseInfo: Param[][] = [
     [
       {
         key: '集群状态',
-        value: statusData ? clusterStatus2StateNode.get(statusData.clusterStatus.status) : <NotFount/>
+        value: getStatusComponent(clusterStatus),
+        description: `${ClusterStatus.HEALTHY}：健康
+        ${ClusterStatus.PROGRESSING}：发布中
+        ${ClusterStatus.SUSPENDED}：发布批次暂停中
+        ${ClusterStatus.DEGRADED}：故障
+        ${ClusterStatus.NOTFOUND}：未发布
+        ${ClusterStatus.FREED}：资源已被释放，可重新构建发布
+        ${ClusterStatus.FREEING}：资源释放中，无法继续操作集群
+        ${ClusterStatus.DELETING}：集群删除中，无法继续操作集群`
       },
     ],
     [
@@ -355,12 +362,11 @@ export default () => {
         })
         break;
       case 'restart':
-        Modal.info({
+        Modal.confirm({
           title: '确定重启所有Pods?',
-          okText: '确定',
           onOk() {
             restart(id).then(() => {
-              successAlert('Restart All Pods Succeed')
+              successAlert('重启操作提交成功')
             })
           },
         });
@@ -372,30 +378,49 @@ export default () => {
       case 'editCluster':
         history.push(`/clusters${fullPath}/-/edit`)
         break;
+      case 'freeCluster':
+        Modal.confirm({
+          title: '确定释放集群?',
+          content: '销毁所有pod并归还资源，保留集群配置',
+          onOk() {
+            freeCluster(id).then(() => {
+              successAlert('开始释放集群...')
+            })
+          },
+        });
+        break;
       default:
 
     }
   }
 
   const operateDropdown = <Menu onClick={onClickOperation}>
-    <Menu.Item disabled={!RBAC.Permissions.rollbackCluster.allowed} key="rollback">回滚</Menu.Item>
+    <Menu.Item
+      disabled={!RBAC.Permissions.rollbackCluster.allowed || isRestrictedStatus(clusterStatus)}
+      key="rollback">回滚</Menu.Item>
     <Menu.Item disabled={!RBAC.Permissions.updateCluster.allowed} key="editCluster">修改集群</Menu.Item>
+    <Menu.Item
+      disabled={!RBAC.Permissions.freeCluster.allowed || isRestrictedStatus(clusterStatus) || clusterStatus === ClusterStatus.FREED}
+      key="freeCluster">释放集群</Menu.Item>
   </Menu>;
 
   return (
     <PageWithBreadcrumb>
       <div>
         <div style={{marginBottom: '5px', textAlign: 'right'}}>
-          <Button disabled={!RBAC.Permissions.buildAndDeployCluster.allowed}
-                  type="primary" onClick={() => onClickOperation({key: 'builddeploy'})}
-                  style={{marginRight: '10px'}}>
+          <Button
+            disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(clusterStatus)}
+            type="primary" onClick={() => onClickOperation({key: 'builddeploy'})}
+            style={{marginRight: '10px'}}>
             构建发布
           </Button>
-          <Button disabled={!RBAC.Permissions.deployCluster.allowed} onClick={() => onClickOperation({key: 'deploy'})}
+          <Button disabled={!RBAC.Permissions.deployCluster.allowed || isRestrictedStatus(clusterStatus)}
+                  onClick={() => onClickOperation({key: 'deploy'})}
                   style={{marginRight: '10px'}}>
             直接发布
           </Button>
-          <Button disabled={!RBAC.Permissions.restartCluster.allowed} onClick={() => onClickOperation({key: 'restart'})}
+          <Button disabled={!RBAC.Permissions.restartCluster.allowed || isRestrictedStatus(clusterStatus)}
+                  onClick={() => onClickOperation({key: 'restart'})}
                   style={{marginRight: '10px'}}>
             重新启动
           </Button>

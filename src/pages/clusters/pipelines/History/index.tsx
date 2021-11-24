@@ -3,10 +3,10 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
-import {getPipelines, rollback} from "@/services/clusters/clusters";
+import {getPipelines} from "@/services/clusters/clusters";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
-import {history} from "@@/core/history";
+import {history} from 'umi';
 import {Failed, NotFount, Progressing, Succeeded, Cancelled} from "@/components/State";
 import {DeployTypeMap} from '@/const'
 import RBAC from '@/rbac'
@@ -21,7 +21,6 @@ export default (props: any) => {
 
   const {initialState} = useModel('@@initialState');
   const {id, fullPath} = initialState!.resource;
-  const {successAlert} = useModel('alert')
 
   const pageSize = 10;
   const [pageNumber, setPageNumber] = useState(1);
@@ -37,14 +36,10 @@ export default (props: any) => {
 
   const onRetry = (pipeline: PIPELINES.Pipeline) => {
     Modal.confirm({
-      title: '确定要重新执行本次Pipeline？',
+      title: '确定要重新执行本次Pipeline？点击确定进入详情页进行二次确认',
       icon: <ExclamationCircleOutlined/>,
       onOk: () => {
-        rollback(id, {pipelinerunID: pipeline.id}).then(() => {
-          successAlert('提交回滚成功')
-          // jump to pods' url
-          history.push(`/clusters${fullPath}/-/pods`)
-        });
+        history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`)
       }
     });
   }
@@ -76,7 +71,7 @@ export default (props: any) => {
       key: 'key',
       render: (text: any) => (
         <Space size="middle">
-          <a onClick={() => history.push(`/clusters${fullPath}/-/pipelines/${text}`)}>{text}</a>
+          <a onClick={() => history.push(`/clusters${fullPath}/-/pipelines/${text}`)}>#{text}</a>
         </Space>
       ),
     },

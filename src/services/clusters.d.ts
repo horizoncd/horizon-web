@@ -25,7 +25,7 @@ declare namespace CLUSTER {
     filter?: string;
     pageNumber: number;
     pageSize: number;
-    environment: string
+    environment?: string
   };
 
   type Scope = {
@@ -69,6 +69,7 @@ declare namespace CLUSTER {
     scope: Scope
     templateInput: any;
     latestDeployedCommit: string;
+    status?: string;
     createdAt: string;
     updatedAt: string;
   };
@@ -186,6 +187,14 @@ declare namespace CLUSTER {
     }
   }
 
+  type Event = {
+    type: string,
+    reason: string,
+    message: string,
+    count: number,
+    eventTimestamp: string,
+  }
+
   type PodInTable = {
     key: string
     podName: string
@@ -196,6 +205,7 @@ declare namespace CLUSTER {
     restartCount?: number
     containerName?: string
     namespace?: string
+    events: Event[]
   }
 
   type PodOnlineOfflineResult = {
