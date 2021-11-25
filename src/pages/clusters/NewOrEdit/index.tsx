@@ -190,8 +190,11 @@ export default (props: any) => {
 
   const {loading, run: onSubmit} = useRequest(() => {
     const info = {
-      name: `${applicationName}-${form.getFieldValue(name)}`,
+      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
       description: form.getFieldValue(description),
+      template: {
+        release: form.getFieldValue(release),
+      },
       git: {
         branch: form.getFieldValue(branch),
       },

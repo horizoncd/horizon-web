@@ -78,8 +78,11 @@ declare namespace CLUSTER {
     name: string;
     description?: string;
     git: {
-      branch: string;
+      branch: string
     };
+    template: {
+      release: string,
+    },
     templateInput: any
   }
 

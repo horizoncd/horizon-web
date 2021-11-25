@@ -24,15 +24,11 @@ export default (props: any) => {
     ready: !!props.template.name
   });
 
-  const {data: regions, run: refreshRegions} = useRequest((environment) => queryRegions(environment), {
-    manual: true,
+  const {data: regions} = useRequest(() => queryRegions(props.form.getFieldValue('environment')), {
     ready: !!props.form.getFieldValue('environment'),
+    refreshDeps: [props.form.getFieldValue('environment')]
   });
-  const {data: environments} = useRequest(() => queryEnvironments(), {
-    onSuccess: () => {
-      refreshRegions(props.form.getFieldValue('environment'))
-    },
-  });
+  const {data: environments} = useRequest(() => queryEnvironments());
   const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
     giturl: props.form.getFieldValue('url'),
     filter,
@@ -40,6 +36,7 @@ export default (props: any) => {
     pageSize: 50,
   }), {
     debounceInterval: 500,
+    ready: !!props.form.getFieldValue('url'),
   })
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -73,7 +70,6 @@ export default (props: any) => {
   };
 
   const {readonly = false, editing = false} = props;
-
   const name = editing ? <Input disabled/> :
     <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}
            disabled={readonly}/>;
@@ -84,7 +80,6 @@ export default (props: any) => {
             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
               // query regions when environment selected
               if (a[0].name[0] === 'environment') {
-                refreshRegions(a[0].value)
                 // clear region form data
                 for (let i = 0; i < b.length; i++) {
                   if (b[i].name[0] === 'region') {
@@ -118,7 +113,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly}>
+            <Select disabled={!!envFromQuery || readonly || editing}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
