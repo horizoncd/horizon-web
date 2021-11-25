@@ -257,14 +257,14 @@ export default (props: any) => {
                      editing={editing} template={template}/>
             }
             {
-              current === 1 && <Config template={template} release={template.release} config={config}
+              current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}
                                        setConfig={setConfig} setConfigErrors={setConfigErrors}
               />
             }
             {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
-                     release={template.release} config={config}/>
+                     release={form.getFieldValue(release)} config={config}/>
             }
           </div>
           <div className={styles.stepsAction}>
