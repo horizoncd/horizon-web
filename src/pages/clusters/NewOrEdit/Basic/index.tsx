@@ -151,7 +151,7 @@ export default (props: any) => {
                     }}>
               {
                 branchList.map((item: string) => {
-                  return <Option value={item}>{item}</Option>
+                  return <Option key={item} value={item}>{item}</Option>
                 })
               }
             </Select>
