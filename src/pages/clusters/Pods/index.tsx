@@ -8,7 +8,7 @@ import {freeCluster, getCluster, getClusterStatus, next, restart} from "@/servic
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
-import {ClusterStatus, PublishType, ResourceType, RunningTask, TaskStatus} from "@/const";
+import {ClusterStatus, PublishType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
 import CodeEditor from "@/components/CodeEditor";
@@ -56,7 +56,7 @@ interface PodsInfo {
   images: Set<string>
 }
 
-const pollingInterval = 5000;
+const pollingInterval = 6000;
 const pendingState = 'pending'
 
 export default () => {
@@ -64,7 +64,7 @@ export default () => {
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
-  const {id, fullPath, type} = initialState!.resource;
+  const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [taskStatus, setTaskStatus] = useState(TaskStatus.SUCCEEDED);
@@ -76,12 +76,10 @@ export default () => {
     notHealthyPods: [],
     images: new Set<string>()
   })
-  const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING
   const {data: cluster} = useRequest(() => getCluster(id), {
     pollingInterval,
-    refreshDeps: [id],
-    ready: !!id && type === ResourceType.CLUSTER,
   });
+  const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus == TaskStatus.FAILED
   const {data: buildLog, run: refreshLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
     refreshDeps: [pipelinerunID],
     ready: !!pipelinerunID && inPublishing,
@@ -173,8 +171,6 @@ export default () => {
   }
   const {data: statusData, run: refreshStatus} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
-    refreshDeps: [id],
-    ready: !!id && type === ResourceType.CLUSTER,
     onSuccess: () => {
       if (statusData) {
         refreshPodsInfo(statusData)
@@ -184,45 +180,45 @@ export default () => {
         const ttStatus = tStatus as TaskStatus
         setTaskStatus(ttStatus)
         setPipelinerunID(pID)
-        // not in publish state
-        if (!(ttStatus === TaskStatus.RUNNING || ttStatus === TaskStatus.PENDING)) {
-          return
-        }
-
-        const {step, status} = statusData.clusterStatus;
-        const entity = taskStatus2Entity.get(ttStatus)
-        if (tt === RunningTask.BUILD) {
-          // refresh build log when in build task
-          steps[0] = {
-            title: entity!.buildTitle,
-            content: <BuildPage log={buildLog}/>,
-            icon: entity!.icon,
+        if (inPublishing) {
+          const {step, status} = statusData.clusterStatus;
+          const entity = taskStatus2Entity.get(ttStatus)
+          if (!entity) {
+            return
           }
-        }
-        if (tt === RunningTask.DEPLOY && status != ClusterStatus.NOTFOUND) {
-          const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
-          steps[0] = {
-            title: succeed!.buildTitle,
-            content: <BuildPage log={buildLog}/>,
-            icon: smile,
+          if (tt === RunningTask.BUILD) {
+            // refresh build log when in build task
+            steps[0] = {
+              title: entity.buildTitle,
+              content: <BuildPage log={buildLog}/>,
+              icon: entity.icon,
+            };
           }
-          steps[1] = {
-            title: entity!.deployTitle,
-            content: <DeployPage status={statusData} step={step} onNext={() => {
-              next(id).then(() => {
-                successAlert(`第${step.index + 1}批次开始发布`)
-                refreshStatus()
-              })
+          if (tt === RunningTask.DEPLOY && status != ClusterStatus.NOTFOUND) {
+            const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
+            steps[0] = {
+              title: succeed!.buildTitle,
+              content: <BuildPage log={buildLog}/>,
+              icon: smile,
             }
-            }/>,
-            icon: entity!.icon,
+            steps[1] = {
+              title: entity.deployTitle,
+              content: <DeployPage status={statusData} step={step} onNext={() => {
+                next(id).then(() => {
+                  successAlert(`第${step.index + 1}批次开始发布`)
+                  refreshStatus()
+                })
+              }
+              }/>,
+              icon: entity.icon,
+            }
+            setCurrent(1)
           }
-          setCurrent(1)
-        }
-        setSteps(steps)
-        setStepStatus(entity!.stepStatus);
+          setSteps(steps)
+          setStepStatus(entity.stepStatus);
 
-        refreshLog()
+          refreshLog()
+        }
       }
     }
   });
@@ -232,7 +228,7 @@ export default () => {
       <div>
         <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
         {
-          statusData?.runningTask.task as RunningTask === RunningTask.BUILD &&
+          statusData?.runningTask.task as RunningTask === RunningTask.BUILD && taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING &&
           <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
             cancelPipeline(pipelinerunID!).then(() => {
               successAlert('取消发布成功')
@@ -295,7 +291,7 @@ export default () => {
     </div>
   };
 
-  const clusterStatus = cluster?.status ? cluster?.status : statusData?.clusterStatus.status || ''
+  const clusterStatus = cluster?.status ? cluster.status : (statusData?.clusterStatus.status || '')
 
   const baseInfo: Param[][] = [
     [

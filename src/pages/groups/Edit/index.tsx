@@ -133,9 +133,9 @@ export default () => {
               </Form.Item>
             }
           </Form>
-          {RBAC.Permissions.updateGroup.allowed && <Divider/>}
+          {RBAC.Permissions.deleteGroup.allowed && <Divider/>}
           {
-            RBAC.Permissions.updateGroup.allowed && <Card className={'card'}>
+            RBAC.Permissions.deleteGroup.allowed && <Card className={'card'}>
               <Button style={{backgroundColor: '#dd2b0e', color: 'white'}} onClick={() => {
                 Modal.confirm({
                   title: '删除分组前，请确认子分组和应用已全被删除',

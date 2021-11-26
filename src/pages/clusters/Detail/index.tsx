@@ -11,10 +11,9 @@ import {DownOutlined, ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {deleteCluster, getCluster, getClusterTags} from "@/services/clusters/clusters";
+import {deleteCluster, getCluster, getClusterTags, getClusterTemplateSchemaTags} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
-import {ClusterStatus, PublishType, ResourceType} from "@/const";
-import {application} from "express";
+import {ClusterStatus, ResourceType} from "@/const";
 
 export default () => {
   const intl = useIntl();
@@ -54,6 +53,7 @@ export default () => {
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [tags, setTags] = useState<CLUSTER.ClusterTag[]>()
+  const [adminTags, setAdminTags] = useState<CLUSTER.ClusterTag[]>()
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
     [
@@ -86,7 +86,10 @@ export default () => {
     return getCluster(clusterID).then(({data: result}) => {
       setCluster(result);
       // query schema by template and release
-      querySchema(result.template.name, result.template.release).then(({data}) => {
+      querySchema(result.template.name, result.template.release, {
+        resourceType: ResourceType.CLUSTER,
+        clusterID: clusterID
+      }).then(({data}) => {
         setTemplate(data);
       });
     });
@@ -100,7 +103,14 @@ export default () => {
       setTags(result.tags);
     });
   }, {
-    ready: type === ResourceType.CLUSTER && !!clusterID,
+    refreshDeps: [clusterID]
+  })
+
+  const {run: refreshAdminTags} = useRequest(() => {
+    return getClusterTemplateSchemaTags(clusterID).then(({data: result}) => {
+      setAdminTags(result.tags);
+    });
+  }, {
     refreshDeps: [clusterID]
   })
 
@@ -108,6 +118,7 @@ export default () => {
 
   const editClusterRoute = `/clusters${clusterFullPath}/-/edit`;
   const manageTagsRoute = `/clusters${clusterFullPath}/-/tags`;
+  const manageAdminTagsRoute = `/clusters${clusterFullPath}/-/admintags`;
   const tagColumns = [
     {
       title: '键',
@@ -217,7 +228,30 @@ export default () => {
           dataSource={tags}
           columns={tagColumns}
         />
-
+      </Card>
+      <Card
+        style={{marginTop: '20px'}}
+        title={(
+          <div style={{display: "flex"}}>
+            <span className={styles.cardTitle}>管理员标签</span>
+            <div style={{flex: 1}}/>
+            {
+              RBAC.Permissions.updateTemplateSchemaTags.allowed && <Button
+                onClick={
+                  () =>
+                    history.push({
+                      pathname: manageAdminTagsRoute,
+                    })
+                }
+              >管理标签</Button>
+            }
+          </div>
+        )}
+        type={"inner"}>
+        <Table
+          dataSource={adminTags}
+          columns={tagColumns}
+        />
       </Card>
     </Detail>
   )

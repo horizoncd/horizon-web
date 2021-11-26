@@ -186,4 +186,9 @@ declare namespace API {
     pageSize: number,
     filter?: string,
   }
+
+  type TemplateSchemaParam = {
+    clusterID?: number,
+    resourceType?: string,
+  }
 }

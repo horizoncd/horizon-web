@@ -1,6 +1,6 @@
 import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
-import Config from '../../applications/NewOrEdit/Config';
+import Config from './Config';
 import Audit from './Audit';
 import {useState} from 'react';
 import {useRequest} from 'umi';
@@ -102,6 +102,7 @@ export default (props: any) => {
         )
         setConfig(templateInput)
         setTemplate(t)
+        setCluster(clusterData)
       }
     });
   }
@@ -190,8 +191,11 @@ export default (props: any) => {
 
   const {loading, run: onSubmit} = useRequest(() => {
     const info = {
-      name: `${applicationName}-${form.getFieldValue(name)}`,
+      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
       description: form.getFieldValue(description),
+      template: {
+        release: form.getFieldValue(release),
+      },
       git: {
         branch: form.getFieldValue(branch),
       },
@@ -254,14 +258,14 @@ export default (props: any) => {
                      editing={editing} template={template}/>
             }
             {
-              current === 1 && <Config template={template} release={template.release} config={config}
-                                       setConfig={setConfig} setConfigErrors={setConfigErrors}
+              current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}
+                                       setConfig={setConfig} setConfigErrors={setConfigErrors} clusterID={cluster?.id}
               />
             }
             {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
-                     release={template.release} config={config}/>
+                     release={form.getFieldValue(release)} config={config}/>
             }
           </div>
           <div className={styles.stepsAction}>

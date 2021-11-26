@@ -33,7 +33,7 @@ export default (props: any) => {
       if (alert.message) {
         clearAlert()
       }
-    }, 4000);
+    }, 3000);
 
     return () => timer && clearTimeout(timer);
   });

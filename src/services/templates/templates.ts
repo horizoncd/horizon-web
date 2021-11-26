@@ -1,4 +1,4 @@
-import { request } from 'umi';
+import {request} from 'umi';
 
 export async function queryTemplates() {
   return request<{
@@ -16,10 +16,11 @@ export async function queryReleases(template: string) {
   });
 }
 
-export async function querySchema(template: string, release: string) {
+export async function querySchema(template: string, release: string, params?: API.TemplateSchemaParam) {
   return request<{
     data: any;
   }>(`/apis/core/v1/templates/${template}/releases/${release}/schema`, {
     method: 'GET',
+    params
   });
 }

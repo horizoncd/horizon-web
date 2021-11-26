@@ -6,6 +6,7 @@ import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {listBranch} from '@/services/code/code'
 import HForm from '@/components/HForm'
+import {useEffect} from "react";
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -24,6 +25,12 @@ export default (props: any) => {
     manual: true,
     debounceInterval: 500,
   })
+
+  useEffect(() => {
+    if (props.editing) {
+      refreshBranchList(props.form.getFieldValue('url'), '')
+    }
+  }, [props.editing, props.form, refreshBranchList])
 
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -139,7 +146,7 @@ export default (props: any) => {
                     }}>
               {
                 branchList.map((item: string) => {
-                  return <Option value={item}>{item}</Option>
+                  return <Option key={item} value={item}>{item}</Option>
                 })
               }
             </Select>

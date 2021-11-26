@@ -35,3 +35,12 @@ export async function offline(clusterID: number, pods: string[]) {
     }
   });
 }
+
+export async function queryPodEvents(clusterID: number, podName: string) {
+  return request(`/apis/core/v1/clusters/${clusterID}/events`, {
+    method: 'GET',
+    params: {
+      podName
+    }
+  });
+}
