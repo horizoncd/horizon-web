@@ -5,7 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
 import {useRequest} from "@@/plugin-request/request";
-import {offline, online, queryPodStdout} from "@/services/clusters/pods";
+import {offline, online, queryPodEvents, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
@@ -16,6 +16,7 @@ import withTrim from "@/components/WithTrim";
 import styles from './index.less'
 
 const Search = withTrim(Input.Search);
+const pollingInterval = 5000;
 
 const status2StateNode = new Map(
   [
@@ -39,6 +40,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const [pod, setPod] = useState<CLUSTER.PodInTable>()
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
   const {successAlert, errorAlert} = useModel('alert')
+  const [showEvents, setShowEvents] = useState(false)
+  const [events, setEvents] = useState([])
 
   const {
     data: podLog,
@@ -54,6 +57,21 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       return res
     },
     pollingInterval: 5000,
+  })
+
+  const {
+    run: refreshEvents,
+    cancel: stopRefreshEvents,
+    loading: eventsLoading,
+  } = useRequest((podName) => queryPodEvents(cluster!.id, podName), {
+    pollingInterval,
+    manual: true,
+    formatResult: (res) => {
+      return res
+    },
+    onSuccess: (eventsResp) => {
+      setEvents(eventsResp.data)
+    }
   })
 
   const formatMessage = (suffix: string, defaultMsg: string) => {
@@ -77,7 +95,13 @@ containerName=${p.containerName}&environment=${environment}`
       title: <span className={styles.tableColumnTitle}>类型</span>,
       dataIndex: 'type',
       key: 'type',
-      width: '70px'
+      width: '70px',
+      render: (text: any) => {
+        if (text === 'Warn') {
+          return <span style={{color: 'red'}}>{text}</span>
+        }
+        return <span style={{color: 'green'}}>{text}</span>
+      },
     },
     {
       title: <span className={styles.tableColumnTitle}>原因</span>,
@@ -104,25 +128,8 @@ containerName=${p.containerName}&environment=${environment}`
   ]
 
   const onClickEvents = (p: CLUSTER.PodInTable) => {
-    Modal.confirm({
-      title: 'Events',
-      icon: <div/>,
-      closable: true,
-      cancelButtonProps: {style: {display: 'none'}},
-      okButtonProps: {style: {display: 'none'}},
-      width: '1200px',
-      bodyStyle: {overflow: 'auto'},
-      content: <Table
-        pagination={
-          {
-            pageSize: 8
-          }
-        }
-        columns={eventTableColumns}
-        dataSource={p.events}
-
-      />
-    });
+    refreshEvents(p.podName).then();
+    setShowEvents(true);
   }
 
   const formatMonitorURL = (p: CLUSTER.PodInTable) => {
@@ -344,5 +351,29 @@ containerName=${p.containerName}&environment=${environment}`
         content={podLog}
       />
     </FullscreenModal>
+    {
+      <Modal
+        title={'Events'}
+        visible={showEvents}
+        closable={true}
+        footer={[]}
+        width={'1200px'}
+        bodyStyle={{overflow: 'auto'}}
+        onCancel={() => {
+          stopRefreshEvents();
+          setShowEvents(false);
+        }}
+      >
+        <Table
+          pagination={
+            {
+              pageSize: 8
+            }
+          }
+          columns={eventTableColumns}
+          dataSource={events}
+        />
+      </Modal>
+    }
   </div>
 }

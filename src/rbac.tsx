@@ -24,6 +24,7 @@ const Resource = {
   online: 'online',
   offline: 'offline',
   free: 'free',
+  templateSchemaTags: 'templateschematags',
 }
 
 // 操作
@@ -188,6 +189,12 @@ const Permissions = {
   // 集群下线
   offlineCluster: {
     resource: `${Resource.cluster}/${Resource.offline}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 创建/修改/删除管理员标签
+  updateTemplateSchemaTags: {
+    resource: `${Resource.cluster}/${Resource.templateSchemaTags}`,
     action: Action.create,
     allowed: false,
   },

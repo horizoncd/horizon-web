@@ -125,6 +125,11 @@ const clusterRoutes = [
     menuRender: false,
     component: 'clusters/Tag',
   },
+  {
+    path: '/clusters/*/-/admintags',
+    menuRender: false,
+    component: 'clusters/AdminTag',
+  },
 ];
 
 const allRoute = [];
