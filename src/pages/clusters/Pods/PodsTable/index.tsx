@@ -97,7 +97,7 @@ containerName=${p.containerName}&environment=${environment}`
       key: 'type',
       width: '70px',
       render: (text: any) => {
-        if (text === 'Warn') {
+        if (text === 'Warning') {
           return <span style={{color: 'red'}}>{text}</span>
         }
         return <span style={{color: 'green'}}>{text}</span>
