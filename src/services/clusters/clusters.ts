@@ -165,3 +165,20 @@ export async function updateClusterTags(clusterID: number, data: CLUSTER.Cluster
     data,
   });
 }
+
+export async function getClusterTemplateSchemaTags(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterTags
+  }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
+    method: 'GET',
+  });
+}
+
+export async function updateClusterTemplateSchemaTags(clusterID: number, data: CLUSTER.ClusterTags) {
+  return request<{
+    data: CLUSTER.ClusterTags
+  }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
+    method: 'POST',
+    data,
+  });
+}

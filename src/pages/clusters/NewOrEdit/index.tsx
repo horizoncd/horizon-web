@@ -1,6 +1,6 @@
 import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
-import Config from '../../applications/NewOrEdit/Config';
+import Config from './Config';
 import Audit from './Audit';
 import {useState} from 'react';
 import {useRequest} from 'umi';
@@ -102,6 +102,7 @@ export default (props: any) => {
         )
         setConfig(templateInput)
         setTemplate(t)
+        setCluster(clusterData)
       }
     });
   }
@@ -258,7 +259,7 @@ export default (props: any) => {
             }
             {
               current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}
-                                       setConfig={setConfig} setConfigErrors={setConfigErrors}
+                                       setConfig={setConfig} setConfigErrors={setConfigErrors} clusterID={cluster?.id}
               />
             }
             {
