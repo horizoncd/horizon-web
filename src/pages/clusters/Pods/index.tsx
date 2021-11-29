@@ -48,14 +48,6 @@ interface DeployPageProps {
   status: CLUSTER.ClusterStatus
 }
 
-interface PodsInfo {
-  oldPods: CLUSTER.PodInTable[],
-  newPods: CLUSTER.PodInTable[],
-  healthyPods: CLUSTER.PodInTable[],
-  notHealthyPods: CLUSTER.PodInTable[],
-  images: Set<string>
-}
-
 const pollingInterval = 6000;
 const pendingState = 'pending'
 
@@ -67,44 +59,55 @@ export default () => {
   const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
-  const [taskStatus, setTaskStatus] = useState(TaskStatus.SUCCEEDED);
-  const [pipelinerunID, setPipelinerunID] = useState<number>();
-  const [podsInfo, setPodsInfo] = useState<PodsInfo>({
-    newPods: [],
-    oldPods: [],
-    healthyPods: [],
-    notHealthyPods: [],
-    images: new Set<string>()
-  })
+
   const {data: cluster} = useRequest(() => getCluster(id), {
     pollingInterval,
   });
-  const inPublishing = taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus == TaskStatus.FAILED
-  const {data: buildLog, run: refreshLog} = useRequest(() => queryPipelineLog(pipelinerunID!), {
-    refreshDeps: [pipelinerunID],
-    ready: !!pipelinerunID && inPublishing,
+
+  const inPublishing = (statusData?: CLUSTER.ClusterStatus) => {
+    const taskStatus = statusData?.runningTask.taskStatus as TaskStatus
+    return taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus == TaskStatus.FAILED
+  }
+
+  const canCancelPublish = (statusData?: CLUSTER.ClusterStatus) => {
+    const taskStatus = statusData?.runningTask.taskStatus as TaskStatus
+    const task = statusData?.runningTask.task as RunningTask
+    return task === RunningTask.BUILD && (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING)
+  }
+
+  const {data: buildLog, run: refreshLog} = useRequest((pID) => queryPipelineLog(pID), {
     formatResult: (res) => {
       return res
     },
+    manual: true
   })
+
   const [steps, setSteps] = useState([
     {
-      title: '构建中',
-      content: <BuildPage log={buildLog}/>,
-      icon: loading
+      title: '待构建',
+      icon: waiting
     },
     {
       title: '待发布',
-      content: <div/>,
       icon: waiting
     },
   ]);
-  const refreshPodsInfo = (data: CLUSTER.ClusterStatus) => {
+
+  const refreshPodsInfo = (data?: CLUSTER.ClusterStatus) => {
     const oldPods: CLUSTER.PodInTable[] = []
     const newPods: CLUSTER.PodInTable[] = []
     const healthyPods: CLUSTER.PodInTable[] = []
     const notHealthyPods: CLUSTER.PodInTable[] = []
     const images = new Set<string>()
+    if (!data) {
+      return {
+        newPods,
+        oldPods,
+        healthyPods,
+        notHealthyPods,
+        images
+      }
+    }
 
     const {podTemplateHash, versions} = data.clusterStatus;
     if (versions) {
@@ -161,76 +164,66 @@ export default () => {
       });
     }
 
-    setPodsInfo({
+    return {
       newPods,
       oldPods,
       healthyPods,
       notHealthyPods,
       images
-    })
+    }
   }
   const {data: statusData, run: refreshStatus} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
       if (statusData) {
-        refreshPodsInfo(statusData)
-
         const {task: t, taskStatus: tStatus, pipelinerunID: pID} = statusData.runningTask;
         const tt = t as RunningTask
         const ttStatus = tStatus as TaskStatus
-        setTaskStatus(ttStatus)
-        setPipelinerunID(pID)
-        if (inPublishing) {
-          const {step, status} = statusData.clusterStatus;
+        if (inPublishing(statusData)) {
+          refreshLog(pID)
+          const {status} = statusData.clusterStatus;
           const entity = taskStatus2Entity.get(ttStatus)
           if (!entity) {
             return
           }
+
+          setStepStatus(entity.stepStatus);
           if (tt === RunningTask.BUILD) {
-            // refresh build log when in build task
             steps[0] = {
               title: entity.buildTitle,
-              content: <BuildPage log={buildLog}/>,
               icon: entity.icon,
-            };
-          }
-          if (tt === RunningTask.DEPLOY && status != ClusterStatus.NOTFOUND) {
+            }
+          } else {
             const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
             steps[0] = {
               title: succeed!.buildTitle,
-              content: <BuildPage log={buildLog}/>,
               icon: smile,
             }
-            steps[1] = {
-              title: entity.deployTitle,
-              content: <DeployPage status={statusData} step={step} onNext={() => {
-                next(id).then(() => {
-                  successAlert(`第${step.index + 1}批次开始发布`)
-                  refreshStatus()
-                })
+            if (status != ClusterStatus.NOTFOUND) {
+              steps[1] = {
+                title: entity.deployTitle,
+                icon: entity.icon,
               }
-              }/>,
-              icon: entity.icon,
+              setCurrent(1)
             }
-            setCurrent(1)
           }
-          setSteps(steps)
-          setStepStatus(entity.stepStatus);
 
-          refreshLog()
+          setSteps(steps)
         }
       }
     }
   });
+
+  const podsInfo = refreshPodsInfo(statusData)
 
   function BuildPage({log}: { log: string }) {
     return <div style={{height: '500px'}}>
       <div>
         <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
         {
-          statusData?.runningTask.task as RunningTask === RunningTask.BUILD && taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING &&
+          canCancelPublish(statusData) &&
           <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
-            cancelPipeline(pipelinerunID!).then(() => {
+            cancelPipeline(statusData!.runningTask.pipelinerunID).then(() => {
               successAlert('取消发布成功')
             })
           }}>
@@ -432,13 +425,27 @@ export default () => {
       />
 
       {
-        inPublishing && (
+        inPublishing(statusData) && (
           <Row>
             <Col span={4}>
               <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
             </Col>
             <Col span={20}>
-              <div className={styles.stepsContent}>{steps[current].content}</div>
+              <div className={styles.stepsContent}>
+                {
+                  current === 0 && <BuildPage log={buildLog}/>
+                }
+                {
+                  current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status != ClusterStatus.NOTFOUND &&
+                  <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
+                    next(id).then(() => {
+                      successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
+                      refreshStatus()
+                    })
+                  }
+                  }/>
+                }
+              </div>
             </Col>
           </Row>
         )
