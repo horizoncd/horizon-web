@@ -153,7 +153,7 @@ const getStatusComponent = (status: any) => {
     case ClusterStatus.DEGRADED:
       return <Failed text={'NotHealthy'}/>
     case ClusterStatus.SUSPENDED:
-      return <Progressing/>
+      return <Suspended/>
     case ClusterStatus.FREEING:
       return <Freeing/>
     case ClusterStatus.FREED:
