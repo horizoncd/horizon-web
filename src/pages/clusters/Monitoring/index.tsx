@@ -1,12 +1,12 @@
 import {useMemo, useState} from 'react';
-import moment from 'moment';
+import moment, {unitOfTime} from 'moment';
 import queryString from 'query-string';
 import {withRouter} from 'umi';
 import {formatQueryParam, mergeDefaultValue} from '@/utils';
 import MonitorSearchForm from './MonitorSearchForm';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useRequest} from "@@/plugin-request/request";
-import {getClusterStatus, getDashboards} from "@/services/clusters/clusters";
+import {getClusterPods, getDashboards} from "@/services/clusters/clusters";
 import {useModel} from "@@/plugin-model/useModel";
 import {Tabs} from "antd";
 
@@ -17,32 +17,38 @@ const TaskDetailMonitor = ({location, history}) => {
   const {initialState} = useModel('@@initialState');
   const {id} = initialState!.resource;
   const {query} = location;
-  const {podName} = query
+  const {podName, type: typeFromQuery, timeRange: timeChangeFromQuery} = query
 
-  const [pods, setPods] = useState<CLUSTER.PodFromBackend[]>([]);
   const [podNames, setPodNames] = useState<string[]>([]);
   const [tabKey, setTabKey] = useState<string>('basic');
 
   const {data: dashboards} = useRequest(() => getDashboards(id));
 
-  const {data: statusData} = useRequest(() => getClusterStatus(id), {
-    onSuccess: () => {
-      const {versions} = statusData!.clusterStatus;
-      const allPods: CLUSTER.PodFromBackend[] = []
-      const allPodNames: string[] = []
-      if (versions) {
-        Object.keys(versions).forEach(version => {
-          const versionObj = versions[version]
-          const {pods: p} = versionObj
-          if (p) {
-            allPods.push(...Object.values<CLUSTER.PodFromBackend>(p))
-            allPodNames.push(...Object.keys(p))
-          }
-        });
-      }
-      setPods(allPods)
-      setPodNames(allPodNames)
+  const formatStartAndEnd = () => {
+    const now = moment()
+    if (!typeFromQuery) {
+      return [now.subtract(1, 'h').unix(), moment().unix()]
     }
+
+    if (typeFromQuery === 'custom') {
+      if (!timeChangeFromQuery) {
+        return [moment().startOf('day').unix(), moment().endOf('day').unix()]
+      }
+      return timeChangeFromQuery.map((item: number) => Math.round(item / 1000));
+    }
+
+    const gap = typeFromQuery.split('-')[1] as string;
+    const num = parseInt(gap.substring(0, gap.length - 1))
+    const t = gap.charAt(gap.length - 1) as unitOfTime.DurationConstructor
+    return [now.subtract(num, t).unix(), moment().unix()]
+  }
+
+  const startAndEnd = formatStartAndEnd();
+  const {data: podsData} = useRequest(() => getClusterPods(id, startAndEnd[0], startAndEnd[1]), {
+    onSuccess: () => {
+      setPodNames(Array.from(new Set(podsData?.pods.map(item => item.pod) || [])))
+    },
+    refreshDeps: [typeFromQuery, timeChangeFromQuery]
   });
 
   const formData = useMemo(() => formatQueryParam(mergeDefaultValue(query, {
@@ -103,7 +109,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
 
     return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}`;
-  }, [dashboards, formData, pods, podNames, tabKey]);
+  }, [dashboards, formData, podNames, tabKey]);
 
   return (
     <PageWithBreadcrumb>
