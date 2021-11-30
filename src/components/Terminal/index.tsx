@@ -34,7 +34,9 @@ const Index: React.FC<IProps> = ({
   // 初始化terminal
   useEffect(() => {
     terminalRef.current = new Terminal({
+      // @ts-ignore
       rows: Math.round(containerRef.current.clientHeight / DEFAULT_CHAR_HEIGHT),
+      // @ts-ignore
       cols: Math.round(containerRef.current?.clientWidth / DEFAULT_CHAR_WIDTH),
       // windowOptions: {
       //   fullscreenWin: true,

@@ -294,7 +294,7 @@ export default () => {
         description: `${ClusterStatus.HEALTHY}：健康
         ${ClusterStatus.PROGRESSING}：发布中
         ${ClusterStatus.SUSPENDED}：发布批次暂停中
-        ${ClusterStatus.DEGRADED}：故障
+        ${ClusterStatus.NOT_HEALTHY}：故障
         ${ClusterStatus.NOTFOUND}：未发布
         ${ClusterStatus.FREED}：资源已被释放，可重新构建发布
         ${ClusterStatus.FREEING}：资源释放中，无法继续操作集群

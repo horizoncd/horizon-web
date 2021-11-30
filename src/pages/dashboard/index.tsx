@@ -8,7 +8,7 @@ import {searchApplications} from "@/services/applications/applications"
 import {searchClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
 import Utils from "@/utils";
-import {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
+import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
 import {BookOutlined, CloudOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
 import {useRequest} from "@@/plugin-request/request";
@@ -36,16 +36,14 @@ export default (props: any) => {
 
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
-  const pageSize = 10;
-
   const [searchValue, setSearchValue] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [query, setQuery] = useState(0);
   const [groups, setGroups] = useState<API.GroupChild[]>([]);
   const defaultExpandedKeys: (string | number)[] = [];
   const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
-  // @ts-ignore
   const [applications, setApplications] = useState<API.Application[]>([]);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
 
@@ -77,7 +75,7 @@ export default (props: any) => {
     )
   }, {
     ready: pathname === groupsURL,
-    refreshDeps: [query, pageNumber],
+    refreshDeps: [query, pageNumber, pageSize],
     onSuccess: () => {
       const {items, total: t} = groupsData!
       setGroups(items);
@@ -96,7 +94,7 @@ export default (props: any) => {
     )
   }, {
     ready: pathname === applicationsURL,
-    refreshDeps: [query, pageNumber],
+    refreshDeps: [query, pageNumber, pageSize],
     onSuccess: () => {
       const {items, total: t} = applicationsData!
       setTotal(t)
@@ -114,7 +112,7 @@ export default (props: any) => {
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, pageNumber],
+    refreshDeps: [query, pageNumber, pageSize],
     onSuccess: () => {
       const {items, total: t} = clustersData!
       setClusters(items);
@@ -159,10 +157,12 @@ export default (props: any) => {
 
   const onPressEnter = () => {
     setQuery(prev => prev + 1)
+    setPageNumber(1)
   }
 
   const onSearch = () => {
     setQuery(prev => prev + 1)
+    setPageNumber(1)
   }
 
   const updateChildren = (items: API.GroupChild[], id: number, children: API.GroupChild[]): API.GroupChild[] => {
@@ -352,7 +352,10 @@ export default (props: any) => {
         <br/>
         <div style={{textAlign: 'center'}}>
           <Pagination current={pageNumber} hideOnSinglePage pageSize={pageSize} total={total}
-                      onChange={(page) => setPageNumber(page)}/>
+                      onChange={(page, pSize) => {
+                        setPageSize(pSize!)
+                        setPageNumber(page)
+                      }}/>
         </div>
       </Col>
     </Row>
