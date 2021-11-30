@@ -182,3 +182,19 @@ export async function updateClusterTemplateSchemaTags(clusterID: number, data: C
     data,
   });
 }
+
+export async function getClusterPods(clusterID: number, start: number, end: number) {
+  return request<{
+    data: {
+      pods: {
+        pod: string
+      }[]
+    }
+  }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
+    method: 'GET',
+    params: {
+      start,
+      end
+    }
+  });
+}
