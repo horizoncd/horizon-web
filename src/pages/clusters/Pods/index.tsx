@@ -305,8 +305,8 @@ export default () => {
       {
         key: 'Pods数量',
         value: {
-          Health: podsInfo.healthyPods.length,
-          NotHealth: podsInfo.notHealthyPods.length,
+          Healthy: podsInfo.healthyPods.length,
+          NotHealthy: podsInfo.notHealthyPods.length,
         }
       }
     ],
