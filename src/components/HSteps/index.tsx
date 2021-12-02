@@ -2,10 +2,11 @@ import type {StepsProps} from "antd/lib/steps";
 import {Divider, Steps} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import './index.less'
+import type {ReactNode} from "react";
 
 const {Step} = Steps;
 
-export default (props: StepsProps & {steps: {title: string, disabled?: boolean, icon?: JSX.Element}[], content?: any}) => {
+export default (props: StepsProps & {steps: {title: ReactNode, disabled?: boolean, icon?: JSX.Element}[], content?: any}) => {
   const intl = useIntl();
 
   const {current, onChange, steps} = props;
