@@ -5,6 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
 import {freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
+import type {ReactNode} from 'react';
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
 import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
@@ -29,15 +30,28 @@ const waiting = <HourglassOutlined/>
 
 const taskStatus2Entity = new Map<TaskStatus, {
   icon: JSX.Element,
-  buildTitle: string,
-  deployTitle: string,
+  buildTitle: ReactNode,
+  deployTitle: ReactNode,
   stepStatus: 'wait' | 'process' | 'finish' | 'error',
 }>([
   [TaskStatus.PENDING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
-  [TaskStatus.FAILED, {icon: frown, buildTitle: '构建失败', deployTitle: '发布失败', stepStatus: 'error'}]
+  [TaskStatus.FAILED, {icon: frown, buildTitle: <span style={{color: 'red'}}>构建失败</span>, deployTitle: <span style={{color: 'red'}}>发布失败</span>, stepStatus: 'error'}]
 ]);
+
+const pro = 'pro'
+const pre = 'pre'
+const testDev = 'test_dev'
+const env2MlogEnv = new Map<string, string>([
+  ['online', pro],
+  ['pre', pre],
+  ['test', testDev],
+  ['reg', testDev],
+  ['perf', testDev],
+  ['beta', testDev],
+  ['dev', testDev],
+])
 
 interface DeployPageProps {
   step: {
@@ -82,7 +96,10 @@ export default () => {
     manual: true
   })
 
-  const [steps, setSteps] = useState([
+  const [steps, setSteps] = useState<{
+    title: ReactNode,
+    icon: JSX.Element
+  }[]>([
     {
       title: '待构建',
       icon: waiting
@@ -393,6 +410,16 @@ export default () => {
       key="freeCluster">释放集群</Menu.Item>
   </Menu>;
 
+  const infoWhenNotHealthy = <strong style={{color: 'red'}}>
+    建议排查步骤：<br/>
+    1. 点击【查看日志】 查看启动日志中是否有异常信息 <br/><br/>
+    2. 点击【查看events】 查看事件列表中是否有Warning类型的事件 <br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/><br/>
+    3. 点击【Terminal】 登陆容器查看业务日志 如无法登陆请点击 <a target="_blank"
+                                           href={`http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&loggerLevel=ERROR`}>链接</a> 跳转mlog日志平台查看
+  </strong>
+
   return (
     <PageWithBreadcrumb>
       <div>
@@ -437,13 +464,16 @@ export default () => {
                 }
                 {
                   current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status != ClusterStatus.NOTFOUND &&
-                  <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
-                    next(id).then(() => {
-                      successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
-                      refreshStatus()
-                    })
-                  }
-                  }/>
+                  (
+                    statusData.clusterStatus.status == ClusterStatus.DEGRADED ? infoWhenNotHealthy :
+                      <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
+                        next(id).then(() => {
+                          successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
+                          refreshStatus()
+                        })
+                      }
+                      }/>
+                  )
                 }
               </div>
             </Col>
