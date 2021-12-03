@@ -92,13 +92,13 @@ const Index: React.FC<IProps> = ({
   }, 100);
 
   //由于accordionCollapse状态改变时，折叠实际还未完成，需要等待一段时间，再进行resize，否则可能会不准确
-  useEffect(() => {
-    sleep(300).then(
-      () => {
-        onResize();
-      }
-    )
-  }, [initialState?.accordionCollapse])
+  // useEffect(() => {
+  //   sleep(300).then(
+  //     () => {
+  //       onResize();
+  //     }
+  //   )
+  // }, [initialState?.accordionCollapse])
 
   // 初始化websocket连接
   useEffect(() => {
@@ -145,9 +145,9 @@ const Index: React.FC<IProps> = ({
 
   // 窗口大小变化时的回调
   useEffect(() => {
-    containerRef.current?.addEventListener('resize', onResize);
+    window.addEventListener('resize', onResize);
     return () => {
-      containerRef.current?.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
