@@ -30,6 +30,7 @@ export default {
   'pages.applicationNew.basic.url': 'url',
   'pages.applicationNew.basic.subfolder': 'subfolder',
   'pages.applicationNew.basic.branch': 'branch',
+  'pages.applicationNew.basic.recommendedRelease': 'recommended release',
   'pages.applicationEdit.success': 'update application succeed',
   'pages.applicationEdit.header': 'Editing [ {application} ], please fill in the information step by step',
 

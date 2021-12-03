@@ -7,6 +7,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
+import Detail from '@/components/'
 import RBAC from '@/rbac'
 
 const {TextArea} = Input;
@@ -36,9 +37,9 @@ export default () => {
     </strong>
   );
 
-  const groupNameLabel = formatLabel("Group name");
-  const groupDescLabel = formatLabel("Group description");
-  const groupURLLabel = formatLabel("Group URL");
+  const groupNameLabel = formatLabel("名称");
+  const groupDescLabel = formatLabel("描述");
+  const groupURLLabel = formatLabel("路径");
 
   const getGroupNameLabelStyle = () => {
     return {
@@ -93,9 +94,9 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <Row>
-        <Col span={3}/>
-        <Col span={18}>
+        <h1>{'分组配置'}</h1>
+        <Divider/>
+      <Card>
           <Form
             layout={'vertical'}
             form={form}
@@ -129,10 +130,11 @@ export default () => {
             </Form.Item>
             {
               RBAC.Permissions.updateGroup.allowed && <Form.Item style={getSubmitBtnStyle()}>
-                <Button type="primary" htmlType={'submit'}>Save changes</Button>
+                <Button type="primary" htmlType={'submit'}>保存</Button>
               </Form.Item>
             }
           </Form>
+      </Card>
           {RBAC.Permissions.deleteGroup.allowed && <Divider/>}
           {
             RBAC.Permissions.deleteGroup.allowed && <Card className={'card'}>
@@ -148,8 +150,6 @@ export default () => {
               <span style={{fontWeight: 'bold', marginLeft: '20px'}}>分组删除后，将无法恢复!</span>
             </Card>
           }
-        </Col>
-      </Row>
     </PageWithBreadcrumb>
   );
 };

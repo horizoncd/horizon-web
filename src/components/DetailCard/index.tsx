@@ -23,6 +23,7 @@ export type Param = {
   key: string,
   value: string | string[] | Record<string, string | number> | React.ReactNode;
   description?: string;
+  hidden?: boolean;
 }
 
 export default (props: Props) => {
@@ -43,6 +44,9 @@ export default (props: Props) => {
         {index > 0 ? columnSeparator : null}
         <div className={styles.dataColumn}>
           {params.map((param) => {
+            if (param.hidden) {
+              return
+            }
             let col2 = 0
             const itemContents: any = []
             if (React.isValidElement(param.value)) {
@@ -80,7 +84,7 @@ export default (props: Props) => {
               <div className={styles.textKey}>{param.key}</div>
               {
                 param.description &&
-                <Tooltip overlayStyle={{minWidth: "290px"}} placement={"right"} className={styles.textDescription}
+                <Tooltip overlayStyle={{maxWidth: "1000px"}} placement={"right"} className={styles.textDescription}
                          title={<span style={{
                            whiteSpace: "pre-line"
                          }}>{param.description}</span>}>
