@@ -212,7 +212,8 @@ export default () => {
             <span className={styles.cardTitle}>标签</span>
             <div style={{flex: 1}}/>
             {
-              initialState!.currentUser!.isAdmin && <Button
+              <Button
+                disabled={!RBAC.Permissions.updateTags.allowed}
                 onClick={
                   () =>
                     history.push({
@@ -236,7 +237,8 @@ export default () => {
             <span className={styles.cardTitle}>管理员标签</span>
             <div style={{flex: 1}}/>
             {
-              RBAC.Permissions.updateTemplateSchemaTags.allowed && <Button
+              <Button
+                disabled={!RBAC.Permissions.updateTemplateSchemaTags.allowed}
                 onClick={
                   () =>
                     history.push({

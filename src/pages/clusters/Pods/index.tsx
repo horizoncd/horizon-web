@@ -308,28 +308,28 @@ export default () => {
       {
         key: '集群状态',
         value: getStatusComponent(clusterStatus),
-        description: `${ClusterStatus.HEALTHY}：健康
-        ${ClusterStatus.PROGRESSING}：发布中
-        ${ClusterStatus.SUSPENDED}：发布批次暂停中
-        ${ClusterStatus.NOT_HEALTHY}：故障
-        ${ClusterStatus.NOTFOUND}：未发布
-        ${ClusterStatus.FREED}：资源已被释放，可重新构建发布
-        ${ClusterStatus.FREEING}：资源释放中，无法继续操作集群
-        ${ClusterStatus.DELETING}：集群删除中，无法继续操作集群`
+        description: `正常： 集群已正常发布
+        暂停： 集群处于发布批次暂停中
+        异常： 集群处于异常状态
+        未发布： 集群尚未发布
+        发布中： 集群正在发布中
+        已释放： 集群的资源已被释放，与未发布状态类似，可重新构建发布
+        释放中： 集群处于资源释放中，无法继续操作集群
+        删除中： 集群处于删除中，无法继续操作集群`
       },
     ],
     [
       {
         key: 'Pods数量',
         value: {
-          Healthy: podsInfo.healthyPods.length,
-          NotHealthy: podsInfo.notHealthyPods.length,
+          正常: podsInfo.healthyPods.length,
+          异常: podsInfo.notHealthyPods.length,
         }
       }
     ],
     [
       {
-        key: 'Git Repo',
+        key: '代码',
         value: {
           URL: cluster?.git.url || '',
           Branch: cluster?.git.branch || '',
@@ -338,7 +338,7 @@ export default () => {
     ],
     [
       {
-        key: 'Images',
+        key: '镜像',
         value: Array.from(podsInfo.images),
       }
     ]

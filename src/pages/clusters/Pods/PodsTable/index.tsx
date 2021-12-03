@@ -14,6 +14,7 @@ import {Offline, Online, Pending, Running, Terminated, Waiting} from '@/componen
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import styles from './index.less'
+import Utils from '@/utils'
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -65,11 +66,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   } = useRequest((podName) => queryPodEvents(cluster!.id, podName), {
     pollingInterval,
     manual: true,
-    formatResult: (res) => {
+    formatResult: (res: any) => {
       return res
     },
-    onSuccess: (eventsResp) => {
-      setEvents(eventsResp.data)
+    onSuccess: (eventsResp: any) => {
+      let result: any = []
+      for (const v of eventsResp.data) {
+        result = result.concat(
+          {
+            type: v.type,
+            reason: v.reason,
+            message: v.message,
+            count: v.count,
+            eventTimestamp: Utils.timeToLocal(v.eventTimestamp),
+          }
+        )
+      }
+      setEvents(result)
     }
   })
 

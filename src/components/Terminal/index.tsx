@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
+import React, {useEffect, useRef} from 'react';
+import {Terminal} from 'xterm';
+import {FitAddon} from 'xterm-addon-fit';
 import WebSocket from '@/websocket';
 import debounce from 'lodash/debounce';
 import 'xterm/css/xterm.css';
 import './index.module.less';
+import {useModel} from "@@/plugin-model/useModel";
 
 export const DEFAULT_CHAR_WIDTH = 9.609375;
 export const DEFAULT_CHAR_HEIGHT = 18;
@@ -22,20 +23,23 @@ interface IProps {
 }
 
 const Index: React.FC<IProps> = ({
-  url,
-  protocol,
-  postSocketMessage,
-  postSendData,
-  onSocketOpen,
-}) => {
+                                   url,
+                                   protocol,
+                                   postSocketMessage,
+                                   postSendData,
+                                   onSocketOpen,
+                                 }) => {
   const containerRef = useRef<HTMLDivElement>();
   const terminalRef = useRef<Terminal | undefined>(undefined);
   const socketRef = useRef<WebSocket | undefined>(undefined);
+  const {initialState} = useModel('@@initialState');
   // 初始化terminal
   useEffect(() => {
+    // initialState.forbidAccordionCollapse = true;
+    // setInitialState(initialState);
     terminalRef.current = new Terminal({
       // @ts-ignore
-      rows: Math.round(containerRef.current.clientHeight / DEFAULT_CHAR_HEIGHT),
+      rows: Math.round(containerRef.current?.clientHeight / DEFAULT_CHAR_HEIGHT),
       // @ts-ignore
       cols: Math.round(containerRef.current?.clientWidth / DEFAULT_CHAR_WIDTH),
       // windowOptions: {
@@ -67,6 +71,34 @@ const Index: React.FC<IProps> = ({
     );
     terminalRef.current.focus();
   }, []);
+
+  function sleep(time: any) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  //重新设置terminal大小
+  const onResize = debounce(() => {
+    fitAddon.fit();
+    const dimensions = fitAddon.proposeDimensions();
+    socketRef.current?.sendMessage?.(
+      JSON.stringify([
+        JSON.stringify({
+          Op: 'resize',
+          Cols: dimensions.cols,
+          Rows: dimensions.rows,
+        }),
+      ]),
+    );
+  }, 100);
+
+  //由于accordionCollapse状态改变时，折叠实际还未完成，需要等待一段时间，再进行resize，否则可能会不准确
+  // useEffect(() => {
+  //   sleep(300).then(
+  //     () => {
+  //       onResize();
+  //     }
+  //   )
+  // }, [initialState?.accordionCollapse])
 
   // 初始化websocket连接
   useEffect(() => {
@@ -113,26 +145,13 @@ const Index: React.FC<IProps> = ({
 
   // 窗口大小变化时的回调
   useEffect(() => {
-    const listener = debounce(() => {
-      fitAddon.fit();
-      const dimensions = fitAddon.proposeDimensions();
-      socketRef.current?.sendMessage?.(
-        JSON.stringify([
-          JSON.stringify({
-            Op: 'resize',
-            Cols: dimensions.cols,
-            Rows: dimensions.rows,
-          }),
-        ]),
-      );
-    }, 100);
-    window.addEventListener('resize', listener);
+    window.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener('resize', listener);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
-  return <div className={"full-screen"} ref={containerRef as React.RefObject<HTMLDivElement>} />;
+  return <div className={"full-screen"} ref={containerRef as React.RefObject<HTMLDivElement>}/>;
 };
 
 export default Index

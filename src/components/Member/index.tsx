@@ -155,6 +155,7 @@ export default (props: MemberProps) => {
     }).then(() => {
       successAlert(intl.formatMessage({id: "pages.members.add.success"}))
       form.resetFields();
+      setUsers({total: 0, items: []});
       refreshMembers().then();
     })
   }

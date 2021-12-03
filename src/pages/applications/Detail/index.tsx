@@ -55,6 +55,12 @@ export default () => {
         key: intl.formatMessage({id: 'pages.applicationDetail.basic.release'}),
         value: `${application.template.name}-${application.template.release}`
       },
+      // 仅当推荐版本与当前版本不一致时显示推荐信息
+      {
+        key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
+        value: `${application.template.name}-${application.template.recommendedRelease}`,
+        hidden: application.template.release === application.template.recommendedRelease,
+      },
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.url'}), value: application.git.url},
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.subfolder'}), value: application.git.subfolder},
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
@@ -70,14 +76,6 @@ export default () => {
       },
     ],
   ]
-
-  // 仅当推荐版本与当前版本不一致时显示推荐信息
-  if (application.template.release !== application.template.recommendedRelease) {
-    serviceDetail[1] = serviceDetail[1].concat({
-      key: intl.formatMessage({id: 'pages.applicationNew.basic.recommendedRelease'}),
-      value: `${application.template.name}-${application.template.recommendedRelease}`
-    })
-  }
 
   const {run: refreshApplication} = useRequest(() => {
     return getApplication(id).then(({data: result}) => {

@@ -20,7 +20,7 @@ export default (props: any) => {
   const {id: sessionID} = data || {};
 
   const protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
-  const url = `${protocol}//${backend}/apis/front/v1/terminal/${sessionID}/websocket`
+  const url = `${protocol}//horizon.yf-dev.netease.com/apis/front/v1/terminal/${sessionID}/websocket`
   return (
     sessionID ? <Terminal
       url={url}
