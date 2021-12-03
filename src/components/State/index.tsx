@@ -147,21 +147,23 @@ const Offline = (props: StatusProps) => {
 const getStatusComponent = (status: any) => {
   switch (status) {
     case ClusterStatus.PROGRESSING:
-      return <Progressing/>
+      return <Progressing text={'发布中'}/>
     case ClusterStatus.HEALTHY:
-      return <Succeeded text={'Healthy'}/>
+      return <Succeeded text={'正常'}/>
     case ClusterStatus.DEGRADED:
-      return <Failed text={'NotHealthy'}/>
+      return <Failed text={'异常'}/>
     case ClusterStatus.SUSPENDED:
-      return <Suspended/>
+      return <Suspended text={'暂停'}/>
     case ClusterStatus.FREEING:
-      return <Freeing/>
+      return <Freeing text={'释放中'}/>
     case ClusterStatus.FREED:
-      return <Freed/>
+      return <Freed text={'已释放'}/>
     case ClusterStatus.DELETING:
-      return <Deleting/>
+      return <Deleting text={'删除中'}/>
+    case ClusterStatus.NOTFOUND:
+      return <NotFount text={'未发布'}/>
     default:
-      return <NotFount/>
+      return <NotFount text={'未知'}/>
   }
 }
 

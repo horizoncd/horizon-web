@@ -25,6 +25,7 @@ const Resource = {
   offline: 'offline',
   free: 'free',
   templateSchemaTags: 'templateschematags',
+  tags: 'tags',
 }
 
 // 操作
@@ -195,6 +196,12 @@ const Permissions = {
   // 创建/修改/删除管理员标签
   updateTemplateSchemaTags: {
     resource: `${Resource.cluster}/${Resource.templateSchemaTags}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 创建/修改/删除标签
+  updateTags: {
+    resource: `${Resource.cluster}/${Resource.tags}`,
     action: Action.create,
     allowed: false,
   },

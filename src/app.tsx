@@ -11,9 +11,9 @@ import {
   AppstoreOutlined,
   BankOutlined,
   ContactsOutlined,
+  FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  FundOutlined,
   TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
@@ -32,7 +32,7 @@ const IconMap = {
   bank: <BankOutlined/>,
   appstore: <AppstoreOutlined/>,
   fundout: <FundOutlined/>,
-  tags: <TagsOutlined />
+  tags: <TagsOutlined/>
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -56,9 +56,17 @@ export async function getInitialState(): Promise<{
   roles?: API.Role[];
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
   resource: API.Resource;
+  accordionCollapse: boolean;
 }> {
   const settings: Partial<LayoutSettings> = {};
-  const resource: API.Resource = {fullName: '', fullPath: '', id: 0, name: '', type: 'group', parentID: 0};
+  const resource: API.Resource = {
+    fullName: '',
+    fullPath: '',
+    id: 0,
+    name: '',
+    type: 'group',
+    parentID: 0,
+  };
   let currentUser: API.CurrentUser | undefined = {
     id: 0,
     name: "",
@@ -66,7 +74,6 @@ export async function getInitialState(): Promise<{
     role: RBAC.AnonymousRole,
   }
   let roles: API.Role[] = [];
-
 
   try {
     const {data: userData} = await queryCurrentUser();
@@ -120,6 +127,7 @@ export async function getInitialState(): Promise<{
     roles,
     settings,
     resource,
+    accordionCollapse: false,
   };
 }
 
@@ -168,9 +176,10 @@ export const request: RequestConfig = {
   },
 };
 
+
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({initialState}) => {
+export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
     headerContentRender: () => {
       return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
@@ -235,6 +244,10 @@ export const layout: RunTimeLayoutConfig = ({initialState}) => {
             return defaultMenuData;
         }
       },
+    },
+    onCollapse: (collapsed) => {
+      initialState!.accordionCollapse = collapsed;
+      setInitialState(initialState).then();
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
