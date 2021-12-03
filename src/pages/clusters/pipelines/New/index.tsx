@@ -12,7 +12,7 @@ import {buildDeploy, deploy, diffsOfCode, getCluster} from "@/services/clusters/
 import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
 import type {FieldData} from 'rc-field-form/lib/interface'
-import {Rule} from "rc-field-form/lib/interface";
+import type {Rule} from "rc-field-form/lib/interface";
 import {listBranch} from "@/services/code/code";
 import HForm from '@/components/HForm'
 
@@ -52,7 +52,6 @@ export default (props: any) => {
     pageNumber: 1,
     pageSize: 50,
   }), {
-    ready: type === PublishType.BUILD_DEPLOY && !!cluster,
     debounceInterval: 500,
   })
 
@@ -68,6 +67,20 @@ export default (props: any) => {
     },
   ];
 
+  const {run: startBuildDeploy, loading: buildDeployLoading} = useRequest((clusterID: number, d: CLUSTER.ClusterBuildDeploy) => buildDeploy(clusterID, d), {
+    onSuccess: () => {
+      hookAfterSubmit()
+    },
+    manual: true
+  })
+
+  const {run: startDeploy, loading: deployLoading} = useRequest((clusterID: number, d: CLUSTER.ClusterDeploy) => deploy(clusterID, d), {
+    onSuccess: () => {
+      hookAfterSubmit()
+    },
+    manual: true
+  })
+
   const onSubmit = () => {
     const info = {
       title: form.getFieldValue('title'),
@@ -75,20 +88,16 @@ export default (props: any) => {
     }
     if (type === PublishType.BUILD_DEPLOY) {
       form.validateFields(['title', 'branch']).then(() => {
-        buildDeploy(id!, {
+        startBuildDeploy(id!, {
           ...info,
           git: {
             branch: form.getFieldValue('branch'),
           }
-        }).then(() => {
-          hookAfterSubmit()
         })
       })
     } else {
       form.validateFields(['title']).then(() => {
-        deploy(id!, info).then(() => {
-          hookAfterSubmit()
-        })
+        startDeploy(id!, info)
       });
     }
   }
@@ -156,7 +165,7 @@ export default (props: any) => {
         </Card>
       </Card>
 
-      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel}/>
+      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel} loading={buildDeployLoading || deployLoading}/>
     </PageWithBreadcrumb>
   )
 }
