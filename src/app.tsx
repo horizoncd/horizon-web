@@ -1,6 +1,6 @@
 import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
 import {PageLoading} from '@ant-design/pro-layout';
-import {Menu, notification} from 'antd';
+import {Menu, notification, Tooltip} from 'antd';
 import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history} from 'umi';
 import RBAC from '@/rbac';
@@ -203,22 +203,44 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
       if (!title || !fullPath) {
         return false;
       }
+
+      const {accordionCollapse = false} = initialState || {};
       const firstLetter = title.substring(0, 1).toUpperCase();
-      const titleContent = title.length <= 15 ? title : title.substr(0, 12) + '...'
+      if (!accordionCollapse) {
+        const titleContent = title.length <= 15 ? title : `${title.substr(0, 12)}...`
+        return (
+          <Tooltip title={title}>
+            <span
+              style={{alignItems: 'center', lineHeight: '40px'}}
+              onClick={() => {
+                window.location.href = fullPath;
+              }}
+            >
+              <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+                {firstLetter}
+              </span>
+              <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>
+                {titleContent}
+              </span>
+            </span>
+          </Tooltip>
+        );
+      }
+
       return (
-        <span
-          style={{alignItems: 'center', lineHeight: '40px'}}
-          onClick={() => {
-            window.location.href = fullPath;
-          }}
-        >
-          <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
-            {firstLetter}
+        <Tooltip title={title}>
+          <span
+            style={{alignItems: 'center', lineHeight: '40px'}}
+            onClick={() => {
+              window.location.href = fullPath;
+            }}
+          >
+            <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+              {firstLetter}
+            </span>
+            <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}/>
           </span>
-          <span style={{alignItems: 'center', marginLeft: 60, color: 'black', fontSize: '16px'}}>
-            {titleContent}
-          </span>
-        </span>
+        </Tooltip>
       );
     },
     menu: {
@@ -246,8 +268,8 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
       },
     },
     onCollapse: (collapsed) => {
-      initialState!.accordionCollapse = collapsed;
-      setInitialState(initialState).then();
+      // @ts-ignore
+      setInitialState((s) => ({...s, accordionCollapse: collapsed}));
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

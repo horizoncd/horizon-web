@@ -10,7 +10,7 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Offline, Online, Pending, Running, Terminated, Waiting} from '@/components/State'
+import {Offline, Online, PodPending, PodRunning, PodError} from '@/components/State'
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import styles from './index.less'
@@ -21,12 +21,14 @@ const pollingInterval = 5000;
 
 const status2StateNode = new Map(
   [
-    ['running', <Running/>],
-    ['waiting', <Waiting/>],
-    ['terminated', <Terminated/>],
+    ['running', <PodRunning text={'Running'}/>],
+    ['terminated', <PodPending text={'Terminated'}/>],
+    ['PodInitializing', <PodPending text={'PodInitializing'}/>],
+    ['CrashLoopBackOff', <PodError text={'CrashLoopBackOff'}/>],
+    ['PostStartHookError', <PodError text={'PostStartHookError'}/>],
+
     ['online', <Online/>],
     ['offline', <Offline/>],
-    ['pending', <Pending/>],
   ]
 )
 
@@ -49,8 +51,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     run: refreshPodLog,
     cancel: cancelPodLog,
   } = useRequest((podName, containerName) => queryPodStdout(cluster!.id, {
-    podName: podName,
-    containerName: containerName
+    podName,
+    containerName
   }), {
     manual: true,
     ready: !!cluster,
@@ -70,19 +72,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       return res
     },
     onSuccess: (eventsResp: any) => {
-      let result: any = []
-      for (const v of eventsResp.data) {
-        result = result.concat(
-          {
-            type: v.type,
-            reason: v.reason,
-            message: v.message,
-            count: v.count,
-            eventTimestamp: Utils.timeToLocal(v.eventTimestamp),
-          }
-        )
-      }
-      setEvents(result)
+      setEvents(eventsResp.data.map((v: any) => ({
+        type: v.type,
+        reason: v.reason,
+        message: v.message,
+        count: v.count,
+        eventTimestamp: Utils.timeToLocal(v.eventTimestamp),
+      })))
     }
   })
 
@@ -253,6 +249,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     value: item,
   }));
 
+  const postStartHookError = 'PostStartHookError'
   const columns = [
     {
       title: formatMessage('podName', '副本'),
@@ -266,7 +263,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'status',
       filters: statusList,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
-      render: (text: string) => status2StateNode.get(text)
+      render: (text: string) => {
+        // special handle for PostStartHookError
+        if (text.length > postStartHookError.length) {
+          return <PodError text={text.substr(0, postStartHookError.length)} message={text}/>
+        }
+        return status2StateNode.get(text);
+      }
     },
     {
       title: 'IP',
