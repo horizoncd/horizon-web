@@ -22,6 +22,8 @@ export default () => {
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
   const {successAlert} = useModel('alert')
   const defaultCluster: CLUSTER.Cluster = {
+    createdBy: {name: ""},
+    updatedBy: {name: ""},
     latestDeployedCommit: "",
     id: 0,
     application: {
@@ -52,8 +54,6 @@ export default () => {
     updatedAt: ''
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
-  const [tags, setTags] = useState<CLUSTER.ClusterTag[]>()
-  const [adminTags, setAdminTags] = useState<CLUSTER.ClusterTag[]>()
   const [template, setTemplate] = useState([])
   const serviceDetail: Param[][] = [
     [
@@ -64,7 +64,7 @@ export default () => {
     [
       {
         key: intl.formatMessage({id: 'pages.clusterDetail.basic.release'}),
-        value: cluster.template.name + '-' + cluster.template.release
+        value: `${cluster.template.name  }-${  cluster.template.release}`
       },
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.url'}), value: cluster.git.url},
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.branch'}), value: cluster.git.branch},
@@ -79,6 +79,14 @@ export default () => {
         key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}),
         value: utils.timeToLocal(cluster.updatedAt)
       },
+      {
+        key: '创建者',
+        value: cluster.createdBy.name
+      },
+      {
+        key: '更新者',
+        value: cluster.updatedBy.name
+      },
     ],
   ]
 
@@ -88,7 +96,7 @@ export default () => {
       // query schema by template and release
       querySchema(result.template.name, result.template.release, {
         resourceType: ResourceType.CLUSTER,
-        clusterID: clusterID
+        clusterID
       }).then(({data}) => {
         setTemplate(data);
       });
@@ -98,19 +106,11 @@ export default () => {
     refreshDeps: [clusterID]
   })
 
-  const {run: refreshTags} = useRequest(() => {
-    return getClusterTags(clusterID).then(({data: result}) => {
-      setTags(result.tags);
-    });
-  }, {
-    refreshDeps: [clusterID]
+  const {data: tags} = useRequest(() => getClusterTags(clusterID), {
+    refreshDeps: [clusterID],
   })
 
-  const {run: refreshAdminTags} = useRequest(() => {
-    return getClusterTemplateSchemaTags(clusterID).then(({data: result}) => {
-      setAdminTags(result.tags);
-    });
-  }, {
+  const {data: adminTags} = useRequest(() => getClusterTemplateSchemaTags(clusterID), {
     refreshDeps: [clusterID]
   })
 
@@ -226,7 +226,7 @@ export default () => {
         )}
         type={"inner"}>
         <Table
-          dataSource={tags}
+          dataSource={tags?.tags}
           columns={tagColumns}
         />
       </Card>
@@ -251,7 +251,7 @@ export default () => {
         )}
         type={"inner"}>
         <Table
-          dataSource={adminTags}
+          dataSource={adminTags?.tags}
           columns={tagColumns}
         />
       </Card>

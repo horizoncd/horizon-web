@@ -10,7 +10,7 @@ import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
 import copy from "copy-to-clipboard";
-import {Offline, Online, PodPending, PodRunning, PodError} from '@/components/State'
+import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/State'
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import styles from './index.less'
@@ -21,12 +21,6 @@ const pollingInterval = 5000;
 
 const status2StateNode = new Map(
   [
-    ['running', <PodRunning text={'Running'}/>],
-    ['terminated', <PodPending text={'Terminated'}/>],
-    ['PodInitializing', <PodPending text={'PodInitializing'}/>],
-    ['CrashLoopBackOff', <PodError text={'CrashLoopBackOff'}/>],
-    ['PostStartHookError', <PodError text={'PostStartHookError'}/>],
-
     ['online', <Online/>],
     ['offline', <Offline/>],
   ]
@@ -72,7 +66,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       return res
     },
     onSuccess: (eventsResp: any) => {
-      setEvents(eventsResp.data.map((v: any) => ({
+      setEvents(eventsResp.data.map((v: any, idx: number) => ({
+        key: idx,
         type: v.type,
         reason: v.reason,
         message: v.message,
@@ -240,16 +235,34 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     </div>
   }
 
+  // 预处理下数据结构
+  const postStartHookError = 'PostStartHookError'
   const filteredData = data.filter((item: CLUSTER.PodInTable) => {
     return !filter || item.podName.indexOf(filter) > -1 || item.ip.indexOf(filter) > -1
+  }).map(item => {
+    const {state} = item
+    if (!state.reason) {
+      state.reason = state.state
+    }
+
+    if (state.state === 'terminated') {
+      state.reason = 'terminated';
+    }
+
+    if (state.reason.length > postStartHookError.length) {
+      state.reason = state.reason.substr(0, postStartHookError.length);
+    }
+
+    // change first letter to uppercase
+    state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1)
+    return item;
   })
 
-  const statusList = Array.from(new Set(filteredData.map(item => item.status))).map(item => ({
-    text: item.slice(0, 1).toUpperCase() + item.slice(1),
+  const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
+    text: item,
     value: item,
   }));
 
-  const postStartHookError = 'PostStartHookError'
   const columns = [
     {
       title: formatMessage('podName', '副本'),
@@ -259,16 +272,26 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: formatMessage('status', '状态'),
-      dataIndex: 'status',
+      dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
-      onFilter: (value: string, record: CLUSTER.PodInTable) => record.status === value,
-      render: (text: string) => {
-        // special handle for PostStartHookError
-        if (text.length > postStartHookError.length) {
-          return <PodError text={text.substr(0, postStartHookError.length)} message={text}/>
+      onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
+      render: (text: string, record: CLUSTER.PodInTable) => {
+        const {message} = record.state
+        switch (text) {
+          case 'PodInitializing':
+            return <PodPending text={'PodInitializing'} message={message}/>
+          case 'PostStartHookError':
+            return <PodError text={'PostStartHookError'} message={message}/>
+          case 'CrashLoopBackOff':
+            return <PodError text={'CrashLoopBackOff'} message={message}/>
+          case 'Running':
+            return <PodRunning text={'Running'}/>
+          case 'Terminated':
+            return <PodPending text={'Terminated'} message={message}/>
+          default:
+            return <PodPending text={'Pending'}/>
         }
-        return status2StateNode.get(text);
       }
     },
     {

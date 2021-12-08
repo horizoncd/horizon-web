@@ -110,10 +110,12 @@ const PodRunning = (props: StatusProps) => {
 }
 
 const PodPending = (props: StatusProps) => {
-  const {text} = props;
-  return <span className="badge-color-yellow badge-content">
-    {text}
-  </span>
+  const {text, message} = props;
+  return <Tooltip title={message}>
+    <span className="badge-color-yellow badge-content">
+      {text}
+    </span>
+  </Tooltip>
 }
 
 const PodError = (props: StatusProps) => {
