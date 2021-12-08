@@ -20,6 +20,7 @@ import {stringify} from "querystring";
 import Utils from '@/utils'
 import {getStatusComponent, isRestrictedStatus} from "@/components/State";
 import RBAC from '@/rbac'
+import {queryEnvironments, queryRegions} from "@/services/environments/environments";
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -64,6 +65,9 @@ interface DeployPageProps {
 
 const pollingInterval = 6000;
 const pendingState = 'pending'
+const runningState = 'running'
+const onlineState = 'online'
+const offlineState = 'offline'
 
 export default () => {
 
@@ -73,14 +77,32 @@ export default () => {
   const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
+  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
 
   const {data: cluster} = useRequest(() => getCluster(id), {
     pollingInterval,
   });
 
+  const {data: envs} = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      envs!.forEach(item => e.set(item.name, item.displayName))
+      setEnv2DisplayName(e)
+    }
+  });
+  const {data: regions} = useRequest(() => queryRegions(cluster!.scope.environment), {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      regions!.forEach(item => e.set(item.name, item.displayName))
+      setRegion2DisplayName(e)
+    },
+    ready: !!cluster
+  });
+
   const inPublishing = (statusData?: CLUSTER.ClusterStatus) => {
     const taskStatus = statusData?.runningTask.taskStatus as TaskStatus
-    return taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus == TaskStatus.FAILED
+    return taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus === TaskStatus.FAILED
   }
 
   const canCancelPublish = (statusData?: CLUSTER.ClusterStatus) => {
@@ -138,21 +160,24 @@ export default () => {
             const {containers, initContainers} = spec
             const {namespace, creationTimestamp} = metadata
             const {containerStatuses} = status
-            let state = ''
+            const state = {
+              state: pendingState,
+              reason: '',
+              message: ''
+            }
             let restartCount = 0
-            let onlineStatus = 'offline'
+            let onlineStatus = offlineState
             if (containerStatuses && containerStatuses.length > 0) {
-              state = containerStatuses[0].state.state
+              Object.assign(state, containerStatuses[0].state)
+
               restartCount = containerStatuses[0].restartCount
-              onlineStatus = containerStatuses[0].ready ? 'online' : 'offline'
-            } else {
-              state = pendingState
+              onlineStatus = containerStatuses[0].ready ? onlineState : offlineState
             }
 
             const podInTable: CLUSTER.PodInTable = {
               key: podName,
               podName,
-              status: state,
+              state,
               createTime: Utils.timeToLocal(creationTimestamp),
               ip: status.podIP,
               onlineStatus,
@@ -161,7 +186,7 @@ export default () => {
               namespace,
               events: status.events,
             };
-            if (state === 'running') {
+            if (state.state === runningState) {
               healthyPods.push(podInTable)
             } else {
               notHealthyPods.push(podInTable)
@@ -194,18 +219,17 @@ export default () => {
     onSuccess: () => {
       if (statusData) {
         const {task: t, taskStatus: tStatus, pipelinerunID: pID} = statusData.runningTask;
-        const tt = t as RunningTask
-        const ttStatus = tStatus as TaskStatus
         if (inPublishing(statusData)) {
           refreshLog(pID)
-          const {status} = statusData.clusterStatus;
+          const ttStatus = tStatus as TaskStatus
           const entity = taskStatus2Entity.get(ttStatus)
           if (!entity) {
+            console.log(tStatus)
             return
           }
 
           setStepStatus(entity.stepStatus);
-          if (tt === RunningTask.BUILD) {
+          if (t === RunningTask.BUILD) {
             steps[0] = {
               title: entity.buildTitle,
               icon: entity.icon,
@@ -216,16 +240,26 @@ export default () => {
               title: succeed!.buildTitle,
               icon: smile,
             }
-            if (status != ClusterStatus.NOTFOUND) {
-              steps[1] = {
-                title: entity.deployTitle,
-                icon: entity.icon,
-              }
+            const {status} = statusData.clusterStatus;
+            if (status !== ClusterStatus.NOTFOUND) {
               setCurrent(1)
+              // 判断action，除非为build_deploy，不然只展示deploy step
+              const {latestPipelinerun} = statusData
+              const {action} = latestPipelinerun
+              if (action === PublishType.BUILD_DEPLOY) {
+                steps[1] = {
+                  title: entity.deployTitle,
+                  icon: entity.icon,
+                };
+                setSteps(steps)
+              } else {
+                setSteps([{
+                  title: entity.deployTitle,
+                  icon: entity.icon,
+                }])
+              }
             }
           }
-
-          setSteps(steps)
         }
       }
     }
@@ -317,14 +351,22 @@ export default () => {
         释放中： 集群处于资源释放中，无法继续操作集群
         删除中： 集群处于删除中，无法继续操作集群`
       },
-    ],
-    [
       {
         key: 'Pods数量',
         value: {
-          正常: podsInfo.healthyPods.length,
-          异常: podsInfo.notHealthyPods.length,
+          '正常': podsInfo.healthyPods.length,
+          '异常': podsInfo.notHealthyPods.length,
         }
+      }
+    ],
+    [
+      {
+        key: '区域',
+        value: (cluster && region2DisplayName) ? region2DisplayName.get(cluster.scope.region) : ''
+      },
+      {
+        key: '环境',
+        value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : ''
       }
     ],
     [
@@ -463,9 +505,9 @@ export default () => {
                   current === 0 && <BuildPage log={buildLog}/>
                 }
                 {
-                  current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status != ClusterStatus.NOTFOUND &&
+                  current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
                   (
-                    statusData.clusterStatus.status == ClusterStatus.DEGRADED ? infoWhenNotHealthy :
+                    statusData.clusterStatus.status === ClusterStatus.DEGRADED ? infoWhenNotHealthy :
                       <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
                         next(id).then(() => {
                           successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)

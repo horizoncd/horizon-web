@@ -72,6 +72,12 @@ declare namespace CLUSTER {
     status?: string;
     createdAt: string;
     updatedAt: string;
+    createdBy: {
+      name: string,
+    }
+    updatedBy: {
+      name: string,
+    }
   };
 
   type NewCluster = {
@@ -175,6 +181,10 @@ declare namespace CLUSTER {
       pipelinerunID: number,
       taskStatus: string,
     }
+    latestPipelinerun: {
+      id: number,
+      action: string
+    }
     clusterStatus: {
       status: string,
       step: {
@@ -201,7 +211,11 @@ declare namespace CLUSTER {
   type PodInTable = {
     key: string
     podName: string
-    status: string
+    state: {
+      state: string
+      reason: string
+      message: string
+    }
     ip: string
     onlineStatus: string
     createTime?: string

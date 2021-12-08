@@ -11,7 +11,8 @@ import NotFount from "@/pages/404";
 export default (props: any) => {
   const {initialState} = useModel('@@initialState');
   const {fullName} = initialState!.resource
-  if (!fullName) {
+  const isStaticRoute = pathnameInStaticRoutes()
+  if (!isStaticRoute && !fullName) {
     return <NotFount/>;
   }
 
@@ -26,7 +27,6 @@ export default (props: any) => {
     return <a href={path}>{breadcrumbName}
     </a>;
   }
-  const staticRoute = pathnameInStaticRoutes()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,7 +48,7 @@ export default (props: any) => {
       }
       <div className={styles.pageContainer}>
         <PageContainer
-          header={staticRoute ? {} : {
+          header={isStaticRoute ? {} : {
             breadcrumb: {
               routes: utils.getBreadcrumbs(fullName),
               itemRender
@@ -57,7 +57,7 @@ export default (props: any) => {
           title={false}
         >
           {
-            !staticRoute && <Divider className={styles.divider}/>
+            !isStaticRoute && <Divider className={styles.divider}/>
           }
           {props.children}
         </PageContainer>
