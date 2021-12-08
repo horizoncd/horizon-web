@@ -76,12 +76,12 @@ export default () => {
         value: utils.timeToLocal(cluster.createdAt)
       },
       {
-        key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}),
-        value: utils.timeToLocal(cluster.updatedAt)
-      },
-      {
         key: '创建人',
         value: cluster.createdBy.name
+      },
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.updateTime'}),
+        value: utils.timeToLocal(cluster.updatedAt)
       },
       {
         key: '修改人',
