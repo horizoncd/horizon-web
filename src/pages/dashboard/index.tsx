@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Input, Pagination, Row, Tabs, Tree} from 'antd';
+import {Button, Col, Divider, Input, Pagination, Row, Tabs, Tooltip, Tree} from 'antd';
 import {history} from 'umi';
 import './index.less';
 import {useIntl} from '@@/plugin-locale/localeExports';
@@ -136,7 +136,7 @@ export default (props: any) => {
         <span className="group-title">{title}</span>
       );
     const firstLetter = title.substring(0, 1).toUpperCase()
-    const {fullPath} = node;
+    const {fullPath, updatedAt} = node;
 
     return <span style={{padding: '10px 0'}} onClick={() => {
       if (groupsDashboard) {
@@ -147,6 +147,11 @@ export default (props: any) => {
         {firstLetter}
       </span>
       <span style={{marginLeft: 48}}>{tmp}</span>
+      <span style={{float: 'right'}}>
+        <Tooltip title={Utils.timeToLocal(updatedAt)}>
+          更新于 {Utils.timeFromNow(updatedAt)}
+        </Tooltip>
+      </span>
     </span>;
   };
 
