@@ -12,10 +12,12 @@ import {
 import {ClusterStatus} from "@/const";
 import {history} from 'umi';
 import './index.less'
+import {Tooltip} from "antd";
 
 interface StatusProps {
   text?: string
   link?: string
+  message?: string
 }
 
 // state for clusterStatus and pipeline status
@@ -100,32 +102,29 @@ const Deleting = (props: StatusProps) => {
 }
 
 // state for pods
-const Running = (props: StatusProps) => {
+const PodRunning = (props: StatusProps) => {
   const {text} = props;
   return <span className="badge-color-green badge-content">
-    {text || 'Running'}
+    {text}
   </span>
 }
 
-const Waiting = (props: StatusProps) => {
-  const {text} = props;
-  return <span className="badge-color-yellow badge-content">
-    {text || 'Waiting'}
-  </span>
+const PodPending = (props: StatusProps) => {
+  const {text, message} = props;
+  return <Tooltip title={message}>
+    <span className="badge-color-yellow badge-content">
+      {text}
+    </span>
+  </Tooltip>
 }
 
-const Pending = (props: StatusProps) => {
-  const {text} = props;
-  return <span className="badge-color-yellow badge-content">
-    {text || 'Pending'}
-  </span>
-}
-
-const Terminated = (props: StatusProps) => {
-  const {text} = props;
-  return <span className="badge-color-red badge-content">
-    {text || 'Terminated'}
-  </span>
+const PodError = (props: StatusProps) => {
+  const {text, message} = props;
+  return <Tooltip title={message}>
+    <span className="badge-color-red badge-content">
+      {text}
+    </span>
+  </Tooltip>
 }
 
 // state for oline status
@@ -173,8 +172,9 @@ const isRestrictedStatus = (status: string) => {
     case ClusterStatus.FREEING:
     case ClusterStatus.DELETING:
       return true
+    default:
+      return false
   }
-  return false
 }
 
 export {
@@ -183,16 +183,15 @@ export {
   Progressing,
   Suspended,
   NotFount,
-  Running,
+  PodRunning,
   Online,
-  Waiting,
   Offline,
-  Terminated,
-  Pending,
+  PodPending,
   Cancelled,
   Freeing,
   Freed,
   Deleting,
   getStatusComponent,
   isRestrictedStatus,
+  PodError,
 }
