@@ -80,11 +80,11 @@ export default () => {
         value: utils.timeToLocal(cluster.updatedAt)
       },
       {
-        key: '创建者',
+        key: '创建人',
         value: cluster.createdBy.name
       },
       {
-        key: '更新者',
+        key: '修改人',
         value: cluster.updatedBy.name
       },
     ],
