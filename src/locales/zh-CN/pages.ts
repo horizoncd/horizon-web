@@ -89,7 +89,7 @@ export default {
   'pages.clusterDetail.basic.subfolder': '代码目录',
   'pages.clusterDetail.basic.branch': '分支',
   'pages.clusterDetail.basic.createTime': '创建时间',
-  'pages.clusterDetail.basic.updateTime': '更新时间',
+  'pages.clusterDetail.basic.updateTime': '修改时间',
   'pages.clusterDelete.success': '集群删除成功',
   'pages.clusterDelete.confirm.title': '是否确定要删除该集群:{cluster}?',
   'pages.clusterDelete.confirm.content': `注意：删除后集群将无法恢复`,
