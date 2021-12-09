@@ -218,13 +218,16 @@ export default () => {
     pollingInterval,
     onSuccess: () => {
       if (statusData) {
-        const {task: t, taskStatus: tStatus, pipelinerunID: pID} = statusData.runningTask;
+        const {task: t, taskStatus: tStatus} = statusData.runningTask;
         if (inPublishing(statusData)) {
-          refreshLog(pID)
+          const {latestPipelinerun} = statusData
+          const {action, id: pID} = latestPipelinerun
+          if (action === PublishType.BUILD_DEPLOY) {
+            refreshLog(pID)
+          }
           const ttStatus = tStatus as TaskStatus
           const entity = taskStatus2Entity.get(ttStatus)
           if (!entity) {
-            console.log(tStatus)
             return
           }
 
@@ -244,8 +247,6 @@ export default () => {
             if (status !== ClusterStatus.NOTFOUND) {
               setCurrent(1)
               // 判断action，除非为build_deploy，不然只展示deploy step
-              const {latestPipelinerun} = statusData
-              const {action} = latestPipelinerun
               if (action === PublishType.BUILD_DEPLOY) {
                 steps[1] = {
                   title: entity.deployTitle,
@@ -319,7 +320,7 @@ export default () => {
       <div style={{textAlign: 'center'}}>
         {
           index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
-          <Button style={{margin: '0 8px'}} onClick={onNext}>
+          <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
             {intl.formatMessage({id: 'pages.pods.nextStep'})}
           </Button>
         }
