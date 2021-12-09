@@ -38,7 +38,12 @@ const taskStatus2Entity = new Map<TaskStatus, {
   [TaskStatus.PENDING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
-  [TaskStatus.FAILED, {icon: frown, buildTitle: <span style={{color: 'red'}}>构建失败</span>, deployTitle: <span style={{color: 'red'}}>发布失败</span>, stepStatus: 'error'}]
+  [TaskStatus.FAILED, {
+    icon: frown,
+    buildTitle: <span style={{color: 'red'}}>构建失败</span>,
+    deployTitle: <span style={{color: 'red'}}>发布失败</span>,
+    stepStatus: 'error'
+  }]
 ]);
 
 const pro = 'pro'
@@ -102,7 +107,7 @@ export default () => {
 
   const inPublishing = (statusData?: CLUSTER.ClusterStatus) => {
     const taskStatus = statusData?.runningTask.taskStatus as TaskStatus
-    return taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus === TaskStatus.FAILED
+    return statusData?.latestPipelinerun && (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus === TaskStatus.FAILED)
   }
 
   const canCancelPublish = (statusData?: CLUSTER.ClusterStatus) => {
@@ -217,48 +222,46 @@ export default () => {
   const {data: statusData, run: refreshStatus} = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
-      if (statusData) {
-        const {task: t, taskStatus: tStatus} = statusData.runningTask;
-        if (inPublishing(statusData)) {
-          const {latestPipelinerun} = statusData
-          const {action, id: pID} = latestPipelinerun
-          if (action === PublishType.BUILD_DEPLOY) {
-            refreshLog(pID)
-          }
-          const ttStatus = tStatus as TaskStatus
-          const entity = taskStatus2Entity.get(ttStatus)
-          if (!entity) {
-            return
-          }
+      if (inPublishing(statusData)) {
+        const {latestPipelinerun, clusterStatus} = statusData!
+        const {task: t, taskStatus: tStatus} = statusData!.runningTask;
+        const {action, id: pID} = latestPipelinerun!;
+        if (action === PublishType.BUILD_DEPLOY) {
+          refreshLog(pID)
+        }
+        const ttStatus = tStatus as TaskStatus
+        const entity = taskStatus2Entity.get(ttStatus)
+        if (!entity) {
+          return
+        }
 
-          setStepStatus(entity.stepStatus);
-          if (t === RunningTask.BUILD) {
-            steps[0] = {
-              title: entity.buildTitle,
-              icon: entity.icon,
-            }
-          } else {
-            const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
-            steps[0] = {
-              title: succeed!.buildTitle,
-              icon: smile,
-            }
-            const {status} = statusData.clusterStatus;
-            if (status !== ClusterStatus.NOTFOUND) {
-              setCurrent(1)
-              // 判断action，除非为build_deploy，不然只展示deploy step
-              if (action === PublishType.BUILD_DEPLOY) {
-                steps[1] = {
-                  title: entity.deployTitle,
-                  icon: entity.icon,
-                };
-                setSteps(steps)
-              } else {
-                setSteps([{
-                  title: entity.deployTitle,
-                  icon: entity.icon,
-                }])
-              }
+        setStepStatus(entity.stepStatus);
+        if (t === RunningTask.BUILD) {
+          steps[0] = {
+            title: entity.buildTitle,
+            icon: entity.icon,
+          }
+        } else {
+          const succeed = taskStatus2Entity.get(TaskStatus.SUCCEEDED)
+          steps[0] = {
+            title: succeed!.buildTitle,
+            icon: smile,
+          }
+          const {status} = clusterStatus;
+          if (status !== ClusterStatus.NOTFOUND) {
+            setCurrent(1)
+            // 判断action，除非为build_deploy，不然只展示deploy step
+            if (action === PublishType.BUILD_DEPLOY) {
+              steps[1] = {
+                title: entity.deployTitle,
+                icon: entity.icon,
+              };
+              setSteps(steps)
+            } else {
+              setSteps([{
+                title: entity.deployTitle,
+                icon: entity.icon,
+              }])
             }
           }
         }
@@ -275,7 +278,7 @@ export default () => {
         {
           canCancelPublish(statusData) &&
           <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
-            cancelPipeline(statusData!.runningTask.pipelinerunID).then(() => {
+            cancelPipeline(statusData!.latestPipelinerun!.id).then(() => {
               successAlert('取消发布成功')
             })
           }}>
