@@ -15,6 +15,13 @@ import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import styles from './index.less'
 import Utils from '@/utils'
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+  LoadingOutlined,
+  PauseCircleOutlined
+} from "@ant-design/icons";
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -25,6 +32,12 @@ const status2StateNode = new Map(
     ['offline', <Offline/>],
   ]
 )
+
+const LifeCycleItemAbnormal = 'Abnormal'
+const LifeCycleItemSuccess = 'Success'
+const LifeCycleItemWaiting = 'Waiting'
+const LifeCycleItemRunning = 'Running'
+
 
 export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
   const {data, cluster} = props;
@@ -38,6 +51,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
   const {successAlert, errorAlert} = useModel('alert')
   const [showEvents, setShowEvents] = useState(false)
+  const [showLifeCycle, setShowLifeCycle] = useState(false)
   const [events, setEvents] = useState([])
 
   const {
@@ -263,6 +277,82 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     value: item,
   }));
 
+  const lifeCycleColumns = [
+    {
+      title: '任务',
+      dataIndex: 'type',
+      key: 'type',
+      width: '200px'
+    },
+    {
+      title: '信息',
+      dataIndex: 'message',
+      key: 'message',
+    },
+  ]
+
+  const podLifeCycleTypeMap = {
+    PodSchedule: '节点分配',
+    PodInitialize: '环境初始化',
+    ContainerStartup: '业务启动及端口检查',
+    ContainerOnline: '业务上线',
+    HealthCheck: '健康检查',
+  }
+
+  const podLifeCycleStatusMap = {
+    [LifeCycleItemSuccess]: {
+      style: styles.lifecycleStatusSuccess,
+      icon: <CheckCircleOutlined/>
+    },
+    [LifeCycleItemWaiting]: {
+      style: styles.lifecycleStatusWaiting,
+      icon: <PauseCircleOutlined/>,
+    },
+    [LifeCycleItemRunning]: {
+      style: styles.lifecycleStatusRunning,
+      icon: <LoadingOutlined/>,
+    },
+    [LifeCycleItemAbnormal]: {
+      style: styles.lifecycleStatusFailed,
+      icon: <CloseCircleOutlined/>
+    },
+  }
+
+
+  const [podLifeCycle, setPodLifeCycle] = useState([])
+  const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
+    const lifeCycle: any = []
+    podInfo.lifeCycle.forEach((value) => {
+      if (value.status === LifeCycleItemSuccess && value.message === '') {
+        value.message = '成功'
+      } else if (value.status === LifeCycleItemAbnormal && value.message === '') {
+        switch (value.type) {
+          case 'ContainerStartup':
+            value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
+            break;
+          case 'ContainerOnline':
+            value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
+            break;
+          case 'HealthCheck':
+            value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
+            break;
+        }
+      }
+      lifeCycle.push({
+          type: <div
+            className={podLifeCycleStatusMap[value.status].style}
+            key={value.type}
+          >
+            {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
+          </div>,
+          message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
+        }
+      )
+    })
+    setPodLifeCycle(lifeCycle);
+    setShowLifeCycle(true);
+  }
+
   const columns = [
     {
       title: formatMessage('podName', '副本'),
@@ -278,20 +368,42 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       render: (text: string, record: CLUSTER.PodInTable) => {
         const {message} = record.state
+        let status = <div></div>
         switch (text) {
           case 'PodInitializing':
-            return <PodPending text={'PodInitializing'} message={message}/>
+            status = <PodPending text={'PodInitializing'} message={message}/>
           case 'PostStartHookError':
-            return <PodError text={'PostStartHookError'} message={message}/>
+            status = <PodError text={'PostStartHookError'} message={message}/>
           case 'CrashLoopBackOff':
-            return <PodError text={'CrashLoopBackOff'} message={message}/>
+            status = <PodError text={'CrashLoopBackOff'} message={message}/>
           case 'Running':
-            return <PodRunning text={'Running'}/>
+            status = <PodRunning text={'Running'}/>
           case 'Terminated':
-            return <PodPending text={'Terminated'} message={message}/>
+            status = <PodPending text={'Terminated'} message={message}/>
           default:
-            return <PodPending text={'Pending'}/>
+            status = <PodPending text={'Pending'}/>
         }
+        let lifeCycleButtonStyle = styles.lifecycleButtonBlue
+        for (const lifeCycleItem of record.lifeCycle) {
+          if (lifeCycleItem.status === LifeCycleItemAbnormal) {
+            lifeCycleButtonStyle = styles.lifecycleButtonRed
+          }
+        }
+        return <div>
+          {status}
+          <Button type={"link"} className={lifeCycleButtonStyle}>
+            <Tooltip
+              title={'查看状态详情'}
+            >
+              <EyeOutlined
+                onClick={() => {
+                  onClickLifeCycle(record)
+                }}
+                className={styles.lifecycleButtonIcon}
+              />
+            </Tooltip>
+          </Button>
+        </div>
       }
     },
     {
@@ -412,5 +524,22 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         />
       </Modal>
     }
+    <Modal
+      visible={showLifeCycle}
+      title={'Pod启动状态详情'}
+      footer={[]}
+      onCancel={() => {
+        setShowLifeCycle(false)
+      }}
+      width={'800px'}
+      centered
+    >
+      <div>
+        <Table
+          columns={lifeCycleColumns}
+          dataSource={podLifeCycle}
+        />
+      </div>
+    </Modal>
   </div>
 }

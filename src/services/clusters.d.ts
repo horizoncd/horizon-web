@@ -172,6 +172,11 @@ declare namespace CLUSTER {
         count: number
         eventTimestamp: string
       }]
+      lifeCycle: [{
+        type: string
+        status: string
+        message: string
+      }]
     }
   }
 
@@ -223,6 +228,13 @@ declare namespace CLUSTER {
     containerName?: string
     namespace?: string
     events: Event[]
+    lifeCycle: PodLifeCycle[]
+  }
+
+  type PodLifeCycle = {
+    type: string,
+    status: string,
+    message: string,
   }
 
   type PodOnlineOfflineResult = {

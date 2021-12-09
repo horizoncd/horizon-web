@@ -38,7 +38,12 @@ const taskStatus2Entity = new Map<TaskStatus, {
   [TaskStatus.PENDING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.RUNNING, {icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process'}],
   [TaskStatus.SUCCEEDED, {icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish'}],
-  [TaskStatus.FAILED, {icon: frown, buildTitle: <span style={{color: 'red'}}>构建失败</span>, deployTitle: <span style={{color: 'red'}}>发布失败</span>, stepStatus: 'error'}]
+  [TaskStatus.FAILED, {
+    icon: frown,
+    buildTitle: <span style={{color: 'red'}}>构建失败</span>,
+    deployTitle: <span style={{color: 'red'}}>发布失败</span>,
+    stepStatus: 'error'
+  }]
 ]);
 
 const pro = 'pro'
@@ -185,6 +190,7 @@ export default () => {
               containerName: containers[0].name,
               namespace,
               events: status.events,
+              lifeCycle: status.lifeCycle,
             };
             if (state.state === runningState) {
               healthyPods.push(podInTable)
