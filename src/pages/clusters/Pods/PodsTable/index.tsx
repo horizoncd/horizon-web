@@ -37,6 +37,7 @@ const LifeCycleItemAbnormal = 'Abnormal'
 const LifeCycleItemSuccess = 'Success'
 const LifeCycleItemWaiting = 'Waiting'
 const LifeCycleItemRunning = 'Running'
+const noWrap = () => ({style: {whiteSpace: 'nowrap'}})
 
 
 export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
@@ -279,13 +280,21 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const lifeCycleColumns = [
     {
-      title: '任务',
+      title: <span className={styles.tableColumnTitle}>类型</span>,
       dataIndex: 'type',
       key: 'type',
-      width: '200px'
+      onHeaderCell: noWrap,
+      onCell: noWrap,
     },
     {
-      title: '信息',
+      title: <span className={styles.tableColumnTitle}>任务</span>,
+      dataIndex: 'task',
+      key: 'task',
+      onHeaderCell: noWrap,
+      onCell: noWrap,
+    },
+    {
+      title: <span className={styles.tableColumnTitle}>信息</span>,
       dataIndex: 'message',
       key: 'message',
     },
@@ -323,36 +332,48 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
     const lifeCycle: any = []
     podInfo.lifeCycle.forEach((value) => {
-      if (value.status === LifeCycleItemSuccess && value.message === '') {
-        value.message = '成功'
-      } else if (value.status === LifeCycleItemAbnormal && value.message === '') {
-        switch (value.type) {
-          case 'ContainerStartup':
-            value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
-            break;
-          case 'ContainerOnline':
-            value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
-            break;
-          case 'HealthCheck':
-            value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
-            break;
+        if (value.message === '') {
+          switch (value.status) {
+            case LifeCycleItemSuccess:
+              value.message = '成功';
+              break;
+            case LifeCycleItemAbnormal:
+              switch (value.type) {
+                case 'ContainerStartup':
+                  value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
+                  break;
+                case 'ContainerOnline':
+                  value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
+                  break;
+                case 'HealthCheck':
+                  value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
+                  break;
+                default:
+                  value.message = '执行失败，请联系管理员。'
+              }
+              break;
+            default:
+              break;
+          }
         }
+        lifeCycle.push({
+            type: <div
+              className={podLifeCycleStatusMap[value.status].style}
+            >{value.type}</div>,
+            task: <div
+              className={podLifeCycleStatusMap[value.status].style}
+              key={value.type}
+            >
+              {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
+            </div>,
+            message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
+          }
+        )
       }
-      lifeCycle.push({
-          type: <div
-            className={podLifeCycleStatusMap[value.status].style}
-            key={value.type}
-          >
-            {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
-          </div>,
-          message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
-        }
-      )
-    })
+    )
     setPodLifeCycle(lifeCycle);
     setShowLifeCycle(true);
   }
-
   const columns = [
     {
       title: formatMessage('podName', '副本'),
@@ -365,6 +386,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
+      onHeaderCell: noWrap,
+      onCell: noWrap,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       render: (text: string, record: CLUSTER.PodInTable) => {
         const {message} = record.state
@@ -372,14 +395,19 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         switch (text) {
           case 'PodInitializing':
             status = <PodPending text={'PodInitializing'} message={message}/>
+            break;
           case 'PostStartHookError':
             status = <PodError text={'PostStartHookError'} message={message}/>
+            break;
           case 'CrashLoopBackOff':
             status = <PodError text={'CrashLoopBackOff'} message={message}/>
+            break;
           case 'Running':
             status = <PodRunning text={'Running'}/>
+            break;
           case 'Terminated':
             status = <PodPending text={'Terminated'} message={message}/>
+            break;
           default:
             status = <PodPending text={'Pending'}/>
         }
@@ -536,6 +564,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     >
       <div>
         <Table
+          // @ts-ignore
           columns={lifeCycleColumns}
           dataSource={podLifeCycle}
         />

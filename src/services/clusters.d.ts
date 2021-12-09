@@ -172,11 +172,7 @@ declare namespace CLUSTER {
         count: number
         eventTimestamp: string
       }]
-      lifeCycle: [{
-        type: string
-        status: string
-        message: string
-      }]
+      lifeCycle: PodLifeCycle[]
     }
   }
 
