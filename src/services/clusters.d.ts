@@ -178,10 +178,9 @@ declare namespace CLUSTER {
   type ClusterStatus = {
     runningTask: {
       task: string,
-      pipelinerunID: number,
       taskStatus: string,
     }
-    latestPipelinerun: {
+    latestPipelinerun?: {
       id: number,
       action: string
     }
