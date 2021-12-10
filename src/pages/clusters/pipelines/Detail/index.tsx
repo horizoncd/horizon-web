@@ -13,7 +13,6 @@ import {Button, Card} from "antd";
 import {CopyOutlined, FullscreenOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import copy from "copy-to-clipboard";
-import FullscreenModal from '@/components/FullscreenModal'
 import {useState} from "react";
 import CodeDiff from '@/components/CodeDiff'
 import {useParams} from 'umi';
@@ -25,9 +24,10 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {rollback} from "@/services/clusters/clusters";
 import {history} from "@@/core/history";
+import FullscreenModal from "@/components/FullscreenModal";
 
 export default (props: any) => {
-  const params = useParams<{id: string}>();
+  const params = useParams<{ id: string }>();
   const pipelineID = parseInt(params.id)
 
   const intl = useIntl();
@@ -115,10 +115,31 @@ export default (props: any) => {
     setFullscreen(false)
   }
 
+  const onCopyButtonClick = () => {
+    if (copy(buildLog)) {
+      successAlert(intl.formatMessage({id: "component.FullscreenModal.copySuccess"}))
+    } else {
+      errorAlert(intl.formatMessage({id: "component.FullscreenModal.copyFailed"}))
+    }
+  }
+
+  const extraContent = {
+    'BuildLog': <div>
+      <Button className={styles.buttonClass}>
+        <CopyOutlined className={styles.iconCommonModal} onClick={onCopyButtonClick}/>
+      </Button>
+      <Button className={styles.buttonClass}>
+        <FullscreenOutlined className={styles.iconCommonModal} onClick={onFullscreenClick}/>
+      </Button>
+    </div>,
+    'Changes': <div/>
+  }
+
   const content = {
-    'BuildLog': <CodeEditor
-      content={buildLog}
-    />,
+    'BuildLog':
+      <CodeEditor
+        content={buildLog}
+      />,
     'Changes': <div>
       {
         pipeline?.action === PublishType.BUILD_DEPLOY &&
@@ -164,16 +185,7 @@ export default (props: any) => {
       tabList={cardTab}
       bodyStyle={{height: '500px'}}
       onTabChange={setActiveTabKey}
-      tabBarExtraContent={(
-        <div>
-          <Button className={styles.buttonClass}>
-            <CopyOutlined className={styles.iconCommonModal} onClick={onCopyClick}/>
-          </Button>
-          <Button className={styles.buttonClass}>
-            <FullscreenOutlined className={styles.iconCommonModal} onClick={onFullscreenClick}/>
-          </Button>
-        </div>
-      )}
+      tabBarExtraContent={extraContent[activeTabKey]}
     >
       {content[activeTabKey]}
     </Card>
@@ -184,7 +196,9 @@ export default (props: any) => {
       fullscreen={true}
       supportFullscreenToggle={false}
     >
-      {content[activeTabKey]}
+      <CodeEditor
+        content={buildLog}
+      />
     </FullscreenModal>
   </PageWithBreadcrumb>
 }
