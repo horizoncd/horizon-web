@@ -1,10 +1,10 @@
-import {Button, Col, Dropdown, Menu, Modal, Row, Steps, Tabs} from "antd";
+import {Button, Col, Dropdown, Menu, Modal, Row, Steps, Tabs, Tooltip} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
-import {freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
+import {deleteCluster, freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
@@ -190,6 +190,7 @@ export default () => {
               containerName: containers[0].name,
               namespace,
               events: status.events,
+              lifeCycle: status.lifeCycle,
             };
             if (state.state === runningState) {
               healthyPods.push(podInTable)
@@ -442,9 +443,22 @@ export default () => {
         });
         break;
       default:
-
     }
   }
+
+  const onDeleteCluster = () => {
+    Modal.confirm({
+      title: '确定删除集群?',
+      content: '删除后，数据将无法恢复',
+      onOk() {
+        deleteCluster(cluster?.id).then(() => {
+          successAlert('开始删除集群')
+          window.location.href = `/applications${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}/-/clusters`
+        })
+      },
+    });
+  }
+
 
   const operateDropdown = <Menu onClick={onClickOperation}>
     <Menu.Item
@@ -454,6 +468,15 @@ export default () => {
     <Menu.Item
       disabled={!RBAC.Permissions.freeCluster.allowed || isRestrictedStatus(clusterStatus) || clusterStatus === ClusterStatus.FREED}
       key="freeCluster">释放集群</Menu.Item>
+    <Tooltip title={clusterStatus !== ClusterStatus.FREED && '请先释放集群，再进行删除'}>
+      <div>
+        <Menu.Item onClick={onDeleteCluster}
+                   disabled={!RBAC.Permissions.deleteCluster.allowed || clusterStatus !== ClusterStatus.FREED}
+                   key="deleteCluster">
+          删除集群
+        </Menu.Item>
+      </div>
+    </Tooltip>
   </Menu>;
 
   const infoWhenNotHealthy = <strong style={{color: 'red'}}>
