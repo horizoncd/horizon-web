@@ -129,6 +129,7 @@ export default () => {
       title: '值',
       dataIndex: 'value',
       key: 'value',
+      ellipsis: true,
     }
   ]
 

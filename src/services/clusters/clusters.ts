@@ -101,6 +101,12 @@ export async function next(clusterID: number) {
   });
 }
 
+export async function promote(clusterID: number) {
+  return request(`/apis/core/v1/clusters/${clusterID}/promote`, {
+    method: 'POST',
+  });
+}
+
 export async function diffsOfCode(clusterID: number, targetBranch: string) {
   return request<{
     data: CLUSTER.ClusterDiffs

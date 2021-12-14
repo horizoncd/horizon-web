@@ -4,7 +4,15 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
-import {deleteCluster, freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
+import {
+  deleteCluster,
+  freeCluster,
+  getCluster,
+  getClusterStatus,
+  next,
+  promote,
+  restart
+} from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
@@ -65,6 +73,7 @@ interface DeployPageProps {
     total: number
   },
   onNext: () => void,
+  onPromote: () => void,
   status: CLUSTER.ClusterStatus
 }
 
@@ -317,16 +326,21 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, status}: DeployPageProps) {
+  function DeployPage({step, onNext, onPromote, status}: DeployPageProps) {
     const {index, total} = step
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
         {
           index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
-          <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
-            {intl.formatMessage({id: 'pages.pods.nextStep'})}
-          </Button>
+          <div>
+            <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
+              {intl.formatMessage({id: 'pages.pods.nextStep'})}
+            </Button>
+            <Button type="primary" style={{margin: '0 8px'}} onClick={onPromote}>
+              全部发布
+            </Button>
+          </div>
         }
       </div>
     </div>
@@ -521,7 +535,7 @@ export default () => {
       />
 
       {
-        inPublishing(statusData) && (
+        inPublishing(statusData) && !(clusterStatus === ClusterStatus.FREEING) && (
           <Row>
             <Col span={4}>
               <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
@@ -535,13 +549,37 @@ export default () => {
                   current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
                   (
                     statusData.clusterStatus.status === ClusterStatus.DEGRADED ? infoWhenNotHealthy :
-                      <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
-                        next(id).then(() => {
-                          successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
-                          refreshStatus()
-                        })
-                      }
-                      }/>
+                      <DeployPage
+                        status={statusData}
+                        step={statusData.clusterStatus.step}
+                        onNext={
+                          () => {
+                            next(id).then(() => {
+                              successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
+                              refreshStatus()
+                            })
+                          }
+                        }
+                        onPromote={
+                          () => {
+                            Modal.confirm(
+                              {
+                                title: <div className={styles.boldText}>确定要全部发布？</div>,
+                                content: <div
+                                  className={styles.promotePrompt}>{"预发和线上将进行自动分批(每批为实例总量的25%)发布，其他环境将一次性发布。\n如果实例较多，一次性发布可能会对环境造成压力，请谨慎选择。"}</div>,
+                                onOk: () => {
+                                  promote(id).then(() => {
+                                    successAlert(`开始发布剩余批次`)
+                                    refreshStatus()
+                                  })
+                                },
+                                width: "600px"
+                              }
+                            )
+
+                          }
+                        }
+                      />
                   )
                 }
               </div>
