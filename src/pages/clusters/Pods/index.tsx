@@ -487,7 +487,7 @@ export default () => {
 
   const infoWhenNotHealthy = <strong style={{color: 'red'}}>
     建议排查步骤：<br/>
-    1. 点击【查看日志】 查看启动日志中是否有异常信息 <br/><br/>
+    1. 点击【Stdout】 查看启动日志中是否有异常信息 <br/><br/>
     2. 点击【查看events】 查看事件列表中是否有Warning类型的事件 <br/>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/><br/>
