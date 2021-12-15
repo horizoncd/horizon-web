@@ -107,7 +107,8 @@ export default () => {
 
   const inPublishing = (statusData?: CLUSTER.ClusterStatus) => {
     const taskStatus = statusData?.runningTask.taskStatus as TaskStatus
-    return statusData?.latestPipelinerun && (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus === TaskStatus.FAILED)
+    // 2021.12.15 应用迁移到Horizon后，latestPipelinerun为null
+    return taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING || taskStatus === TaskStatus.FAILED
   }
 
   const canCancelPublish = (statusData?: CLUSTER.ClusterStatus) => {
@@ -226,14 +227,18 @@ export default () => {
       if (inPublishing(statusData)) {
         const {latestPipelinerun, clusterStatus} = statusData!
         const {task: t, taskStatus: tStatus} = statusData!.runningTask;
-        const {action, id: pID} = latestPipelinerun!;
-        if (action === PublishType.BUILD_DEPLOY) {
-          refreshLog(pID)
-        }
+
         const ttStatus = tStatus as TaskStatus
         const entity = taskStatus2Entity.get(ttStatus)
         if (!entity) {
           return
+        }
+
+        if (latestPipelinerun) {
+          const {action, id: pID} = latestPipelinerun;
+          if (action === PublishType.BUILD_DEPLOY) {
+            refreshLog(pID);
+          }
         }
 
         setStepStatus(entity.stepStatus);
@@ -252,7 +257,8 @@ export default () => {
           if (status !== ClusterStatus.NOTFOUND) {
             setCurrent(1)
             // 判断action，除非为build_deploy，不然只展示deploy step
-            if (action === PublishType.BUILD_DEPLOY) {
+            // 2021.12.15 刚迁移过来的应用，没有PipelineID，所以隐藏"构建"Tab
+            if (latestPipelinerun?.action === PublishType.BUILD_DEPLOY) {
               steps[1] = {
                 title: entity.deployTitle,
                 icon: entity.icon,
@@ -451,7 +457,7 @@ export default () => {
       title: '确定删除集群?',
       content: '删除后，数据将无法恢复',
       onOk() {
-        deleteCluster(cluster?.id).then(() => {
+        deleteCluster(cluster!.id).then(() => {
           successAlert('开始删除集群')
           window.location.href = `/applications${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}/-/clusters`
         })
