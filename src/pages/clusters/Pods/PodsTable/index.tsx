@@ -278,6 +278,15 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     // change first letter to uppercase
     state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1)
     return item;
+  }).sort((a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
+      if (a.createTime < b.createTime) {
+        return 1;
+      }
+      if (a.createTime > b.createTime) {
+        return -1;
+      }
+
+      return 0;
   })
 
   const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
@@ -462,6 +471,18 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      // defaultSortOrder: 'descend',
+      // sortDirections: ['ascend', 'descend', 'ascend'],
+      // sorter: (a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
+      //   if (a.createTime < b.createTime) {
+      //     return -1;
+      //   }
+      //   if (a.createTime > b.createTime) {
+      //     return 1;
+      //   }
+      //
+      //   return 0;
+      // },
     },
     {
       title: formatMessage('action', '操作'),
@@ -497,7 +518,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志、查看基础资源监控、登陆Pod、杀死一个Pod等操作'}/>
+    '比如查看日志、查看基础资源监控、登陆Pod等'}/>
   }
 
   return <div>
