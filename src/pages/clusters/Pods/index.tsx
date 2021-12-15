@@ -46,19 +46,6 @@ const taskStatus2Entity = new Map<TaskStatus, {
   }]
 ]);
 
-const pro = 'pro'
-const pre = 'pre'
-const testDev = 'test_dev'
-const env2MlogEnv = new Map<string, string>([
-  ['online', pro],
-  ['pre', pre],
-  ['test', testDev],
-  ['reg', testDev],
-  ['perf', testDev],
-  ['beta', testDev],
-  ['dev', testDev],
-])
-
 interface DeployPageProps {
   step: {
     index: number,
@@ -485,15 +472,19 @@ export default () => {
     </Tooltip>
   </Menu>;
 
-  const infoWhenNotHealthy = <strong style={{color: 'red'}}>
-    建议排查步骤：<br/>
-    1. 点击【查看日志】 查看启动日志中是否有异常信息 <br/><br/>
-    2. 点击【查看events】 查看事件列表中是否有Warning类型的事件 <br/>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/><br/>
-    3. 点击【Terminal】 登陆容器查看业务日志 如无法登陆请点击 <a target="_blank"
-                                           href={`http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&loggerLevel=ERROR`}>链接</a> 跳转mlog日志平台查看
-  </strong>
+  const getTips = () => {
+    return <div style={{color: 'grey', marginTop: '15px', textAlign: 'center'}}>
+      <div style={{display: 'inline-block', textAlign: 'left'}}>
+        【<span style={{color: 'green'}}>温馨提示</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关操作进行排查：<br/>
+         &nbsp;&nbsp;1.【<span style={{color: 'green'}}>Stdout</span>】 查看启动日志中是否有异常信息 <br/>
+         &nbsp;&nbsp;2.【<span style={{color: 'green'}}>查看events</span>】 查看事件列表中是否有Warning类型的事件 <br/>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/>
+         &nbsp;&nbsp;3.【<span style={{color: 'green'}}>查看Mlog</span>】 查看Mlog是否有异常日志 <br/>
+         &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈
+      </div>
+    </div>
+  }
 
   return (
     <PageWithBreadcrumb>
@@ -540,7 +531,7 @@ export default () => {
                 {
                   current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
                   (
-                    statusData.clusterStatus.status === ClusterStatus.DEGRADED ? infoWhenNotHealthy :
+                    <div>
                       <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
                         next(id).then(() => {
                           successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
@@ -548,6 +539,8 @@ export default () => {
                         })
                       }
                       }/>
+                      {getTips()}
+                    </div>
                   )
                 }
               </div>

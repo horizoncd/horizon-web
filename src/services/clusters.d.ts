@@ -218,7 +218,7 @@ declare namespace CLUSTER {
     }
     ip: string
     onlineStatus: string
-    createTime?: string
+    createTime: string
     restartCount?: number
     containerName?: string
     namespace?: string

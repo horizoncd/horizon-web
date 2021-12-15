@@ -75,6 +75,7 @@ export default (props: any) => {
       {
         key: 'Git info',
         value: {
+          'Branch': pipeline?.gitBranch || '',
           'Commit ID': pipeline?.gitCommit || '',
         }
       }
@@ -101,14 +102,6 @@ export default (props: any) => {
   const {successAlert, errorAlert} = useModel('alert')
   const onFullscreenClick = () => {
     setFullscreen(true)
-  }
-
-  const onCopyClick = () => {
-    if (copy(props.content)) {
-      successAlert('复制成功')
-    } else {
-      errorAlert('复制失败')
-    }
   }
 
   const onClose = () => {
