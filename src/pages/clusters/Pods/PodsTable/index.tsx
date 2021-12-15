@@ -465,7 +465,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
-                  onClick={() => onClickStdout(record)}>查看日志</Button>
+                  onClick={() => onClickStdout(record)}>Stdout</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getClusterStatus.allowed}
                   onClick={() => onClickEvents(record)}>查看events</Button>
