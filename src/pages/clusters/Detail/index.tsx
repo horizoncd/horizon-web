@@ -232,7 +232,7 @@ export default () => {
       {
         <Card
           style={{marginTop: '20px'}}
-          title={(<span className={styles.cardTitle}>集群输出</span>)}
+          title={(<span className={styles.cardTitle}>输出</span>)}
           type={"inner"}>
           <Table
             dataSource={clusterOutputArray}
