@@ -563,14 +563,19 @@ export default () => {
                               {
                                 title: <div className={styles.boldText}>确定要全部发布？</div>,
                                 content: <div
-                                  className={styles.promotePrompt}>{"预发和线上将进行自动分批(每批为实例总量的25%)发布，其他环境将一次性发布。\n如果实例较多，一次性发布可能会对环境造成压力，请谨慎选择。"}</div>,
+                                  className={styles.promotePrompt}>将按照如下策略进行自动分批发布：<br/>
+                                1. <span className={styles.textGreen}>安全</span>：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数 <br/>
+                                2. <span className={styles.textGreen}>滚动</span>：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）<br/>
+                                注：<br/>
+                                1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注<br/>
+                                2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%</div>,
                                 onOk: () => {
                                   promote(id).then(() => {
                                     successAlert(`开始发布剩余批次`)
                                     refreshStatus()
                                   })
                                 },
-                                width: "600px"
+                                width: "750px"
                               }
                             )
 
