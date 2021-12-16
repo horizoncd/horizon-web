@@ -26,7 +26,6 @@ export default () => {
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
-  const {successAlert} = useModel('alert')
   const defaultCluster: CLUSTER.Cluster = {
     createdBy: {name: ""},
     updatedBy: {name: ""},
