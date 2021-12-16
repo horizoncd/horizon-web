@@ -76,6 +76,7 @@ export default (props: any) => {
       {
         key: 'Git info',
         value: {
+          'Branch': pipeline?.gitBranch || '',
           'Commit ID': pipeline?.gitCommit || '',
         }
       }

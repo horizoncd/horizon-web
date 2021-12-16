@@ -49,6 +49,20 @@ const DeployTypeMap = new Map([
     ['deleteCluster', '删除集群'],
 ])
 
+const pro = 'pro'
+const pre = 'pre'
+const testDev = 'test_dev'
+const env2MlogEnv = new Map<string, string>([
+  ['online', pro],
+  ['pre', pre],
+  ['test', testDev],
+  ['reg', testDev],
+  ['perf', testDev],
+  ['beta', testDev],
+  ['dev', testDev],
+])
+
 export {
     DeployTypeMap,
+    env2MlogEnv
 }

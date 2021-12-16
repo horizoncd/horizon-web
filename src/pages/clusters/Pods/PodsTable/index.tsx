@@ -15,6 +15,8 @@ import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import styles from './index.less'
 import Utils from '@/utils'
+import {env2MlogEnv} from "@/const";
+
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -105,6 +107,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setFullscreen(true);
     setPod(p)
     refreshPodLog(p.podName, p.containerName).then();
+  }
+
+  const onClickMlog = (p: CLUSTER.PodInTable) => {
+    const link = `http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&hostname=${p.podName}`
+    window.open(link)
   }
 
   const eventTableColumns = [
@@ -271,6 +278,15 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     // change first letter to uppercase
     state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1)
     return item;
+  }).sort((a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
+      if (a.createTime < b.createTime) {
+        return 1;
+      }
+      if (a.createTime > b.createTime) {
+        return -1;
+      }
+
+      return 0;
   })
 
   const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
@@ -455,6 +471,18 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      // defaultSortOrder: 'descend',
+      // sortDirections: ['ascend', 'descend', 'ascend'],
+      // sorter: (a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
+      //   if (a.createTime < b.createTime) {
+      //     return -1;
+      //   }
+      //   if (a.createTime > b.createTime) {
+      //     return 1;
+      //   }
+      //
+      //   return 0;
+      // },
     },
     {
       title: formatMessage('action', '操作'),
@@ -465,7 +493,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
-                  onClick={() => onClickStdout(record)}>查看日志</Button>
+                  onClick={() => onClickStdout(record)}>Stdout</Button>
+          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
+                  onClick={() => onClickMlog(record)}>查看Mlog</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getClusterStatus.allowed}
                   onClick={() => onClickEvents(record)}>查看events</Button>
@@ -488,7 +518,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志、查看基础资源监控、登陆Pod、杀死一个Pod等操作'}/>
+    '比如查看日志、查看基础资源监控、登陆Pod等'}/>
   }
 
   return <div>
