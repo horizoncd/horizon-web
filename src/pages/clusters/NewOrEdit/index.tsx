@@ -311,8 +311,20 @@ export default (props: any) => {
               title={<span
                 className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
               visible={showBuildDeployModal}
-              onOk={onBuildAndDeployButtonOK}
-              onCancel={onDeployButtonCancel}
+              footer={[
+                <Button
+                  onClick={onBuildAndDeployButtonOK}
+                  type={'primary'}
+                >
+                  构建发布
+                </Button>,
+                <Button
+                  onClick={onDeployButtonOK}
+                  type={'primary'}
+                >
+                  直接发布
+                </Button>
+              ]}
             >
               <div
                 className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>

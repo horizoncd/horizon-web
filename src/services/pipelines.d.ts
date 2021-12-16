@@ -13,6 +13,7 @@ declare namespace PIPELINES {
       userID: number,
       userName: string
     },
+    createdAt: string,
     startedAt: string,
     finishedAt: string,
     canRollback: true,

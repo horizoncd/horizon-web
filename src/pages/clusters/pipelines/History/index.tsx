@@ -93,8 +93,8 @@ export default (props: any) => {
     },
     {
       title: '创建时间',
-      dataIndex: 'startedAt',
-      key: 'startedAt',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
     },
     {
       title: '操作',
@@ -113,7 +113,7 @@ export default (props: any) => {
     ...item,
     key: item.id,
     trigger: item.createdBy.userName,
-    startedAt: Utils.timeToLocal(item.startedAt)
+    createdAt: Utils.timeToLocal(item.createdAt)
   }))
 
   const table = <Table

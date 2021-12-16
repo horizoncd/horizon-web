@@ -25,10 +25,11 @@ import {useModel} from "@@/plugin-model/useModel";
 import {rollback} from "@/services/clusters/clusters";
 import {history} from "@@/core/history";
 import FullscreenModal from "@/components/FullscreenModal";
+import moment from "moment";
 
 export default (props: any) => {
   const params = useParams<{ id: string }>();
-  const pipelineID = parseInt(params.id)
+  const pipelineID = parseInt(params.id, 10)
 
   const intl = useIntl();
   const {location} = props;
@@ -60,11 +61,11 @@ export default (props: any) => {
       },
       {
         key: '启动时间/Started',
-        value: Utils.timeToLocal(pipeline?.startedAt || ''),
+        value: Utils.timeToLocal(pipeline?.createdAt || ''),
       },
       {
         key: '持续时间/Duration',
-        value: pipeline ? `${Utils.timeSecondsDuration(pipeline!.startedAt, pipeline!.finishedAt)}s` : '',
+        value: pipeline ? `${Utils.timeSecondsDuration(pipeline!.createdAt, pipeline!.finishedAt || moment().format('YYYY-MM-DD HH:mm:ss'))}s` : '',
       },
     ],
     [

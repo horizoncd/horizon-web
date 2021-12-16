@@ -4,7 +4,15 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import PodsTable from './PodsTable'
-import {deleteCluster, freeCluster, getCluster, getClusterStatus, next, restart} from "@/services/clusters/clusters";
+import {
+  deleteCluster,
+  freeCluster,
+  getCluster,
+  getClusterStatus,
+  next,
+  promote,
+  restart
+} from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
@@ -52,6 +60,7 @@ interface DeployPageProps {
     total: number
   },
   onNext: () => void,
+  onPromote: () => void,
   status: CLUSTER.ClusterStatus
 }
 
@@ -310,16 +319,21 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, status}: DeployPageProps) {
+  function DeployPage({step, onNext, onPromote, status}: DeployPageProps) {
     const {index, total} = step
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
         {
           index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
-          <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
-            {intl.formatMessage({id: 'pages.pods.nextStep'})}
-          </Button>
+          <div>
+            <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
+              {intl.formatMessage({id: 'pages.pods.nextStep'})}
+            </Button>
+            <Button type="primary" style={{margin: '0 8px'}} onClick={onPromote}>
+              全部发布
+            </Button>
+          </div>
         }
       </div>
     </div>
@@ -518,7 +532,7 @@ export default () => {
       />
 
       {
-        inPublishing(statusData) && (
+        inPublishing(statusData) && !(clusterStatus === ClusterStatus.FREEING) && (
           <Row>
             <Col span={4}>
               <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
@@ -532,13 +546,42 @@ export default () => {
                   current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
                   (
                     <div>
-                      <DeployPage status={statusData} step={statusData.clusterStatus.step} onNext={() => {
-                        next(id).then(() => {
-                          successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
-                          refreshStatus()
-                        })
-                      }
-                      }/>
+                      <DeployPage
+                        status={statusData}
+                        step={statusData.clusterStatus.step}
+                        onNext={
+                          () => {
+                            next(id).then(() => {
+                              successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
+                              refreshStatus()
+                            })
+                          }
+                        }
+                        onPromote={
+                          () => {
+                            Modal.confirm(
+                              {
+                                title: <div className={styles.boldText}>确定要全部发布？</div>,
+                                content: <div
+                                  className={styles.promotePrompt}>将按照如下策略进行自动分批发布：<br/>
+                                1. <span className={styles.textGreen}>安全</span>：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数 <br/>
+                                2. <span className={styles.textGreen}>滚动</span>：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）<br/>
+                                注：<br/>
+                                1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注<br/>
+                                2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%</div>,
+                                onOk: () => {
+                                  promote(id).then(() => {
+                                    successAlert(`开始发布剩余批次`)
+                                    refreshStatus()
+                                  })
+                                },
+                                width: "750px"
+                              }
+                            )
+
+                          }
+                        }
+                      />
                       {getTips()}
                     </div>
                   )
