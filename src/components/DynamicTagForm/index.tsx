@@ -54,7 +54,7 @@ export default (props: Props) => {
         {(fields, {add, remove}) => (
           <>
             {fields.map(({key, name, fieldKey, ...restField}) => (
-              <Space key={key} style={{display: 'flex', marginBottom: 8}} align="baseline">
+              <div key={key} style={{display: 'flex', marginBottom: 8, alignItems: "baseline"}}>
                 <Form.Item
                   {...restField}
                   name={[name, 'key']}
@@ -69,6 +69,7 @@ export default (props: Props) => {
                   <Input placeholder="key"/>
                 </Form.Item>
                 <Form.Item
+                  style={{flex: 1, marginInline: '10px'}}
                   {...restField}
                   name={[name, 'value']}
                   fieldKey={[fieldKey, 'value']}
@@ -77,7 +78,7 @@ export default (props: Props) => {
                   <Input placeholder="value"/>
                 </Form.Item>
                 <MinusCircleOutlined onClick={() => remove(name)}/>
-              </Space>
+              </div>
             ))}
             <Form.Item>
               <Button type="dashed" onClick={() => {
