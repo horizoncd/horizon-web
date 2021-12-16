@@ -1,17 +1,23 @@
 import DetailCard, {Param} from '@/components/DetailCard'
+import * as React from "react";
 import {useState} from "react";
-import {Avatar, Button, Card, Divider, Table} from 'antd';
+import {Avatar, Button, Card, Divider, Table, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
 import 'antd/lib/form/style';
 import styles from './index.less'
 import utils from '@/utils';
-import {ReloadOutlined} from '@ant-design/icons';
+import {QuestionCircleOutlined, ReloadOutlined} from '@ant-design/icons';
 import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
-import {getCluster, getClusterTags, getClusterTemplateSchemaTags} from "@/services/clusters/clusters";
+import {
+  getCluster,
+  getClusterOutputs,
+  getClusterTags,
+  getClusterTemplateSchemaTags
+} from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
 import {ResourceType} from "@/const";
 
@@ -110,6 +116,22 @@ export default () => {
     refreshDeps: [clusterID],
   })
 
+  const [clusterOutputArray, setClusterOutputArray] = useState()
+  const {data: clusterOutputs} = useRequest(() => getClusterOutputs(clusterID), {
+    refreshDeps: [clusterID],
+    onSuccess: () => {
+      let outputs: any = []
+      for (const name in clusterOutputs) {
+        outputs = outputs.concat({
+          key: name,
+          description: clusterOutputs[name].description,
+          value: clusterOutputs[name].value,
+        })
+        setClusterOutputArray(outputs)
+      }
+    }
+  })
+
   const {data: adminTags} = useRequest(() => getClusterTemplateSchemaTags(clusterID), {
     refreshDeps: [clusterID]
   })
@@ -121,15 +143,44 @@ export default () => {
   const manageAdminTagsRoute = `/clusters${clusterFullPath}/-/admintags`;
   const tagColumns = [
     {
-      title: '键',
+      title: <span className={styles.tableColumn}>键</span>,
       dataIndex: 'key',
       key: 'key',
+      className: styles.tableHeader
     },
     {
-      title: '值',
+      title: <span className={styles.tableColumn}>值</span>,
       dataIndex: 'value',
       key: 'value',
       ellipsis: true,
+      className: styles.tableHeader
+    }
+  ]
+
+  const outputColumns = [
+    {
+      title: <span className={styles.tableColumn}>键</span>,
+      dataIndex: 'key',
+      key: 'key',
+      render: (text: string, record: any) => {
+        return <div style={{display: "flex", alignItems: "center"}}>
+          <span style={{marginRight: "5px"}} >{text}</span>
+          <Tooltip placement={"right"} className={styles.textDescription}
+                   title={<span style={{
+                     whiteSpace: "pre-line"
+                   }}>{record.description}</span>}>
+            <QuestionCircleOutlined/>
+          </Tooltip>
+        </div>
+      },
+      className: styles.tableHeader
+    },
+    {
+      title: <span className={styles.tableColumn}>值</span>,
+      dataIndex: 'value',
+      key: 'value',
+      ellipsis: true,
+      className: styles.tableHeader
     }
   ]
 
@@ -179,6 +230,17 @@ export default () => {
           })
         }
       </Card>
+      {
+        <Card
+          style={{marginTop: '20px'}}
+          title={(<span className={styles.cardTitle}>集群输出</span>)}
+          type={"inner"}>
+          <Table
+            dataSource={clusterOutputArray}
+            columns={outputColumns}
+          />
+        </Card>
+      }
       <Card
         style={{marginTop: '20px'}}
         title={(

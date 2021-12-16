@@ -74,7 +74,7 @@ export default {
   'pages.clusterEdit.header': '正在编辑【 {cluster} 】，请按步骤填写信息',
   'pages.clusterEdit.success': '集群更新成功',
   'pages.clusterEdit.prompt.buildDeploy.title': '是否进行发布？',
-  'pages.clusterEdit.prompt.buildDeploy.content': '新创建的集群，需要发布完成才生效。\n构建发布：重新拉取代码进行构建，并应用最新配置进行发布，修改流水线配置、代码分支需要进行构建发布。\n直接发布：应用最新配置进行发布，修改自定义配置可以直接发布。',
+  'pages.clusterEdit.prompt.buildDeploy.content': '新创建的集群，需要发布完成才生效。\n构建发布：拉取代码进行构建并发布。\n直接发布：基于已有的构建产物进行发布。',
   'pages.clusterEdit.prompt.deploy.title': '是否进行发布？',
   'pages.clusterEdit.prompt.deploy.content': '修改后的配置，需要发布完成才生效。\n构建发布：重新拉取代码进行构建，并应用最新配置进行发布，修改流水线配置、代码分支需要进行构建发布。\n直接发布：应用最新配置进行发布，修改自定义配置可以直接发布。',
 

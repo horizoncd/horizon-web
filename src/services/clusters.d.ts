@@ -45,6 +45,13 @@ declare namespace CLUSTER {
     updatedAt: string
   }
 
+  type ClusterOutputs = Record<string, ClusterOutput>
+
+  type ClusterOutput = {
+    description: string,
+    value: string,
+  }
+
   type Cluster = {
     fullPath: string,
     fullName?: string,

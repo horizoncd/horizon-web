@@ -35,6 +35,14 @@ export async function getCluster(clusterID: number) {
   });
 }
 
+export async function getClusterOutputs(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterOutputs
+  }>(`/apis/core/v1/clusters/${clusterID}/outputs`, {
+    method: 'GET',
+  });
+}
+
 export async function updateCluster(clusterID: number, data: CLUSTER.UpdateCluster) {
   return request(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'PUT',
