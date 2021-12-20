@@ -81,9 +81,7 @@ export default () => {
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
 
-  const {data: cluster} = useRequest(() => getCluster(id), {
-    pollingInterval,
-  });
+  const {data: cluster} = useRequest(() => getCluster(id), {});
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -347,7 +345,7 @@ export default () => {
     </div>
   };
 
-  const clusterStatus = cluster?.status ? cluster.status : (statusData?.clusterStatus.status || '')
+  const clusterStatus = statusData?.clusterStatus.status || ''
 
   const baseInfo: Param[][] = [
     [
@@ -490,12 +488,12 @@ export default () => {
     return <div style={{color: 'grey', marginTop: '15px', textAlign: 'center'}}>
       <div style={{display: 'inline-block', textAlign: 'left'}}>
         【<span style={{color: 'green'}}>温馨提示</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关操作进行排查：<br/>
-         &nbsp;&nbsp;1.【<span style={{color: 'green'}}>Stdout</span>】 查看启动日志中是否有异常信息 <br/>
-         &nbsp;&nbsp;2.【<span style={{color: 'green'}}>查看events</span>】 查看事件列表中是否有Warning类型的事件 <br/>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/>
-         &nbsp;&nbsp;3.【<span style={{color: 'green'}}>查看Mlog</span>】 查看Mlog是否有异常日志 <br/>
-         &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈
+        &nbsp;&nbsp;1.【<span style={{color: 'green'}}>Stdout</span>】 查看启动日志中是否有异常信息 <br/>
+        &nbsp;&nbsp;2.【<span style={{color: 'green'}}>查看events</span>】 查看事件列表中是否有Warning类型的事件 <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/>
+        &nbsp;&nbsp;3.【<span style={{color: 'green'}}>查看Mlog</span>】 查看Mlog是否有异常日志 <br/>
+        &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈
       </div>
     </div>
   }
@@ -564,11 +562,11 @@ export default () => {
                                 title: <div className={styles.boldText}>确定要全部发布？</div>,
                                 content: <div
                                   className={styles.promotePrompt}>将按照如下策略进行自动分批发布：<br/>
-                                1. <span className={styles.textGreen}>安全</span>：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数 <br/>
-                                2. <span className={styles.textGreen}>滚动</span>：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）<br/>
-                                注：<br/>
-                                1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注<br/>
-                                2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%</div>,
+                                  1. <span className={styles.textGreen}>安全</span>：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数 <br/>
+                                  2. <span className={styles.textGreen}>滚动</span>：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）<br/>
+                                  注：<br/>
+                                  1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注<br/>
+                                  2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%</div>,
                                 onOk: () => {
                                   promote(id).then(() => {
                                     successAlert(`开始发布剩余批次`)
