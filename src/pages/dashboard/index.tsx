@@ -7,7 +7,7 @@ import {querySubGroups, searchGroups} from "@/services/groups/groups";
 import {searchApplications} from "@/services/applications/applications"
 import {searchClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
-import Utils from "@/utils";
+import Utils, {handleHref} from "@/utils";
 import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
 import {BookOutlined, CloudOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
@@ -138,9 +138,10 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath} = node;
 
-    return <span style={{padding: '10px 0'}} onClick={() => {
+    return <span style={{padding: '10px 0'}} onClick={(nativeEvent) => {
+      // group点击名字进入主页 点击其他部位是展开
       if (groupsDashboard) {
-        window.location.href = fullPath
+        handleHref(nativeEvent, fullPath)
       }
     }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
@@ -184,14 +185,15 @@ export default (props: any) => {
     selectedKeys: Key[],
     info: {
       node: any;
+      nativeEvent: any
     },
   ) => {
-    const {node} = info;
+    const {node, nativeEvent} = info;
     const {key, expanded, fullPath, childrenCount} = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
       // title变为了element对象，需要注意下
-      window.location.href = fullPath
+      handleHref(nativeEvent, fullPath)
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {
@@ -204,11 +206,13 @@ export default (props: any) => {
     selectedKeys: Key[],
     info: {
       node: any;
+      nativeEvent: any
     },
   ) => {
-    const {node} = info;
+    const {node, nativeEvent} = info;
     const {fullPath} = node;
-    window.location.href = `/applications${fullPath}/-/clusters`;
+
+    handleHref(nativeEvent, `/applications${fullPath}/-/clusters`)
   };
 
   // select cluster
@@ -216,11 +220,13 @@ export default (props: any) => {
     selectedKeys: Key[],
     info: {
       node: any;
+      nativeEvent: any
     },
   ) => {
-    const {node} = info;
+    const {node, nativeEvent} = info;
     const {fullPath} = node;
-    window.location.href = `/clusters${fullPath}/-/pods`
+
+    handleHref(nativeEvent, `/clusters${fullPath}/-/pods`)
   };
 
   // @ts-ignore
@@ -280,7 +286,7 @@ export default (props: any) => {
   }
 
   return (
-    <Row id="dashboard">
+    <Row>
       <Col span={2}/>
       <Col span={20}>
         <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange}

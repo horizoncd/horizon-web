@@ -231,6 +231,23 @@ export const pathnameInStaticRoutes = (): boolean => {
   return false;
 }
 
+export const handleHref = (event: any, link: string) => {
+  const {metaKey, ctrlKey} = event
+
+  // mac 平台 判断 metaKey; 其他平台判断ctrlKey
+  // https://developer.mozilla.org/en-US/docs/web/api/navigator/platform#browser_compatibility
+  // mozilla 建议换成 navigator.userAgentData.platform 但浏览器兼容性不足 后续看情况再调整
+  if (navigator.platform.indexOf('Mac') > -1 && metaKey) {
+    window.open(link)
+    return
+  }
+  if (navigator.platform.indexOf('Mac') === -1 && ctrlKey) {
+    window.open(link)
+    return;
+  }
+  window.location.href = link
+}
+
 export default {
   getResourcePath,
   getBreadcrumbs,
