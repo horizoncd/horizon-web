@@ -1,7 +1,7 @@
 import DetailCard, {Param} from '@/components/DetailCard'
 import * as React from "react";
 import {useState} from "react";
-import {Avatar, Button, Card, Divider, Table, Tooltip} from 'antd';
+import {Avatar, Button, Card, Divider, Select, Table, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -20,6 +20,8 @@ import {
 } from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
 import {ResourceType} from "@/const";
+import {queryEnvironments} from "@/services/environments/environments";
+const {Option} = Select;
 
 export default () => {
   const intl = useIntl();
@@ -60,6 +62,7 @@ export default () => {
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])
+  const [editing, setEditing] = useState(false)
   const serviceDetail: Param[][] = [
     [
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
@@ -94,6 +97,8 @@ export default () => {
       },
     ],
   ]
+
+  const {data: environments} = useRequest(() => queryEnvironments());
 
   const {run: refreshCluster} = useRequest(() => {
     return getCluster(clusterID).then(({data: result}) => {
@@ -217,7 +222,35 @@ export default () => {
                   data={serviceDetail}/>
       <Card title={(
         <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.clusterDetail.basic.config'})}</span>)}
-            type={"inner"}>
+            type={"inner"} extra={
+              <div>
+                <Button type={editing? 'primary' : 'default'} onClick={() => {
+                  // 提交模版
+                  if (editing) {
+
+                  }
+                  setEditing(prev => !prev)
+                }}>{editing? '提交' : '编辑'}</Button>
+                {
+                  editing && <Button style={{marginLeft: '10px'}} onClick={() => setEditing(false)}>
+                    取消
+                  </Button>
+                }
+                <Select style={{minWidth: '100px', marginLeft: '10px'}} defaultValue={'default'} onSelect={(val) => {
+                  // 查询环境对应的模版
+
+                }}>
+                  <Option key={'default'} value={''}>
+                    默认
+                  </Option>
+                  {environments?.map((item) => {
+                    return <Option key={item.name} value={item.name}>
+                      {item.displayName}
+                    </Option>
+                  })}
+                </Select>
+              </div>
+      }>
         {
           template && Object.keys(template).map((item) => {
             return (
