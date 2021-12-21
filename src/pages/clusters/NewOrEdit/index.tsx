@@ -256,15 +256,27 @@ export default (props: any) => {
       const appPart = 'application'
       const pipelinePart = 'pipeline'
       const configDiff = difference(config, originConfig)
-      // 构建并发布：创建时，pipeline不为空；更新时，diff中pipeline存在
-      // 直接发布：创建时，pipeline为空;更新时，diff中application存在
-      // 直接跳转：更新时，diff为空
-      if ((creating && Object.keys(config[pipelinePart]).length > 0) || (editing && Object.keys(configDiff).includes(pipelinePart))) {
-        setShowBuildDeployModal(true)
-      } else if (creating || (editing && Object.keys(configDiff).includes(appPart))) {
-        setShowDeployModal(true)
-      } else {
-        onDeployButtonCancel();
+      // 创建时：
+      //    1.构建配置不为空则提示构建发布
+      //    2.构建配置为空则提示直接发布
+      // 更新时：
+      //    1.构建配置被修改则提示构建发布
+      //    2.构建配置未被修改，部署配置被修改则提示直接发布
+      //    3.构建配置、部署配置均未被修改则无提示，直接跳转
+      if (creating) {
+        if (Object.keys(config[pipelinePart]).length > 0) {
+          setShowBuildDeployModal(true)
+        } else {
+          setShowDeployModal(true)
+        }
+      } else if (editing) {
+        if (Object.keys(configDiff).includes(pipelinePart)) {
+          setShowBuildDeployModal(true)
+        } else if (Object.keys(configDiff).includes(appPart)) {
+          setShowDeployModal(true)
+        } else {
+          onDeployButtonCancel();
+        }
       }
     }
   });
