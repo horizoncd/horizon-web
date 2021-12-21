@@ -304,7 +304,7 @@ export default (props: any) => {
             {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
-                     release={form.getFieldValue(release)} config={config}/>
+                     release={form.getFieldValue(release)} config={config} clusterID={cluster?.id}/>
             }
           </div>
           <div className={styles.stepsAction}>
