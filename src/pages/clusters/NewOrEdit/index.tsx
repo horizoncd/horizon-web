@@ -14,6 +14,23 @@ import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
 import type {FieldData} from 'rc-field-form/lib/interface'
 
+
+function difference(object: any, other: any) {
+  const diff = {};
+  for (const key in object) {
+    if (typeof object[key] === "object" && typeof other[key] === "object" && object[key] && other[key]) {
+      const subDiff = difference(object[key], other[key])
+      if (Object.keys(subDiff).length !== 0) {
+        diff[key] = subDiff;
+      }
+    } else if (object[key] !== other[key]) {
+      diff[key] = object[key];
+    }
+  }
+  return diff;
+}
+
+
 export default (props: any) => {
   const intl = useIntl();
 
@@ -46,6 +63,7 @@ export default (props: any) => {
     name: environment, value: envFromQuery
   }]);
   const [config, setConfig] = useState({});
+  const [originConfig, setOriginConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
   const [applicationName, setApplicationName] = useState('');
   const [cluster, setCluster] = useState<CLUSTER.Cluster>()
@@ -100,6 +118,7 @@ export default (props: any) => {
             {name: release, value: rel},
           ]
         )
+        setOriginConfig(templateInput)
         setConfig(templateInput)
         setTemplate(t)
         setCluster(clusterData)
@@ -189,36 +208,6 @@ export default (props: any) => {
     }
   };
 
-  const {loading, run: onSubmit} = useRequest(() => {
-    const info = {
-      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
-      description: form.getFieldValue(description),
-      template: {
-        release: form.getFieldValue(release),
-      },
-      git: {
-        branch: form.getFieldValue(branch),
-      },
-      templateInput: config,
-    }
-    if (creating) {
-      return createCluster(id, `${form.getFieldValue(environment)}/${form.getFieldValue(region)}`, info)
-    }
-    return updateCluster(id, info)
-  }, {
-    manual: true,
-    onSuccess: (res: CLUSTER.Cluster) => {
-      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterEdit.success'}))
-      setCluster(res);
-      if (creating) {
-        setShowBuildDeployModal(true);
-      }
-      if (editing) {
-        setShowDeployModal(true);
-      }
-    }
-  });
-
   const onCurrentChange = async (cur: number) => {
     if (cur < current || await currentIsValid()) {
       setCurrent(cur);
@@ -241,6 +230,56 @@ export default (props: any) => {
     // jump to cluster's home page
     window.location.href = cluster!.fullPath
   }
+
+  const {loading, run: onSubmit} = useRequest(() => {
+    const info = {
+      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
+      description: form.getFieldValue(description),
+      template: {
+        release: form.getFieldValue(release),
+      },
+      git: {
+        branch: form.getFieldValue(branch),
+      },
+      templateInput: config,
+    }
+    if (creating) {
+      return createCluster(id, `${form.getFieldValue(environment)}/${form.getFieldValue(region)}`, info)
+    }
+    return updateCluster(id, info)
+  }, {
+    manual: true,
+    onSuccess: (res: CLUSTER.Cluster) => {
+      successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterEdit.success'}))
+      setCluster(res);
+
+      const appPart = 'application'
+      const pipelinePart = 'pipeline'
+      const configDiff = difference(config, originConfig)
+      // 创建时：
+      //    1.构建配置不为空则提示构建发布
+      //    2.构建配置为空则提示直接发布
+      // 更新时：
+      //    1.构建配置被修改则提示构建发布
+      //    2.构建配置未被修改，部署配置被修改则提示直接发布
+      //    3.构建配置、部署配置均未被修改则无提示，直接跳转
+      if (creating) {
+        if (Object.keys(config[pipelinePart]).length > 0) {
+          setShowBuildDeployModal(true)
+        } else {
+          setShowDeployModal(true)
+        }
+      } else if (editing) {
+        if (Object.keys(configDiff).includes(pipelinePart)) {
+          setShowBuildDeployModal(true)
+        } else if (Object.keys(configDiff).includes(appPart)) {
+          setShowDeployModal(true)
+        } else {
+          onDeployButtonCancel();
+        }
+      }
+    }
+  });
 
   return (
     <PageWithBreadcrumb>
@@ -286,15 +325,29 @@ export default (props: any) => {
             )}
             <Modal
               title={<span
-                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
-              visible={showDeployModal}
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
+              visible={showBuildDeployModal}
               footer={[
                 <Button
                   onClick={onBuildAndDeployButtonOK}
                   type={'primary'}
                 >
                   构建发布
-                </Button>,
+                </Button>
+              ]}
+              onCancel={onDeployButtonCancel}
+            >
+              <div
+                className={styles.modalContent}>{creating ?
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.create.content'}) :
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.edit.content'})}
+              </div>
+            </Modal>
+            <Modal
+              title={<span
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
+              visible={showDeployModal}
+              footer={[
                 <Button
                   onClick={onDeployButtonOK}
                   type={'primary'}
@@ -305,29 +358,10 @@ export default (props: any) => {
               onCancel={onDeployButtonCancel}
             >
               <div
-                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.content'})}</div>
-            </Modal>
-            <Modal
-              title={<span
-                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
-              visible={showBuildDeployModal}
-              footer={[
-                <Button
-                  onClick={onBuildAndDeployButtonOK}
-                  type={'primary'}
-                >
-                  构建发布
-                </Button>,
-                <Button
-                  onClick={onDeployButtonOK}
-                  type={'primary'}
-                >
-                  直接发布
-                </Button>
-              ]}
-            >
-              <div
-                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>
+                className={styles.modalContent}>{creating ?
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.create.content'}) :
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.edit.content'})}
+              </div>
             </Modal>
           </div>
         </Col>

@@ -145,13 +145,14 @@ export default () => {
       title: <span className={styles.tableColumn}>键</span>,
       dataIndex: 'key',
       key: 'key',
+      width: '30%',
       className: styles.tableHeader
     },
     {
       title: <span className={styles.tableColumn}>值</span>,
       dataIndex: 'value',
       key: 'value',
-      ellipsis: true,
+      width: '70%',
       className: styles.tableHeader
     }
   ]
@@ -163,7 +164,7 @@ export default () => {
       key: 'key',
       render: (text: string, record: any) => {
         return <div style={{display: "flex", alignItems: "center"}}>
-          <span style={{marginRight: "5px"}} >{text}</span>
+          <span style={{marginRight: "5px"}}>{text}</span>
           <Tooltip placement={"right"} className={styles.textDescription}
                    title={<span style={{
                      whiteSpace: "pre-line"
@@ -172,13 +173,14 @@ export default () => {
           </Tooltip>
         </div>
       },
+      width: '30%',
       className: styles.tableHeader
     },
     {
       title: <span className={styles.tableColumn}>值</span>,
       dataIndex: 'value',
       key: 'value',
-      ellipsis: true,
+      width: '70%',
       className: styles.tableHeader
     }
   ]
@@ -235,6 +237,7 @@ export default () => {
           title={(<span className={styles.cardTitle}>输出</span>)}
           type={"inner"}>
           <Table
+            tableLayout={"fixed"}
             dataSource={clusterOutputArray}
             columns={outputColumns}
           />
@@ -261,6 +264,7 @@ export default () => {
         )}
         type={"inner"}>
         <Table
+          tableLayout={"fixed"}
           dataSource={tags?.tags}
           columns={tagColumns}
         />
@@ -286,6 +290,7 @@ export default () => {
         )}
         type={"inner"}>
         <Table
+          tableLayout={"fixed"}
           dataSource={adminTags?.tags}
           columns={tagColumns}
         />
