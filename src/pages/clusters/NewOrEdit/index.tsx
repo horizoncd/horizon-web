@@ -223,11 +223,18 @@ export default (props: any) => {
   }
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
-    setBasic(allFields)
-    // 如果修改了环境，查询该应用在该环境下的模版
+    // query regions when environment selected
     if (changingFiled[0].name[0] === 'environment') {
+      // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value)
+      // clear region form data
+      for (let i = 0; i < allFields.length; i++) {
+        if (allFields[i].name[0] === 'region') {
+          allFields[i].value = undefined
+        }
+      }
     }
+    setBasic(allFields)
   }
 
   const onBuildAndDeployButtonOK = () => {
