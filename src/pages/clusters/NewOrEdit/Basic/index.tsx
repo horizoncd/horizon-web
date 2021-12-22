@@ -78,15 +78,6 @@ export default (props: any) => {
     <div>
       <HForm layout={'vertical'} form={props.form}
             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-              // query regions when environment selected
-              if (a[0].name[0] === 'environment') {
-                // clear region form data
-                for (let i = 0; i < b.length; i++) {
-                  if (b[i].name[0] === 'region') {
-                    b[i].value = undefined
-                  }
-                }
-              }
               props.setFormData(a, b)
             }}
             fields={props.formData}
