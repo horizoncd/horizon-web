@@ -14,6 +14,7 @@ const {TextArea} = Input;
 const {Option} = Select;
 
 export default (props: any) => {
+  console.log(props.formData)
   const {readonly = false, editing = false} = props;
   const {query: q} = history.location;
   // @ts-ignore

@@ -1,5 +1,4 @@
 import DetailCard, {Param} from '@/components/DetailCard'
-import * as React from "react";
 import {useState} from "react";
 import {Avatar, Button, Card, Divider, Table, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';

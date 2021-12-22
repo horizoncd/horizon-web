@@ -2,14 +2,14 @@ import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-import {getApplication} from "@/services/applications/applications";
+import {getApplication, getApplicationEnvTemplate} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
 import type {FieldData} from 'rc-field-form/lib/interface'
@@ -70,22 +70,30 @@ export default (props: any) => {
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
 
+  const {run: refreshAppEnvTemplate} = useRequest((env) => getApplicationEnvTemplate(id, env), {
+    onSuccess: (data) => {
+      setConfig(data)
+    }
+  });
+
+  useEffect(() => {refreshAppEnvTemplate(envFromQuery)}, [])
+
   // query application if creating
   if (creating) {
     const {data} = useRequest(() => getApplication(id), {
       onSuccess: () => {
-        const {template: t, git, templateInput, name: n} = data!
+        const {template: t, git, name: n} = data!
         setTemplate(t)
         const {url: u, subfolder: s, branch: b} = git
         const {release: r} = t
-        setBasic([
+        setBasic(prevBasic => [
+            ...prevBasic,
             {name: url, value: u},
             {name: subfolder, value: s},
             {name: branch, value: b},
             {name: release, value: r},
           ]
         )
-        setConfig(templateInput)
         setApplicationName(n)
       }
     });
@@ -216,6 +224,10 @@ export default (props: any) => {
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     setBasic(allFields)
+    // 如果修改了环境，查询该应用在该环境下的模版
+    if (changingFiled[0].name[0] === 'environment') {
+      refreshAppEnvTemplate(changingFiled[0].value)
+    }
   }
 
   const onBuildAndDeployButtonOK = () => {

@@ -1,8 +1,13 @@
 import type {Param} from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard'
 import {useEffect, useState} from "react";
-import {deleteApplication, getApplication} from '@/services/applications/applications';
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal} from 'antd';
+import {
+  deleteApplication,
+  getApplication,
+  getApplicationEnvTemplate,
+  updateApplicationEnvTemplate
+} from '@/services/applications/applications';
+import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, Select} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -14,6 +19,8 @@ import {useHistory, useIntl} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 import RBAC from '@/rbac'
+import {queryEnvironments} from "@/services/environments/environments";
+const {Option} = Select;
 
 export default () => {
   const intl = useIntl();
@@ -43,7 +50,11 @@ export default () => {
   }
   const {successAlert} = useModel('alert')
   const [application, setApplication] = useState<API.Application>(defaultApplication)
-  const [template, setTemplate] = useState([])
+  const [editing, setEditing] = useState(false)
+  const [template, setTemplate] = useState({})
+  const [templateInput, setTemplateInput] = useState({})
+  const [templateInputError, setTemplateInputError] = useState({})
+  const [currentEnv, setCurrentEnv] = useState('')
   const serviceDetail: Param[][] = [
     [
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.name'}), value: application.name},
@@ -77,9 +88,12 @@ export default () => {
     ],
   ]
 
+  const {data: environments} = useRequest(() => queryEnvironments());
+
   const {run: refreshApplication} = useRequest(() => {
     return getApplication(id).then(({data: result}) => {
       setApplication(result);
+      setTemplateInput(result.templateInput)
       // query schema by template and release
       querySchema(result.template.name, result.template.release).then(({data}) => {
         setTemplate(data);
@@ -123,6 +137,16 @@ export default () => {
   );
 
   const editApplicationRoute = `/applications${applicationFullPath}/-/edit`;
+  const templateInputHasError = () => {
+    let hasError = false;
+    Object.keys(templateInputError).forEach((item) => {
+      if (templateInputError[item].length > 0) {
+        hasError = true;
+      }
+    });
+
+    return hasError;
+  };
 
   return (
     <Detail>
@@ -162,16 +186,61 @@ export default () => {
                   data={serviceDetail}/>
       <Card title={(
         <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.applicationDetail.basic.config'})}</span>)}
-            type={"inner"}>
+            type={"inner"} extra={
+        <div>
+          <Button type={editing? 'primary' : 'default'} disabled={editing && templateInputHasError()} onClick={() => {
+            // 提交模版
+            if (editing) {
+              updateApplicationEnvTemplate(id, currentEnv, templateInput).then(() => {
+                successAlert('模版更新成功')
+              })
+            }
+            setEditing(prev => !prev)
+          }}>{editing? '提交' : '编辑'}</Button>
+          {
+            editing && <Button style={{marginLeft: '10px'}} onClick={() => {
+              setEditing(false)
+              setTemplateInputError([])
+              getApplicationEnvTemplate(id, currentEnv).then(({data}) => {
+                setTemplateInput(data)
+              })
+            }}>
+              取消
+            </Button>
+          }
+          <Select style={{minWidth: '100px', marginLeft: '10px'}} value={currentEnv} onSelect={(val) => {
+            // 查询环境对应的模版
+            getApplicationEnvTemplate(id, val).then(({data}) => {
+              setTemplateInput(data)
+            })
+            setCurrentEnv(val)
+          }}>
+            <Option key={'default'} value={''}>
+              默认
+            </Option>
+            {environments?.map((item) => {
+              return <Option key={item.name} value={item.name}>
+                {item.displayName}
+              </Option>
+            })}
+          </Select>
+        </div>
+      }>
         {
           template && Object.keys(template).map((item) => {
             return (
               <JsonSchemaForm
                 key={item}
-                disabled={true}
+                disabled={!editing}
                 uiSchema={template[item].uiSchema}
-                formData={application.templateInput[item]}
+                formData={templateInput[item]}
                 jsonSchema={template[item].jsonSchema}
+                onChange={({formData, errors}: any) => {
+                  setTemplateInput((config: any) => ({...config, [item]: formData}));
+                  setTemplateInputError((configErrors: any) => ({...configErrors, [item]: errors}));
+                }}
+                liveValidate={true}
+                showErrorList={false}
               />)
           })
         }
