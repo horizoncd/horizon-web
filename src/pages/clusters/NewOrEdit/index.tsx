@@ -73,7 +73,8 @@ export default (props: any) => {
   const {run: refreshAppEnvTemplate} = useRequest((env) => getApplicationEnvTemplate(id, env), {
     onSuccess: (data) => {
       setConfig(data)
-    }
+    },
+    ready: creating
   });
 
   useEffect(() => {refreshAppEnvTemplate(envFromQuery)}, [])
