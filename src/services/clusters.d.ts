@@ -43,6 +43,7 @@ declare namespace CLUSTER {
       release: string;
     };
     updatedAt: string
+    createdAt: string
   }
 
   type ClusterOutputs = Record<string, ClusterOutput>

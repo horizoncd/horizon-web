@@ -55,7 +55,12 @@ export default (props: any) => {
       key: 'template',
     },
     {
-      title: '更新时间',
+      title: '创建时间',
+      dataIndex: 'createdTime',
+      key: 'createdTime',
+    },
+    {
+      title: '修改时间',
       dataIndex: 'updatedTime',
       key: 'updatedTime',
     },
@@ -73,15 +78,14 @@ export default (props: any) => {
       setEnv2DisplayName(e)
     }
   });
-  const {data: clusters} = useRequest(() => {
-    return queryClusters(id, environment ? {
-        filter, pageNumber, pageSize, environment
-      } : {
-        filter, pageNumber, pageSize,
-      }
-    )
-  }, {
-    refreshDeps: [query, environment, pageNumber],
+  const {data: clusters} = useRequest(() => queryClusters(id, environment ? {
+      filter, pageNumber, pageSize, environment
+    } : {
+      filter, pageNumber, pageSize,
+    }
+  ), {
+    refreshDeps: [query, filter, environment, pageNumber],
+    debounceInterval: 200,
   });
 
   const onChange = (e: any) => {
@@ -124,15 +128,25 @@ export default (props: any) => {
   )
 
   const data = clusters?.items.map(item => {
-    const {name, scope, template, updatedAt} = item
+    const {name, scope, template, updatedAt, createdAt} = item
     return {
       key: name,
       name: name,
       environment: env2DisplayName?.get(scope.environment),
       regionDisplayName: scope.regionDisplayName,
       template: `${template.name}-${template.release}`,
-      updatedTime: Utils.timeToLocal(updatedAt)
+      createdTime: Utils.timeToLocal(createdAt),
+      updatedTime: Utils.timeToLocal(updatedAt),
     }
+  }).sort((a, b) => {
+    if (a.updatedTime < b.updatedTime) {
+      return 1;
+    }
+    if (a.updatedTime > b.updatedTime) {
+      return -1;
+    }
+
+    return 0;
   })
 
   const locale = {

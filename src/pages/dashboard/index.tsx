@@ -36,7 +36,7 @@ export default (props: any) => {
 
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
-  const [searchValue, setSearchValue] = useState('');
+  const [filter, setFilter] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -50,7 +50,7 @@ export default (props: any) => {
   const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
     for (let i = 0; i < data.length; i += 1) {
       const node = data[i];
-      if (searchValue) {
+      if (filter) {
         expandedKeySet.add(node.parentID);
       }
       if (node.children) {
@@ -68,14 +68,15 @@ export default (props: any) => {
   // search groups
   const {data: groupsData} = useRequest(() => {
     return searchGroups({
-        filter: searchValue,
+        filter,
         pageSize,
         pageNumber
       }
     )
   }, {
     ready: pathname === groupsURL,
-    refreshDeps: [query, pageNumber, pageSize],
+    refreshDeps: [query, filter, pageNumber, pageSize],
+    debounceInterval: 200,
     onSuccess: () => {
       const {items, total: t} = groupsData!
       setGroups(items);
@@ -87,14 +88,15 @@ export default (props: any) => {
   // search applications
   const {data: applicationsData} = useRequest(() => {
     return searchApplications({
-        filter: searchValue,
+        filter,
         pageSize,
         pageNumber
       }
     )
   }, {
     ready: pathname === applicationsURL,
-    refreshDeps: [query, pageNumber, pageSize],
+    refreshDeps: [query, filter, pageNumber, pageSize],
+    debounceInterval: 200,
     onSuccess: () => {
       const {items, total: t} = applicationsData!
       setTotal(t)
@@ -105,14 +107,15 @@ export default (props: any) => {
   // search clusters
   const {data: clustersData} = useRequest(() => {
     return searchClusters({
-        filter: searchValue,
+        filter,
         pageSize,
         pageNumber
       }
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, pageNumber, pageSize],
+    refreshDeps: [query, filter, pageNumber, pageSize],
+    debounceInterval: 200,
     onSuccess: () => {
       const {items, total: t} = clustersData!
       setClusters(items);
@@ -122,14 +125,14 @@ export default (props: any) => {
 
   const titleRender = (node: any): React.ReactNode => {
     const {title} = node;
-    const index = title.indexOf(searchValue);
+    const index = title.indexOf(filter);
     const beforeStr = title.substr(0, index);
-    const afterStr = title.substr(index + searchValue.length);
+    const afterStr = title.substr(index + filter.length);
     const tmp =
-      searchValue && index > -1 ? (
+      filter && index > -1 ? (
         <span className="group-title">
           {beforeStr}
-          <span className="site-tree-search-value">{searchValue}</span>
+          <span className="site-tree-search-value">{filter}</span>
           {afterStr}
         </span>
       ) : (
@@ -153,7 +156,7 @@ export default (props: any) => {
 
   const onChange = (e: any) => {
     const {value} = e.target;
-    setSearchValue(value);
+    setFilter(value);
   };
 
   const onPressEnter = () => {
@@ -230,7 +233,7 @@ export default (props: any) => {
   };
 
   // @ts-ignore
-  const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={searchValue}
+  const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={filter}
             style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
     <Button
       type="primary"
@@ -244,7 +247,7 @@ export default (props: any) => {
       {intl.formatMessage({id: 'pages.groups.New group'})}
     </Button>
   </div> : // @ts-ignore
-    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={searchValue}/>;
+    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
     return items.map(({id, name, type, childrenCount, children, ...item}) => {
