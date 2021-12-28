@@ -1,6 +1,4 @@
 import Terminal, {DEFAULT_CHAR_HEIGHT, DEFAULT_CHAR_WIDTH,} from '@/components/Terminal';
-import {useRequest} from "@@/plugin-request/request";
-import {queryTerminalSessionID} from "@/services/clusters/pods";
 import {useModel} from "@@/plugin-model/useModel";
 
 export default (props: any) => {
@@ -13,16 +11,10 @@ export default (props: any) => {
 
   const backend = window.location.host
 
-  const {data} = useRequest(() => queryTerminalSessionID(id, {
-    podName, containerName
-  }))
-
-  const {id: sessionID} = data || {};
-
   const protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
-  const url = `${protocol}//${backend}/apis/front/v1/terminal/${sessionID}/websocket`
+  const url = `${protocol}//${backend}/apis/core/v1/clusters/${id}/shell?podName=${podName}&containerName=${containerName}`
   return (
-    sessionID ? <Terminal
+    <Terminal
       url={url}
       onSocketOpen={(socketRef) => {
         if (socketRef.current) {
@@ -30,7 +22,6 @@ export default (props: any) => {
             JSON.stringify([
               JSON.stringify({
                 Op: 'bind',
-                SessionID: sessionID,
               }),
             ]),
           );
@@ -51,18 +42,18 @@ export default (props: any) => {
         }
       }}
       postSendData={(d) => {
-        return JSON.stringify([
+        const tempData = JSON.stringify([
           JSON.stringify({
             Op: 'stdin',
-            SessionID: sessionID,
             Data: d || '',
           }),
         ]);
+        return tempData;
       }}
       postSocketMessage={(event) => {
         const msg = JSON.parse(JSON.parse(event.data.slice(1))[0]);
         return msg.Data;
       }}
-    /> : <div/>
+    />
   );
 }
