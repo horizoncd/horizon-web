@@ -24,6 +24,7 @@ import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
 
 const loginPath = '/user/login';
+const queryUserPath = '/apis/login/v1/status';
 
 const IconMap = {
   smile: <SmileOutlined/>,
@@ -134,13 +135,18 @@ export async function getInitialState(): Promise<{
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (response.headers.get('X-OIDC-Redirect-To') && !history.location.pathname.startsWith(loginPath)) {
+      if (response.headers.get('X-OIDC-Redirect-To') && response.url.endsWith(queryUserPath)) {
         history.push({
           pathname: loginPath,
           search: stringify({
             redirect: history.location.pathname + history.location.search,
           }),
         });
+        return response
+      }
+      if (response.headers.get('X-OIDC-Redirect-To') && !history.location.pathname.startsWith(loginPath)) {
+        // double check session
+        queryCurrentUser()
       }
       return response;
     },
