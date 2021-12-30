@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Divider, Input, Pagination, Tabs, Tree} from 'antd';
 import {BookOutlined, DownOutlined, FolderOutlined} from '@ant-design/icons';
 import type {DataNode, EventDataNode, Key} from 'rc-tree/lib/interface';
-import Utils from '@/utils'
+import Utils, {handleHref} from '@/utils'
 import './index.less';
 import {queryChildren, querySubGroups, searchChildren, searchGroups} from "@/services/groups/groups";
 import NoData from '@/components/NoData'
@@ -79,12 +79,12 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath, type} = node;
 
-    return <span onClick={() => {
+    return <span onClick={(nativeEvent) => {
       let targetPath = fullPath
       if (type === 'application') {
         targetPath = `/applications${fullPath}/-/clusters`
       }
-      window.location.href = targetPath
+      handleHref(nativeEvent, targetPath)
     }}>
       <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
@@ -128,9 +128,10 @@ export default (props: any) => {
     selectedKeys: Key[],
     info: {
       node: any;
+      nativeEvent: any
     },
   ) => {
-    const {node} = info;
+    const {node, nativeEvent} = info;
     const {key, expanded, fullPath, childrenCount, type} = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
     if (!childrenCount) {
@@ -139,7 +140,7 @@ export default (props: any) => {
       if (type === 'application') {
         targetPath = `/applications${fullPath}/-/clusters`
       }
-      window.location.href = targetPath
+      handleHref(nativeEvent, targetPath)
     } else if (!expanded) {
       setExpandedKeys([...expandedKeys, key]);
     } else {

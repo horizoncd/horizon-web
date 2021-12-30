@@ -2,17 +2,34 @@ import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-import {getApplication} from "@/services/applications/applications";
+import {getApplication, getApplicationEnvTemplate} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
 import type {FieldData} from 'rc-field-form/lib/interface'
+
+
+function difference(object: any, other: any) {
+  const diff = {};
+  for (const key in object) {
+    if (typeof object[key] === "object" && typeof other[key] === "object" && object[key] && other[key]) {
+      const subDiff = difference(object[key], other[key])
+      if (Object.keys(subDiff).length !== 0) {
+        diff[key] = subDiff;
+      }
+    } else if (object[key] !== other[key]) {
+      diff[key] = object[key];
+    }
+  }
+  return diff;
+}
+
 
 export default (props: any) => {
   const intl = useIntl();
@@ -46,28 +63,38 @@ export default (props: any) => {
     name: environment, value: envFromQuery
   }]);
   const [config, setConfig] = useState({});
+  const [originConfig, setOriginConfig] = useState({});
   const [configErrors, setConfigErrors] = useState({});
   const [applicationName, setApplicationName] = useState('');
   const [cluster, setCluster] = useState<CLUSTER.Cluster>()
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
 
+  const {run: refreshAppEnvTemplate} = useRequest((env) => getApplicationEnvTemplate(id, env), {
+    onSuccess: (data) => {
+      setConfig(data)
+    },
+    ready: creating
+  });
+
+  useEffect(() => {refreshAppEnvTemplate(envFromQuery)}, [])
+
   // query application if creating
   if (creating) {
     const {data} = useRequest(() => getApplication(id), {
       onSuccess: () => {
-        const {template: t, git, templateInput, name: n} = data!
+        const {template: t, git, name: n} = data!
         setTemplate(t)
         const {url: u, subfolder: s, branch: b} = git
         const {release: r} = t
-        setBasic([
+        setBasic(prevBasic => [
+            ...prevBasic,
             {name: url, value: u},
             {name: subfolder, value: s},
             {name: branch, value: b},
             {name: release, value: r},
           ]
         )
-        setConfig(templateInput)
         setApplicationName(n)
       }
     });
@@ -100,6 +127,7 @@ export default (props: any) => {
             {name: release, value: rel},
           ]
         )
+        setOriginConfig(templateInput)
         setConfig(templateInput)
         setTemplate(t)
         setCluster(clusterData)
@@ -189,6 +217,40 @@ export default (props: any) => {
     }
   };
 
+  const onCurrentChange = async (cur: number) => {
+    if (cur < current || await currentIsValid()) {
+      setCurrent(cur);
+    }
+  }
+
+  const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
+    // query regions when environment selected
+    if (changingFiled[0].name[0] === 'environment') {
+      // 如果修改了环境，查询该应用在该环境下的模版
+      refreshAppEnvTemplate(changingFiled[0].value)
+      // clear region form data
+      for (let i = 0; i < allFields.length; i++) {
+        if (allFields[i].name[0] === 'region') {
+          allFields[i].value = undefined
+        }
+      }
+    }
+    setBasic(allFields)
+  }
+
+  const onBuildAndDeployButtonOK = () => {
+    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`
+  }
+
+  const onDeployButtonOK = () => {
+    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`
+  }
+
+  const onDeployButtonCancel = () => {
+    // jump to cluster's home page
+    window.location.href = cluster!.fullPath
+  }
+
   const {loading, run: onSubmit} = useRequest(() => {
     const info = {
       name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
@@ -210,37 +272,34 @@ export default (props: any) => {
     onSuccess: (res: CLUSTER.Cluster) => {
       successAlert(creating ? intl.formatMessage({id: 'pages.clusterNew.success'}) : intl.formatMessage({id: 'pages.clusterEdit.success'}))
       setCluster(res);
+
+      const appPart = 'application'
+      const pipelinePart = 'pipeline'
+      const configDiff = difference(config, originConfig)
+      // 创建时：
+      //    1.构建配置不为空则提示构建发布
+      //    2.构建配置为空则提示直接发布
+      // 更新时：
+      //    1.构建配置被修改则提示构建发布
+      //    2.构建配置未被修改，部署配置被修改则提示直接发布
+      //    3.构建配置、部署配置均未被修改则无提示，直接跳转
       if (creating) {
-        setShowBuildDeployModal(true);
-      }
-      if (editing) {
-        setShowDeployModal(true);
+        if (Object.keys(config[pipelinePart]).length > 0) {
+          setShowBuildDeployModal(true)
+        } else {
+          setShowDeployModal(true)
+        }
+      } else if (editing) {
+        if (Object.keys(configDiff).includes(pipelinePart)) {
+          setShowBuildDeployModal(true)
+        } else if (Object.keys(configDiff).includes(appPart)) {
+          setShowDeployModal(true)
+        } else {
+          onDeployButtonCancel();
+        }
       }
     }
   });
-
-  const onCurrentChange = async (cur: number) => {
-    if (cur < current || await currentIsValid()) {
-      setCurrent(cur);
-    }
-  }
-
-  const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
-    setBasic(allFields)
-  }
-
-  const onBuildAndDeployButtonOK = () => {
-    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`
-  }
-
-  const onDeployButtonOK = () => {
-    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`
-  }
-
-  const onDeployButtonCancel = () => {
-    // jump to cluster's home page
-    window.location.href = cluster!.fullPath
-  }
 
   return (
     <PageWithBreadcrumb>
@@ -265,7 +324,7 @@ export default (props: any) => {
             {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
-                     release={form.getFieldValue(release)} config={config}/>
+                     release={form.getFieldValue(release)} config={config} clusterID={cluster?.id}/>
             }
           </div>
           <div className={styles.stepsAction}>
@@ -286,15 +345,29 @@ export default (props: any) => {
             )}
             <Modal
               title={<span
-                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
-              visible={showDeployModal}
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
+              visible={showBuildDeployModal}
               footer={[
                 <Button
                   onClick={onBuildAndDeployButtonOK}
                   type={'primary'}
                 >
                   构建发布
-                </Button>,
+                </Button>
+              ]}
+              onCancel={onDeployButtonCancel}
+            >
+              <div
+                className={styles.modalContent}>{creating ?
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.create.content'}) :
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.edit.content'})}
+              </div>
+            </Modal>
+            <Modal
+              title={<span
+                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.title'})}</span>}
+              visible={showDeployModal}
+              footer={[
                 <Button
                   onClick={onDeployButtonOK}
                   type={'primary'}
@@ -305,29 +378,10 @@ export default (props: any) => {
               onCancel={onDeployButtonCancel}
             >
               <div
-                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.content'})}</div>
-            </Modal>
-            <Modal
-              title={<span
-                className={styles.modalTitle}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.title'})}</span>}
-              visible={showBuildDeployModal}
-              footer={[
-                <Button
-                  onClick={onBuildAndDeployButtonOK}
-                  type={'primary'}
-                >
-                  构建发布
-                </Button>,
-                <Button
-                  onClick={onDeployButtonOK}
-                  type={'primary'}
-                >
-                  直接发布
-                </Button>
-              ]}
-            >
-              <div
-                className={styles.modalContent}>{intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.content'})}</div>
+                className={styles.modalContent}>{creating ?
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.create.content'}) :
+                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.edit.content'})}
+              </div>
             </Modal>
           </div>
         </Col>

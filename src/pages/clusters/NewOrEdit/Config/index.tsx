@@ -28,7 +28,6 @@ export default (props: any) => {
           if (readonly) {
             return;
           }
-
           props.setConfig((config: any) => ({...config, [item]: formData}));
           props.setConfigErrors((configErrors: any) => ({...configErrors, [item]: errors}));
         };

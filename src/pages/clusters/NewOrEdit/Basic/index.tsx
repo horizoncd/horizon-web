@@ -14,6 +14,7 @@ const {TextArea} = Input;
 const {Option} = Select;
 
 export default (props: any) => {
+  const {readonly = false, editing = false} = props;
   const {query: q} = history.location;
   // @ts-ignore
   const {environment: envFromQuery} = q
@@ -21,7 +22,7 @@ export default (props: any) => {
   const intl = useIntl();
 
   const {data: releases} = useRequest(() => queryReleases(props.template?.name), {
-    ready: !!props.template.name
+    ready: !!props.template.name && !readonly
   });
 
   const {data: regions} = useRequest(() => queryRegions(props.form.getFieldValue('environment')), {
@@ -36,7 +37,7 @@ export default (props: any) => {
     pageSize: 50,
   }), {
     debounceInterval: 500,
-    ready: !!props.form.getFieldValue('url'),
+    ready: !!props.form.getFieldValue('url') && !readonly,
   })
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -69,7 +70,6 @@ export default (props: any) => {
     return item.name;
   };
 
-  const {readonly = false, editing = false} = props;
   const name = editing ? <Input disabled/> :
     <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}
            disabled={readonly}/>;
@@ -78,15 +78,6 @@ export default (props: any) => {
     <div>
       <HForm layout={'vertical'} form={props.form}
             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-              // query regions when environment selected
-              if (a[0].name[0] === 'environment') {
-                // clear region form data
-                for (let i = 0; i < b.length; i++) {
-                  if (b[i].name[0] === 'region') {
-                    b[i].value = undefined
-                  }
-                }
-              }
               props.setFormData(a, b)
             }}
             fields={props.formData}
