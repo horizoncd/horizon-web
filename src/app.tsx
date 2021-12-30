@@ -25,6 +25,7 @@ import {queryRoles, querySelfMember} from "@/services/members/members";
 
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
+const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
 
 const IconMap = {
   smile: <SmileOutlined/>,
@@ -135,7 +136,8 @@ export async function getInitialState(): Promise<{
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (response.headers.get('X-OIDC-Redirect-To') && response.url.endsWith(queryUserPath)) {
+      // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
+      if (response.headers.get(sessionExpireHeaderKey) && response.url.endsWith(queryUserPath)) {
         history.push({
           pathname: loginPath,
           search: stringify({
@@ -144,7 +146,8 @@ export const request: RequestConfig = {
         });
         return response
       }
-      if (response.headers.get('X-OIDC-Redirect-To') && !history.location.pathname.startsWith(loginPath)) {
+      // 其他接口请求（在非登陆页面下），如果响应里有session过期的头，调一次查询用户接口，进行一次二次确认
+      if (response.headers.get(sessionExpireHeaderKey) && !history.location.pathname.startsWith(loginPath)) {
         // double check session
         queryCurrentUser()
       }
