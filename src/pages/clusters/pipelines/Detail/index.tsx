@@ -159,6 +159,11 @@ export default (props: any) => {
     </div>
   }
 
+  const cardContentHeight = {
+    'BuildLog': '600px',
+    'Changes': '100%'
+  }
+
   const [activeTabKey, setActiveTabKey] = useState('Changes')
 
   return <PageWithBreadcrumb>
@@ -177,6 +182,7 @@ export default (props: any) => {
     />
     <Card
       tabList={cardTab}
+      bodyStyle={{height: cardContentHeight[activeTabKey]}}
       onTabChange={setActiveTabKey}
       tabBarExtraContent={extraContent[activeTabKey]}
     >
