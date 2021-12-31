@@ -177,7 +177,6 @@ export default (props: any) => {
     />
     <Card
       tabList={cardTab}
-      bodyStyle={{height: '500px'}}
       onTabChange={setActiveTabKey}
       tabBarExtraContent={extraContent[activeTabKey]}
     >
