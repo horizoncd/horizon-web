@@ -6,15 +6,17 @@ import 'codemirror/addon/mode/simple.js';
 // import 'codemirror/addon/display/fullscreen'
 // import 'codemirror/mode/sql/sql'
 // import 'codemirror/addon/hint/show-hint.css'
+// @ts-ignore
 import CodeMirror from 'codemirror';
 import './index.less'
 import styles from './index.less'
+import React from "react";
 
 interface Props {
   content: string
 }
 
-export default (props: Props) => {
+function CodeEditor(props: Props) {
   // 自定义mode，对日期、构建步骤和一些关键词设定样式，codemirror规定样式名必须为cm-{token}
   CodeMirror.defineSimpleMode("horizon", {
     // The start state contains the rules that are intially used
@@ -65,4 +67,6 @@ export default (props: Props) => {
     }}
   />
 }
+
+export default React.memo(CodeEditor)
 

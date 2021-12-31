@@ -16,7 +16,14 @@ import {
 import type {ReactNode} from 'react';
 import {useState} from 'react';
 import HSteps from '@/components/HSteps'
-import {DownOutlined, FrownOutlined, HourglassOutlined, LoadingOutlined, SmileOutlined} from "@ant-design/icons";
+import {
+  CopyOutlined,
+  DownOutlined,
+  FrownOutlined, FullscreenOutlined,
+  HourglassOutlined,
+  LoadingOutlined,
+  SmileOutlined
+} from "@ant-design/icons";
 import {ClusterStatus, PublishType, RunningTask, TaskStatus} from "@/const";
 import styles from './index.less';
 import {cancelPipeline, queryPipelineLog} from "@/services/pipelineruns/pipelineruns";
@@ -29,6 +36,8 @@ import Utils from '@/utils'
 import {getStatusComponent, isRestrictedStatus} from "@/components/State";
 import RBAC from '@/rbac'
 import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import copy from "copy-to-clipboard";
+import FullscreenModal from "@/components/FullscreenModal";
 
 const {TabPane} = Tabs;
 const {Step} = Steps;
@@ -74,12 +83,14 @@ export default () => {
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
-  const {successAlert} = useModel('alert')
+  const {successAlert, errorAlert} = useModel('alert')
   const {id, fullPath} = initialState!.resource;
   const [current, setCurrent] = useState(0);
+  const [userClickedCurrent, setUserClickedCurrent] = useState(-1);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
+  const [fullscreen, setFullscreen] = useState(false)
 
   const {data: cluster} = useRequest(() => getCluster(id), {});
 
@@ -220,9 +231,9 @@ export default () => {
     onSuccess: () => {
       if (inPublishing(statusData)) {
         const {latestPipelinerun, clusterStatus} = statusData!
-        const {task: t, taskStatus: tStatus} = statusData!.runningTask;
+        const {task, taskStatus} = statusData!.runningTask;
 
-        const ttStatus = tStatus as TaskStatus
+        const ttStatus = taskStatus as TaskStatus
         const entity = taskStatus2Entity.get(ttStatus)
         if (!entity) {
           return
@@ -236,7 +247,7 @@ export default () => {
         }
 
         setStepStatus(entity.stepStatus);
-        if (t === RunningTask.BUILD) {
+        if (task === RunningTask.BUILD) {
           steps[0] = {
             title: entity.buildTitle,
             icon: entity.icon,
@@ -271,25 +282,6 @@ export default () => {
   });
 
   const podsInfo = refreshPodsInfo(statusData)
-
-  function BuildPage({log}: { log: string }) {
-    return <div style={{height: '500px'}}>
-      <div>
-        <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
-        {
-          canCancelPublish(statusData) &&
-          <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
-            cancelPipeline(statusData!.latestPipelinerun!.id).then(() => {
-              successAlert('取消发布成功')
-            })
-          }}>
-            取消发布
-          </Button>
-        }
-      </div>
-      <CodeEditor content={log}/>
-    </div>
-  }
 
   function DeployStep({index, total}: { index: number, total: number }) {
     const s = []
@@ -498,6 +490,24 @@ export default () => {
     </div>
   }
 
+  // used by build log ops
+  const onCopyButtonClick = () => {
+    if (copy(buildLog)) {
+      successAlert(intl.formatMessage({id: "component.FullscreenModal.copySuccess"}))
+    } else {
+      errorAlert(intl.formatMessage({id: "component.FullscreenModal.copyFailed"}))
+    }
+  }
+  const onFullscreenClick = () => {
+    setFullscreen(true)
+  }
+
+  const onClose = () => {
+    setFullscreen(false)
+  }
+
+  const currentTab = userClickedCurrent > -1 ? userClickedCurrent : current
+
   return (
     <PageWithBreadcrumb>
       <div>
@@ -533,15 +543,42 @@ export default () => {
         inPublishing(statusData) && !(clusterStatus === ClusterStatus.FREEING) && (
           <Row>
             <Col span={4}>
-              <HSteps current={current} status={stepStatus} steps={steps} onChange={setCurrent}/>
+              <HSteps current={currentTab} status={stepStatus} steps={steps} onChange={(cur) => {
+                setCurrent(cur)
+                setUserClickedCurrent(cur)
+              }}/>
             </Col>
             <Col span={20}>
               <div className={styles.stepsContent}>
                 {
-                  current === 0 && <BuildPage log={buildLog}/>
+                  currentTab === 0 && <div>
+                    <div style={{display: "flex"}}>
+                      <span style={{marginBottom: '10px', fontSize: '16px', fontWeight: 'bold'}}>构建日志</span>
+                      {
+                        canCancelPublish(statusData) &&
+                        <Button danger style={{marginLeft: '10px', marginBottom: '10px'}} onClick={() => {
+                          cancelPipeline(statusData!.latestPipelinerun!.id).then(() => {
+                            successAlert('取消发布成功')
+                          })
+                        }}>
+                          取消发布
+                        </Button>
+                      }
+                      <div style={{flex: 1}} />
+                      <Button className={styles.buttonClass}>
+                        <CopyOutlined className={styles.iconCommonModal} onClick={onCopyButtonClick}/>
+                      </Button>
+                      <Button className={styles.buttonClass}>
+                        <FullscreenOutlined className={styles.iconCommonModal} onClick={onFullscreenClick}/>
+                      </Button>
+                    </div>
+                    <div style={{height: '500px'}}>
+                      <CodeEditor content={buildLog}/>
+                    </div>
+                  </div>
                 }
                 {
-                  current === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
+                  currentTab === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
                   (
                     <div>
                       <DeployPage
@@ -576,7 +613,6 @@ export default () => {
                                 width: "750px"
                               }
                             )
-
                           }
                         }
                       />
@@ -603,6 +639,17 @@ export default () => {
           </TabPane>
         </Tabs>
       }
+      <FullscreenModal
+        title={''}
+        visible={fullscreen}
+        onClose={onClose}
+        fullscreen={true}
+        supportFullscreenToggle={false}
+      >
+        <CodeEditor
+          content={buildLog}
+        />
+      </FullscreenModal>
     </PageWithBreadcrumb>
   )
 };
