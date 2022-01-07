@@ -198,6 +198,7 @@ declare namespace CLUSTER {
       step: {
         index: number,
         total: number,
+        replicas: string[]
       }
       podTemplateHash: string,
       replicas: number,

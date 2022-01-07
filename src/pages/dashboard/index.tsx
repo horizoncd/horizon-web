@@ -9,11 +9,16 @@ import {searchClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
 import Utils, {handleHref} from "@/utils";
 import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
-import {BookOutlined, CloudOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
+import {BookOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
 import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
+import {queryEnvironments} from "@/services/environments/environments";
+import {
+  GitlabOutlined,
+  FundOutlined
+} from '@ant-design/icons/lib';
 
 const {DirectoryTree} = Tree;
 const Search = withTrim(Input.Search);
@@ -46,6 +51,15 @@ export default (props: any) => {
   const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
   const [applications, setApplications] = useState<API.Application[]>([]);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
+  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+
+  const {data: envs} = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      envs!.forEach(item => e.set(item.name, item.displayName))
+      setEnv2DisplayName(e)
+    }
+  });
 
   const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
     for (let i = 0; i < data.length; i += 1) {
@@ -122,6 +136,47 @@ export default (props: any) => {
       setTotal(t)
     }
   });
+
+  const clusterTitleRender = (node: any): React.ReactNode => {
+    const {updatedAt, scope, template, name, fullPath, git} = node;
+    const index = name.indexOf(filter);
+    const beforeStr = name.substr(0, index);
+    const afterStr = name.substr(index + filter.length);
+    const tmp =
+      filter && index > -1 ? (
+        <a className="group-title" href={`/clusters${fullPath}/-/pods`}>
+          {beforeStr}
+          <span className="site-tree-search-value">{filter}</span>
+          {afterStr}
+        </a>
+      ) : (
+        <a href={`/clusters${fullPath}/-/pods`} className="group-title">{name}</a>
+      );
+    const firstLetter = name.substring(0, 1).toUpperCase()
+
+    return <div style={{padding: '20px 0', display: 'flex', lineHeight: '32px', fontSize: 16}}>
+      <div style={{flex: '1 1 100%'}}>
+        <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(name)}`}>
+          {firstLetter}
+        </span>
+        <span style={{marginLeft: 48}}>{tmp}</span>
+        <span className={'user-access-role'}>{scope.regionDisplayName}</span>
+        <span className={'user-access-role'}>{template.name}-{template.release}</span>
+        <span className={'user-access-role'}>{env2DisplayName?.get(scope.environment)}</span>
+      </div>
+      <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <a style={{color: 'black'}}><GitlabOutlined /></a>
+          <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
+        </div>
+        <div style={{display: 'flex'}}>
+          <Tooltip title={Utils.timeToLocal(updatedAt)}>
+            更新于 {Utils.timeFromNow(updatedAt)}
+          </Tooltip>
+        </div>
+      </div>
+    </div>
+  };
 
   const titleRender = (node: any): React.ReactNode => {
     const {title} = node;
@@ -223,20 +278,6 @@ export default (props: any) => {
     handleHref(nativeEvent, `/applications${fullPath}/-/clusters`)
   };
 
-  // select cluster
-  const onSelectCluster = (
-    selectedKeys: Key[],
-    info: {
-      node: any;
-      nativeEvent: any
-    },
-  ) => {
-    const {node, nativeEvent} = info;
-    const {fullPath} = node;
-
-    handleHref(nativeEvent, `/clusters${fullPath}/-/pods`)
-  };
-
   // @ts-ignore
   const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={filter}
             style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
@@ -295,27 +336,20 @@ export default (props: any) => {
 
   return (
     <Row>
-      <Col span={2}/>
-      <Col span={20}>
+      <Col span={4}/>
+      <Col span={16}>
         <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange}
               animated={false} style={{marginTop: '15px'}}
         >
           <TabPane tab={'Clusters'} key="/dashboard/clusters">
             {clusters.map((item: CLUSTER.Cluster) => {
-              const treeData: DataNode[] = [{
-                key: item.id,
+              const treeData = {
                 title: item.fullName?.split("/").join("  /  "),
-                isLeaf: true,
-                icon: <CloudOutlined/>,
                 ...item
-              }];
+              };
               return (
                 <div key={item.id}>
-                  <DirectoryTree
-                    treeData={treeData}
-                    titleRender={titleRender}
-                    onSelect={onSelectCluster}
-                  />
+                  {clusterTitleRender(treeData)}
                   <Divider style={{margin: '5px 0 5px 0'}}/>
                 </div>
               );
