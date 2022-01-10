@@ -43,7 +43,7 @@ export default (props: any) => {
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
   const [filter, setFilter] = useState('');
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState(location.state?.total || 0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [query, setQuery] = useState(0);
@@ -132,8 +132,7 @@ export default (props: any) => {
     refreshDeps: [query, filter, pageNumber, pageSize],
     debounceInterval: 200,
     onSuccess: (data) => {
-      const {items, total: t} = data!
-      setTotal(t)
+      const {items} = data!
       setApplications(items);
     }
   });
@@ -171,9 +170,8 @@ export default (props: any) => {
     refreshDeps: [query, filter, pageNumber, pageSize, environment],
     debounceInterval: 200,
     onSuccess: (data) => {
-      const {items, total: t} = data!
+      const {items} = data!
       setClusters(items);
-      setTotal(t)
     }
   });
 
