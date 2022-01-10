@@ -4,8 +4,8 @@ import './index.less';
 import {useIntl} from '@@/plugin-locale/localeExports';
 import {useModel} from "@@/plugin-model/useModel";
 import {querySubGroups, searchGroups} from "@/services/groups/groups";
-import {searchApplications} from "@/services/applications/applications"
-import {searchClusters} from "@/services/clusters/clusters"
+import {searchApplications, searchMyApplications} from "@/services/applications/applications"
+import {searchClusters, searchMyClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
 import Utils, {handleHref} from "@/utils";
 import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
@@ -15,7 +15,7 @@ import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
-import {FundOutlined, GitlabFilled, GitlabOutlined} from '@ant-design/icons/lib';
+import {FundOutlined, RocketTwoTone, GitlabOutlined} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
 const {Option} = Select;
 
@@ -43,7 +43,7 @@ export default (props: any) => {
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
   const [filter, setFilter] = useState('');
-  const [total, setTotal] = useState(location.state?.total);
+  const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [query, setQuery] = useState(0);
@@ -103,7 +103,7 @@ export default (props: any) => {
 
   // search your applications
   useRequest(() => {
-    return searchApplications({
+    return searchMyApplications({
         filter,
         pageSize,
         pageNumber
@@ -140,7 +140,7 @@ export default (props: any) => {
 
   // search your clusters
   useRequest(() => {
-    return searchClusters({
+    return searchMyClusters({
         filter,
         pageSize,
         pageNumber,
@@ -178,7 +178,7 @@ export default (props: any) => {
   });
 
   const clusterTitleRender = (node: any): React.ReactNode => {
-    const {updatedAt, scope, template, name, fullPath, git} = node;
+    const {updatedAt, scope, template, name, fullPath, git, description} = node;
     const index = name.indexOf(filter);
     const beforeStr = name.substr(0, index);
     const afterStr = name.substr(index + filter.length);
@@ -194,23 +194,35 @@ export default (props: any) => {
       );
     const firstLetter = name.substring(0, 1).toUpperCase()
 
-    return <div style={{padding: '20px 0', display: 'flex', lineHeight: '32px', fontSize: 16}}>
-      <div style={{flex: '1 1 100%'}}>
-        <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(name)}`}>
+    const cssForDesc = !description ? {
+      height: '48px',
+      lineHeight: '48px'
+    }: {}
+    return <div style={{padding: '10px 0', display: 'flex', fontSize: 16}}>
+      <div style={{flex: '1 1 100%', alignItems: 'center', ...cssForDesc}}>
+        <span className={`avatar-48 identicon bg${Utils.getAvatarColorIndex(name)}`}>
           {firstLetter}
         </span>
-        <span style={{marginLeft: 48}}>{tmp}</span>
+        <span style={{marginLeft: 60}}>{tmp}</span>
         <span className={'user-access-role'}>{env2DisplayName?.get(scope.environment)}</span>
         <span className={'user-access-role'}>{scope.regionDisplayName}</span>
         <span className={'user-access-role'}>{template.name}-{template.release}</span>
+        <br/>
+        <span style={{marginLeft: 60, color: '#666666'}}>{description}</span>
       </div>
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
-        <div style={{display: 'flex', alignItems: 'center'}}>
-          <a style={{color: '#e24329'}}><GitlabFilled /></a>
-          <a style={{color: '#e24329'}}><GitlabOutlined /></a>
-          <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
+        <div style={{display: 'flex', alignItems: 'center', fontSize: 'x-large'}}>
+          <Tooltip title="代码仓库">
+            <a href={git.httpURL} style={{color: '#e24329'}}><GitlabOutlined /></a>
+          </Tooltip>
+          <Tooltip title="集群监控">
+            <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
+          </Tooltip>
+          <Tooltip title="构建发布">
+            <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone style={{marginLeft: '1rem'}}/></a>
+          </Tooltip>
         </div>
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex', alignItems: 'center', fontSize: 14, color: '#666666'}}>
           <Tooltip title={Utils.timeToLocal(updatedAt)}>
             Updated {Utils.timeFromNowEnUS(updatedAt)}
           </Tooltip>
@@ -237,17 +249,17 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath, updatedAt} = node;
 
-    return <span style={{padding: '10px 0'}} onClick={(nativeEvent) => {
+    return <span style={{padding: '10px 0', lineHeight: '48px', }} onClick={(nativeEvent) => {
       // group点击名字进入主页 点击其他部位是展开
       if (groupsDashboard) {
         handleHref(nativeEvent, fullPath)
       }
     }}>
-      <span className={`avatar-32 identicon bg${Utils.getAvatarColorIndex(title)}`}>
+      <span className={`avatar-48 identicon bg${Utils.getAvatarColorIndex(title)}`}>
         {firstLetter}
       </span>
-      <span style={{marginLeft: 48}}>{tmp}</span>
-      <span style={{float: 'right'}}>
+      <span style={{marginLeft: 60}}>{tmp}</span>
+      <span style={{float: 'right', fontSize: 14, color: '#666666'}}>
         <Tooltip title={Utils.timeToLocal(updatedAt)}>
           Updated {Utils.timeFromNowEnUS(updatedAt)}
         </Tooltip>
@@ -348,7 +360,7 @@ export default (props: any) => {
       }
       {
         // @ts-ignore
-        <Search style={{width: '50%', marginLeft: '5px'}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
+        <Search style={pathname.endsWith("clusters") ? {width: '50%', marginLeft: '5px'}: {}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
       }
   </div>
 
@@ -423,7 +435,7 @@ export default (props: any) => {
           }
           {
             pathname.indexOf('clusters') > -1 &&
-            <TabPane tab={formatTabTitle('All clusters', total)} key="/explore/clusters">
+            <TabPane tab={'All clusters'} key="/explore/clusters">
               {clusters.map((item: CLUSTER.Cluster) => {
                 const treeData = {
                   title: item.fullName?.split("/").join("  /  "),
@@ -465,7 +477,7 @@ export default (props: any) => {
           }
           {
             pathname.indexOf('applications') > -1 &&
-            <TabPane tab={formatTabTitle('All applications', total)} key="/explore/applications">
+            <TabPane tab={'All applications'} key="/explore/applications">
               {applications.map((item: API.Application) => {
                 const treeData: DataNode[] = [{
                   key: item.id,
