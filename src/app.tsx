@@ -26,6 +26,7 @@ import {queryRoles, querySelfMember} from "@/services/members/members";
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
+const {SubMenu} = Menu;
 
 const IconMap = {
   smile: <SmileOutlined/>,
@@ -191,16 +192,30 @@ export const request: RequestConfig = {
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
     headerContentRender: () => {
-      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
-        <Menu.Item key="1">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
-        </Menu.Item>
-        <Menu.Item key="2">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
-        </Menu.Item>
-        <Menu.Item key="3">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/groups")}>Groups</a>
-        </Menu.Item>
+      return <Menu mode="horizontal" theme={'dark'}  style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
+        <SubMenu key="sub1" title="Clusters">
+          <Menu.Item key="1">
+            <a style={{fontWeight: 'bold'}} href={'/dashboard/clusters'}>Your clusters</a>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <a style={{fontWeight: 'bold'}} href={'/explore/clusters'}>All clusters</a>
+          </Menu.Item>
+        </SubMenu>
+
+        <SubMenu key="sub2" title="Applications">
+          <Menu.Item key="3">
+            <a style={{fontWeight: 'bold'}} href={'/dashboard/applications'}>Your applications</a>
+          </Menu.Item>
+           <Menu.Item key="4">
+             <a style={{fontWeight: 'bold'}} href={'/explore/applications'}>All applications</a>
+           </Menu.Item>
+        </SubMenu>
+
+        <SubMenu key="sub3" title="Groups">
+          <Menu.Item key="5">
+            <a style={{fontWeight: 'bold'}} href={'/dashboard/groups'}>All groups</a>
+          </Menu.Item>
+        </SubMenu>
       </Menu>
     },
     rightContentRender: () => <RightContent/>,

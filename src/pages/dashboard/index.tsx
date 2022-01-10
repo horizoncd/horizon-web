@@ -15,10 +15,8 @@ import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
-import {
-  GitlabOutlined,
-  FundOutlined
-} from '@ant-design/icons/lib';
+import {FundOutlined, GitlabOutlined} from '@ant-design/icons/lib';
+import styles from "@/pages/clusters/Pods/index.less";
 
 const {DirectoryTree} = Tree;
 const Search = withTrim(Input.Search);
@@ -27,7 +25,9 @@ const {TabPane} = Tabs;
 
 const groupsURL = '/dashboard/groups'
 const applicationsURL = '/dashboard/applications'
+const allApplicationsURL = '/explore/applications'
 const clustersURL = '/dashboard/clusters'
+const allClustersURL = '/explore/clusters'
 
 export default (props: any) => {
   const {location} = props;
@@ -42,7 +42,7 @@ export default (props: any) => {
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
   const [filter, setFilter] = useState('');
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState(location.state?.total);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [query, setQuery] = useState(0);
@@ -99,8 +99,8 @@ export default (props: any) => {
     }
   });
 
-  // search applications
-  const {data: applicationsData} = useRequest(() => {
+  // search your applications
+  useRequest(() => {
     return searchApplications({
         filter,
         pageSize,
@@ -111,15 +111,33 @@ export default (props: any) => {
     ready: pathname === applicationsURL,
     refreshDeps: [query, filter, pageNumber, pageSize],
     debounceInterval: 200,
-    onSuccess: () => {
-      const {items, total: t} = applicationsData!
+    onSuccess: (data) => {
+      const {items, total: t} = data!
+      setTotal(t)
+      setApplications(items);
+    }
+  });
+  // search all applications
+  useRequest(() => {
+    return searchApplications({
+        filter,
+        pageSize,
+        pageNumber
+      }
+    )
+  }, {
+    ready: pathname === allApplicationsURL,
+    refreshDeps: [query, filter, pageNumber, pageSize],
+    debounceInterval: 200,
+    onSuccess: (data) => {
+      const {items, total: t} = data!
       setTotal(t)
       setApplications(items);
     }
   });
 
-  // search clusters
-  const {data: clustersData} = useRequest(() => {
+  // search your clusters
+  useRequest(() => {
     return searchClusters({
         filter,
         pageSize,
@@ -130,8 +148,26 @@ export default (props: any) => {
     ready: pathname === clustersURL,
     refreshDeps: [query, filter, pageNumber, pageSize],
     debounceInterval: 200,
-    onSuccess: () => {
-      const {items, total: t} = clustersData!
+    onSuccess: (data) => {
+      const {items, total: t} = data!
+      setClusters(items);
+      setTotal(t)
+    }
+  });
+  // search all clusters
+  useRequest(() => {
+    return searchClusters({
+        filter,
+        pageSize,
+        pageNumber
+      }
+    )
+  }, {
+    ready: pathname === allClustersURL,
+    refreshDeps: [query, filter, pageNumber, pageSize],
+    debounceInterval: 200,
+    onSuccess: (data) => {
+      const {items, total: t} = data!
       setClusters(items);
       setTotal(t)
     }
@@ -160,18 +196,18 @@ export default (props: any) => {
           {firstLetter}
         </span>
         <span style={{marginLeft: 48}}>{tmp}</span>
+        <span className={'user-access-role'}>{env2DisplayName?.get(scope.environment)}</span>
         <span className={'user-access-role'}>{scope.regionDisplayName}</span>
         <span className={'user-access-role'}>{template.name}-{template.release}</span>
-        <span className={'user-access-role'}>{env2DisplayName?.get(scope.environment)}</span>
       </div>
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
         <div style={{display: 'flex', alignItems: 'center'}}>
-          <a style={{color: 'black'}}><GitlabOutlined /></a>
+          <a style={{color: 'black'}}><GitlabOutlined/></a>
           <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
         </div>
         <div style={{display: 'flex'}}>
           <Tooltip title={Utils.timeToLocal(updatedAt)}>
-            更新于 {Utils.timeFromNow(updatedAt)}
+            Updated {Utils.timeFromNowEnUS(updatedAt)}
           </Tooltip>
         </div>
       </div>
@@ -208,7 +244,7 @@ export default (props: any) => {
       <span style={{marginLeft: 48}}>{tmp}</span>
       <span style={{float: 'right'}}>
         <Tooltip title={Utils.timeToLocal(updatedAt)}>
-          更新于 {Utils.timeFromNow(updatedAt)}
+          Updated {Utils.timeFromNowEnUS(updatedAt)}
         </Tooltip>
       </span>
     </span>;
@@ -280,19 +316,19 @@ export default (props: any) => {
 
   // @ts-ignore
   const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={filter}
-            style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
-    <Button
-      type="primary"
-      onClick={() =>
-        history.push({
-          pathname: newGroup,
-        })
-      }
-      style={{backgroundColor: '#1f75cb'}}
-    >
-      {intl.formatMessage({id: 'pages.groups.New group'})}
-    </Button>
-  </div> : // @ts-ignore
+                 style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
+      <Button
+        type="primary"
+        onClick={() =>
+          history.push({
+            pathname: newGroup,
+          })
+        }
+        style={{backgroundColor: '#1f75cb'}}
+      >
+        {intl.formatMessage({id: 'pages.groups.New group'})}
+      </Button>
+    </div> : // @ts-ignore
     <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>;
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
@@ -331,7 +367,13 @@ export default (props: any) => {
   };
 
   const onTabChange = (key: string) => {
-    history.replace(key)
+    history.push(key, {total})
+  }
+
+  const formatTabTitle = (tab: string, totalItems: number) => {
+    return <div>
+      {tab}<span className={styles.tabNumber}>{totalItems}</span>
+    </div>
   }
 
   return (
@@ -341,61 +383,113 @@ export default (props: any) => {
         <Tabs activeKey={pathname} size={'large'} tabBarExtraContent={queryInput} onChange={onTabChange}
               animated={false} style={{marginTop: '15px'}}
         >
-          <TabPane tab={'Clusters'} key="/dashboard/clusters">
-            {clusters.map((item: CLUSTER.Cluster) => {
-              const treeData = {
-                title: item.fullName?.split("/").join("  /  "),
-                ...item
-              };
-              return (
-                <div key={item.id}>
-                  {clusterTitleRender(treeData)}
-                  <Divider style={{margin: '5px 0 5px 0'}}/>
-                </div>
-              );
-            })}
-          </TabPane>
-          <TabPane tab={'Applications'} key="/dashboard/applications">
-            {applications.map((item: API.Application) => {
-              const treeData: DataNode[] = [{
-                key: item.id,
-                title: item.fullName?.split("/").join("  /  "),
-                isLeaf: true,
-                icon: <BookOutlined/>,
-                ...item
-              }];
-              return (
-                <div key={item.id}>
-                  <DirectoryTree
-                    treeData={treeData}
-                    titleRender={titleRender}
-                    onSelect={onSelectApplication}
-                  />
-                  <Divider style={{margin: '5px 0 5px 0'}}/>
-                </div>
-              );
-            })}
-          </TabPane>
-          <TabPane tab={'Groups'} key="/dashboard/groups">
-            {groups.map((item: API.GroupChild) => {
-              const treeData = formatTreeData([item]);
-              const hasChildren = item.childrenCount > 0;
-              return (
-                <div key={item.id}>
-                  <DirectoryTree
-                    onExpand={onExpand}
-                    showLine={hasChildren ? {showLeafIcon: false} : false}
-                    switcherIcon={<DownOutlined/>}
-                    treeData={treeData}
-                    titleRender={titleRender}
-                    onSelect={onSelectGroup}
-                    expandedKeys={expandedKeys}
-                  />
-                  <Divider style={{margin: '5px 0 5px 0'}}/>
-                </div>
-              );
-            })}
-          </TabPane>
+          {
+            pathname.indexOf('clusters') > -1 &&
+            <TabPane tab={formatTabTitle('Your clusters', total)} key="/dashboard/clusters">
+              {clusters.map((item: CLUSTER.Cluster) => {
+                const treeData = {
+                  title: item.fullName?.split("/").join("  /  "),
+                  ...item
+                };
+                return (
+                  <div key={item.id}>
+                    {clusterTitleRender(treeData)}
+                    <Divider style={{margin: '5px 0 5px 0'}}/>
+                  </div>
+                );
+              })}
+            </TabPane>
+          }
+          {
+            pathname.indexOf('clusters') > -1 &&
+            <TabPane tab={formatTabTitle('All clusters', total)} key="/explore/clusters">
+              {clusters.map((item: CLUSTER.Cluster) => {
+                const treeData = {
+                  title: item.fullName?.split("/").join("  /  "),
+                  ...item
+                };
+                return (
+                  <div key={item.id}>
+                    {clusterTitleRender(treeData)}
+                    <Divider style={{margin: '5px 0 5px 0'}}/>
+                  </div>
+                );
+              })}
+            </TabPane>
+          }
+
+          {
+            pathname.indexOf('applications') > -1 &&
+            <TabPane tab={formatTabTitle('Your applications', total)} key="/dashboard/applications">
+              {applications.map((item: API.Application) => {
+                const treeData: DataNode[] = [{
+                  key: item.id,
+                  title: item.fullName?.split("/").join("  /  "),
+                  isLeaf: true,
+                  icon: <BookOutlined/>,
+                  ...item
+                }];
+                return (
+                  <div key={item.id}>
+                    <DirectoryTree
+                      treeData={treeData}
+                      titleRender={titleRender}
+                      onSelect={onSelectApplication}
+                    />
+                    <Divider style={{margin: '5px 0 5px 0'}}/>
+                  </div>
+                );
+              })}
+            </TabPane>
+          }
+          {
+            pathname.indexOf('applications') > -1 &&
+            <TabPane tab={formatTabTitle('All applications', total)} key="/explore/applications">
+              {applications.map((item: API.Application) => {
+                const treeData: DataNode[] = [{
+                  key: item.id,
+                  title: item.fullName?.split("/").join("  /  "),
+                  isLeaf: true,
+                  icon: <BookOutlined/>,
+                  ...item
+                }];
+                return (
+                  <div key={item.id}>
+                    <DirectoryTree
+                      treeData={treeData}
+                      titleRender={titleRender}
+                      onSelect={onSelectApplication}
+                    />
+                    <Divider style={{margin: '5px 0 5px 0'}}/>
+                  </div>
+                );
+              })}
+            </TabPane>
+          }
+
+          {
+            pathname.indexOf('groups') > -1 &&
+            <TabPane tab={formatTabTitle('All groups', total)} key="/dashboard/groups">
+              {groups.map((item: API.GroupChild) => {
+                const treeData = formatTreeData([item]);
+                const hasChildren = item.childrenCount > 0;
+                return (
+                  <div key={item.id}>
+                    <DirectoryTree
+                      onExpand={onExpand}
+                      showLine={hasChildren ? {showLeafIcon: false} : false}
+                      switcherIcon={<DownOutlined/>}
+                      treeData={treeData}
+                      titleRender={titleRender}
+                      onSelect={onSelectGroup}
+                      expandedKeys={expandedKeys}
+                    />
+                    <Divider style={{margin: '5px 0 5px 0'}}/>
+                  </div>
+                );
+              })}
+            </TabPane>
+          }
         </Tabs>
         <br/>
         <div style={{textAlign: 'center'}}>
