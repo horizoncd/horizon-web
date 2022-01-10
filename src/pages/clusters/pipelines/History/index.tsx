@@ -134,6 +134,7 @@ export default (props: any) => {
       <Tabs size={'large'} activeKey={tabKey} onChange={(key) => {
         history.replace(`/clusters${fullPath}/-/pipelines?category=${key}`)
         setTabKey(key)
+        setPageNumber(1)
       }} animated={false}>
         <TabPane tab={'所有'} key={'all'}>
           {table}

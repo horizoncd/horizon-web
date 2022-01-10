@@ -152,6 +152,15 @@ export async function searchClusters(params: API.PageParam) {
   });
 }
 
+export async function searchMyClusters(params: API.PageParam) {
+  return request<{
+    data: API.PageResult<CLUSTER.Cluster>;
+  }>('/apis/front/v1/clusters/searchmyclusters', {
+    method: 'GET',
+    params
+  });
+}
+
 export async function getDashboards(clusterID: number) {
   return request<{
     data: {

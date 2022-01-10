@@ -14,7 +14,7 @@ import {
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  TagsOutlined
+  TagsOutlined,
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
 import {queryResource} from '@/services/core';
@@ -185,21 +185,20 @@ export const request: RequestConfig = {
   },
 };
 
-
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
     headerContentRender: () => {
-      return <Menu theme="dark" mode="horizontal" style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
+      return <Menu mode="horizontal" theme={'dark'}  style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
         <Menu.Item key="1">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
-        </Menu.Item>
-        <Menu.Item key="2">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
+          <a style={{fontWeight: 'bold'}} href={'/dashboard/clusters'}>Clusters</a>
         </Menu.Item>
         <Menu.Item key="3">
-          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/groups")}>Groups</a>
+          <a style={{fontWeight: 'bold'}} href={'/dashboard/applications'}>Applications</a>
+        </Menu.Item>
+        <Menu.Item key="5">
+          <a style={{fontWeight: 'bold'}} href={'/dashboard/groups'}>Groups</a>
         </Menu.Item>
       </Menu>
     },

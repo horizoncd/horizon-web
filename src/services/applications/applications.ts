@@ -47,6 +47,15 @@ export async function searchApplications(params: API.PageParam) {
   });
 }
 
+export async function searchMyApplications(params: API.PageParam) {
+  return request<{
+    data: API.PageResult<API.Application>;
+  }>('/apis/front/v1/applications/searchmyapplications', {
+    method: 'GET',
+    params
+  });
+}
+
 export async function getApplicationEnvTemplate(applicationID: number, environment: string) {
   return request(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'GET',

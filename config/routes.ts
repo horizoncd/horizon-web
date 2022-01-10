@@ -20,7 +20,17 @@
     component: 'dashboard',
   },
   {
+    path: '/explore/applications',
+    menuRender: false,
+    component: 'dashboard',
+  },
+  {
     path: '/dashboard/clusters',
+    menuRender: false,
+    component: 'dashboard',
+  },
+  {
+    path: '/explore/clusters',
     menuRender: false,
     component: 'dashboard',
   },
