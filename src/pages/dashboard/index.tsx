@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Input, Pagination, Row, Tabs, Tooltip, Tree} from 'antd';
+import {Button, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree} from 'antd';
 import {history} from 'umi';
 import './index.less';
 import {useIntl} from '@@/plugin-locale/localeExports';
@@ -15,8 +15,9 @@ import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
-import {FundOutlined, GitlabOutlined} from '@ant-design/icons/lib';
+import {FundOutlined, GitlabFilled, GitlabOutlined} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
+const {Option} = Select;
 
 const {DirectoryTree} = Tree;
 const Search = withTrim(Input.Search);
@@ -52,6 +53,7 @@ export default (props: any) => {
   const [applications, setApplications] = useState<API.Application[]>([]);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [environment, setEnvironment] = useState();
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -141,12 +143,13 @@ export default (props: any) => {
     return searchClusters({
         filter,
         pageSize,
-        pageNumber
+        pageNumber,
+        environment
       }
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -159,12 +162,13 @@ export default (props: any) => {
     return searchClusters({
         filter,
         pageSize,
-        pageNumber
+        pageNumber,
+        environment
       }
     )
   }, {
     ready: pathname === allClustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -202,7 +206,8 @@ export default (props: any) => {
       </div>
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
         <div style={{display: 'flex', alignItems: 'center'}}>
-          <a style={{color: 'black'}}><GitlabOutlined/></a>
+          <a style={{color: '#e24329'}}><GitlabFilled /></a>
+          <a style={{color: '#e24329'}}><GitlabOutlined /></a>
           <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
         </div>
         <div style={{display: 'flex'}}>
@@ -328,8 +333,24 @@ export default (props: any) => {
       >
         {intl.formatMessage({id: 'pages.groups.New group'})}
       </Button>
-    </div> : // @ts-ignore
-    <Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>;
+    </div> : <div>
+      {
+        // @ts-ignore
+        pathname.endsWith("clusters") && <Select allowClear style={{minWidth: 200}} placeholder='Filter by env' onSelect={setEnvironment} onClear={() => setEnvironment('')}>
+          {envs?.map((item) => {
+            return (
+              <Option key={item.name} value={item.name}>
+                {item.displayName}
+              </Option>
+            )
+          })}
+        </Select>
+      }
+      {
+        // @ts-ignore
+        <Search style={{width: '50%', marginLeft: '5px'}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
+      }
+  </div>
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
     return items.map(({id, name, type, childrenCount, children, ...item}) => {

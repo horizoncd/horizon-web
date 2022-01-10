@@ -1,6 +1,6 @@
 import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
 import {PageLoading} from '@ant-design/pro-layout';
-import {Menu, notification, Tooltip} from 'antd';
+import {Menu, notification, Tooltip, Button} from 'antd';
 import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
 import {history} from 'umi';
 import RBAC from '@/rbac';
@@ -14,7 +14,8 @@ import {
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  TagsOutlined
+  TagsOutlined,
+  DownOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
 import {queryResource} from '@/services/core';
@@ -186,14 +187,24 @@ export const request: RequestConfig = {
   },
 };
 
+const formatSubMenu = (title: string, selected: boolean) => {
+  return selected ? <Button>
+    {title}
+    <DownOutlined style={{color: 'black'}}/>
+  </Button> : <div>
+    {title}
+    <DownOutlined  style={{marginLeft: 8}}/>
+  </div>
+}
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
     headerContentRender: () => {
+      const pathname = history.location.pathname
       return <Menu mode="horizontal" theme={'dark'}  style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
-        <SubMenu key="sub1" title="Clusters">
+        <SubMenu key="sub1" title={formatSubMenu('Clusters', pathname === '/dashboard/clusters' || pathname === '/explore/clusters')}>
           <Menu.Item key="1">
             <a style={{fontWeight: 'bold'}} href={'/dashboard/clusters'}>Your clusters</a>
           </Menu.Item>
@@ -202,7 +213,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
           </Menu.Item>
         </SubMenu>
 
-        <SubMenu key="sub2" title="Applications">
+        <SubMenu key="sub2" title={formatSubMenu('Applications', pathname === '/dashboard/applications' || pathname === '/explore/applications')}>
           <Menu.Item key="3">
             <a style={{fontWeight: 'bold'}} href={'/dashboard/applications'}>Your applications</a>
           </Menu.Item>
@@ -211,7 +222,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
            </Menu.Item>
         </SubMenu>
 
-        <SubMenu key="sub3" title="Groups">
+        <SubMenu key="sub3" title={formatSubMenu('Groups', pathname === '/dashboard/groups')}>
           <Menu.Item key="5">
             <a style={{fontWeight: 'bold'}} href={'/dashboard/groups'}>All groups</a>
           </Menu.Item>
