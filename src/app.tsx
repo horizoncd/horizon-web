@@ -198,7 +198,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
           <a style={{fontWeight: 'bold'}} href={'/dashboard/applications'}>Applications</a>
         </Menu.Item>
         <Menu.Item key="5">
-          <a style={{fontWeight: 'bold'}} href={'/dashboard/groups'}>Groups</a>
+          <a style={{fontWeight: 'bold'}} href={'/explore/groups'}>Groups</a>
         </Menu.Item>
       </Menu>
     },

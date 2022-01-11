@@ -24,7 +24,7 @@ const Search = withTrim(Input.Search);
 
 const {TabPane} = Tabs;
 
-const groupsURL = '/dashboard/groups'
+const groupsURL = '/explore/groups'
 const applicationsURL = '/dashboard/applications'
 const allApplicationsURL = '/explore/applications'
 const clustersURL = '/dashboard/clusters'
@@ -43,7 +43,9 @@ export default (props: any) => {
   const isAdmin = initialState?.currentUser?.isAdmin || false
 
   const [filter, setFilter] = useState('');
-  const [total, setTotal] = useState(location.state?.total || 0);
+  const [total, setTotal] = useState(0);
+  const [totalClusters, setTotalClusters] = useState(location.state?.totalClusters || 0);
+  const [totalApplications, setTotalApplications] = useState(location.state?.totalApplications || 0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [query, setQuery] = useState(0);
@@ -117,6 +119,7 @@ export default (props: any) => {
       const {items, total: t} = data!
       setTotal(t)
       setApplications(items);
+      setTotalApplications(t)
     }
   });
   // search all applications
@@ -132,7 +135,8 @@ export default (props: any) => {
     refreshDeps: [query, filter, pageNumber, pageSize],
     debounceInterval: 200,
     onSuccess: (data) => {
-      const {items} = data!
+      const {items, total: t} = data!
+      setTotal(t)
       setApplications(items);
     }
   });
@@ -154,6 +158,7 @@ export default (props: any) => {
       const {items, total: t} = data!
       setClusters(items);
       setTotal(t)
+      setTotalClusters(t)
     }
   });
   // search all clusters
@@ -170,7 +175,8 @@ export default (props: any) => {
     refreshDeps: [query, filter, pageNumber, pageSize, environment],
     debounceInterval: 200,
     onSuccess: (data) => {
-      const {items} = data!
+      const {items, total: t} = data!
+      setTotal(t)
       setClusters(items);
     }
   });
@@ -398,7 +404,10 @@ export default (props: any) => {
   };
 
   const onTabChange = (key: string) => {
-    history.push(key, {total})
+    history.push(key, {
+      totalClusters,
+      totalApplications
+    })
   }
 
   const formatTabTitle = (tab: string, totalItems: number) => {
@@ -416,7 +425,7 @@ export default (props: any) => {
         >
           {
             pathname.indexOf('clusters') > -1 &&
-            <TabPane tab={formatTabTitle('Your clusters', total)} key="/dashboard/clusters">
+            <TabPane tab={formatTabTitle('Your clusters', totalClusters)} key="/dashboard/clusters">
               {clusters.map((item: CLUSTER.Cluster) => {
                 const treeData = {
                   title: item.fullName?.split("/").join("  /  "),
@@ -451,7 +460,7 @@ export default (props: any) => {
 
           {
             pathname.indexOf('applications') > -1 &&
-            <TabPane tab={formatTabTitle('Your applications', total)} key="/dashboard/applications">
+            <TabPane tab={formatTabTitle('Your applications', totalApplications)} key="/dashboard/applications">
               {applications.map((item: API.Application) => {
                 const treeData: DataNode[] = [{
                   key: item.id,
@@ -500,7 +509,7 @@ export default (props: any) => {
 
           {
             pathname.indexOf('groups') > -1 &&
-            <TabPane tab={formatTabTitle('All groups', total)} key="/dashboard/groups">
+            <TabPane tab={formatTabTitle('All groups', total)} key="/explore/groups">
               {groups.map((item: API.GroupChild) => {
                 const treeData = formatTreeData([item]);
                 const hasChildren = item.childrenCount > 0;
