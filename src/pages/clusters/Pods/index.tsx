@@ -66,7 +66,8 @@ const taskStatus2Entity = new Map<TaskStatus, {
 interface DeployPageProps {
   step: {
     index: number,
-    total: number
+    total: number,
+    replicas: string[]
   },
   onNext: () => void,
   onPromote: () => void,
@@ -283,7 +284,7 @@ export default () => {
 
   const podsInfo = refreshPodsInfo(statusData)
 
-  function DeployStep({index, total}: { index: number, total: number }) {
+  function DeployStep({index, total, replicas}: { index: number, total: number, replicas: string[] }) {
     const s = []
     for (let i = 0; i < total; i += 1) {
       s.push({
@@ -304,7 +305,11 @@ export default () => {
         } else {
           icon = waiting
         }
-        return <Step key={item.title} title={item.title} icon={icon}/>;
+        return <Step key={item.title} title={<span>
+          {item.title}
+          <br />
+          {replicas[idx]}副本
+        </span>} icon={icon}/>;
       })}
     </Steps>
   }

@@ -10,7 +10,7 @@
     redirect: '/dashboard/clusters',
   },
   {
-    path: '/dashboard/groups',
+    path: '/explore/groups',
     menuRender: false,
     component: 'dashboard',
   },
@@ -20,7 +20,17 @@
     component: 'dashboard',
   },
   {
+    path: '/explore/applications',
+    menuRender: false,
+    component: 'dashboard',
+  },
+  {
     path: '/dashboard/clusters',
+    menuRender: false,
+    component: 'dashboard',
+  },
+  {
+    path: '/explore/clusters',
     menuRender: false,
     component: 'dashboard',
   },

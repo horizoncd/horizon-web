@@ -73,6 +73,11 @@ function timeFromNow(oldTime: string) {
   return moment(oldTime).local().locale(getLocale()).fromNow()
 }
 
+// 计算出某个时间点是当前多久以前 by en-US
+function timeFromNowEnUS(oldTime: string) {
+  return moment(oldTime).local().locale('en-US').fromNow()
+}
+
 // 计算出两个时间点之间的间隔
 function timeSecondsDuration(startedAt: string, finishedAt: string) {
   return moment(finishedAt).diff(moment(startedAt), "seconds")
@@ -253,6 +258,7 @@ export default {
   getBreadcrumbs,
   getAvatarColorIndex,
   timeFromNow,
+  timeFromNowEnUS,
   timeToLocal,
   timeSecondsDuration,
 };
