@@ -192,13 +192,13 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     headerContentRender: () => {
       return <Menu mode="horizontal" theme={'dark'}  style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
         <Menu.Item key="1">
-          <a style={{fontWeight: 'bold'}} href={'/dashboard/clusters'}>Clusters</a>
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
         </Menu.Item>
         <Menu.Item key="3">
-          <a style={{fontWeight: 'bold'}} href={'/dashboard/applications'}>Applications</a>
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
         </Menu.Item>
         <Menu.Item key="5">
-          <a style={{fontWeight: 'bold'}} href={'/explore/groups'}>Groups</a>
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push("/explore/groups")}>Groups</a>
         </Menu.Item>
       </Menu>
     },

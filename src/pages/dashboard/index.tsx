@@ -215,7 +215,7 @@ export default (props: any) => {
         <span style={{marginLeft: 60, color: '#666666'}}>{description}</span>
       </div>
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
-        <div style={{display: 'flex', alignItems: 'center', fontSize: 'x-large'}}>
+        <div style={{display: 'flex', alignItems: 'center', fontSize: 'larger'}}>
           <Tooltip title="代码仓库">
             <a href={git.httpURL} style={{color: '#e24329'}}><GitlabOutlined /></a>
           </Tooltip>
