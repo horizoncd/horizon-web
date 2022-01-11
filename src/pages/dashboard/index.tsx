@@ -216,14 +216,14 @@ export default (props: any) => {
       </div>
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
         <div style={{display: 'flex', alignItems: 'center', fontSize: 'larger'}}>
-          <Tooltip title="代码仓库">
-            <a href={git.httpURL} style={{color: '#e24329'}}><GitlabOutlined /></a>
+          <Tooltip title="构建发布">
+            <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone /></a>
           </Tooltip>
           <Tooltip title="集群监控">
             <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
           </Tooltip>
-          <Tooltip title="构建发布">
-            <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone style={{marginLeft: '1rem'}}/></a>
+          <Tooltip title="代码仓库">
+            <a href={git.httpURL} style={{marginLeft: '1rem', color: '#e24329'}}><GitlabOutlined /></a>
           </Tooltip>
         </div>
         <div style={{display: 'flex', alignItems: 'center', fontSize: 14, color: '#666666'}}>
