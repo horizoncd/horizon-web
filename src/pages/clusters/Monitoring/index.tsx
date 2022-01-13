@@ -57,7 +57,7 @@ const TaskDetailMonitor = ({location, history}) => {
       moment().startOf('day'),
       moment().endOf('day')
     ],
-    refresh: '1h',
+    refresh: '10s',
     podName: podNames.length > 0 ? podNames[0] : undefined
   }), {
     timeRange: ['array', 'moment'],

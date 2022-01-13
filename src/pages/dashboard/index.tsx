@@ -223,7 +223,7 @@ export default (props: any) => {
             <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
           </Tooltip>
           <Tooltip title="代码仓库">
-            <a href={git.httpURL} style={{marginLeft: '1rem', color: '#e24329'}}><GitlabOutlined /></a>
+            <a onClick={() => {window.open(git.httpURL)}} style={{marginLeft: '1rem', color: '#e24329'}}><GitlabOutlined /></a>
           </Tooltip>
         </div>
         <div style={{display: 'flex', alignItems: 'center', fontSize: 14, color: '#666666'}}>
@@ -509,7 +509,7 @@ export default (props: any) => {
 
           {
             pathname.indexOf('groups') > -1 &&
-            <TabPane tab={formatTabTitle('All groups', total)} key="/explore/groups">
+            <TabPane tab={'All groups'} key="/explore/groups">
               {groups.map((item: API.GroupChild) => {
                 const treeData = formatTreeData([item]);
                 const hasChildren = item.childrenCount > 0;

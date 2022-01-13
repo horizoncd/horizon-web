@@ -169,5 +169,13 @@
         }
       </style>
     </div>
+    <script>
+      // stop wheel events for elements like input[type=number]
+      document.addEventListener("wheel", function(event){
+        if(document.activeElement.type === "number"){
+          document.activeElement.blur();
+        }
+      });
+    </script>
   </body>
 </html>
