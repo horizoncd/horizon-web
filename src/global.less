@@ -6,6 +6,14 @@ body,
   height: 100%;
 }
 
+// 去掉input[type=number]元素出现的上下切换值箭头
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+input[type="number"]{-moz-appearance:textfield;}
+
 .colorWeak {
   filter: invert(80%);
 }
