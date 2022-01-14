@@ -1,4 +1,4 @@
-import {Button, Card, Col, Divider, Form, Input, Modal, Row} from 'antd';
+import {Button, Card, Divider, Form, Input, Modal} from 'antd';
 import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";
@@ -7,7 +7,6 @@ import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
-import Detail from '@/components/'
 import RBAC from '@/rbac'
 
 const {TextArea} = Input;
@@ -101,20 +100,6 @@ export default () => {
             layout={'vertical'}
             form={form}
             onFinish={onFinish}
-            onFieldsChange={(a, b) => {
-              // query regions when environment selected
-              if (a[0].name[0] === 'name') {
-                if (pathRegx.test(a[0].value)) {
-                  for (let i = 0; i < b.length; i++) {
-                    if (b[i].name[0] === 'path') {
-                      b[i].value = a[0].value
-                    }
-                  }
-                  form.setFields(b)
-                  form.validateFields(['path'])
-                }
-              }
-            }}
           >
             <Form.Item label={groupNameLabel} name={'name'} rules={nameRules}>
               <Input disabled={!RBAC.Permissions.updateGroup.allowed} style={getGroupNameLabelStyle()}
@@ -125,8 +110,7 @@ export default () => {
                         autoSize={{minRows: 3}} maxLength={255}/>
             </Form.Item>
             <Form.Item label={groupURLLabel} name={'path'} rules={pathRules}>
-              <Input disabled={!RBAC.Permissions.updateGroup.allowed} addonBefore={getURLPrefix()}
-                     style={{width: '100%'}}/>
+              <Input disabled={!RBAC.Permissions.updateGroup.allowed} addonBefore={getURLPrefix()} style={getGroupPathAndDescStyle()}/>
             </Form.Item>
             {
               RBAC.Permissions.updateGroup.allowed && <Form.Item style={getSubmitBtnStyle()}>
