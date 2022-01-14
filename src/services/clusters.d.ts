@@ -195,14 +195,14 @@ declare namespace CLUSTER {
     }
     clusterStatus: {
       status: string,
-      step: {
+      step?: {
         index: number,
         total: number,
         replicas: string[]
       }
-      podTemplateHash: string,
-      replicas: number,
-      versions: Record<string, {
+      podTemplateHash?: string,
+      replicas?: number,
+      versions?: Record<string, {
         replicas: number
         pods: Record<string, PodFromBackend>
       }>
