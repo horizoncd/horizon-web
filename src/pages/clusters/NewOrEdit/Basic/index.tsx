@@ -29,7 +29,9 @@ export default (props: any) => {
     ready: !!props.form.getFieldValue('environment'),
     refreshDeps: [props.form.getFieldValue('environment')]
   });
+
   const {data: environments} = useRequest(() => queryEnvironments());
+
   const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
     giturl: props.form.getFieldValue('url'),
     filter,
@@ -39,6 +41,7 @@ export default (props: any) => {
     debounceInterval: 500,
     ready: !!props.form.getFieldValue('url') && !readonly,
   })
+
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.clusterNew.basic.${suffix}`, defaultMessage: defaultMsg})
   }
