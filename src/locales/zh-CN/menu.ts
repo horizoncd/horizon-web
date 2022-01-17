@@ -3,6 +3,7 @@ export default {
   'menu.Members': '成员',
   'menu.Settings': '设置',
   'menu.Settings.General': '基础设置',
+  'menu.Settings.DefaultRegions': '默认部署区域',
   'menu.Application overview': '应用主页',
   'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
