@@ -267,6 +267,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       state.reason = state.state
     }
 
+    if (item.deletionTimestamp) {
+      state.state = 'terminated'
+    }
+
     if (state.state === 'terminated') {
       state.reason = 'terminated';
     }
@@ -322,6 +326,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     ContainerStartup: '业务启动及端口检查',
     ContainerOnline: '业务上线',
     HealthCheck: '健康检查',
+    PreStop: '应用下线',
   }
 
   const podLifeCycleStatusMap = {
@@ -366,6 +371,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   break;
                 default:
                   value.message = '执行失败，请联系管理员。'
+              }
+              break;
+            case LifeCycleItemRunning:
+              switch (value.type) {
+                case 'PreStop':
+                  value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。'
+                  break;
               }
               break;
             default:
@@ -584,7 +596,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     }
     <Modal
       visible={showLifeCycle}
-      title={'Pod启动状态详情'}
+      title={'Pod状态详情'}
       footer={[]}
       onCancel={() => {
         setShowLifeCycle(false)
