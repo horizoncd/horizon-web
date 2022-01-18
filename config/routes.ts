@@ -93,6 +93,14 @@ const applicationRoutes = [
     menuRender: false,
     component: 'clusters/NewOrEdit',
   },
+  {
+    path: '/applications/*/-/settings',
+    redirect: '/applications/*/-/settings/defaultregions',
+  },
+  {
+    path: '/applications/*/-/settings/defaultregions',
+    component: 'applications/config/DefaultRegions',
+  },
 ];
 
 const clusterRoutes = [

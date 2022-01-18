@@ -347,6 +347,17 @@ function formatApplicationMenu(fullPath: string) {
       path: `/applications${fullPath}/-/clusters/new`,
       menuRender: false,
     },
+    {
+      path: `/applications${fullPath}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+      children: [
+        {
+          path: `/applications${fullPath}/-/settings/defaultregions`,
+          name: 'DefaultRegions',
+        },
+      ],
+    },
   ];
 }
 
