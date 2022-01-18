@@ -128,10 +128,10 @@ export default (props: any) => {
 
         <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('url')} name={'url'} rules={requiredRule}>
-            <Input />
+            <Input disabled={readonly}/>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
-            <Input />
+            <Input disabled={readonly}/>
           </Form.Item>
           <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
             <Select disabled={readonly} showSearch

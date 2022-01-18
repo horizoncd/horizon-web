@@ -2,7 +2,7 @@ import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
@@ -74,10 +74,21 @@ export default (props: any) => {
     onSuccess: (data) => {
       setConfig(data)
     },
-    ready: creating
+    ready: creating,
+    manual: true,
   });
 
-  useEffect(() => {refreshAppEnvTemplate(envFromQuery)}, [])
+  const {data: defaultRegions = []} = useRequest(() => getApplicationRegions(id), {
+    refreshDeps: [],
+    ready: creating,
+    onSuccess: () => {
+      defaultRegions.forEach(item => {
+        if (item.environment === envFromQuery) {
+          setBasic(b => ([...b, {name: region, value: item.region}]))
+        }
+      })
+    }
+  })
 
   // query application if creating
   if (creating) {
@@ -96,6 +107,7 @@ export default (props: any) => {
           ]
         )
         setApplicationName(n)
+        refreshAppEnvTemplate(envFromQuery)
       }
     });
   }
@@ -230,20 +242,18 @@ export default (props: any) => {
       refreshAppEnvTemplate(changingFiled[0].value)
 
       // 创建集群时 环境切换，查询应用在该环境下的默认部署区域并设置为当前集群的区域
-      getApplicationRegions(id).then(({data}) => {
-        data.forEach(item => {
-          if (item.environment === changingFiled[0].value) {
-            for (let i = 0; i < allFields.length; i++) {
-              if (allFields[i].name[0] === 'region') {
-                allFields[i].value = item.region
-                setBasic(allFields)
-              }
+      defaultRegions.forEach(item => {
+        if (item.environment === changingFiled[0].value) {
+          for (let i = 0; i < allFields.length; i++) {
+            if (allFields[i].name[0] === 'region') {
+              allFields[i].value = item.region
+              form.validateFields(basicNeedValidFields)
             }
           }
-        })
+        }
       })
     }
-    // setBasic(allFields)
+    setBasic(allFields)
   }
 
   const onBuildAndDeployButtonOK = () => {
