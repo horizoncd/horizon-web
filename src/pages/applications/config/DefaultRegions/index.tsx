@@ -36,16 +36,10 @@ export default () => {
     }
   });
 
-  const {data = [{
-    environment: 'test',
-    region: 'hz',
-  }]} = useRequest(() => getApplicationRegions(id), {
+  const {data = []} = useRequest(() => getApplicationRegions(id), {
     onSuccess: () => {
       setDefaultRegions(data)
-    },
-    onError: () => {
-      setDefaultRegions(data)
-    },
+    }
   })
 
   const {run: updateRegions, loading} = useRequest(() => updateApplicationRegions(id, defaultRegions), {
