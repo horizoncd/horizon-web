@@ -166,6 +166,7 @@ export async function getDashboards(clusterID: number) {
     data: {
       basic: string,
       serverless?: string,
+      memcached?: string,
     }
   }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
     method: 'GET',
