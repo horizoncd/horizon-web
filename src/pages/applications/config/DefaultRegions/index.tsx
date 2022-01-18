@@ -12,7 +12,10 @@ export default () => {
 
   const {initialState} = useModel("@@initialState")
   const {id} = initialState!.resource
-  const [defaultRegions, setDefaultRegions] = useState({});
+  const [defaultRegions, setDefaultRegions] = useState<{
+    environment: string,
+    region: string,
+  }[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState({});
   const [env2Regions, setEnv2Regions] = useState<Record<string, CLUSTER.Region[]>>();
@@ -33,10 +36,10 @@ export default () => {
     }
   });
 
-  const {data = {
-    "test": "hz",
-    "online":"hz"
-  }} = useRequest(() => getApplicationRegions(id), {
+  const {data = [{
+    environment: 'test',
+    region: 'hz',
+  }]} = useRequest(() => getApplicationRegions(id), {
     onSuccess: () => {
       setDefaultRegions(data)
     },
@@ -67,15 +70,17 @@ export default () => {
           title: '区域',
           dataIndex: 'regionDisplayName',
           key: 'regionDisplayName',
-          render: (regionDisplayName: string, record: {env: string, region: string}) => {
+          render: (regionDisplayName: string, record: {environment: string, region: string}, index: number) => {
             return <Select value={record.region} style={{width: 200}} onSelect={(region: string) => {
-              setDefaultRegions(prev => ({
-                ...prev,
-                [record.env]: region
-              }))
+              const dr = [...defaultRegions]
+              dr[index] = {
+                environment: record.environment,
+                region
+              }
+              setDefaultRegions(dr)
             }}>
               {
-                env2Regions?.[record.env]?.map(item => {
+                env2Regions?.[record.environment]?.map(item => {
                   return <Option key={item.name} value={item.name}>
                     {item.displayName}
                   </Option>
@@ -83,12 +88,11 @@ export default () => {
               }
             </Select>
           }}]}
-      dataSource={Object.keys(defaultRegions!).map(env => ({
-        env,
-        envDisplayName: env2DisplayName?.get(env),
-        region: defaultRegions![env],
-        regionDisplayName: region2DisplayName[defaultRegions![env]],
-        key: env,
+      dataSource={defaultRegions.map(item => ({
+        ...item,
+        envDisplayName: env2DisplayName?.get(item.environment),
+        regionDisplayName: region2DisplayName[item.region],
+        key: item.environment,
       }))}
     />
     <div style={{padding: '10px 0'}}>

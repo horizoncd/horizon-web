@@ -67,10 +67,10 @@ export async function getApplicationEnvTemplate(applicationID: number, environme
 
 export async function getApplicationRegions(applicationID: number) {
   return request<{
-    data: Record<string, {
+    data: [{
+      environment: string,
       region: string,
-      regionDisplayName: string,
-    }>
+    }]
   }>(`/apis/core/v1/applications/${applicationID}/regions`, {
     method: 'GET',
   });

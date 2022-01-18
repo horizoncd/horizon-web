@@ -353,7 +353,7 @@ function formatApplicationMenu(fullPath: string) {
       icon: 'setting',
       children: [
         {
-          path: `/applications${fullPath}/-/defaultregions`,
+          path: `/applications${fullPath}/-/settings/defaultregions`,
           name: 'DefaultRegions',
         },
       ],

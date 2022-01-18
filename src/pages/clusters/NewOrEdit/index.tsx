@@ -231,11 +231,11 @@ export default (props: any) => {
 
       // 创建集群时 环境切换，查询应用在该环境下的默认部署区域并设置为当前集群的区域
       getApplicationRegions(id).then(({data}) => {
-        Object.keys(data).forEach(env => {
-          if (env === changingFiled[0].value) {
+        data.forEach(item => {
+          if (item.environment === changingFiled[0].value) {
             for (let i = 0; i < allFields.length; i++) {
               if (allFields[i].name[0] === 'region') {
-                allFields[i].value = data[env]
+                allFields[i].value = item.region
               }
             }
           }
