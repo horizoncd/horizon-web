@@ -182,6 +182,7 @@ declare namespace CLUSTER {
       }]
       lifeCycle: PodLifeCycle[]
     }
+    deletionTimestamp: string
   }
 
   type ClusterStatus = {
@@ -233,6 +234,7 @@ declare namespace CLUSTER {
     namespace?: string
     events: Event[]
     lifeCycle: PodLifeCycle[]
+    deletionTimestamp: string
   }
 
   type PodLifeCycle = {

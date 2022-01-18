@@ -392,6 +392,10 @@ function formatClusterMenu(fullPath: string) {
     },
     {
       path: `/clusters${fullPath}/-/webconsole`,
+      menuRender: false,
+      headerRender: false,
+      menuHeaderRender: false,
+      footerRender: false,
     },
   ];
 }

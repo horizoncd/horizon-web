@@ -198,6 +198,7 @@ export default () => {
               namespace,
               events: status.events,
               lifeCycle: status.lifeCycle,
+              deletionTimestamp: podObj.deletionTimestamp,
             };
             if (state.state === runningState) {
               healthyPods.push(podInTable)

@@ -26,6 +26,7 @@ const Resource = {
   free: 'free',
   templateSchemaTags: 'templateschematags',
   tags: 'tags',
+  shell: 'shell',
 }
 
 // 操作
@@ -165,8 +166,8 @@ const Permissions = {
   },
   // 查看terminal
   createTerminal: {
-    resource: `${Resource.cluster}/${Resource.terminal}`,
-    action: Action.create,
+    resource: `${Resource.cluster}/${Resource.shell}`,
+    action: Action.get,
     allowed: false,
   },
   // 查看容器stdout日志
