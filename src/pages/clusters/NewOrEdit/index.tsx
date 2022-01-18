@@ -9,7 +9,7 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-import {getApplication, getApplicationEnvTemplate} from "@/services/applications/applications";
+import {getApplication, getApplicationEnvTemplate, getApplicationRegions} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
 import type {FieldData} from 'rc-field-form/lib/interface'
@@ -228,14 +228,22 @@ export default (props: any) => {
     if (changingFiled[0].name[0] === 'environment') {
       // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value)
-      // clear region form data
-      for (let i = 0; i < allFields.length; i++) {
-        if (allFields[i].name[0] === 'region') {
-          allFields[i].value = undefined
-        }
-      }
+
+      // 创建集群时 环境切换，查询应用在该环境下的默认部署区域并设置为当前集群的区域
+      getApplicationRegions(id).then(({data}) => {
+        data.forEach(item => {
+          if (item.environment === changingFiled[0].value) {
+            for (let i = 0; i < allFields.length; i++) {
+              if (allFields[i].name[0] === 'region') {
+                allFields[i].value = item.region
+                setBasic(allFields)
+              }
+            }
+          }
+        })
+      })
     }
-    setBasic(allFields)
+    // setBasic(allFields)
   }
 
   const onBuildAndDeployButtonOK = () => {
@@ -259,6 +267,8 @@ export default (props: any) => {
         release: form.getFieldValue(release),
       },
       git: {
+        url: form.getFieldValue(url),
+        subfolder: form.getFieldValue(subfolder) || '',
         branch: form.getFieldValue(branch),
       },
       templateInput: config,

@@ -35,8 +35,8 @@ export default (props: any) => {
       }
     }, 3000);
 
-    return () => timer && clearTimeout(timer);
-  });
+    return () => clearTimeout(timer);
+  }, [alert, clearAlert]);
 
   return (
     <div>

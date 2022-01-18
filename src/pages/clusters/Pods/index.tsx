@@ -583,7 +583,7 @@ export default () => {
                   </div>
                 }
                 {
-                  currentTab === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.status !== ClusterStatus.NOTFOUND &&
+                  currentTab === 1 && statusData?.runningTask.task === RunningTask.DEPLOY && statusData.clusterStatus.step &&
                   (
                     <div>
                       <DeployPage
@@ -592,7 +592,7 @@ export default () => {
                         onNext={
                           () => {
                             next(id).then(() => {
-                              successAlert(`第${statusData.clusterStatus.step.index + 1}批次开始发布`)
+                              successAlert(`第${statusData.clusterStatus.step!.index + 1}批次开始发布`)
                               refreshStatus()
                             })
                           }

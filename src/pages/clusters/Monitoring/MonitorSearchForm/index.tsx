@@ -1,11 +1,14 @@
 import {useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {DatePicker, Form, Input, Select} from 'antd';
+import {DatePicker, Form, Input, Select, Button} from 'antd';
 import moment from 'moment';
+import {useModel} from "@@/plugin-model/useModel";
 
 // @ts-ignore
 const MonitorSearchForm = ({onSubmit, formData, pods, dashboard}) => {
   const [form] = Form.useForm();
+  const {initialState} = useModel('@@initialState');
+  const {name} = initialState!.resource;
 
   const submitForm = () => {
     form.validateFields().then(onSubmit);
@@ -81,6 +84,11 @@ const MonitorSearchForm = ({onSubmit, formData, pods, dashboard}) => {
             }
           </Select>
         </Form.Item>
+      }
+      {
+        dashboard === 'basic' && <Button type='primary' onClick={() => window.open(`https://nss.netease.com/sentry/appMonitor/view?clusterName=${name}&sign=0`)}>
+          哨兵监控
+        </Button>
       }
     </Form>
   );

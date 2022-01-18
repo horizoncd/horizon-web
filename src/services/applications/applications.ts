@@ -65,6 +65,24 @@ export async function getApplicationEnvTemplate(applicationID: number, environme
   });
 }
 
+export async function getApplicationRegions(applicationID: number) {
+  return request<{
+    data: [{
+      environment: string,
+      region: string,
+    }]
+  }>(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
+    method: 'GET',
+  });
+}
+
+export async function updateApplicationRegions(applicationID: number, regions: any) {
+  return request(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
+    method: 'POST',
+    data: regions,
+  });
+}
+
 export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: any) {
   return request<{
     data: API.PageResult<API.Application>;
