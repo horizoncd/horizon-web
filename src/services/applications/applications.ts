@@ -71,13 +71,13 @@ export async function getApplicationRegions(applicationID: number) {
       environment: string,
       region: string,
     }]
-  }>(`/apis/core/v1/applications/${applicationID}/regions`, {
+  }>(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
     method: 'GET',
   });
 }
 
 export async function updateApplicationRegions(applicationID: number, regions: any) {
-  return request(`/apis/core/v1/applications/${applicationID}/regions`, {
+  return request(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
     method: 'POST',
     data: regions,
   });

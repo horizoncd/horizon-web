@@ -236,13 +236,14 @@ export default (props: any) => {
             for (let i = 0; i < allFields.length; i++) {
               if (allFields[i].name[0] === 'region') {
                 allFields[i].value = item.region
+                setBasic(allFields)
               }
             }
           }
         })
       })
     }
-    setBasic(allFields)
+    // setBasic(allFields)
   }
 
   const onBuildAndDeployButtonOK = () => {
@@ -266,6 +267,8 @@ export default (props: any) => {
         release: form.getFieldValue(release),
       },
       git: {
+        url: form.getFieldValue(url),
+        subfolder: form.getFieldValue(subfolder) || '',
         branch: form.getFieldValue(branch),
       },
       templateInput: config,
