@@ -17,10 +17,9 @@ const TaskDetailMonitor = ({location, history}) => {
   const {initialState} = useModel('@@initialState');
   const {id} = initialState!.resource;
   const {query} = location;
-  const {podName, type: typeFromQuery, timeRange: timeChangeFromQuery} = query
+  const {podName, type: typeFromQuery, timeRange: timeChangeFromQuery, monitor = 'basic'} = query
 
   const [podNames, setPodNames] = useState<string[]>([]);
-  const [tabKey, setTabKey] = useState<string>('basic');
 
   const {data: dashboards} = useRequest(() => getDashboards(id));
 
@@ -68,6 +67,7 @@ const TaskDetailMonitor = ({location, history}) => {
     history.replace({
       query: {
         ...data,
+        monitor,
         timeRange: data.timeRange && data.timeRange.map(e => e.valueOf()),
       }
     });
@@ -78,8 +78,7 @@ const TaskDetailMonitor = ({location, history}) => {
       return 'null';
     }
 
-    const baseUrl = dashboards[tabKey]
-
+    const baseUrl = dashboards[monitor]
     const {type, timeRange, refresh} = formData;
     let [from, to] = timeRange;
     if (type !== 'custom') {
@@ -90,7 +89,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
     let podNamesQuery = ''
     // 基础监控才需要选择Pods
-    if (tabKey === 'basic') {
+    if (monitor === 'basic' || monitor === 'memcached') {
       if (!podName && podNames.length > 0) {
         podNamesQuery = `&var-pod=${podNames[0]}`;
       }
@@ -109,15 +108,21 @@ const TaskDetailMonitor = ({location, history}) => {
     }
 
     return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}`;
-  }, [dashboards, formData, podNames, tabKey]);
+  }, [dashboards, formData, podNames, monitor]);
 
   const iframe = <iframe src={src} style={{
     border: 0, width: '100%', height: '90vh', marginTop: 10
   }}/>;
-
   return (
     <PageWithBreadcrumb>
-      <Tabs activeKey={tabKey} size={'large'} onChange={setTabKey}>
+      <Tabs activeKey={monitor} defaultActiveKey={monitor} size={'large'} onChange={(tab) => {
+        history.replace({
+          query: {
+            ...query,
+            monitor: tab,
+          }
+        });
+      }}>
         <TabPane tab={'基础监控'} key="basic">
           <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'basic'}/>
           {
