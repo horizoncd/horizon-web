@@ -111,27 +111,29 @@ const TaskDetailMonitor = ({location, history}) => {
     return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}`;
   }, [dashboards, formData, podNames, tabKey]);
 
+  const iframe = <iframe src={src} style={{
+    border: 0, width: '100%', height: '90vh', marginTop: 10
+  }}/>;
+
   return (
     <PageWithBreadcrumb>
       <Tabs activeKey={tabKey} size={'large'} onChange={setTabKey}>
         <TabPane tab={'基础监控'} key="basic">
           <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'basic'}/>
           {
-            dashboards?.basic && <iframe
-              src={src}
-              style={{
-                border: 0, width: '100%', height: '90vh', marginTop: 10
-              }}/>
+            dashboards?.basic && iframe
           }
         </TabPane>
         {
           dashboards?.serverless && <TabPane tab={'Serverless'} key="serverless">
             <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'serverless'}/>
-            <iframe
-              src={src}
-              style={{
-                border: 0, width: '100%', height: '90vh', marginTop: 10
-              }}/>
+            {iframe}
+          </TabPane>
+        }
+        {
+          dashboards?.memcached && <TabPane tab={'Memcached'} key="memcached">
+            <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'memcached'}/>
+            {iframe}
           </TabPane>
         }
       </Tabs>

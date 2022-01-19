@@ -75,7 +75,7 @@ const MonitorSearchForm = ({onSubmit, formData, pods, dashboard}) => {
         </Select>
       </Form.Item>
       {
-        dashboard === 'basic' && <Form.Item label="Pods" name="podName">
+        (dashboard === 'basic' || dashboard === 'memcached') && <Form.Item label="Pods" name="podName">
           <Select style={{width: 300}} mode="multiple">
             {
               pods.map((item: string) => (
