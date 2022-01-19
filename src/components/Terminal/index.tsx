@@ -49,6 +49,7 @@ const Index: React.FC<IProps> = ({
       'The web terminal has been initialized successfully!',
     );
     terminalRef.current.loadAddon(fitAddon);
+    // 前端terminal适应屏幕尺寸
     fitAddon.fit();
     terminalRef.current.onData(
       (event) =>
@@ -59,6 +60,20 @@ const Index: React.FC<IProps> = ({
     );
     terminalRef.current.focus();
   }, []);
+
+  const resize = debounce(() => {
+    fitAddon.fit();
+    const dimensions = fitAddon.proposeDimensions();
+    socketRef.current?.sendMessage?.(
+      JSON.stringify([
+        JSON.stringify({
+          Op: 'resize',
+          Cols: dimensions.cols,
+          Rows: dimensions.rows,
+        }),
+      ]),
+    );
+  }, 100);
 
   // 初始化websocket连接
   useEffect(() => {
@@ -75,6 +90,8 @@ const Index: React.FC<IProps> = ({
             '*********************************** The websocket connection is established ****************************************',
           );
         }
+        // 后端terminal适应屏幕尺寸
+        resize();
         if (onSocketOpen) {
           onSocketOpen(socketRef);
         }
@@ -99,28 +116,14 @@ const Index: React.FC<IProps> = ({
           'error occured during the connection process.',
         ),
     });
-
     socketRef.current.createWebSocket();
   }, []);
 
   // 窗口大小变化时的回调
   useEffect(() => {
-    const listener = debounce(() => {
-      fitAddon.fit();
-      const dimensions = fitAddon.proposeDimensions();
-      socketRef.current?.sendMessage?.(
-        JSON.stringify([
-          JSON.stringify({
-            Op: 'resize',
-            Cols: dimensions.cols,
-            Rows: dimensions.rows,
-          }),
-        ]),
-      );
-    }, 100);
-    window.addEventListener('resize', listener);
+    window.addEventListener('resize', resize);
     return () => {
-      window.removeEventListener('resize', listener);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 

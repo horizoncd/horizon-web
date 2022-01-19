@@ -51,8 +51,19 @@ export default (props: any) => {
         return tempData;
       }}
       postSocketMessage={(event) => {
-        const msg = JSON.parse(JSON.parse(event.data.slice(1))[0]);
-        return msg.Data;
+        try {
+          const msg = JSON.parse(JSON.parse(event.data.slice(1))[0]);
+          switch (msg.Op) {
+            case 'stdout':
+              return msg.Data;
+            case 'stderr':
+              return msg.Data;
+            default:
+              console.error('Unexpected message type:', msg);
+          }
+        } catch (error) {
+          console.log('data error.', event.data);
+        }
       }}
     />
   );
