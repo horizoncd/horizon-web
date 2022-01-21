@@ -1,4 +1,4 @@
-import {Button, Input, Modal, Space, Table, Tooltip} from "antd";
+import {Button, Input, Menu, Modal, Space, Table, Tag, Tooltip} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -20,10 +20,13 @@ import {env2MlogEnv} from "@/const";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  DownOutlined,
   EyeOutlined,
   LoadingOutlined,
+  MoreOutlined,
   PauseCircleOutlined
 } from "@ant-design/icons";
+import Dropdown from "antd/es/dropdown";
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -281,17 +284,24 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
     // change first letter to uppercase
     state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1)
+
+    for (const k in item.annotations) {
+      if (!k.startsWith("cloudnative.music.netease.com/git")) {
+        delete item.annotations[k]
+      }
+    }
     return item;
   }).sort((a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
-      if (a.createTime < b.createTime) {
-        return 1;
-      }
-      if (a.createTime > b.createTime) {
-        return -1;
-      }
+    if (a.createTime < b.createTime) {
+      return 1;
+    }
+    if (a.createTime > b.createTime) {
+      return -1;
+    }
 
-      return 0;
+    return 0;
   })
+  console.log(filteredData)
 
   const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
     text: item,
@@ -402,6 +412,24 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setPodLifeCycle(lifeCycle);
     setShowLifeCycle(true);
   }
+
+  const otherOperations = (record: CLUSTER.PodInTable) => (<Menu>
+      <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
+                 onClick={() => onClickStdout(record)}>
+        <div style={{color: "#1890ff"}}>Stdout</div>
+      </Menu.Item>
+      <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
+                 onClick={() => onClickMlog(record)}>
+        <div style={{color: "#1890ff"}}>Mlog</div>
+      </Menu.Item>
+      <Menu.Item disabled={!RBAC.Permissions.getEvents.allowed}
+                 onClick={() => onClickEvents(record)}>
+        <div style={{color: "#1890ff"}}>Events</div>
+      </Menu.Item>
+    </Menu>
+  )
+
+  // @ts-ignore
   const columns = [
     {
       title: formatMessage('podName', '副本'),
@@ -480,6 +508,34 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'restartCount',
     },
     {
+      title: '注释',
+      dataIndex: 'annotations',
+      key: 'annotations',
+      render: (text: any, record: CLUSTER.PodInTable) => {
+        const annotations = []
+        for (const k in record.annotations) {
+          annotations.push(
+            <Tag style={
+              {
+                backgroundColor: "#f2f2f2",
+                borderRadius: '1rem',
+                display: "block",
+                width: "207px",
+                whiteSpace: "pre-line",
+                wordBreak: "break-all",
+                marginBottom: "10px",
+                borderWidth: 0,
+              }
+            }>
+              {k}: {record.annotations[k]}
+            </Tag>
+          )
+        }
+        return <div
+        >{annotations}</div>
+      },
+    },
+    {
       title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
@@ -498,19 +554,19 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: formatMessage('action', '操作'),
+      width: "240px",
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="middle">
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
-          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
-                  onClick={() => onClickStdout(record)}>Stdout</Button>
-          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getContainerLog.allowed}
-                  onClick={() => onClickMlog(record)}>查看Mlog</Button>
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
-          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.getClusterStatus.allowed}
-                  onClick={() => onClickEvents(record)}>查看events</Button>
+          <Dropdown trigger={['click']} overlay={otherOperations(record)}>
+            <a>
+              更多操作 <DownOutlined/>
+            </a>
+          </Dropdown>
         </Space>
       ),
     },
