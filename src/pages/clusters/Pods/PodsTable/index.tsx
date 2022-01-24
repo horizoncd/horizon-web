@@ -1,4 +1,4 @@
-import {Button, Input, Menu, Modal, Space, Table, Tag, Tooltip} from "antd";
+import {Button, Input, Menu, Modal, Space, Table, Tooltip} from "antd";
 import {useIntl} from "@@/plugin-locale/localeExports";
 import React, {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
@@ -13,6 +13,7 @@ import copy from "copy-to-clipboard";
 import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/State'
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
+import CollapseList from '@/components/CollapseList'
 import styles from './index.less'
 import Utils from '@/utils'
 import {env2MlogEnv} from "@/const";
@@ -23,7 +24,6 @@ import {
   DownOutlined,
   EyeOutlined,
   LoadingOutlined,
-  MoreOutlined,
   PauseCircleOutlined
 } from "@ant-design/icons";
 import Dropdown from "antd/es/dropdown";
@@ -511,28 +511,12 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '注释',
       dataIndex: 'annotations',
       key: 'annotations',
+      width: '26%',
       render: (text: any, record: CLUSTER.PodInTable) => {
-        const annotations = []
-        for (const k in record.annotations) {
-          annotations.push(
-            <Tag style={
-              {
-                backgroundColor: "#f2f2f2",
-                borderRadius: '1rem',
-                display: "block",
-                width: "207px",
-                whiteSpace: "pre-line",
-                wordBreak: "break-all",
-                marginBottom: "10px",
-                borderWidth: 0,
-              }
-            }>
-              {k}: {record.annotations[k]}
-            </Tag>
-          )
-        }
-        return <div
-        >{annotations}</div>
+        // return <collapseList defaultCount={2} data={record.annotations}/>
+        return <div>
+          <CollapseList defaultCount={2} data={record.annotations} />
+          </div>
       },
     },
     {
@@ -554,10 +538,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: formatMessage('action', '操作'),
-      width: "240px",
+      width: "18%",
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
-        <Space size="middle">
+        <Space size='small'>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
