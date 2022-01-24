@@ -504,6 +504,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: formatMessage('restartCount', '重启次数'),
+      width: '90px',
       dataIndex: 'restartCount',
       key: 'restartCount',
     },
@@ -522,6 +523,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     {
       title: '启动时间',
       dataIndex: 'createTime',
+      width: "110px",
       key: 'createTime',
       // defaultSortOrder: 'descend',
       // sortDirections: ['ascend', 'descend', 'ascend'],
@@ -538,10 +540,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: formatMessage('action', '操作'),
-      width: "18%",
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
-        <Space size='small'>
+        <Space size='small' style={{maxWidth: '200px', whiteSpace: 'nowrap'}}>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
