@@ -27,6 +27,7 @@ const Resource = {
   templateSchemaTags: 'templateschematags',
   tags: 'tags',
   shell: 'shell',
+  events: 'events',
 }
 
 // 操作
@@ -204,6 +205,12 @@ const Permissions = {
   updateTags: {
     resource: `${Resource.cluster}/${Resource.tags}`,
     action: Action.create,
+    allowed: false,
+  },
+  // 查看events
+  getEvents: {
+    resource: `${Resource.cluster}/${Resource.events}`,
+    action: Action.get,
     allowed: false,
   },
 }

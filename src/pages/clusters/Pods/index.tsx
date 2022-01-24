@@ -19,7 +19,8 @@ import HSteps from '@/components/HSteps'
 import {
   CopyOutlined,
   DownOutlined,
-  FrownOutlined, FullscreenOutlined,
+  FrownOutlined,
+  FullscreenOutlined,
   HourglassOutlined,
   LoadingOutlined,
   SmileOutlined
@@ -199,6 +200,7 @@ export default () => {
               events: status.events,
               lifeCycle: status.lifeCycle,
               deletionTimestamp: podObj.deletionTimestamp,
+              annotations: podObj.metadata.annotations,
             };
             if (state.state === runningState) {
               healthyPods.push(podInTable)
@@ -308,7 +310,7 @@ export default () => {
         }
         return <Step key={item.title} title={<span>
           {item.title}
-          <br />
+          <br/>
           {replicas[idx]}副本
         </span>} icon={icon}/>;
       })}
@@ -379,25 +381,11 @@ export default () => {
     ],
     [
       {
-        key: '代码',
-        value: {
-          URL: cluster?.git.url || '',
-          Branch: cluster?.git.branch || '',
-        }
-      }
-    ],
-    [
-      {
         key: '镜像',
         value: Array.from(podsInfo.images),
       }
     ]
   ]
-
-  if (cluster?.latestDeployedCommit) {
-    // @ts-ignore
-    baseInfo[2][0].value['Commit ID'] = cluster!.latestDeployedCommit
-  }
 
   const onClickOperation = ({key}: { key: string }) => {
     switch (key) {
@@ -570,7 +558,7 @@ export default () => {
                           取消发布
                         </Button>
                       }
-                      <div style={{flex: 1}} />
+                      <div style={{flex: 1}}/>
                       <Button className={styles.buttonClass}>
                         <CopyOutlined className={styles.iconCommonModal} onClick={onCopyButtonClick}/>
                       </Button>
