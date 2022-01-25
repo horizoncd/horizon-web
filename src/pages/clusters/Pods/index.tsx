@@ -10,8 +10,10 @@ import {
   getCluster,
   getClusterStatus,
   next,
+  pause,
   promote,
-  restart
+  restart,
+  resume
 } from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
@@ -19,6 +21,7 @@ import HSteps from '@/components/HSteps'
 import {
   CopyOutlined,
   DownOutlined,
+  ExclamationCircleOutlined,
   FrownOutlined,
   FullscreenOutlined,
   HourglassOutlined,
@@ -72,6 +75,8 @@ interface DeployPageProps {
   },
   onNext: () => void,
   onPromote: () => void,
+  onPause: () => void,
+  onResume: () => void,
   status: CLUSTER.ClusterStatus
 }
 
@@ -317,22 +322,37 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, onPromote, status}: DeployPageProps) {
-    const {index, total} = step
+  function DeployPage({step, onNext, onPause, onResume, onPromote, status}: DeployPageProps) {
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
         {
-          index < total && status.clusterStatus.status === ClusterStatus.SUSPENDED &&
-          <div>
-            <Button type="primary" style={{margin: '0 8px'}} onClick={onNext}>
-              {intl.formatMessage({id: 'pages.pods.nextStep'})}
-            </Button>
-            <Button type="primary" style={{margin: '0 8px'}} onClick={onPromote}>
-              全部发布
-            </Button>
-          </div>
+          status.clusterStatus.manualPaused ? <Button type="primary"
+                                                      disabled={!status.clusterStatus.manualPaused ||
+                                                      !RBAC.Permissions.resumeCluster.allowed
+                                                      }
+                                                      style={{margin: '0 8px'}} onClick={onResume}>
+            取消暂停
+          </Button> : <Button type="primary"
+                              disabled={status.clusterStatus.manualPaused ||
+                              status.clusterStatus.status === ClusterStatus.SUSPENDED ||
+                              !RBAC.Permissions.pauseCluster.allowed
+                              }
+                              style={{margin: '0 8px'}} onClick={onPause}>
+            人工暂停
+          </Button>
         }
+
+        <Button type="primary"
+                disabled={status.clusterStatus.status !== ClusterStatus.SUSPENDED || status.clusterStatus.manualPaused}
+                style={{margin: '0 8px'}} onClick={onNext}>
+          {intl.formatMessage({id: 'pages.pods.nextStep'})}
+        </Button>
+        <Button type="primary"
+                disabled={status.clusterStatus.status !== ClusterStatus.SUSPENDED || status.clusterStatus.manualPaused}
+                style={{margin: '0 8px'}} onClick={onPromote}>
+          全部发布
+        </Button>
       </div>
     </div>
   }
@@ -345,7 +365,10 @@ export default () => {
     </div>
   };
 
-  const clusterStatus = statusData?.clusterStatus.status || ''
+  let clusterStatus = statusData?.clusterStatus.status || ''
+  if (statusData?.clusterStatus.manualPaused) {
+    clusterStatus = ClusterStatus.MANUALPAUSED
+  }
 
   const baseInfo: Param[][] = [
     [
@@ -353,13 +376,15 @@ export default () => {
         key: '集群状态',
         value: getStatusComponent(clusterStatus),
         description: `正常： 集群已正常发布
-        暂停： 集群处于发布批次暂停中
         异常： 集群处于异常状态
         未发布： 集群尚未发布
         发布中： 集群正在发布中
         已释放： 集群的资源已被释放，与未发布状态类似，可重新构建发布
         释放中： 集群处于资源释放中，无法继续操作集群
-        删除中： 集群处于删除中，无法继续操作集群`
+        删除中： 集群处于删除中，无法继续操作集群
+        批次暂停： 集群处于发布批次暂停中
+        人工暂停： 集群处于人工暂停中，发布/回滚操作会在取消暂停后生效
+        `
       },
       {
         key: 'Pods数量',
@@ -437,6 +462,26 @@ export default () => {
     }
   }
 
+  const onClickOperationWithResumePrompt = ({key}: { key: string }) => {
+    const needResumePrompt = ['builddeploy', 'deploy', 'restart', 'rollback']
+    console.log(key)
+    if (clusterStatus === ClusterStatus.MANUALPAUSED && needResumePrompt.includes(key)) {
+      Modal.info({
+        title: '该集群处于人工暂停状态，该操作会在取消暂停之后生效。',
+        icon: <ExclamationCircleOutlined/>,
+        okText: '确定',
+        onOk: () => {
+          onClickOperation({key});
+        },
+        onCancel: () => {
+          onClickOperation({key});
+        },
+      });
+    } else {
+      onClickOperation({key});
+    }
+  }
+
   const onDeleteCluster = () => {
     Modal.confirm({
       title: '确定删除集群?',
@@ -451,7 +496,7 @@ export default () => {
   }
 
 
-  const operateDropdown = <Menu onClick={onClickOperation}>
+  const operateDropdown = <Menu onClick={onClickOperationWithResumePrompt}>
     <Menu.Item
       disabled={!RBAC.Permissions.rollbackCluster.allowed || isRestrictedStatus(clusterStatus)}
       key="rollback">回滚</Menu.Item>
@@ -473,13 +518,15 @@ export default () => {
   const getTips = () => {
     return <div style={{color: 'grey', marginTop: '15px', textAlign: 'center'}}>
       <div style={{display: 'inline-block', textAlign: 'left'}}>
-        【<span style={{color: 'green'}}>温馨提示</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关操作进行排查：<br/>
+        【<span style={{color: 'green'}}>温馨提示1</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关操作进行排查：<br/>
         &nbsp;&nbsp;1.【<span style={{color: 'green'}}>Stdout</span>】 查看启动日志中是否有异常信息 <br/>
         &nbsp;&nbsp;2.【<span style={{color: 'green'}}>查看events</span>】 查看事件列表中是否有Warning类型的事件 <br/>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/>
         &nbsp;&nbsp;3.【<span style={{color: 'green'}}>查看Mlog</span>】 查看Mlog是否有异常日志 <br/>
-        &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈
+        &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈 <br/>
+        【<span style={{color: 'green'}}>温馨提示2</span>】集群处于【<span style={{color: 'green'}}>人工暂停</span>】状态时，
+        任何发布/回滚操作均会在【<span style={{color: 'green'}}>取消暂停</span>】之后才生效<br/>
       </div>
     </div>
   }
@@ -508,17 +555,23 @@ export default () => {
         <div style={{marginBottom: '5px', textAlign: 'right'}}>
           <Button
             disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(clusterStatus)}
-            type="primary" onClick={() => onClickOperation({key: 'builddeploy'})}
+            type="primary" onClick={() => {
+            onClickOperationWithResumePrompt({key: 'builddeploy'})
+          }}
             style={{marginRight: '10px'}}>
             构建发布
           </Button>
           <Button disabled={!RBAC.Permissions.deployCluster.allowed || isRestrictedStatus(clusterStatus)}
-                  onClick={() => onClickOperation({key: 'deploy'})}
+                  onClick={() => {
+                    onClickOperationWithResumePrompt({key: 'deploy'})
+                  }}
                   style={{marginRight: '10px'}}>
             直接发布
           </Button>
           <Button disabled={!RBAC.Permissions.restartCluster.allowed || isRestrictedStatus(clusterStatus)}
-                  onClick={() => onClickOperation({key: 'restart'})}
+                  onClick={() => {
+                    onClickOperationWithResumePrompt({key: 'restart'})
+                  }}
                   style={{marginRight: '10px'}}>
             重新启动
           </Button>
@@ -582,6 +635,22 @@ export default () => {
                           () => {
                             next(id).then(() => {
                               successAlert(`第${statusData.clusterStatus.step!.index + 1}批次开始发布`)
+                              refreshStatus()
+                            })
+                          }
+                        }
+                        onPause={
+                          () => {
+                            pause(id).then(() => {
+                              successAlert(`人工暂停成功`)
+                              refreshStatus()
+                            })
+                          }
+                        }
+                        onResume={
+                          () => {
+                            resume(id).then(() => {
+                              successAlert(`取消暂停成功`)
                               refreshStatus()
                             })
                           }
