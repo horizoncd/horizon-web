@@ -344,12 +344,20 @@ export default () => {
         }
 
         <Button type="primary"
-                disabled={status.clusterStatus.status !== ClusterStatus.SUSPENDED || status.clusterStatus.manualPaused}
+                disabled={
+                  !RBAC.Permissions.deployClusterNext.allowed ||
+                  status.clusterStatus.status !== ClusterStatus.SUSPENDED ||
+                  status.clusterStatus.manualPaused
+                }
                 style={{margin: '0 8px'}} onClick={onNext}>
           {intl.formatMessage({id: 'pages.pods.nextStep'})}
         </Button>
         <Button type="primary"
-                disabled={status.clusterStatus.status !== ClusterStatus.SUSPENDED || status.clusterStatus.manualPaused}
+                disabled={
+                  !RBAC.Permissions.promoteCluster.allowed ||
+                  status.clusterStatus.status !== ClusterStatus.SUSPENDED ||
+                  status.clusterStatus.manualPaused
+                }
                 style={{margin: '0 8px'}} onClick={onPromote}>
           全部发布
         </Button>
