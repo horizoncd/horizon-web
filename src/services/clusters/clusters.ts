@@ -109,6 +109,18 @@ export async function next(clusterID: number) {
   });
 }
 
+export async function pause(clusterID: number) {
+  return request(`/apis/core/v1/clusters/${clusterID}/pause`, {
+    method: 'POST',
+  });
+}
+
+export async function resume(clusterID: number) {
+  return request(`/apis/core/v1/clusters/${clusterID}/resume`, {
+    method: 'POST',
+  });
+}
+
 export async function promote(clusterID: number) {
   return request(`/apis/core/v1/clusters/${clusterID}/promote`, {
     method: 'POST',

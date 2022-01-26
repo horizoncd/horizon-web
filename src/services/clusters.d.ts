@@ -145,6 +145,7 @@ declare namespace CLUSTER {
 
   type PodFromBackend = {
     metadata: {
+      annotations: Record<string, string>,
       namespace: string
       creationTimestamp: string
     }
@@ -195,6 +196,7 @@ declare namespace CLUSTER {
       action: string
     }
     clusterStatus: {
+      manualPaused: boolean,
       status: string,
       step?: {
         index: number,
@@ -235,6 +237,7 @@ declare namespace CLUSTER {
     events: Event[]
     lifeCycle: PodLifeCycle[]
     deletionTimestamp: string
+    annotations: Record<string, string>
   }
 
   type PodLifeCycle = {

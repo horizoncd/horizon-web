@@ -10,7 +10,6 @@ export default (props: any) => {
   const {podName, containerName} = query;
 
   const backend = window.location.host
-
   const protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
   const url = `${protocol}//${backend}/apis/core/v1/clusters/${id}/shell?podName=${podName}&containerName=${containerName}`
   return (
@@ -22,20 +21,6 @@ export default (props: any) => {
             JSON.stringify([
               JSON.stringify({
                 Op: 'bind',
-              }),
-            ]),
-          );
-
-          socketRef.current.sendMessage(
-            JSON.stringify([
-              JSON.stringify({
-                Op: 'resize',
-                Cols: Math.round(
-                  document.body.clientWidth / DEFAULT_CHAR_WIDTH,
-                ),
-                Rows: Math.round(
-                  document.body.clientHeight / DEFAULT_CHAR_HEIGHT,
-                ),
               }),
             ]),
           );

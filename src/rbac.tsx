@@ -27,6 +27,10 @@ const Resource = {
   templateSchemaTags: 'templateschematags',
   tags: 'tags',
   shell: 'shell',
+  events: 'events',
+  pause: 'pause',
+  resume: 'resume',
+  promote: 'promote'
 }
 
 // 操作
@@ -203,6 +207,30 @@ const Permissions = {
   // 创建/修改/删除标签
   updateTags: {
     resource: `${Resource.cluster}/${Resource.tags}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 查看events
+  getEvents: {
+    resource: `${Resource.cluster}/${Resource.events}`,
+    action: Action.get,
+    allowed: false,
+  },
+  // 集群暂停
+  pauseCluster: {
+    resource: `${Resource.cluster}/${Resource.pause}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 集群取消暂停
+  resumeCluster: {
+    resource: `${Resource.cluster}/${Resource.resume}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 集群发布剩余批次
+  promoteCluster: {
+    resource: `${Resource.cluster}/${Resource.promote}`,
     action: Action.create,
     allowed: false,
   },
