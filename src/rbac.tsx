@@ -29,7 +29,8 @@ const Resource = {
   shell: 'shell',
   events: 'events',
   pause: 'pause',
-  resume: 'resume'
+  resume: 'resume',
+  promote: 'promote'
 }
 
 // 操作
@@ -224,6 +225,12 @@ const Permissions = {
   // 集群取消暂停
   resumeCluster: {
     resource: `${Resource.cluster}/${Resource.resume}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 集群发布剩余批次
+  promoteCluster: {
+    resource: `${Resource.cluster}/${Resource.promote}`,
     action: Action.create,
     allowed: false,
   },
