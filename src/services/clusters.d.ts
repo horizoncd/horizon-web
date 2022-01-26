@@ -196,6 +196,7 @@ declare namespace CLUSTER {
       action: string
     }
     clusterStatus: {
+      manualPaused: boolean,
       status: string,
       step?: {
         index: number,

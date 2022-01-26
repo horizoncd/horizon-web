@@ -152,7 +152,7 @@ const getStatusComponent = (status: any) => {
     case ClusterStatus.DEGRADED:
       return <Failed text={'异常'}/>
     case ClusterStatus.SUSPENDED:
-      return <Suspended text={'暂停'}/>
+      return <Suspended text={'批次暂停'}/>
     case ClusterStatus.FREEING:
       return <Freeing text={'释放中'}/>
     case ClusterStatus.FREED:
@@ -161,6 +161,8 @@ const getStatusComponent = (status: any) => {
       return <Deleting text={'删除中'}/>
     case ClusterStatus.NOTFOUND:
       return <NotFount text={'未发布'}/>
+    case ClusterStatus.MANUALPAUSED:
+      return <Suspended text={'人工暂停'}/>
     default:
       return <NotFount text={'未知'}/>
   }

@@ -28,6 +28,8 @@ const Resource = {
   tags: 'tags',
   shell: 'shell',
   events: 'events',
+  pause: 'pause',
+  resume: 'resume'
 }
 
 // 操作
@@ -211,6 +213,18 @@ const Permissions = {
   getEvents: {
     resource: `${Resource.cluster}/${Resource.events}`,
     action: Action.get,
+    allowed: false,
+  },
+  // 集群暂停
+  pauseCluster: {
+    resource: `${Resource.cluster}/${Resource.pause}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 集群取消暂停
+  resumeCluster: {
+    resource: `${Resource.cluster}/${Resource.resume}`,
+    action: Action.create,
     allowed: false,
   },
 }
