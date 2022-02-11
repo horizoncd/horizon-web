@@ -1,11 +1,13 @@
 import {CloseOutlined, CopyOutlined, FullscreenExitOutlined, FullscreenOutlined} from '@ant-design/icons';
-import {Button, Modal, Switch} from 'antd';
+import {Button, Modal, Select, Switch} from 'antd';
 import './index.less'
 import styles from './index.less'
-import {useState} from "react";
+import React, {useState} from "react";
 import copy from 'copy-to-clipboard'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useModel} from "@@/plugin-model/useModel";
+
+const {Option} = Select;
 
 interface Props {
   title: string
@@ -13,6 +15,8 @@ interface Props {
   fullscreen: boolean
   supportFullscreenToggle: boolean
   onClose: () => void
+  listToSelect?: string[]
+  onSelectChange?: (item: any) => void
   children?: any
   supportRefresh?: boolean
   onRefreshButtonToggle?: (checked: boolean, event: MouseEvent) => void
@@ -51,6 +55,23 @@ export default (props: Props) => {
         defaultChecked={true}
         onChange={props.onRefreshButtonToggle}
       />}
+      {
+        (props.listToSelect && props.onSelectChange) && <div>
+          <Select
+            defaultValue={props.listToSelect[0]}
+            onChange={(value) => {
+              props.onSelectChange!(value);
+            }
+            }
+          >
+            {
+              props.listToSelect?.map((item: string) => {
+                return <Option key={item} value={item}>{item}</Option>
+              })
+            }
+          </Select>
+        </div>
+      }
       <Button className={styles.buttonClass} onClick={onCopyClick}>
         <CopyOutlined className={styles.iconCommonModal}/>
       </Button>
