@@ -720,7 +720,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   key: 'restartCount',
                   width: '10%',
                   render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    return <div>{container.status.restartCount}</div>
+                    let cnt = 0
+                    if (container.status) {
+                      cnt = container.status.restartCount
+                    }
+                    return <div>{cnt}</div>
                   }
                 },
                 {
