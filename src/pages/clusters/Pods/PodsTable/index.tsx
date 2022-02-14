@@ -5,7 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import './index.less'
 import FullscreenModal from "@/components/FullscreenModal";
 import {useRequest} from "@@/plugin-request/request";
-import {offline, online, queryPodEvents, queryPodStdout} from "@/services/clusters/pods";
+import {offline, online, queryPodContainers, queryPodEvents, queryPodStdout} from "@/services/clusters/pods";
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
@@ -14,19 +14,22 @@ import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/St
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import CollapseList from '@/components/CollapseList'
+import type {Param} from '@/components/DetailCard';
+import DetailCard from '@/components/DetailCard'
 import styles from './index.less'
 import Utils from '@/utils'
 import {env2MlogEnv} from "@/const";
-
+import Dropdown from "antd/es/dropdown";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   DownOutlined,
   EyeOutlined,
   LoadingOutlined,
-  PauseCircleOutlined
+  MinusSquareTwoTone,
+  PauseCircleOutlined,
+  PlusSquareTwoTone,
 } from "@ant-design/icons";
-import Dropdown from "antd/es/dropdown";
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -54,19 +57,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const {fullPath} = initialState!.resource;
   const [fullscreen, setFullscreen] = useState(false)
   const [pod, setPod] = useState<CLUSTER.PodInTable>()
+  const [currentContainer, setCurrentContainer] = useState<CLUSTER.ContainerDetail>()
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
   const {successAlert, errorAlert} = useModel('alert')
   const [showEvents, setShowEvents] = useState(false)
   const [showLifeCycle, setShowLifeCycle] = useState(false)
+  const [showContainerDetail, setShowContainerDetail] = useState(false)
   const [events, setEvents] = useState([])
+  const [podLog, setPodLog] = useState("")
+  const [autoRefreshPodLog, setAutoRefreshPodLog] = useState(true)
 
   const {
-    data: podLog,
+    data: podLogInterval,
     run: refreshPodLog,
     cancel: cancelPodLog,
   } = useRequest((podName, containerName) => queryPodStdout(cluster!.id, {
     podName,
-    containerName
+    containerName,
   }), {
     manual: true,
     ready: !!cluster,
@@ -74,6 +81,26 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       return res
     },
     pollingInterval: 5000,
+    onSuccess: () => {
+      setPodLog(podLogInterval)
+    }
+  })
+
+  const {
+    data: podLogOnce,
+    run: refreshPodLogOnce,
+  } = useRequest((podName, containerName) => queryPodStdout(cluster!.id, {
+    podName,
+    containerName,
+  }), {
+    manual: true,
+    ready: !!cluster,
+    formatResult: (res) => {
+      return res
+    },
+    onSuccess: () => {
+      setPodLog(podLogOnce)
+    }
   })
 
   const {
@@ -301,7 +328,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
     return 0;
   })
-  console.log(filteredData)
 
   const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
     text: item,
@@ -516,8 +542,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       render: (text: any, record: CLUSTER.PodInTable) => {
         // return <collapseList defaultCount={2} data={record.annotations}/>
         return <div>
-          <CollapseList defaultCount={2} data={record.annotations} />
-          </div>
+          <CollapseList defaultCount={2} data={record.annotations}/>
+        </div>
       },
     },
     {
@@ -562,6 +588,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   };
 
   const onRefreshButtonToggle = (checked: boolean) => {
+    setAutoRefreshPodLog(checked)
     if (checked) {
       refreshPodLog(pod?.podName, pod?.containerName).then();
     } else {
@@ -573,6 +600,45 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
     '比如查看日志、查看基础资源监控、登陆Pod等'}/>
   }
+
+  const [containersCache, setContainersCache] = useState<Record<string, any[]>>({})
+  const containerDetail: Param[][] = [[]]
+  if (currentContainer?.status) {
+    const stateKey = Object.keys(currentContainer?.status.state)
+    if (stateKey.length > 0) {
+      containerDetail[0].push(
+        {
+          key: "Status",
+          value: stateKey[0],
+        }
+      )
+    }
+    if (currentContainer?.status.state.waiting) {
+      containerDetail[0].push(
+        {
+          key: "Reason",
+          value: currentContainer?.status.state.waiting.reason,
+        })
+    } else if (currentContainer?.status.state.terminated) {
+      containerDetail[0].push(
+        {
+          key: "Reason",
+          value: currentContainer?.status.state.terminated.reason,
+        },
+        {
+          key: "Message",
+          value: currentContainer?.status.state.terminated.message,
+        },
+      )
+    }
+  }
+
+  containerDetail[0].push(
+    {key: "Ready", value: currentContainer?.status.ready.toString()},
+    {key: "Started", value: currentContainer?.status.started.toString()},
+  )
+  containerDetail.push([{key: "Image", value: currentContainer?.image}])
+
 
   return <div>
     <Table
@@ -592,10 +658,141 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         onChange: (page) => setPageNumber(page)
       }}
       title={renderTile}
+      expandable={{
+        expandedRowRender: (record) => {
+          if (!containersCache[record.podName]) {
+            return <div/>
+          }
+
+          return <Table
+            columns={
+              [
+                {
+                  title: "容器名称",
+                  dataIndex: 'name',
+                  width: '15%',
+                  key: 'name',
+                  render: (text: string, container: CLUSTER.ContainerDetail) => {
+                    return <Button
+                      type={'link'}
+                      onClick={
+                        () => {
+                          setCurrentContainer(container);
+                          setShowContainerDetail(true);
+                        }}
+                    >
+                      {text}
+                    </Button>
+                  }
+                },
+                {
+                  title: "镜像",
+                  dataIndex: 'image',
+                  key: 'image',
+                  width: '50%'
+                },
+                {
+                  title: "状态",
+                  dataIndex: 'status',
+                  key: 'status',
+                  width: '5%',
+                  render: (text: string, container: CLUSTER.ContainerDetail) => {
+                    if (!container.status) {
+                      return <div/>
+                    }
+                    const stateKey = Object.keys(container.status.state)
+                    if (stateKey.length == 0) {
+                      return <div/>
+                    }
+                    switch (stateKey[0]) {
+                      case 'running':
+                        return <PodRunning text={'Running'}/>
+                      case 'terminated':
+                        return <PodError text={'Terminated'}/>
+                      default:
+                        return <PodPending text={'Waiting'}/>
+                    }
+                  }
+                },
+                {
+                  title: "重启次数",
+                  dataIndex: 'restartCount',
+                  key: 'restartCount',
+                  width: '10%',
+                  render: (text: string, container: CLUSTER.ContainerDetail) => {
+                    return <div>{container.status.restartCount}</div>
+                  }
+                },
+                {
+                  title: "启动时间",
+                  dataIndex: 'startedAt',
+                  key: 'startedAt',
+                  width: '20%',
+                  render: (text: string, container: CLUSTER.ContainerDetail) => {
+                    if (!container.status) {
+                      return <div/>
+                    }
+
+                    if (container.status.state.running) {
+                      return <div>{container.status.state.running.startedAt}</div>
+                    } else if (container.status.state.terminated) {
+                      return <div>{container.status.state.terminated.startedAt}</div>
+                    }
+                    return <div/>
+                  }
+                },
+              ]
+            }
+            pagination={{
+              hideOnSinglePage: true
+            }}
+            dataSource={containersCache[record.podName]}
+            rowKey={(container) => {
+              return container.name
+            }}
+          />
+        },
+        onExpand: (expanded, record) => {
+          if (expanded) {
+            queryPodContainers(cluster!.id, {podName: record.podName}).then((result) => {
+              const containersCacheNew = Object.create(containersCache)
+              const containers: any[] = []
+              result.data.forEach((container: CLUSTER.ContainerDetail) => {
+                containers.push(container)
+              })
+              containersCacheNew[record.podName] = containers
+              setContainersCache(containersCacheNew)
+            });
+          }
+        },
+        expandIcon: ({expanded, onExpand, record}) =>
+          expanded ? (
+            <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
+          ) : (
+            <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
+          )
+      }}
     />
     <FullscreenModal
       title={'Stdout信息'}
       visible={fullscreen}
+      listToSelect={pod?.containers.map((container) => {
+        return container.name
+      })}
+      onSelectChange={(value: string) => {
+        if (pod) {
+          const newPod = Object.create(pod)
+          newPod.containerName = value
+          setPod(newPod)
+          if (autoRefreshPodLog) {
+            cancelPodLog();
+            refreshPodLog(pod.podName, value).then();
+          } else {
+            refreshPodLogOnce(pod.podName, value).then();
+          }
+        }
+      }}
+
       onClose={
         () => {
           setFullscreen(false);
@@ -653,5 +850,106 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         />
       </div>
     </Modal>
+    {
+      currentContainer && <Modal
+        visible={showContainerDetail}
+        title={<span className={styles.containerDetailHeading}>容器详情</span>}
+        footer={[]}
+        onCancel={() => {
+          setShowContainerDetail(false)
+        }}
+        width={'1000px'}
+        centered
+        bodyStyle={{height: '600px', overflowY: 'auto'}}
+      >
+        <DetailCard
+          title={<span className={styles.containerDetailHeading}>状态</span>}
+          data={containerDetail}
+        />
+        <span className={styles.containerDetailHeading}>环境变量</span>
+        <Table
+          className={styles.containerDetailTable}
+          pagination={
+            {
+              pageSize: 20,
+              hideOnSinglePage: true,
+            }
+          }
+          columns={[
+            {
+              title: "名称",
+              dataIndex: 'name',
+              key: 'name',
+            },
+            {
+              title: "值",
+              dataIndex: 'value',
+              key: 'value',
+            },
+          ]}
+          dataSource={currentContainer!.env.filter(
+            (env: any) => {
+              return env.value
+            }
+          )}
+          rowKey={(env) => {
+            return env.name
+          }}
+        >
+        </Table>
+        <span className={styles.containerDetailHeading}>存储挂载</span>
+        <Table
+          className={styles.containerDetailTable}
+          pagination={
+            {
+              pageSize: 20,
+              hideOnSinglePage: true,
+            }
+          }
+          columns={[
+            {
+              title: "名称",
+              dataIndex: 'name',
+              key: 'name',
+            },
+            {
+              title: "只读",
+              dataIndex: 'readOnly',
+              key: 'readOnly',
+              render: (value: any) => {
+                return <span>{value.toString()}</span>
+              }
+            },
+            {
+              title: "挂载路径",
+              dataIndex: 'mountPath',
+              key: 'mountPath',
+            },
+            {
+              title: "子路径",
+              dataIndex: 'subPath',
+              key: 'subPath',
+            },
+            {
+              title: "挂载类型",
+              dataIndex: 'volumeType',
+              key: 'volumeType',
+              render: (text: string, volumeMount: CLUSTER.VolumeMount) => {
+                const volumes = Object.keys(volumeMount.volume)
+                if (volumes.length < 2) {
+                  return <div/>
+                }
+                return <span>{volumes[1]}</span>
+              }
+            },
+          ]}
+          dataSource={currentContainer!.volumeMounts}
+          rowKey={(volumeMount) => {
+            return volumeMount.name
+          }}
+        >
+        </Table>
+      </Modal>
+    }
   </div>
 }

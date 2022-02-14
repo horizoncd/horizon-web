@@ -31,6 +31,9 @@ const Index: React.FC<IProps> = ({
 
   // 初始化terminal
   useEffect(() => {
+    if (terminalRef) {
+      terminalRef?.current?.dispose();
+    }
     terminalRef.current = new Terminal({
       cursorBlink: true,
       cursorStyle: 'block',
@@ -59,20 +62,24 @@ const Index: React.FC<IProps> = ({
         ),
     );
     terminalRef.current.focus();
-  }, []);
+  }, [url]);
 
   const resize = debounce(() => {
     fitAddon.fit();
     const dimensions = fitAddon.proposeDimensions();
-    socketRef.current?.sendMessage?.(
-      JSON.stringify([
-        JSON.stringify({
-          Op: 'resize',
-          Cols: dimensions.cols,
-          Rows: dimensions.rows,
-        }),
-      ]),
-    );
+    try {
+      socketRef.current?.sendMessage?.(
+        JSON.stringify([
+          JSON.stringify({
+            Op: 'resize',
+            Cols: dimensions.cols,
+            Rows: dimensions.rows,
+          }),
+        ]),
+      );
+    } catch (error) {
+      console.log("failed to resize: ", error)
+    }
   }, 100);
 
   // 初始化websocket连接
@@ -117,7 +124,7 @@ const Index: React.FC<IProps> = ({
         ),
     });
     socketRef.current.createWebSocket();
-  }, []);
+  }, [url]);
 
   // 窗口大小变化时的回调
   useEffect(() => {
@@ -127,7 +134,8 @@ const Index: React.FC<IProps> = ({
     };
   }, []);
 
-  return <div ref={containerRef as React.RefObject<HTMLDivElement>}/>;
+  return <div
+    ref={containerRef as React.RefObject<HTMLDivElement>}/>;
 };
 
 export default Index

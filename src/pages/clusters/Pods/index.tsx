@@ -206,6 +206,7 @@ export default () => {
               lifeCycle: status.lifeCycle,
               deletionTimestamp: podObj.deletionTimestamp,
               annotations: podObj.metadata.annotations,
+              containers: podObj.spec.containers,
             };
             if (state.state === runningState) {
               healthyPods.push(podInTable)

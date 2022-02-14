@@ -238,12 +238,64 @@ declare namespace CLUSTER {
     lifeCycle: PodLifeCycle[]
     deletionTimestamp: string
     annotations: Record<string, string>
+    containers: ContainerDetail[]
+  }
+
+  type ContainerDetail = {
+    name: string,
+    image: string,
+    env: Env[],
+    command: string[],
+    args: string[],
+    volumeMounts: VolumeMount[],
+    status: ContainerStatus
+  }
+
+  type Env = {
+    name: string,
+    value: string,
+  }
+
+  type VolumeMount = {
+    name: string,
+    readOnly: boolean,
+    mountPath: string,
+    subPath: string,
+    volume: Record<string, any>
+  }
+
+  type ContainerStatus = {
+    ready: boolean,
+    restartCount: number,
+    started: boolean,
+    state: {
+      running: {
+        startedAt: string
+      },
+      waiting: {
+        reason: string
+        message: string
+      }
+      terminated: {
+        exitCode: number
+        signal: number
+        reason: string
+        message: string
+        startedAt: string
+        finishedAt: string
+        containerID: string
+      }
+    }
   }
 
   type PodLifeCycle = {
     type: string,
     status: string,
     message: string,
+  }
+
+  type PodContainersQuery = {
+    podName: string
   }
 
   type PodOnlineOfflineResult = {
