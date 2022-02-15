@@ -192,4 +192,10 @@ declare namespace API {
     clusterID?: number,
     resourceType?: string,
   }
+
+  type SLODashboards = {
+    overview: string;
+    api: string;
+    pipeline: string;
+  };
 }

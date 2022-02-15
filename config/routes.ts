@@ -39,6 +39,11 @@
     menuRender: false,
     component: 'groups/NewGroup',
   },
+  {
+    path: '/slo',
+    menuRender: false,
+    component: 'more/SLO',
+  },
 ];
 
 const groupRoutes = [
