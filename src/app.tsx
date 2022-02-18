@@ -15,6 +15,7 @@ import {
   SettingOutlined,
   SmileOutlined,
   TagsOutlined,
+  DownOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
 import {queryResource} from '@/services/core';
@@ -26,6 +27,7 @@ import {queryRoles, querySelfMember} from "@/services/members/members";
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
+const {SubMenu} = Menu;
 
 const IconMap = {
   smile: <SmileOutlined/>,
@@ -194,12 +196,19 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         <Menu.Item key="1">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
         </Menu.Item>
-        <Menu.Item key="3">
+        <Menu.Item key="2">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/applications")}>Applications</a>
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="3">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/explore/groups")}>Groups</a>
         </Menu.Item>
+        <SubMenu key="4" title={<span style={{fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)'}}>
+          More <DownOutlined style={{fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)'}}/>
+        </span>}>
+          <Menu.Item key="5">
+            <a style={{fontWeight: 'bold'}} href={'/slo'}>SLO</a>
+          </Menu.Item>
+        </SubMenu>
       </Menu>
     },
     rightContentRender: () => <RightContent/>,
