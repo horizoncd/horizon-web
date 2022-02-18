@@ -891,11 +891,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               key: 'value',
             },
           ]}
-          dataSource={currentContainer!.env.filter(
+          dataSource={currentContainer?.env ? currentContainer?.env.filter(
             (env: any) => {
               return env.value
             }
-          )}
+          ) : []}
           rowKey={(env) => {
             return env.name
           }}
@@ -947,7 +947,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               }
             },
           ]}
-          dataSource={currentContainer!.volumeMounts}
+          dataSource={currentContainer?.volumeMounts ? currentContainer?.volumeMounts : []}
           rowKey={(volumeMount) => {
             return volumeMount.name
           }}
