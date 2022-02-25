@@ -13,7 +13,7 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
       annotationStyle = styles.annotationWithoutMargin
     }
     items.push(
-      <Tag className={annotationStyle}>
+      <Tag id={annotationStyle}>
         {k}: {props.data[k]}
       </Tag>
     )
