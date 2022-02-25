@@ -529,7 +529,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       render: (text: string) => status2StateNode.get(text)
     },
     {
-      title: formatMessage('restartCount', '重启次数'),
+      title: <div style={{whiteSpace: 'nowrap'}}>{formatMessage('restartCount', '重启次数')}</div>,
       width: '90px',
       dataIndex: 'restartCount',
       key: 'restartCount',
@@ -538,12 +538,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '注释',
       dataIndex: 'annotations',
       key: 'annotations',
-      width: '26%',
       render: (text: any, record: CLUSTER.PodInTable) => {
         // return <collapseList defaultCount={2} data={record.annotations}/>
-        return <div>
+        return Object.keys(record.annotations).length > 0 ? <div style={{minWidth: '260px', maxWidth: "390px", wordBreak: 'break-all'}}>
           <CollapseList defaultCount={2} data={record.annotations}/>
-        </div>
+        </div> : <div/>
       },
     },
     {
@@ -575,7 +574,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             <a>
-              更多操作 <DownOutlined/>
+              More <DownOutlined/>
             </a>
           </Dropdown>
         </Space>
@@ -604,7 +603,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const [containersCache, setContainersCache] = useState<Record<string, any[]>>({})
   const containerDetail: Param[][] = [[]]
   if (currentContainer?.status) {
-    const stateKey = Object.keys(currentContainer?.status.state)
+    const stateKey = Object.keys(currentContainer?.status?.state)
     if (stateKey.length > 0) {
       containerDetail[0].push(
         {
@@ -613,29 +612,29 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         }
       )
     }
-    if (currentContainer?.status.state.waiting) {
+    if (currentContainer?.status?.state?.waiting) {
       containerDetail[0].push(
         {
           key: "Reason",
-          value: currentContainer?.status.state.waiting.reason,
+          value: currentContainer?.status?.state?.waiting?.reason || '',
         })
-    } else if (currentContainer?.status.state.terminated) {
+    } else if (currentContainer?.status?.state?.terminated) {
       containerDetail[0].push(
         {
           key: "Reason",
-          value: currentContainer?.status.state.terminated.reason,
+          value: currentContainer?.status?.state?.terminated?.reason || '',
         },
         {
           key: "Message",
-          value: currentContainer?.status.state.terminated.message,
+          value: currentContainer?.status?.state?.terminated?.message || '',
         },
       )
     }
-  }
 
+  }
   containerDetail[0].push(
-    {key: "Ready", value: currentContainer?.status.ready.toString()},
-    {key: "Started", value: currentContainer?.status.started.toString()},
+    {key: "Ready", value: currentContainer?.status?.ready?.toString() || '未就绪'},
+    {key: "Started", value: currentContainer?.status?.started?.toString() || '未就绪'},
   )
   containerDetail.push([{key: "Image", value: currentContainer?.image}])
 
@@ -715,7 +714,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   }
                 },
                 {
-                  title: "重启次数",
+                  title: <div style={{whiteSpace: 'nowrap'}}>重启次数</div>,
                   dataIndex: 'restartCount',
                   key: 'restartCount',
                   width: '10%',
@@ -738,9 +737,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                     }
 
                     if (container.status.state.running) {
-                      return <div>{container.status.state.running.startedAt}</div>
+                      return <div>{Utils.timeToLocal(container.status.state.running.startedAt)}</div>
                     } else if (container.status.state.terminated) {
-                      return <div>{container.status.state.terminated.startedAt}</div>
+                      return <div>{Utils.timeToLocal(container.status.state.terminated.startedAt)}</div>
                     }
                     return <div/>
                   }
@@ -867,7 +866,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         bodyStyle={{height: '600px', overflowY: 'auto'}}
       >
         <DetailCard
-          title={<span className={styles.containerDetailHeading}>状态</span>}
+          title={<span className={styles.containerDetailHeading}>基本信息</span>}
           data={containerDetail}
         />
         <span className={styles.containerDetailHeading}>环境变量</span>
