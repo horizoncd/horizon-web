@@ -236,6 +236,20 @@ export const pathnameInStaticRoutes = (): boolean => {
   return false;
 }
 
+export const FilterGap = ","
+export const FilterSep = "::"
+
+export const EncodeFilters = (filters: Map<string,string>)=>{
+  if(filters.size === 0) {
+    return ""
+  }
+  let res = ""
+  filters.forEach((k,v)=> {
+    res += k+FilterSep+v+FilterGap 
+  })
+  return res.substring(0,res.length-1)
+}
+
 export const handleHref = (event: any, link: string) => {
   const {metaKey, ctrlKey} = event
 

@@ -166,6 +166,7 @@ declare namespace API {
     // todo:看下有没有其他实现方法
     isConcat?: boolean,
     environment?: string,
+    filters?: string,
   };
 
   type RoleRule = {

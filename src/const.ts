@@ -4,6 +4,11 @@ export enum ResourceType {
   CLUSTER = 'cluster',
 }
 
+export enum Filters {
+  template = 'template',
+  templateRelease = 'template_release'
+}
+
 export enum PublishType {
   BUILD_DEPLOY = 'builddeploy',
   DEPLOY = 'deploy',

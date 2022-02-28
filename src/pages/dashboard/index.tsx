@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree} from 'antd';
+import {Button, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree,Cascader} from 'antd';
 import {history} from 'umi';
 import './index.less';
 import {useIntl} from '@@/plugin-locale/localeExports';
@@ -7,14 +7,15 @@ import {querySubGroups, searchGroups} from "@/services/groups/groups";
 import {searchApplications, searchMyApplications} from "@/services/applications/applications"
 import {searchClusters, searchMyClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
-import Utils, {handleHref} from "@/utils";
+import Utils, {EncodeFilters, handleHref} from "@/utils";
 import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
 import {BookOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
 import {useRequest} from "@@/plugin-request/request";
-import {ResourceType} from "@/const";
+import {ResourceType,Filters} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
+import { queryTemplates,queryReleases } from '@/services/templates/templates';
 import {FundOutlined, RocketTwoTone, GitlabOutlined} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
 const {Option} = Select;
@@ -56,6 +57,8 @@ export default (props: any) => {
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [environment, setEnvironment] = useState();
+  const [filters,setFilters] = useState<Map<string,string>>(new Map());
+  const [filterOptions,setFilterOptions] = useState<CLUSTER.TemplateOptions[]>([]);
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -103,6 +106,16 @@ export default (props: any) => {
     }
   });
 
+  const { data: tpls } = useRequest(queryTemplates,{
+    onSuccess: () => {
+      const t: CLUSTER.TemplateOptions[] = []
+      tpls?.forEach((item)=> {
+        t.push({label: item.name,value: item.name,isLeaf: false})
+      })
+      setFilterOptions(t)
+    }
+  })
+
   // search your applications
   useRequest(() => {
     return searchMyApplications({
@@ -147,12 +160,13 @@ export default (props: any) => {
         filter,
         pageSize,
         pageNumber,
-        environment
+        environment,
+        filters: EncodeFilters(filters)
       }
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment,filters],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -167,12 +181,13 @@ export default (props: any) => {
         filter,
         pageSize,
         pageNumber,
-        environment
+        environment,
+        filters: EncodeFilters(filters),
       }
     )
   }, {
     ready: pathname === allClustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment,filters],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -271,6 +286,44 @@ export default (props: any) => {
     </span>;
   };
 
+  const onCascadeChange = (e: any) => {
+    if(e === undefined || e === null) {
+      return
+    }
+    const t =  Object.assign(new Map,filters)
+    const template = e[0]
+    const templateRelease = e[1]
+    if(template !== undefined && template !== null) {
+      t.set(Filters.template,template)
+    }
+    if(templateRelease !== undefined && templateRelease !== null) {
+      t.set(Filters.templateRelease,templateRelease)
+    }
+    setFilters(t)
+  }
+
+  const CascaderLoadData = (selectedOptions: CLUSTER.TemplateOptions[]) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    if(targetOption.loaded) {
+      return
+    }
+
+    // load options lazily
+    queryReleases(targetOption.value).then((resp) => {
+      const { data } = resp
+      targetOption.children = []
+      data.forEach((item) => {
+        targetOption.children!.push({
+          label: item.name,
+          value: item.name,
+          isLeaf: true,
+        })
+      })
+      targetOption.loaded = true;
+      setFilterOptions([...filterOptions])
+    })
+  };
+
   const onChange = (e: any) => {
     const {value} = e.target;
     setFilter(value);
@@ -352,7 +405,11 @@ export default (props: any) => {
     </div> : <div>
       {
         // @ts-ignore
-        pathname.endsWith("clusters") && <Select allowClear style={{minWidth: 200}} placeholder='Filter by env' onSelect={setEnvironment} onClear={() => setEnvironment('')}>
+        pathname.endsWith("clusters") && <Cascader allowClear style={{maxWidth:'150px'}} placeholder="Filter by template" options={filterOptions} loadData={CascaderLoadData} onChange={onCascadeChange} changeOnSelect/>
+      }
+      {
+        // @ts-ignore
+        pathname.endsWith("clusters") && <Select allowClear style={{maxWidth: '150px', marginLeft:'5px'}} placeholder='Filter by env' onSelect={setEnvironment} onClear={() => setEnvironment('')}>
           {envs?.map((item) => {
             return (
               <Option key={item.name} value={item.name}>
@@ -364,7 +421,7 @@ export default (props: any) => {
       }
       {
         // @ts-ignore
-        <Search style={pathname.endsWith("clusters") ? {width: '50%', marginLeft: '5px'}: {}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
+        <Search style={pathname.endsWith("clusters") ? {width: '40%', marginLeft: '5px'}: {}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
       }
   </div>
 
