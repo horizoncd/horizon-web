@@ -73,7 +73,7 @@ export default (props: Props) => {
                   {...restField}
                   name={[name, 'value']}
                   fieldKey={[fieldKey, 'value']}
-                  rules={[{required: true, message: '值是必填项，长度不超过512个字符', max: 512}]}
+                  rules={[{required: true, message: '值是必填项，长度不超过1280个字符', max: 1280}]}
                 >
                   <Input placeholder="value"/>
                 </Form.Item>
