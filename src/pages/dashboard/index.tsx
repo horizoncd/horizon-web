@@ -7,12 +7,12 @@ import {querySubGroups, searchGroups} from "@/services/groups/groups";
 import {searchApplications, searchMyApplications} from "@/services/applications/applications"
 import {searchClusters, searchMyClusters} from "@/services/clusters/clusters"
 import React, {useState} from "react";
-import Utils, {EncodeFilters, handleHref} from "@/utils";
+import Utils, {handleHref} from "@/utils";
 import type {DataNode, EventDataNode, Key} from "rc-tree/lib/interface";
 import {BookOutlined, DownOutlined, FolderOutlined} from "@ant-design/icons";
 import '@/components/GroupTree/index.less'
 import {useRequest} from "@@/plugin-request/request";
-import {Filters, ResourceType} from "@/const";
+import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
 import {queryReleases, queryTemplates} from '@/services/templates/templates';
@@ -58,7 +58,8 @@ export default (props: any) => {
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [environment, setEnvironment] = useState('');
-  const [filters, setFilters] = useState<Map<string, string>>(new Map());
+  const [tpl, setTpl] = useState('')
+  const [tplRelease, setTplRelease] = useState('')
   const [filterOptions, setFilterOptions] = useState<CLUSTER.TemplateOptions[]>([]);
 
   const {data: envs} = useRequest(queryEnvironments, {
@@ -162,12 +163,13 @@ export default (props: any) => {
         pageSize,
         pageNumber,
         environment,
-        filters: EncodeFilters(filters)
+        template: tpl,
+        templateRelease: tplRelease,
       }
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment, filters],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment, tpl, tplRelease],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -183,12 +185,13 @@ export default (props: any) => {
         pageSize,
         pageNumber,
         environment,
-        filters: EncodeFilters(filters),
+        template: tpl,
+        templateRelease: tplRelease,
       }
     )
   }, {
     ready: pathname === allClustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment, filters],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment, tpl, tplRelease],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -293,16 +296,12 @@ export default (props: any) => {
     if (e === undefined || e === null) {
       return
     }
-    const t = Object.assign(new Map, filters)
-    const template = e[0]
-    const templateRelease = e[1]
-    if (template !== undefined && template !== null) {
-      t.set(Filters.template, template)
+    if (tpl !== e[0]) {
+      setTpl(e[0] ? e[0] : '')
     }
-    if (templateRelease !== undefined && templateRelease !== null) {
-      t.set(Filters.templateRelease, templateRelease)
+    if (tpl !== e[1]) {
+      setTplRelease(e[1] ? e[1] : '')
     }
-    setFilters(t)
   }
 
   const CascaderLoadData = (selectedOptions: CLUSTER.TemplateOptions[]) => {

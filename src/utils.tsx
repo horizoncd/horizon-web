@@ -1,6 +1,6 @@
 import {history} from 'umi';
 import {getLocale} from "@@/plugin-locale/localeExports";
-import moment, { isMoment } from 'moment';
+import moment, {isMoment} from 'moment';
 import {routes} from "../config/routes";
 
 const getResourcePath = () => {
@@ -192,8 +192,8 @@ const formatValue = (data, type) => {
  * @returns {object} 格式化后数据
  */
 // @ts-ignore
-export const formatQueryParam = (data, options ) => {
-  const result = { ...data };
+export const formatQueryParam = (data, options) => {
+  const result = {...data};
 
   Object.keys(options).forEach((key) => {
     if (data[key] === undefined) {
@@ -234,20 +234,6 @@ export const pathnameInStaticRoutes = (): boolean => {
   }
 
   return false;
-}
-
-export const FilterGap = ","
-export const FilterSep = "::"
-
-export const EncodeFilters = (filters: Map<string,string>)=>{
-  if(filters.size === 0) {
-    return ""
-  }
-  let res = ""
-  filters.forEach((k,v)=> {
-    res += k+FilterSep+v+FilterGap 
-  })
-  return res.substring(0,res.length-1)
 }
 
 export const handleHref = (event: any, link: string) => {
