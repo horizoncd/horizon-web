@@ -13,7 +13,7 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
       annotationStyle = styles.annotationWithoutMargin
     }
     items.push(
-      <Tag id={annotationStyle}>
+      <Tag key={items.length} id={annotationStyle}>
         {k}: {props.data[k]}
       </Tag>
     )
@@ -25,15 +25,15 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
   return <div>
     {items}
     {
-    !showAll && items.length >= props.defaultCount && <a
-      style={{padding: '0'}}
-      onClick={() => {
-        setShowAll(true)
-      }}
-    >
-      显示所有
-    </a>
-  }
+      !showAll && items.length >= props.defaultCount && <a
+        style={{padding: '0'}}
+        onClick={() => {
+          setShowAll(true)
+        }}
+      >
+        显示所有
+      </a>
+    }
     {
       showAll && items.length >= props.defaultCount && <a
         style={{padding: '0'}}
