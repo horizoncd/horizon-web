@@ -530,7 +530,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     },
     {
       title: <div style={{whiteSpace: 'nowrap'}}>{formatMessage('restartCount', '重启次数')}</div>,
-      width: '90px',
       dataIndex: 'restartCount',
       key: 'restartCount',
     },
@@ -540,16 +539,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       key: 'annotations',
       render: (text: any, record: CLUSTER.PodInTable) => {
         // return <collapseList defaultCount={2} data={record.annotations}/>
-        return Object.keys(record.annotations).length > 0 ? <div style={{minWidth: '260px', maxWidth: "390px", wordBreak: 'break-all'}}>
-          <CollapseList defaultCount={2} data={record.annotations}/>
-        </div> : <div/>
+        return Object.keys(record.annotations).length > 0 ?
+          <div style={{minWidth: '260px', maxWidth: "390px", wordBreak: 'break-all'}}>
+            <CollapseList defaultCount={2} data={record.annotations}/>
+          </div> : <div/>
       },
     },
     {
       title: '启动时间',
       dataIndex: 'createTime',
-      width: "110px",
       key: 'createTime',
+      render: (text: string) => {
+        const times = text.split(" ")
+        return <>
+          <div style={{whiteSpace: 'nowrap'}}>{times[0]}</div>
+          <div style={{whiteSpace: 'nowrap'}}>{times[1]}</div>
+        </>
+      }
       // defaultSortOrder: 'descend',
       // sortDirections: ['ascend', 'descend', 'ascend'],
       // sorter: (a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
@@ -597,7 +603,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志、查看基础资源监控、登陆Pod等'}/>
+      '比如查看日志、查看基础资源监控、登陆Pod等'}/>
   }
 
   const [containersCache, setContainersCache] = useState<Record<string, any[]>>({})
@@ -647,6 +653,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       }}
       // @ts-ignore
       columns={columns}
+      scroll={{x: '0px'}}
       dataSource={filteredData}
       locale={locale}
       pagination={{
