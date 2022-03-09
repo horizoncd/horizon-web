@@ -20,6 +20,7 @@ const TaskDetailMonitor = ({location, history}) => {
   const {podName, type: typeFromQuery, timeRange: timeChangeFromQuery, monitor = 'basic'} = query
 
   const [podNames, setPodNames] = useState<string[]>([]);
+  const [containers, setContainers] = useState<string[]>([]);
 
   const {data: dashboards} = useRequest(() => getDashboards(id));
 
@@ -46,6 +47,7 @@ const TaskDetailMonitor = ({location, history}) => {
   const {data: podsData} = useRequest(() => getClusterPods(id, startAndEnd[0], startAndEnd[1]), {
     onSuccess: () => {
       setPodNames(Array.from(new Set(podsData?.pods.map(item => item.pod) || [])))
+      setContainers(Array.from(new Set(podsData?.pods.map(item => item.container) || [])))
     },
     refreshDeps: [typeFromQuery, timeChangeFromQuery]
   });
@@ -57,21 +59,22 @@ const TaskDetailMonitor = ({location, history}) => {
       moment().endOf('day')
     ],
     refresh: '30s',
-    podName: podNames.length > 0 ? podNames[0] : undefined
+    podName: podNames.length > 0 ? podNames[0] : undefined,
+    container: podNames.length > 0 ? containers : undefined,
   }), {
-    timeRange: ['array', 'moment'],
-    podName: ['array']
-  }), [query, podNames]);
+    podName: ['array'],
+    container: ['array'],
+  }), [query, podNames, containers]);
 
-  const onSearch = (data: { timeRange: any[]; }) => {
-    history.replace({
-      query: {
-        ...data,
-        monitor,
-        timeRange: data.timeRange && data.timeRange.map(e => e.valueOf()),
+  const formatMultiItemQuery = (arr: any[], queryKey: string) => {
+    return arr.reduce((pre: string, cur: string, curIdx: number) => {
+      if (curIdx == 1) {
+        return `&${queryKey}=${pre}&${queryKey}=${cur}`
+      } else {
+        return `${pre}&${queryKey}=${cur}`
       }
-    });
-  };
+    })
+  }
 
   const src = useMemo(() => {
     if (!dashboards) {
@@ -79,7 +82,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
 
     const baseUrl = dashboards[monitor]
-    const {type, timeRange, refresh} = formData;
+    const {type, timeRange, refresh, container} = formData;
     let [from, to] = timeRange;
     if (type !== 'custom') {
       from = type;
@@ -102,14 +105,32 @@ const TaskDetailMonitor = ({location, history}) => {
         } else if (podName.length === 1) {
           podNamesQuery = `&var-pod=${podName[0]}`
         } else {
-          podNamesQuery = podName.reduce((pre: string, cur: string) => `&var-pod=${pre}&var-pod=${cur}`);
+          podNamesQuery = formatMultiItemQuery(podName, "var-pod");
         }
       }
     }
 
-    return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}`;
-  }, [dashboards, formData, podNames, monitor]);
+    let containerQuery = '';
+    if (monitor === 'basic') {
+      if (!container && containers.length > 0) {
+        containerQuery = `&var-container=${containers[0]}`;
+      }
+      if (typeof container === 'string') {
+        containerQuery = `&var-container=${container}`;
+      }
+      if (container instanceof Array) {
+        if (container.length === 0) {
+          containerQuery = '';
+        } else if (container.length === 1) {
+          containerQuery = `&var-container=${container[0]}`;
+        } else {
+          containerQuery = formatMultiItemQuery(container, "var-container");
+        }
+      }
+    }
 
+    return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}${containerQuery}`;
+  }, [dashboards, query, podNames, containers]);
   const iframe = <iframe src={src} style={{
     border: 0, width: '100%', height: '90vh', marginTop: 10
   }}/>;
@@ -124,20 +145,21 @@ const TaskDetailMonitor = ({location, history}) => {
         });
       }}>
         <TabPane tab={'基础监控'} key="basic">
-          <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'basic'}/>
+          <MonitorSearchForm formData={formData} pods={podNames} containers={containers}
+                             dashboard={'basic'}/>
           {
             dashboards?.basic && iframe
           }
         </TabPane>
         {
           dashboards?.serverless && <TabPane tab={'Serverless'} key="serverless">
-            <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'serverless'}/>
+            <MonitorSearchForm formData={formData} pods={podNames} dashboard={'serverless'}/>
             {iframe}
           </TabPane>
         }
         {
           dashboards?.memcached && <TabPane tab={'Memcached'} key="memcached">
-            <MonitorSearchForm formData={formData} onSubmit={onSearch} pods={podNames} dashboard={'memcached'}/>
+            <MonitorSearchForm formData={formData} pods={podNames} dashboard={'memcached'}/>
             {iframe}
           </TabPane>
         }
