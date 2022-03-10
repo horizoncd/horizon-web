@@ -1,6 +1,6 @@
 import {history} from 'umi';
 import {getLocale} from "@@/plugin-locale/localeExports";
-import moment, { isMoment } from 'moment';
+import moment, {isMoment} from 'moment';
 import {routes} from "../config/routes";
 
 const getResourcePath = () => {
@@ -192,8 +192,8 @@ const formatValue = (data, type) => {
  * @returns {object} 格式化后数据
  */
 // @ts-ignore
-export const formatQueryParam = (data, options ) => {
-  const result = { ...data };
+export const formatQueryParam = (data, options) => {
+  const result = {...data};
 
   Object.keys(options).forEach((key) => {
     if (data[key] === undefined) {

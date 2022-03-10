@@ -309,4 +309,12 @@ declare namespace CLUSTER {
     }
   }
 
+  type TemplateOptions = {
+    value: string,
+    label: string,
+    isLeaf?: boolean,
+    children?: TemplateOptions[],
+    loaded?: boolean,
+  }
+
 }

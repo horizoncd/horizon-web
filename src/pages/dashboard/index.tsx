@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree} from 'antd';
+import {Button, Cascader, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree} from 'antd';
 import {history} from 'umi';
 import './index.less';
 import {useIntl} from '@@/plugin-locale/localeExports';
@@ -15,8 +15,10 @@ import {useRequest} from "@@/plugin-request/request";
 import {ResourceType} from "@/const";
 import withTrim from "@/components/WithTrim";
 import {queryEnvironments} from "@/services/environments/environments";
-import {FundOutlined, RocketTwoTone, GitlabOutlined} from '@ant-design/icons/lib';
+import {queryReleases, queryTemplates} from '@/services/templates/templates';
+import {FundOutlined, GitlabOutlined, RocketTwoTone} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
+
 const {Option} = Select;
 
 const {DirectoryTree} = Tree;
@@ -55,7 +57,10 @@ export default (props: any) => {
   const [applications, setApplications] = useState<API.Application[]>([]);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
-  const [environment, setEnvironment] = useState();
+  const [environment, setEnvironment] = useState('');
+  const [tpl, setTpl] = useState('')
+  const [tplRelease, setTplRelease] = useState('')
+  const [filterOptions, setFilterOptions] = useState<CLUSTER.TemplateOptions[]>([]);
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -103,6 +108,16 @@ export default (props: any) => {
     }
   });
 
+  const {data: tpls} = useRequest(queryTemplates, {
+    onSuccess: () => {
+      const t: CLUSTER.TemplateOptions[] = []
+      tpls?.forEach((item) => {
+        t.push({label: item.name, value: item.name, isLeaf: false})
+      })
+      setFilterOptions(t)
+    }
+  })
+
   // search your applications
   useRequest(() => {
     return searchMyApplications({
@@ -147,12 +162,14 @@ export default (props: any) => {
         filter,
         pageSize,
         pageNumber,
-        environment
+        environment,
+        template: tpl,
+        templateRelease: tplRelease,
       }
     )
   }, {
     ready: pathname === clustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment, tpl, tplRelease],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -167,12 +184,14 @@ export default (props: any) => {
         filter,
         pageSize,
         pageNumber,
-        environment
+        environment,
+        template: tpl,
+        templateRelease: tplRelease,
       }
     )
   }, {
     ready: pathname === allClustersURL,
-    refreshDeps: [query, filter, pageNumber, pageSize, environment],
+    refreshDeps: [query, filter, pageNumber, pageSize, environment, tpl, tplRelease],
     debounceInterval: 200,
     onSuccess: (data) => {
       const {items, total: t} = data!
@@ -201,7 +220,7 @@ export default (props: any) => {
     const cssForDesc = !description ? {
       height: '48px',
       lineHeight: '48px'
-    }: {}
+    } : {}
     return <div style={{padding: '10px 0', display: 'flex', fontSize: 16}}>
       <div style={{flex: '1 1 100%', alignItems: 'center', ...cssForDesc}}>
         <span className={`avatar-48 identicon bg${Utils.getAvatarColorIndex(name)}`}>
@@ -217,13 +236,15 @@ export default (props: any) => {
       <div style={{display: 'flex', flex: '1 1 40%', justifyContent: 'space-between', flexDirection: 'row'}}>
         <div style={{display: 'flex', alignItems: 'center', fontSize: 'larger'}}>
           <Tooltip title="构建发布">
-            <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone /></a>
+            <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone/></a>
           </Tooltip>
           <Tooltip title="集群监控">
             <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{marginLeft: '1rem'}}/></a>
           </Tooltip>
           <Tooltip title="代码仓库">
-            <a onClick={() => {window.open(git.httpURL)}} style={{marginLeft: '1rem', color: '#e24329'}}><GitlabOutlined /></a>
+            <a onClick={() => {
+              window.open(git.httpURL)
+            }} style={{marginLeft: '1rem', color: '#e24329'}}><GitlabOutlined/></a>
           </Tooltip>
         </div>
         <div style={{display: 'flex', alignItems: 'center', fontSize: 14, color: '#666666'}}>
@@ -253,7 +274,7 @@ export default (props: any) => {
     const firstLetter = title.substring(0, 1).toUpperCase()
     const {fullPath, updatedAt} = node;
 
-    return <span style={{padding: '10px 0', lineHeight: '48px', }} onClick={(nativeEvent) => {
+    return <span style={{padding: '10px 0', lineHeight: '48px',}} onClick={(nativeEvent) => {
       // group点击名字进入主页 点击其他部位是展开
       if (groupsDashboard) {
         handleHref(nativeEvent, fullPath)
@@ -269,6 +290,40 @@ export default (props: any) => {
         </Tooltip>
       </span>
     </span>;
+  };
+
+  const onCascadeChange = (e: any) => {
+    if (e === undefined || e === null) {
+      return
+    }
+    if (tpl !== e[0]) {
+      setTpl(e[0] ? e[0] : '')
+    }
+    if (tpl !== e[1]) {
+      setTplRelease(e[1] ? e[1] : '')
+    }
+  }
+
+  const CascaderLoadData = (selectedOptions: CLUSTER.TemplateOptions[]) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    if (targetOption.loaded) {
+      return
+    }
+
+    // load options lazily
+    queryReleases(targetOption.value).then((resp) => {
+      const {data} = resp
+      targetOption.children = []
+      data.forEach((item) => {
+        targetOption.children!.push({
+          label: item.name,
+          value: item.name,
+          isLeaf: true,
+        })
+      })
+      targetOption.loaded = true;
+      setFilterOptions([...filterOptions])
+    })
   };
 
   const onChange = (e: any) => {
@@ -335,8 +390,9 @@ export default (props: any) => {
     handleHref(nativeEvent, `/applications${fullPath}/-/clusters`)
   };
 
-  // @ts-ignore
-  const queryInput = (groupsDashboard && isAdmin) ? <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={filter}
+  const queryInput = (groupsDashboard && isAdmin) ?
+    // @ts-ignore
+    <div><Search placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} value={filter}
                  style={{width: '65%', marginRight: '10px'}} onChange={onChange}/>
       <Button
         type="primary"
@@ -351,8 +407,16 @@ export default (props: any) => {
       </Button>
     </div> : <div>
       {
+        pathname.endsWith("clusters") &&
+        <Cascader allowClear style={{maxWidth: '150px'}} placeholder="Filter by template" options={filterOptions}
+          // @ts-ignore
+                  loadData={CascaderLoadData} onChange={onCascadeChange} changeOnSelect/>
+      }
+      {
         // @ts-ignore
-        pathname.endsWith("clusters") && <Select allowClear style={{minWidth: 200}} placeholder='Filter by env' onSelect={setEnvironment} onClear={() => setEnvironment('')}>
+        pathname.endsWith("clusters") &&
+        <Select allowClear style={{maxWidth: '150px', marginLeft: '5px'}} placeholder='Filter by env'
+                onSelect={setEnvironment} onClear={() => setEnvironment('')}>
           {envs?.map((item) => {
             return (
               <Option key={item.name} value={item.name}>
@@ -364,9 +428,10 @@ export default (props: any) => {
       }
       {
         // @ts-ignore
-        <Search style={pathname.endsWith("clusters") ? {width: '50%', marginLeft: '5px'}: {}} placeholder="Search" onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
+        <Search style={pathname.endsWith("clusters") ? {width: '40%', marginLeft: '5px'} : {}} placeholder="Search"
+                onPressEnter={onPressEnter} onSearch={onSearch} onChange={onChange} value={filter}/>
       }
-  </div>
+    </div>
 
   const formatTreeData = (items: API.GroupChild[]): DataNode[] => {
     return items.map(({id, name, type, childrenCount, children, ...item}) => {
