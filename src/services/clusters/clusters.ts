@@ -177,6 +177,7 @@ export async function getDashboards(clusterID: number) {
   return request<{
     data: {
       basic: string,
+      container: string,
       serverless?: string,
       memcached?: string,
     }
@@ -222,9 +223,7 @@ export async function updateClusterTemplateSchemaTags(clusterID: number, data: C
 export async function getClusterPods(clusterID: number, start: number, end: number) {
   return request<{
     data: {
-      pods: {
-        pod: string
-      }[]
+      pods: CLUSTER.MonitorContainer[]
     }
   }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
     method: 'GET',
