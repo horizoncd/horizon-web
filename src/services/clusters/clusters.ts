@@ -223,8 +223,7 @@ export async function getClusterPods(clusterID: number, start: number, end: numb
   return request<{
     data: {
       pods: {
-        pod: string,
-        container: string
+        pod: string
       }[]
     }
   }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
