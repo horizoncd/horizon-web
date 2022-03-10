@@ -317,4 +317,8 @@ declare namespace CLUSTER {
     loaded?: boolean,
   }
 
+  type MonitorContainer = {
+    pod: string,
+    container: string,
+  }
 }

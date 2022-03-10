@@ -186,8 +186,12 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setShowEvents(true);
   }
 
-  const formatMonitorURL = (p: CLUSTER.PodInTable) => {
+  const formatPodMonitorURL = (p: CLUSTER.PodInTable) => {
     return `/clusters${fullPath}/-/monitoring?podName=${p.podName}`
+  }
+
+  const formatContainerMonitorURL = (podName: string, container: string) => {
+    return `/clusters${fullPath}/-/monitoring?monitor=container&container=${podName}%2f${container}`
   }
 
   const renderPodNameAndIP = (text: string) => {
@@ -577,7 +581,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
-          <a onClick={() => history.push(formatMonitorURL(record))}>Monitor</a>
+          <a onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             <a>
               More <DownOutlined/>
@@ -750,6 +754,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                     }
                     return <div/>
                   }
+                },
+                {
+                  title: formatMessage('action', '操作'),
+                  key: 'action',
+                  render: (text: any, container: CLUSTER.ContainerDetail) => (
+                    <a onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}>Monitor</a>
+                  ),
                 },
               ]
             }
