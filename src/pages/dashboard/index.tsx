@@ -408,9 +408,9 @@ export default (props: any) => {
     </div> : <div>
       {
         pathname.endsWith("clusters") &&
-        <Cascader allowClear style={{maxWidth: '150px'}} placeholder="Filter by template" options={filterOptions}
+        <Cascader allowClear style={{maxWidth: '150px'}} placeholder="Filter by template" options={filterOptions} 
           // @ts-ignore
-                  loadData={CascaderLoadData} onChange={onCascadeChange} changeOnSelect/>
+                onClear={()=>{setTpl('');setTplRelease('')}} loadData={CascaderLoadData} onChange={onCascadeChange} changeOnSelect/>
       }
       {
         // @ts-ignore
