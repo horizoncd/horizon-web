@@ -37,13 +37,8 @@ const TaskDetailMonitor = ({location, history}) => {
 
   const [podNames, setPodNames] = useState<string[]>([]);
   const [containers, setContainers] = useState<CLUSTER.MonitorContainer[]>([]);
-  const [containerUrl, setContainerUrl] = useState<string>("");
 
-  const {data: dashboards} = useRequest(() => getDashboards(id), {
-    onSuccess: () => {
-      setContainerUrl(dashboards!.container)
-    }
-  });
+  const {data: dashboards} = useRequest(() => getDashboards(id));
 
   const formatStartAndEnd = () => {
     const now = moment()
@@ -126,8 +121,7 @@ const TaskDetailMonitor = ({location, history}) => {
       containerQuery = `&var-container=${container.split("/")[1]}`;
     }
 
-    const url = `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}${containerQuery}`;
-    return url
+    return `${baseUrl}&${queryString.stringify({from, to, refresh})}${podNamesQuery}${containerQuery}`
   }, [dashboards, query, podNames, containers]);
 
   const iframe = <iframe src={src} style={{
@@ -144,16 +138,20 @@ const TaskDetailMonitor = ({location, history}) => {
           }
         });
       }}>
-        <TabPane tab={'Pod监控'} key="basic">
-          <MonitorSearchForm formData={formData} pods={podNames} containers={containers}
-                             dashboard={'basic'}/>
-          {iframe}
-        </TabPane>
-        <TabPane tab={'容器监控'} key="container">
-          <MonitorSearchForm formData={formData} pods={podNames} containers={containers}
-                             dashboard={'container'} baseUrl={containerUrl}/>
-          {iframe}
-        </TabPane>
+        {
+          dashboards?.basic && <TabPane tab={'Pod监控'} key="basic">
+            <MonitorSearchForm formData={formData} pods={podNames} containers={containers}
+                               dashboard={'basic'}/>
+            {iframe}
+          </TabPane>
+        }
+        {
+          dashboards?.container && <TabPane tab={'容器监控'} key="container">
+            <MonitorSearchForm formData={formData} pods={podNames} containers={containers}
+                               dashboard={'container'} baseUrl={dashboards?.container}/>
+            {iframe}
+          </TabPane>
+        }
         {
           dashboards?.serverless && <TabPane tab={'Serverless'} key="serverless">
             <MonitorSearchForm formData={formData} pods={podNames} dashboard={'serverless'}/>

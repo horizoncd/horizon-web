@@ -82,7 +82,6 @@ const MonitorSearchForm = ({formData, pods, containers, dashboard, baseUrl}) => 
   const type = history.location.query?.type || 'now-1h'
   const containerWithPod = history.location.query?.container || form.getFieldValue("container")
   const container = containerWithPod ? containerWithPod.split("/")[1] : "";
-
   const timeRanges = [
     {key: "now-1h", text: "最近1小时"},
     {key: "now-3h", text: "最近3小时"},
@@ -189,11 +188,15 @@ const MonitorSearchForm = ({formData, pods, containers, dashboard, baseUrl}) => 
           </div>
         </Modal>
         {
-          (dashboard === 'memcached') && formatPodSelect()
+          dashboard === 'memcached' && formatPodSelect()
         }
         {
-          dashboard === 'basic' && <Button type='primary'
-                                           onClick={() => window.open(`https://nss.netease.com/sentry/appMonitor/view?clusterName=${name}&sign=0`)}>
+          dashboard === 'basic' &&
+          <Button type='primary'
+                  disabled={pods.length == 0}
+                  onClick={() => {
+                    window.open(`https://nss.netease.com/sentry/appMonitor/view?clusterName=${name}&podName=${form.getFieldValue("podName")[0]}&sign=0`)
+                  }}>
             哨兵监控
           </Button>
         }
