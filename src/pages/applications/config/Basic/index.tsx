@@ -42,7 +42,7 @@ const Complete: React.FC = () => {
 
   return (
     <PageWithBreadcrumb>
-      <Card title="Transfer Group">
+      <Card title="Transfer Application">
         <p>
           this this is extra info
         </p>
