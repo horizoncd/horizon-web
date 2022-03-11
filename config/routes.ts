@@ -106,6 +106,10 @@ const applicationRoutes = [
     path: '/applications/*/-/settings/defaultregions',
     component: 'applications/config/DefaultRegions',
   },
+  {
+    path: '/applications/*/-/settings/basic',
+    component: 'applications/config/Basic',
+  }
 ];
 
 const clusterRoutes = [

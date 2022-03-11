@@ -365,6 +365,10 @@ function formatApplicationMenu(fullPath: string) {
           path: `/applications${fullPath}/-/settings/defaultregions`,
           name: 'DefaultRegions',
         },
+        {
+          path: `/applications${fullPath}/-/settings/basic`,
+          name: 'Basic',
+        },
       ],
     },
   ];
