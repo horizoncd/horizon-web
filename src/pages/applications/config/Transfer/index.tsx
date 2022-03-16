@@ -1,12 +1,10 @@
 import {Button, Card, Form, Select} from 'antd';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {getAuthedGroup} from "@/services/groups/groups";
-
 import {useModel} from "@@/plugin-model/useModel";
 import {useEffect, useState} from "react";
 import {transferApplication} from "@/services/applications/applications";
 import {history} from "@@/core/history";
-
 
 export default () => {
   const intl = useIntl();
@@ -17,9 +15,9 @@ export default () => {
   const applicationID = initialState!.resource.id
   const applicationName = initialState!.resource.name
   const parentID = initialState!.resource.parentID
-
-
   const [authedGroups, setAuthedGroups] = useState<API.Group[]>([]);
+
+  // getAuthedGroup
   useEffect(() => {
       getAuthedGroup().then((result) => {
           setAuthedGroups(result["data"]);
@@ -27,7 +25,6 @@ export default () => {
       )
     }
     , []);
-
   const groupMap = new Map();
   const groupsOptions = authedGroups.filter((group) => {
     return group.id != parentID
@@ -37,7 +34,7 @@ export default () => {
       return <Option key={group.id} value={group.id}>{group.fullName}</Option>
     })
 
-  //getAuthedGroup
+  // doTransfer
   const onTransferClick = (values: {
     groupID: number
   }) => {
@@ -71,7 +68,7 @@ export default () => {
             {groupsOptions}
           </Select>
         </Form.Item>
-        <Button type="primary" danger
+        <Button type="primary"
                 htmlType="submit">{intl.formatMessage({id: 'pages.application.transfer'})}</Button>
       </Form>
       <p></p>
