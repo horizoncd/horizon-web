@@ -125,6 +125,10 @@ export default {
   'pages.members.user.role.label': 'Choose a role permission',
   'pages.members.user.role.message': 'Please select a role',
   'pages.members.user.invite': 'invite',
+  'pages.application.transfer': 'transfer',
+  'pages.application.transfer.desc': `Transfer application to another group, who do this transfer should be the
+    PE, Owner or Maintainer of the destination group.`,
+  'pages.application.transfer.message': 'Please select a group',
   'pages.members.list.title': 'Members with access to ',
   'pages.members.list.leave': 'Leave',
   'pages.members.list.label': 'Existing shares',
