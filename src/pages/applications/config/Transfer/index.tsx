@@ -62,7 +62,7 @@ export default () => {
         >
           <Select
             showSearch
-            style={{width: 200}}
+            style={{width: '61.8%'}}
             placeholder={intl.formatMessage({id: "pages.application.transfer.message"})}
             optionFilterProp="children">
             {groupsOptions}
