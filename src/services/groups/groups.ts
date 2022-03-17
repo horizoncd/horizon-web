@@ -93,6 +93,16 @@ export async function updateGroupDetail(id: number,
   });
 }
 
+export async function transferGroup(applicationID: number, groupID: number) {
+  return request(`/apis/core/v1/groups/${applicationID}/transfer`, {
+    method: 'PUT',
+    params:{
+      groupID
+    }
+  });
+}
+
+
 export async function deleteGroup(
   params: {
     id: number;

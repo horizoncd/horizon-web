@@ -315,8 +315,12 @@ function formatGroupMenu(fullPath: string) {
       icon: 'setting',
       children: [
         {
-          path: `/groups${fullPath}/-/edit`,
+          path: `/groups${fullPath}/-/settings/basic`,
           name: 'General',
+        },
+        {
+          path: `/groups${fullPath}/-/settings/advance`,
+          name: 'Advance',
         },
       ],
     },
@@ -360,7 +364,6 @@ function formatApplicationMenu(fullPath: string) {
     {
       path: `/applications${fullPath}/-/settings`,
       name: 'Settings',
-      icon: 'setting',
       icon: 'setting',
       children: [
         {
