@@ -73,6 +73,14 @@ export async function getGroupByID(id: number) {
   });
 }
 
+export async function getAuthedGroup() {
+  return request<{
+    data: API.Group[]
+  }>('/apis/front/v1/groups/authedgroups',{
+      method:'GET',
+  });
+}
+
 export async function updateGroupDetail(id: number,
   body: API.Group,
 ) {
