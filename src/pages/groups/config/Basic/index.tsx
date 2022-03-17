@@ -85,8 +85,6 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-        <h1>{'分组配置'}</h1>
-        <Divider/>
       <Card>
           <Form
             layout={'vertical'}

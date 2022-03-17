@@ -58,18 +58,18 @@ export default () => {
       >
         <Form.Item
           name="groupID"
-          rules={[{required: true, message: intl.formatMessage({id: "pages.application.transfer.message"})}]}
+          rules={[{required: true, message: intl.formatMessage({id: "pages.transfer.message"})}]}
         >
           <Select
             showSearch
             style={{width: '61.8%'}}
-            placeholder={intl.formatMessage({id: "pages.application.transfer.message"})}
+            placeholder={intl.formatMessage({id: "pages.transfer.message"})}
             optionFilterProp="children">
             {groupsOptions}
           </Select>
         </Form.Item>
         <Button type="primary"
-                htmlType="submit">{intl.formatMessage({id: 'pages.application.transfer'})}</Button>
+                htmlType="submit">{intl.formatMessage({id: "pages.transfer"})}</Button>
       </Form>
       <p></p>
     </Card>
