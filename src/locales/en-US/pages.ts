@@ -49,7 +49,8 @@ export default {
   'pages.applicationDelete.confirm.content': `Warning：the application could not be resumed after deleted`,
   'pages.applicationDelete.confirm.ok': 'OK',
   'pages.applicationDelete.confirm.cancel': 'Cancel',
-
+  'pages.confirm.ok': 'OK',
+  'pages.confirm.cancel': 'Cancel',
   'pages.clusterNew.config.application': 'deploy config',
   'pages.clusterNew.config.pipeline': 'build config',
   'pages.clusterNew.success': 'create cluster succeed',
@@ -125,10 +126,13 @@ export default {
   'pages.members.user.role.label': 'Choose a role permission',
   'pages.members.user.role.message': 'Please select a role',
   'pages.members.user.invite': 'invite',
-  'pages.application.transfer': 'transfer',
+  'pages.transfer': 'transfer',
   'pages.application.transfer.desc': `Transfer application to another group, who do this transfer should be the
     PE, Owner or Maintainer of the destination group.`,
-  'pages.application.transfer.message': 'Please select a group',
+  'pages.group.transfer.desc': `Transfer application to another group, who do this transfer should be the
+    PE, Owner or Maintainer of the destination group.`,
+  'pages.group.delete.desc': `Delete the group. there should no  application and cluster under the group`,
+  'pages.transfer.message': 'Please select a group',
   'pages.members.list.title': 'Members with access to ',
   'pages.members.list.leave': 'Leave',
   'pages.members.list.label': 'Existing shares',
