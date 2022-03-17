@@ -1,11 +1,10 @@
-import {Button, Card, Divider, Form, Input, Modal} from 'antd';
+import {Button, Card, Divider, Form, Input} from 'antd';
 import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";
-import {deleteGroup, getGroupByID, updateGroupDetail} from "@/services/groups/groups";
+import {getGroupByID, updateGroupDetail} from "@/services/groups/groups";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from "@@/core/history";
-import {ExclamationCircleOutlined} from "@ant-design/icons";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import RBAC from '@/rbac'
 
@@ -63,7 +62,7 @@ export default () => {
     updateGroupDetail(id!, values).then(() => {
       successAlert('分组修改成功');
       const newFullPath = `${detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)}${values.path}`;
-      history.replace(`/groups${newFullPath}/-/edit`)
+      history.replace(`/groups${newFullPath}/-/settings/basic`)
       refresh()
     })
   }
@@ -84,17 +83,8 @@ export default () => {
     },
   ];
 
-  const onDelete = () => {
-    deleteGroup({id: detail.id}).then(() => {
-      successAlert('分组删除成功')
-      history.push('/');
-    });
-  }
-
   return (
     <PageWithBreadcrumb>
-        <h1>{'分组配置'}</h1>
-        <Divider/>
       <Card>
           <Form
             layout={'vertical'}
@@ -119,21 +109,6 @@ export default () => {
             }
           </Form>
       </Card>
-          {RBAC.Permissions.deleteGroup.allowed && <Divider/>}
-          {
-            RBAC.Permissions.deleteGroup.allowed && <Card className={'card'}>
-              <Button style={{backgroundColor: '#dd2b0e', color: 'white'}} onClick={() => {
-                Modal.confirm({
-                  title: '删除分组前，请确认子分组和应用已全被删除',
-                  icon: <ExclamationCircleOutlined/>,
-                  okText: '删除',
-                  cancelText: '取消',
-                  onOk: onDelete,
-                });
-              }}>删除分组</Button>
-              <span style={{fontWeight: 'bold', marginLeft: '20px'}}>分组删除后，将无法恢复!</span>
-            </Card>
-          }
     </PageWithBreadcrumb>
   );
 };

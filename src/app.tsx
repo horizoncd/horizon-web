@@ -11,11 +11,11 @@ import {
   AppstoreOutlined,
   BankOutlined,
   ContactsOutlined,
+  DownOutlined,
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  TagsOutlined,
-  DownOutlined
+  TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
 import {queryResource} from '@/services/core';
@@ -108,6 +108,7 @@ export async function getInitialState(): Promise<{
       resource.type = resourceData.type;
       resource.fullName = resourceData.fullName;
       resource.fullPath = resourceData.fullPath;
+      resource.parentID = resourceData.parentID;
 
       const {data: memberData} = await querySelfMember(resource.type, resource.id)
       if (memberData.total > 0) {
@@ -192,7 +193,7 @@ export const request: RequestConfig = {
 export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
     headerContentRender: () => {
-      return <Menu mode="horizontal" theme={'dark'}  style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
+      return <Menu mode="horizontal" theme={'dark'} style={{marginLeft: '10px', color: '#989898'}} selectable={false}>
         <Menu.Item key="1">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/dashboard/clusters")}>Clusters</a>
         </Menu.Item>
@@ -314,8 +315,12 @@ function formatGroupMenu(fullPath: string) {
       icon: 'setting',
       children: [
         {
-          path: `/groups${fullPath}/-/edit`,
+          path: `/groups${fullPath}/-/settings/basic`,
           name: 'General',
+        },
+        {
+          path: `/groups${fullPath}/-/settings/advance`,
+          name: 'Advance',
         },
       ],
     },
@@ -362,8 +367,8 @@ function formatApplicationMenu(fullPath: string) {
       icon: 'setting',
       children: [
         {
-          path: `/applications${fullPath}/-/settings/defaultregions`,
-          name: 'DefaultRegions',
+          path: `/applications${fullPath}/-/settings/advance`,
+          name: 'Advance',
         },
       ],
     },

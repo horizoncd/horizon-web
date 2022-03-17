@@ -73,6 +73,14 @@ export async function getGroupByID(id: number) {
   });
 }
 
+export async function getAuthedGroup() {
+  return request<{
+    data: API.Group[]
+  }>('/apis/front/v1/groups/authedgroups',{
+      method:'GET',
+  });
+}
+
 export async function updateGroupDetail(id: number,
   body: API.Group,
 ) {
@@ -84,6 +92,16 @@ export async function updateGroupDetail(id: number,
     data: body,
   });
 }
+
+export async function transferGroup(applicationID: number, groupID: number) {
+  return request(`/apis/core/v1/groups/${applicationID}/transfer`, {
+    method: 'PUT',
+    params:{
+      groupID
+    }
+  });
+}
+
 
 export async function deleteGroup(
   params: {

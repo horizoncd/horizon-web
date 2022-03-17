@@ -76,6 +76,17 @@ export async function getApplicationRegions(applicationID: number) {
   });
 }
 
+
+export async function transferApplication(applicationID: number, groupID: number) {
+  return request(`/apis/core/v1/applications/${applicationID}/transfer`, {
+    method: 'PUT',
+    params:{
+      groupID
+    }
+  });
+}
+
+
 export async function updateApplicationRegions(applicationID: number, regions: any) {
   return request(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
     method: 'POST',

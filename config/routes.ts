@@ -56,8 +56,11 @@ const groupRoutes = [
     component: 'groups/Settings',
   },
   {
-    path: '/groups/*/-/edit',
-    component: 'groups/Edit',
+    path: '/groups/*/-/settings/basic',
+    component: 'groups/config/Basic',
+  },{
+    path: '/groups/*/-/settings/advance',
+    component: 'groups/config/Advance'
   },
   {
     path: '/groups/*/-/activity',
@@ -99,13 +102,9 @@ const applicationRoutes = [
     component: 'clusters/NewOrEdit',
   },
   {
-    path: '/applications/*/-/settings',
-    redirect: '/applications/*/-/settings/defaultregions',
-  },
-  {
-    path: '/applications/*/-/settings/defaultregions',
-    component: 'applications/config/DefaultRegions',
-  },
+    path: '/applications/*/-/settings/advance',
+    component: 'applications/config/Advance',
+  }
 ];
 
 const clusterRoutes = [

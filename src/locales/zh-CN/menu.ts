@@ -4,6 +4,7 @@ export default {
   'menu.Settings': '设置',
   'menu.Settings.General': '基础设置',
   'menu.Settings.DefaultRegions': '默认部署区域',
+  'menu.Settings.Advance': '高级配置',
   'menu.Application overview': '应用主页',
   'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
