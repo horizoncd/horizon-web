@@ -7,6 +7,7 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <Transfer/>
+      <br></br>
       <Delete/>
     </PageWithBreadcrumb>
   )
