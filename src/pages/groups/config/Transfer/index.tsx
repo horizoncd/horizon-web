@@ -4,6 +4,7 @@ import {getAuthedGroup, transferGroup} from "@/services/groups/groups";
 import {useModel} from "@@/plugin-model/useModel";
 import {useEffect, useState} from "react";
 import {history} from "@@/core/history";
+import RBAC from "@/rbac";
 
 export default () => {
   const intl = useIntl();
@@ -69,6 +70,7 @@ export default () => {
           </Select>
         </Form.Item>
         <Button type="primary"
+                disabled={!RBAC.Permissions.TransferGroup.allowed}
                 htmlType="submit">{intl.formatMessage({id: 'pages.transfer'})}</Button>
       </Form>
       <p></p>
