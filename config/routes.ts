@@ -119,6 +119,11 @@ const clusterRoutes = [
     component: 'clusters/Pods',
   },
   {
+    path: '/clusters/*/-/pods/:name',
+    menuRender: false,
+    component: 'clusters/Pod',
+  },
+  {
     path: '/clusters/*/-/pipelines',
     component: 'clusters/pipelines/History',
   },
@@ -152,7 +157,7 @@ const clusterRoutes = [
     path: '/clusters/*/-/admintags',
     menuRender: false,
     component: 'clusters/AdminTag',
-  },
+  }
 ];
 
 const allRoute = [];

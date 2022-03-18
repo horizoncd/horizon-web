@@ -9,13 +9,11 @@ import {offline, online, queryPodContainers, queryPodEvents, queryPodStdout} fro
 import CodeEditor from '@/components/CodeEditor'
 import {history} from 'umi';
 import NoData from "@/components/NoData";
-import copy from "copy-to-clipboard";
 import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/State'
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import CollapseList from '@/components/CollapseList'
 import type {Param} from '@/components/DetailCard';
-import DetailCard from '@/components/DetailCard'
 import styles from './index.less'
 import Utils from '@/utils'
 import {env2MlogEnv} from "@/const";
@@ -23,6 +21,7 @@ import Dropdown from "antd/es/dropdown";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  CopyOutlined,
   DownOutlined,
   EyeOutlined,
   LoadingOutlined,
@@ -30,6 +29,7 @@ import {
   PauseCircleOutlined,
   PlusSquareTwoTone,
 } from "@ant-design/icons";
+import copy from "copy-to-clipboard";
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -57,12 +57,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const {fullPath} = initialState!.resource;
   const [fullscreen, setFullscreen] = useState(false)
   const [pod, setPod] = useState<CLUSTER.PodInTable>()
-  const [currentContainer, setCurrentContainer] = useState<CLUSTER.ContainerDetail>()
   const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
   const {successAlert, errorAlert} = useModel('alert')
   const [showEvents, setShowEvents] = useState(false)
   const [showLifeCycle, setShowLifeCycle] = useState(false)
-  const [showContainerDetail, setShowContainerDetail] = useState(false)
   const [events, setEvents] = useState([])
   const [podLog, setPodLog] = useState("")
   const [autoRefreshPodLog, setAutoRefreshPodLog] = useState(true)
@@ -194,32 +192,71 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     return `/clusters${fullPath}/-/monitoring?monitor=container&container=${podName}%2f${container}`
   }
 
-  const renderPodNameAndIP = (text: string) => {
+  const onCopyClick = (text: string) => {
+    if (copy(text)) {
+      successAlert("复制成功")
+    } else {
+      errorAlert("复制失败")
+    }
+  }
+
+  const renderPodNameAndIP = (type: string, text: string) => {
     if (filter && text.indexOf(filter) > -1) {
       const index = text.indexOf(filter);
       const beforeStr = text.substr(0, index);
       const afterStr = text.substr(index + filter.length);
 
-      return <Tooltip title="单击可复制">
-        <span onClick={() => {
-          copy(text)
-          successAlert('复制成功')
-        }}>
+      return <div
+        className={styles.podnameClass}
+      >
+        <Button
+          type={"link"}
+          onClick={
+            () => {
+              history.push({
+                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
+              })
+            }
+          }
+        >
           {beforeStr}
           <span style={{color: '#f50'}}>{filter}</span>
           {afterStr}
-        </span>
-      </Tooltip>
+        </Button>
+        <Button
+          className={styles.copyButtonClass}
+          onClick={() => onCopyClick(text)}
+        >
+          <CopyOutlined/>
+        </Button>
+      </div>
     }
 
-    return <Tooltip title="单击可复制">
-        <span onClick={() => {
-          copy(text)
-          successAlert('复制成功')
-        }}>
-          {text}
-        </span>
-    </Tooltip>
+    return <div
+      className={styles.podnameClass}
+    >
+      {
+        type === "podName" ? <Button
+          type={"link"}
+          className={styles.podnameButtonClass}
+          onClick={
+            () => {
+              history.push({
+                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
+              })
+            }
+          }
+        >
+          <span>{text}</span>
+        </Button> : <span className={styles.ipClass}>{text}</span>
+      }
+      <Button
+        className={styles.copyButtonClass}
+        onClick={() => onCopyClick(text)}
+      >
+        <CopyOutlined/>
+      </Button>
+    </div>
   }
 
   const onChange = (e: any) => {
@@ -465,7 +502,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: formatMessage('podName', '副本'),
       dataIndex: 'podName',
       key: 'podName',
-      render: (text: any) => renderPodNameAndIP(text)
+      render: (text: any) => renderPodNameAndIP("podName", text)
     },
     {
       title: formatMessage('status', '状态'),
@@ -524,7 +561,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: 'IP',
       dataIndex: 'ip',
       key: 'ip',
-      render: (text: any) => renderPodNameAndIP(text)
+      render: (text: any) => renderPodNameAndIP("ip", text)
     },
     {
       title: formatMessage('onlineStatus', '上线状态'),
@@ -607,47 +644,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const locale = {
     emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-      '比如查看日志、查看基础资源监控、登陆Pod等'}/>
+    '比如查看日志、查看基础资源监控、登陆Pod等'}/>
   }
 
   const [containersCache, setContainersCache] = useState<Record<string, any[]>>({})
-  const containerDetail: Param[][] = [[]]
-  if (currentContainer?.status) {
-    const stateKey = Object.keys(currentContainer?.status?.state)
-    if (stateKey.length > 0) {
-      containerDetail[0].push(
-        {
-          key: "Status",
-          value: stateKey[0],
-        }
-      )
-    }
-    if (currentContainer?.status?.state?.waiting) {
-      containerDetail[0].push(
-        {
-          key: "Reason",
-          value: currentContainer?.status?.state?.waiting?.reason || '',
-        })
-    } else if (currentContainer?.status?.state?.terminated) {
-      containerDetail[0].push(
-        {
-          key: "Reason",
-          value: currentContainer?.status?.state?.terminated?.reason || '',
-        },
-        {
-          key: "Message",
-          value: currentContainer?.status?.state?.terminated?.message || '',
-        },
-      )
-    }
-
-  }
-  containerDetail[0].push(
-    {key: "Ready", value: currentContainer?.status?.ready?.toString() || '未就绪'},
-    {key: "Started", value: currentContainer?.status?.started?.toString() || '未就绪'},
-  )
-  containerDetail.push([{key: "Image", value: currentContainer?.image}])
-
 
   return <div>
     <Table
@@ -682,17 +682,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   dataIndex: 'name',
                   width: '15%',
                   key: 'name',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    return <Button
-                      type={'link'}
-                      onClick={
-                        () => {
-                          setCurrentContainer(container);
-                          setShowContainerDetail(true);
-                        }}
-                    >
-                      {text}
-                    </Button>
+                  render: (text: string) => {
+                    return <span>{text}</span>
                   }
                 },
                 {
@@ -759,7 +750,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   title: formatMessage('action', '操作'),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
-                    <a onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}>Monitor</a>
+                    <a
+                      onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}>Monitor</a>
                   ),
                 },
               ]
@@ -871,106 +863,5 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         />
       </div>
     </Modal>
-    {
-      currentContainer && <Modal
-        visible={showContainerDetail}
-        title={<span className={styles.containerDetailHeading}>容器详情</span>}
-        footer={[]}
-        onCancel={() => {
-          setShowContainerDetail(false)
-        }}
-        width={'1000px'}
-        centered
-        bodyStyle={{height: '600px', overflowY: 'auto'}}
-      >
-        <DetailCard
-          title={<span className={styles.containerDetailHeading}>基本信息</span>}
-          data={containerDetail}
-        />
-        <span className={styles.containerDetailHeading}>环境变量</span>
-        <Table
-          className={styles.containerDetailTable}
-          pagination={
-            {
-              pageSize: 20,
-              hideOnSinglePage: true,
-            }
-          }
-          columns={[
-            {
-              title: "名称",
-              dataIndex: 'name',
-              key: 'name',
-            },
-            {
-              title: "值",
-              dataIndex: 'value',
-              key: 'value',
-            },
-          ]}
-          dataSource={currentContainer?.env ? currentContainer?.env.filter(
-            (env: any) => {
-              return env.value
-            }
-          ) : []}
-          rowKey={(env) => {
-            return env.name
-          }}
-        >
-        </Table>
-        <span className={styles.containerDetailHeading}>存储挂载</span>
-        <Table
-          className={styles.containerDetailTable}
-          pagination={
-            {
-              pageSize: 20,
-              hideOnSinglePage: true,
-            }
-          }
-          columns={[
-            {
-              title: "名称",
-              dataIndex: 'name',
-              key: 'name',
-            },
-            {
-              title: "只读",
-              dataIndex: 'readOnly',
-              key: 'readOnly',
-              render: (value: any) => {
-                return <span>{value.toString()}</span>
-              }
-            },
-            {
-              title: "挂载路径",
-              dataIndex: 'mountPath',
-              key: 'mountPath',
-            },
-            {
-              title: "子路径",
-              dataIndex: 'subPath',
-              key: 'subPath',
-            },
-            {
-              title: "挂载类型",
-              dataIndex: 'volumeType',
-              key: 'volumeType',
-              render: (text: string, volumeMount: CLUSTER.VolumeMount) => {
-                const volumes = Object.keys(volumeMount.volume)
-                if (volumes.length < 2) {
-                  return <div/>
-                }
-                return <span>{volumes[1]}</span>
-              }
-            },
-          ]}
-          dataSource={currentContainer?.volumeMounts ? currentContainer?.volumeMounts : []}
-          rowKey={(volumeMount) => {
-            return volumeMount.name
-          }}
-        >
-        </Table>
-      </Modal>
-    }
   </div>
 }
