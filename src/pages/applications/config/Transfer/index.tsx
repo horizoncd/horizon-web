@@ -5,6 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {useEffect, useState} from "react";
 import {transferApplication} from "@/services/applications/applications";
 import {history} from "@@/core/history";
+import RBAC from "@/rbac";
 
 export default () => {
   const intl = useIntl();
@@ -69,6 +70,7 @@ export default () => {
           </Select>
         </Form.Item>
         <Button type="primary"
+                disabled={!RBAC.Permissions.TransferApplication.allowed}
                 htmlType="submit">{intl.formatMessage({id: "pages.transfer"})}</Button>
       </Form>
       <p></p>
