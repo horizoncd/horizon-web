@@ -21,7 +21,7 @@ export default () => {
   // getAuthedGroup
   useEffect(() => {
       getAuthedGroup().then((result) => {
-          setAuthedGroups(result["data"]);
+          setAuthedGroups(result.data);
         }
       )
     }
@@ -62,6 +62,7 @@ export default () => {
           rules={[{required: true, message: intl.formatMessage({id: "pages.transfer.message"})}]}
         >
           <Select
+            disabled={!RBAC.Permissions.TransferApplication.allowed}
             showSearch
             style={{width: '61.8%'}}
             placeholder={intl.formatMessage({id: "pages.transfer.message"})}
@@ -73,7 +74,6 @@ export default () => {
                 disabled={!RBAC.Permissions.TransferApplication.allowed}
                 htmlType="submit">{intl.formatMessage({id: "pages.transfer"})}</Button>
       </Form>
-      <p></p>
     </Card>
   )
 };
