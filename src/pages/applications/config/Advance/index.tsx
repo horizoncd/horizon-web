@@ -6,9 +6,9 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <Transfer/>
-      <p></p>
-      <p></p>
+      <div style={{marginBottom: 10}}>
+        <Transfer/>
+      </div>
       <DefaultRegions/>
     </PageWithBreadcrumb>
   )

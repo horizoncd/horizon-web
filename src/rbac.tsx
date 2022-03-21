@@ -30,7 +30,8 @@ const Resource = {
   events: 'events',
   pause: 'pause',
   resume: 'resume',
-  promote: 'promote'
+  promote: 'promote',
+  transfer: 'transfer'
 }
 
 // 操作
@@ -71,6 +72,12 @@ const Permissions = {
     action: Action.update,
     allowed: false,
   },
+  // 转移应用
+  TransferGroup: {
+    resource: `${Resource.group}/${Resource.transfer}`,
+    action: Action.update,
+    allowed: true,
+  },
   // 创建应用
   createApplication: {
     resource: `${Resource.group}/${Resource.application}`,
@@ -88,6 +95,12 @@ const Permissions = {
     resource: Resource.application,
     action: Action.update,
     allowed: false,
+  },
+  // 转移应用
+  TransferApplication: {
+    resource: `${Resource.application}/${Resource.transfer}`,
+    action: Action.update,
+    allowed: true,
   },
   // 创建集群
   createCluster: {

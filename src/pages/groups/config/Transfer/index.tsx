@@ -4,6 +4,7 @@ import {getAuthedGroup, transferGroup} from "@/services/groups/groups";
 import {useModel} from "@@/plugin-model/useModel";
 import {useEffect, useState} from "react";
 import {history} from "@@/core/history";
+import RBAC from "@/rbac";
 
 export default () => {
   const intl = useIntl();
@@ -20,7 +21,7 @@ export default () => {
   // getAuthedGroup
   useEffect(() => {
       getAuthedGroup().then((result) => {
-          setAuthedGroups(result["data"]);
+          setAuthedGroups(result.data);
         }
       )
     }
@@ -62,6 +63,7 @@ export default () => {
         >
           <Select
             showSearch
+            disabled={!RBAC.Permissions.TransferGroup.allowed}
             style={{width: '61.8%'}}
             placeholder={intl.formatMessage({id: "pages.transfer.message"})}
             optionFilterProp="children">
@@ -69,9 +71,9 @@ export default () => {
           </Select>
         </Form.Item>
         <Button type="primary"
+                disabled={!RBAC.Permissions.TransferGroup.allowed}
                 htmlType="submit">{intl.formatMessage({id: 'pages.transfer'})}</Button>
       </Form>
-      <p></p>
     </Card>
   )
 };

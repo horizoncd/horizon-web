@@ -5,6 +5,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {useEffect, useState} from "react";
 import {transferApplication} from "@/services/applications/applications";
 import {history} from "@@/core/history";
+import RBAC from "@/rbac";
 
 export default () => {
   const intl = useIntl();
@@ -20,7 +21,7 @@ export default () => {
   // getAuthedGroup
   useEffect(() => {
       getAuthedGroup().then((result) => {
-          setAuthedGroups(result["data"]);
+          setAuthedGroups(result.data);
         }
       )
     }
@@ -61,6 +62,7 @@ export default () => {
           rules={[{required: true, message: intl.formatMessage({id: "pages.transfer.message"})}]}
         >
           <Select
+            disabled={!RBAC.Permissions.TransferApplication.allowed}
             showSearch
             style={{width: '61.8%'}}
             placeholder={intl.formatMessage({id: "pages.transfer.message"})}
@@ -69,9 +71,9 @@ export default () => {
           </Select>
         </Form.Item>
         <Button type="primary"
+                disabled={!RBAC.Permissions.TransferApplication.allowed}
                 htmlType="submit">{intl.formatMessage({id: "pages.transfer"})}</Button>
       </Form>
-      <p></p>
     </Card>
   )
 };
