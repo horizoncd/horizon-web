@@ -197,7 +197,6 @@ declare namespace API {
 
   type SLODashboards = {
     overview: string;
-    api: string;
-    pipeline: string;
+    history: string;
   };
 }
