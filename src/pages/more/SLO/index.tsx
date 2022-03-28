@@ -13,7 +13,6 @@ const {TabPane} = Tabs;
 // @ts-ignore
 const TaskDetailMonitor = ({location, history}) => {
   const {query} = location;
-  const [monitor, setMonitor] = useState('api');
   const [env, setEnv] = useState('test');
 
   const {data: dashboards} = useRequest(() => queryDashboards(env), {
@@ -50,9 +49,9 @@ const TaskDetailMonitor = ({location, history}) => {
 
   return (
     <Row>
-      <Col span={3}/>
-      <Col span={18}>
-        <Tabs activeKey={"overview"} defaultActiveKey={monitor} size={'large'}>
+      <Col span={2}/>
+      <Col span={20}>
+        <Tabs activeKey={"overview"} size={'large'}>
           <TabPane tab={'概览'} key="overview">
             <Form layout="inline">
               <Form.Item label="环境" shouldUpdate>
@@ -65,27 +64,17 @@ const TaskDetailMonitor = ({location, history}) => {
             <iframe
               src={`${dashboards?.overview}`}
               style={{
-                border: 0, width: '100%', height: '480px', marginTop: 10
+                border: 0, width: '100%', height: '580px', marginTop: 10
               }}/>
           </TabPane>
         </Tabs>
-        <Tabs activeKey={monitor} defaultActiveKey={monitor} size={'large'} onChange={(tab) => {
-          setMonitor(tab)
-        }}>
-          <TabPane tab={'API'} key="api">
+        <Tabs size={'large'}>
+          <TabPane tab={'历史'} key="history">
             <MonitorSearchForm formData={formData} onSubmit={onSearch}/>
             <iframe
-              src={`${dashboards?.api}&${queryString.stringify({from, to})}`}
+              src={`${dashboards?.history}&${queryString.stringify({from, to})}`}
               style={{
-                border: 0, width: '100%', height: '820px', marginTop: 10
-              }}/>
-          </TabPane>
-          <TabPane tab={'Pipeline'} key="pipeline">
-            <MonitorSearchForm formData={formData} onSubmit={onSearch}/>
-            <iframe
-              src={`${dashboards?.pipeline}&${queryString.stringify({from, to})}`}
-              style={{
-                border: 0, width: '100%', height: '1750px', marginTop: 10
+                border: 0, width: '100%', height: '2820px', marginTop: 10
               }}/>
           </TabPane>
         </Tabs>
