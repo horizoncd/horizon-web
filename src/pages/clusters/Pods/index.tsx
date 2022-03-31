@@ -15,7 +15,6 @@ import {
   promote,
   restart,
   resume,
-  rollback
 } from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
@@ -727,28 +726,12 @@ export default () => {
                                   {
                                     title: <div className={styles.boldText}>确定要取消发布？</div>,
                                     content: <div>
-                                      <strong style={{color: 'red'}}>将一次性全量回滚已发布的实例到最近一次发布成功的版本</strong><br/>
-                                      最近一次发布成功的版本信息：<br/>
-                                      标题：{items[0].title}<br/>
-                                      发布时间：{Utils.timeToLocal(items[0].createdAt)}<br/>
-                                      更多详情：<a onClick={() => window.open(`/clusters${fullPath}/-/pipelines/${items[0].id}`)}>#{items[0].id}</a>
-                                      {
-                                        statusData.clusterStatus.manualPaused && <span>
-                                        <br/>
-                                        当前处于人工暂停状态，点击确定将同时取消掉暂停状态
-                                        </span>
-                                      }
+                                      <strong style={{color: 'red'}}>将跳转到最近一次发布成功的流水线页面，可在目标页面进行回滚操作</strong><br/>
                                     </div>,
                                     onOk: () => {
-                                      rollback(id, {pipelinerunID: items[0].id}).then(() => {
-                                        successAlert('取消发布成功，开始回滚已发布的实例到最近一次发布成功的版本')
-                                      });
-                                      if (statusData.clusterStatus.manualPaused) {
-                                        resume(id).then(() => {
-                                          refreshStatus()
-                                        })
-                                      }
+                                      history.push(`/clusters${fullPath}/-/pipelines/${items[0].id}?rollback=true`)
                                     },
+                                    okText: '跳转',
                                     width: "750px"
                                   }
                                 )
