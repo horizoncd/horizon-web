@@ -19,7 +19,9 @@ export async function queryPodStdout(clusterID: number, params: CLUSTER.PodQuery
 }
 
 export async function queryPodContainers(clusterID: number, params: CLUSTER.PodContainersQuery) {
-  return request(`/apis/core/v1/clusters/${clusterID}/containers`, {
+  return request<{
+    data: CLUSTER.ContainerDetail[]
+  }>(`/apis/core/v1/clusters/${clusterID}/containers`, {
     method: 'GET',
     params
   });
