@@ -82,7 +82,6 @@ export default () => {
     [
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.priority'}), value: cluster.priority},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''},
       {
         key: '区域',
         value: (cluster && region2DisplayName) ? region2DisplayName.get(cluster.scope.region) : ''
@@ -90,7 +89,8 @@ export default () => {
       {
         key: '环境',
         value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : ''
-      }
+      },
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''}
     ],
     [
       {

@@ -704,7 +704,7 @@ export default () => {
                             getPipelines(id, {
                               pageNumber: 1, pageSize: 1, canRollback: true
                             }).then(({data}) => {
-                              const {total, items} = data;
+                              const {total} = data;
                               // first deploy, just free cluster
                               if (total === 0) {
                                 Modal.confirm(
@@ -726,10 +726,10 @@ export default () => {
                                   {
                                     title: <div className={styles.boldText}>确定要取消发布？</div>,
                                     content: <div>
-                                      <strong style={{color: 'red'}}>将跳转到最近一次发布成功的流水线页面，可在目标页面进行回滚操作</strong><br/>
+                                      <strong style={{color: 'red'}}>将跳转到流水线页面，选择目标流水线回滚以取消当前发布</strong><br/>
                                     </div>,
                                     onOk: () => {
-                                      history.push(`/clusters${fullPath}/-/pipelines/${items[0].id}?rollback=true`)
+                                      history.push(`/clusters${fullPath}/-/pipelines?category=rollback`)
                                     },
                                     okText: '跳转',
                                     width: "750px"
