@@ -7,7 +7,7 @@ import {
   getApplicationEnvTemplate,
   updateApplicationEnvTemplate
 } from '@/services/applications/applications';
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, Select} from 'antd';
+import {Avatar, Button, Card, Divider, Dropdown, Menu, Modal, Select, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';
 import Detail from '@/components/PageWithBreadcrumb';
 import {useModel} from '@@/plugin-model/useModel';
@@ -20,6 +20,7 @@ import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {useRequest} from '@@/plugin-request/request';
 import RBAC from '@/rbac'
 import {queryEnvironments} from "@/services/environments/environments";
+import copy from "copy-to-clipboard";
 const {Option} = Select;
 
 export default () => {
@@ -156,7 +157,19 @@ export default () => {
                   shape={"square"}>
             <span className={styles.avatarFont}>{firstLetter}</span>
           </Avatar>
-          <span className={styles.titleFont}>{applicationName}</span>
+          <div className={styles.flexColumn}>
+            <div className={styles.titleFont}>{applicationName}</div>
+            <div className={styles.idFont}>
+              <Tooltip title="单击可复制ID">
+                <span onClick={() => {
+                  copy(String(id))
+                  successAlert('ID复制成功')
+                }}>
+                  Application ID: {id}
+                </span>
+              </Tooltip>
+            </div>
+          </div>
           <div className={styles.flex}/>
           <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined/></Button>
           {
@@ -208,7 +221,7 @@ export default () => {
               取消
             </Button>
           }
-          <Select style={{minWidth: '100px', marginLeft: '10px'}} value={currentEnv} onSelect={(val) => {
+          <Select style={{minWidth: '100px', marginLeft: '10px'}} value={currentEnv} onSelect={(val: string) => {
             // 查询环境对应的模版
             getApplicationEnvTemplate(id, val).then(({data}) => {
               setTemplateInput(data)

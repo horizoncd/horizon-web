@@ -19,13 +19,17 @@ import {
 } from "@/services/clusters/clusters";
 import RBAC from '@/rbac';
 import {ResourceType} from "@/const";
+import copy from "copy-to-clipboard";
+import {queryEnvironments, queryRegions} from "@/services/environments/environments";
 
 export default () => {
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
   const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
-  const defaultCluster: CLUSTER.Cluster = {
+  const {successAlert} = useModel('alert')
+  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();const defaultCluster: CLUSTER.Cluster = {
     createdBy: {name: ""},
     updatedBy: {name: ""},
     latestDeployedCommit: "",
@@ -59,11 +63,34 @@ export default () => {
   }
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster)
   const [template, setTemplate] = useState([])
+  const {data: envs} = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      envs!.forEach(item => e.set(item.name, item.displayName))
+      setEnv2DisplayName(e)
+    }
+  });
+  const {data: regions} = useRequest(() => queryRegions(cluster!.scope.environment), {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      regions!.forEach(item => e.set(item.name, item.displayName))
+      setRegion2DisplayName(e)
+    },
+    ready: !!cluster.scope.environment
+  });
   const serviceDetail: Param[][] = [
     [
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.priority'}), value: cluster.priority},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''},
+      {
+        key: '区域',
+        value: (cluster && region2DisplayName) ? region2DisplayName.get(cluster.scope.region) : ''
+      },
+      {
+        key: '环境',
+        value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : ''
+      },
+      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.description'}), value: cluster.description || ''}
     ],
     [
       {
@@ -192,7 +219,19 @@ export default () => {
                   shape={"square"}>
             <span className={styles.avatarFont}>{firstLetter}</span>
           </Avatar>
-          <span className={styles.titleFont}>{clusterName}</span>
+          <div className={styles.flexColumn}>
+            <div className={styles.titleFont}>{clusterName}</div>
+            <div className={styles.idFont}>
+              <Tooltip title="单击可复制ID">
+                <span onClick={() => {
+                  copy(String(clusterID))
+                  successAlert('ID复制成功')
+                }}>
+                  Cluster ID: {clusterID}
+                </span>
+              </Tooltip>
+            </div>
+          </div>
           <div className={styles.flex}/>
           <Button className={styles.button} onClick={refreshCluster}><ReloadOutlined/></Button>
           {

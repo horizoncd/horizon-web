@@ -9,7 +9,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import './index.less'
 import 'codemirror/addon/display/fullscreen.css'
 import 'codemirror/addon/display/fullscreen'
-import {Button, Card} from "antd";
+import {Button, Card, Modal} from "antd";
 import {CopyOutlined, FullscreenOutlined} from "@ant-design/icons";
 import styles from './index.less'
 import copy from "copy-to-clipboard";
@@ -26,6 +26,7 @@ import {rollback} from "@/services/clusters/clusters";
 import {history} from "@@/core/history";
 import FullscreenModal from "@/components/FullscreenModal";
 import moment from "moment";
+import {ExclamationCircleOutlined} from "@ant-design/icons";
 
 export default (props: any) => {
   const params = useParams<{ id: string }>();
@@ -171,10 +172,16 @@ export default (props: any) => {
       title={<span>基础信息</span>}
       data={data}
       extra={showRollback ? <Button loading={loading} onClick={() => {
-        setLoading(true)
-        rollback(id, {pipelinerunID: pipelineID}).then(() => {
-          successAlert('提交回滚成功')
-          history.push(`/clusters${fullPath}/-/pods`)
+        Modal.confirm({
+          title: '确定要进行回滚？',
+          icon: <ExclamationCircleOutlined/>,
+          onOk: () => {
+            setLoading(true)
+            rollback(id, {pipelinerunID: pipelineID}).then(() => {
+              successAlert('提交回滚成功')
+              history.push(`/clusters${fullPath}/-/pods`)
+            });
+          }
         });
       }}>
         确认回滚

@@ -9,11 +9,12 @@ import {
   freeCluster,
   getCluster,
   getClusterStatus,
+  getPipelines,
   next,
   pause,
   promote,
   restart,
-  resume
+  resume,
 } from "@/services/clusters/clusters";
 import type {ReactNode} from 'react';
 import {useState} from 'react';
@@ -77,6 +78,7 @@ interface DeployPageProps {
   onPromote: () => void,
   onPause: () => void,
   onResume: () => void,
+  onCancelDeploy: () => void,
   status: CLUSTER.ClusterStatus
 }
 
@@ -206,6 +208,7 @@ export default () => {
               lifeCycle: status.lifeCycle,
               deletionTimestamp: podObj.deletionTimestamp,
               annotations: podObj.metadata.annotations,
+              // @ts-ignore
               containers: podObj.spec.containers,
             };
             if (state.state === runningState) {
@@ -323,7 +326,7 @@ export default () => {
     </Steps>
   }
 
-  function DeployPage({step, onNext, onPause, onResume, onPromote, status}: DeployPageProps) {
+  function DeployPage({step, onNext, onPause, onResume, onPromote, onCancelDeploy, status}: DeployPageProps) {
     return <div title={"发布阶段"}>
       <DeployStep {...step}/>
       <div style={{textAlign: 'center'}}>
@@ -361,6 +364,14 @@ export default () => {
                 }
                 style={{margin: '0 8px'}} onClick={onPromote}>
           全部发布
+        </Button>
+        <Button danger
+                disabled={
+                  !RBAC.Permissions.rollbackCluster.allowed ||
+                  !RBAC.Permissions.freeCluster.allowed
+                }
+                style={{margin: '0 8px'}} onClick={onCancelDeploy}>
+          取消发布
         </Button>
       </div>
     </div>
@@ -685,6 +696,47 @@ export default () => {
                                 width: "750px"
                               }
                             )
+                          }
+                        }
+                        onCancelDeploy={
+                          () => {
+                            // query latest canRollback pipelinerun
+                            getPipelines(id, {
+                              pageNumber: 1, pageSize: 1, canRollback: true
+                            }).then(({data}) => {
+                              const {total} = data;
+                              // first deploy, just free cluster
+                              if (total === 0) {
+                                Modal.confirm(
+                                  {
+                                    title: <div className={styles.boldText}>确定要取消发布？</div>,
+                                    content: <div>
+                                      当前集群是第一次发布，<strong style={{color: 'red'}}>取消发布将直接释放集群</strong>
+                                    </div>,
+                                    onOk: () => {
+                                      freeCluster(id).then(() => {
+                                        successAlert(`取消发布成功，开始释放集群`)
+                                      })
+                                    },
+                                    width: "750px"
+                                  }
+                                )
+                              } else {
+                                Modal.confirm(
+                                  {
+                                    title: <div className={styles.boldText}>确定要取消发布？</div>,
+                                    content: <div>
+                                      <strong style={{color: 'red'}}>将跳转到流水线页面，选择目标流水线回滚以取消当前发布</strong><br/>
+                                    </div>,
+                                    onOk: () => {
+                                      history.push(`/clusters${fullPath}/-/pipelines?category=rollback`)
+                                    },
+                                    okText: '跳转',
+                                    width: "750px"
+                                  }
+                                )
+                              }
+                            });
                           }
                         }
                       />

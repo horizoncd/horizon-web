@@ -1,10 +1,9 @@
-import {Button, Modal, Space, Table, Tabs} from "antd";
+import {Button, Space, Table, Tabs, Tooltip} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useState} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import {getPipelines} from "@/services/clusters/clusters";
-import {ExclamationCircleOutlined} from "@ant-design/icons";
 import Utils from '@/utils'
 import {history} from 'umi';
 import {Failed, NotFount, Progressing, Succeeded, Cancelled} from "@/components/State";
@@ -35,13 +34,7 @@ export default (props: any) => {
   });
 
   const onRetry = (pipeline: PIPELINES.Pipeline) => {
-    Modal.confirm({
-      title: '确定要重新执行本次Pipeline？点击确定进入详情页进行二次确认',
-      icon: <ExclamationCircleOutlined/>,
-      onOk: () => {
-        history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`)
-      }
-    });
+    history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`)
   }
 
   const columns = [
@@ -103,7 +96,11 @@ export default (props: any) => {
         record.canRollback && <Space size="middle">
           <Button type={'link'} style={{padding: 0}}
                   disabled={!RBAC.Permissions.rollbackCluster.allowed}
-                  onClick={() => onRetry(record)}>回滚到此版本</Button>
+                  onClick={() => onRetry(record)}>
+            <Tooltip title={'点击进入详情页进行二次确认'}>
+              回滚到此版本
+            </Tooltip>
+          </Button>
         </Space>
       ),
     },
