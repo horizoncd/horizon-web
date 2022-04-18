@@ -29,6 +29,7 @@ export enum TaskStatus {
 }
 
 export enum ClusterStatus {
+  CREATING = 'Creating',
   PROGRESSING = 'Progressing',
   HEALTHY = 'Healthy',
   SUSPENDED = 'Suspended',
