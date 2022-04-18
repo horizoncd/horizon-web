@@ -395,7 +395,8 @@ export default () => {
       {
         key: '集群状态',
         value: getStatusComponent(clusterStatus),
-        description: `正常： 集群已正常发布
+        description: `创建中：集群正在创建中，请勿操作
+        正常： 集群已正常发布
         异常： 集群处于异常状态
         未发布： 集群尚未发布
         发布中： 集群正在发布中
