@@ -85,6 +85,14 @@ const Freeing = (props: StatusProps) => {
   </div>
 }
 
+const Creating = (props: StatusProps) => {
+  const {text} = props;
+  const txt = <span className="ci-status ci-creating"><LoadingOutlined/> {text || 'Creating'}</span>
+  return <div>
+    {txt}
+  </div>
+}
+
 const Freed = (props: StatusProps) => {
   const {text} = props;
   const txt = <span className="ci-status ci-freed"><DisconnectOutlined/> {text || 'Freed'}</span>
@@ -145,6 +153,8 @@ const Offline = (props: StatusProps) => {
 // getStatusComponent returns the status component
 const getStatusComponent = (status: any) => {
   switch (status) {
+    case ClusterStatus.CREATING:
+      return <Creating text={'创建中'}/>
     case ClusterStatus.PROGRESSING:
       return <Progressing text={'发布中'}/>
     case ClusterStatus.HEALTHY:
@@ -171,6 +181,7 @@ const getStatusComponent = (status: any) => {
 // isRestrictedStatus indicates if status is freeing or deleting
 const isRestrictedStatus = (status: string) => {
   switch (status) {
+    case ClusterStatus.CREATING:
     case ClusterStatus.FREEING:
     case ClusterStatus.DELETING:
       return true
