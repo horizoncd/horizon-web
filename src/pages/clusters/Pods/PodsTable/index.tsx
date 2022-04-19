@@ -202,8 +202,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const renderPodNameAndIP = (type: string, text: string) => {
     if (filter && text && text.indexOf(filter) > -1) {
       const index = text.indexOf(filter);
-      const beforeStr = text.substr(0, index);
-      const afterStr = text.substr(index + filter.length);
+      const beforeStr = text.substring(0, index);
+      const afterStr = text.substring(index + filter.length);
 
       return <div
         className={styles.podnameClass}
@@ -330,7 +330,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   // 预处理下数据结构
   const postStartHookError = 'PostStartHookError'
   const filteredData = data.filter((item: CLUSTER.PodInTable) => {
-    return !filter || item.podName.indexOf(filter) > -1 || item.ip.indexOf(filter) > -1
+    return !filter || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)
   }).map(item => {
     const {state} = item
     if (!state.reason) {
