@@ -13,7 +13,6 @@ import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/St
 import RBAC from '@/rbac'
 import withTrim from "@/components/WithTrim";
 import CollapseList from '@/components/CollapseList'
-import type {Param} from '@/components/DetailCard';
 import styles from './index.less'
 import Utils from '@/utils'
 import {env2MlogEnv} from "@/const";
@@ -201,7 +200,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   }
 
   const renderPodNameAndIP = (type: string, text: string) => {
-    if (filter && text.indexOf(filter) > -1) {
+    if (filter && text && text.indexOf(filter) > -1) {
       const index = text.indexOf(filter);
       const beforeStr = text.substr(0, index);
       const afterStr = text.substr(index + filter.length);
@@ -514,7 +513,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       render: (text: string, record: CLUSTER.PodInTable) => {
         const {message} = record.state
-        let status = <div></div>
+        let status: JSX.Element
         switch (text) {
           case 'PodInitializing':
             status = <PodPending text={'PodInitializing'} message={message}/>

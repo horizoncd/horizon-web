@@ -539,13 +539,13 @@ export default () => {
   const getTips = () => {
     return <div style={{color: 'grey', marginTop: '15px', textAlign: 'center'}}>
       <div style={{display: 'inline-block', textAlign: 'left'}}>
-        【<span style={{color: 'green'}}>温馨提示1</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关操作进行排查：<br/>
+        【<span style={{color: 'green'}}>温馨提示1</span>】当某个Pod长时间处于【<span style={{color: 'green'}}>非Running</span>】状态，建议点击相关【操作】进行排查：<br/>
         &nbsp;&nbsp;1.【<span style={{color: 'green'}}>Stdout</span>】 查看启动日志中是否有异常信息 <br/>
         &nbsp;&nbsp;2.【<span style={{color: 'green'}}>查看events</span>】 查看事件列表中是否有Warning类型的事件 <br/>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1 确认健康检查端口配置 <br/>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2 确认上线接口调用耗时是否过长 <br/>
         &nbsp;&nbsp;3.【<span style={{color: 'green'}}>查看Mlog</span>】 查看Mlog是否有异常日志 <br/>
-        &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈 <br/>
+        &nbsp;&nbsp;4.【<span style={{color: 'green'}}>Monitor</span>】 查看资源使用是否存在瓶颈，如存在瓶颈可考虑【升级规格】 <br/>
         【<span style={{color: 'green'}}>温馨提示2</span>】集群处于【<span style={{color: 'green'}}>人工暂停</span>】状态时，
         任何发布/回滚操作均会在【<span style={{color: 'green'}}>取消暂停</span>】之后才生效<br/>
       </div>
