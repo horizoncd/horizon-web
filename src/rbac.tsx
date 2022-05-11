@@ -109,7 +109,8 @@ const Permissions = {
     env: new Array<string>(),
     allowed: false,
     allowedEnv: (env: string) => {
-      return Permissions.createCluster.env.includes(AllowAll) || Permissions.createCluster.env.includes(env)
+      return (env == '' && Permissions.createCluster.env.length > 0) ||
+        Permissions.createCluster.env.includes(AllowAll) || Permissions.createCluster.env.includes(env)
     },
   },
   // 删除集群
@@ -306,15 +307,16 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
     for (const rule of role.rules) {
       for (const verb of rule.verbs) {
         for (const resource of rule.resources) {
-          for (const env of rule.scopes) {
+          for (const scope of rule.scopes) {
             if (!rolePolicy[verb]) {
               rolePolicy[verb] = {};
             }
             if (!rolePolicy[verb][resource]) {
               rolePolicy[verb][resource] = [];
             }
-            const envPrefix = env.replaceAll('/*', '');
-            rolePolicy[verb][resource] = rolePolicy[verb][resource].concat(envPrefix);
+            const parts = scope.split("/")
+            const env = parts[0]
+            rolePolicy[verb][resource] = rolePolicy[verb][resource].concat(env);
           }
         }
       }
