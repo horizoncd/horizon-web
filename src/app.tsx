@@ -209,6 +209,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
           <Menu.Item key="5">
             <a style={{fontWeight: 'bold'}} href={'/slo'}>SLO</a>
           </Menu.Item>
+          {
+            initialState?.currentUser?.isAdmin && <Menu.Item key="5">
+              <a style={{fontWeight: 'bold'}} href={'/admin'}>Admin</a>
+            </Menu.Item>
+          }
         </SubMenu>
       </Menu>
     },
@@ -217,10 +222,9 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     onPageChange: () => {
     },
     menuHeaderRender: () => {
-      const {name: title, fullPath} = initialState?.resource || {};
-      if (!title || !fullPath) {
-        return false;
-      }
+      const {name: t, fullPath: f} = initialState?.resource || {};
+      const title = t ? t : "admin";
+      const fullPath = f ? f : "/admin"
 
       const {accordionCollapse = false} = initialState || {};
       const firstLetter = title.substring(0, 1).toUpperCase();
@@ -267,6 +271,25 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         resource: initialState?.resource
       },
       request: async (params, defaultMenuData) => {
+        if (history.location.pathname.startsWith("/admin/")) {
+          return loopMenuItem([
+            ...routes,
+            {
+              path: `/admin/harbors`,
+              name: 'Harbors',
+              icon: 'appstore',
+            }, {
+              path: `/admin/regions`,
+              name: 'Regions',
+              icon: 'appstore',
+            }, {
+              path: `/admin/environments`,
+              name: 'Environments',
+              icon: 'appstore',
+            },
+          ])
+        }
+
         if (pathnameInStaticRoutes() || !initialState) {
           return defaultMenuData;
         }

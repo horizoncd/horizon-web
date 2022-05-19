@@ -40,3 +40,4 @@ imagebuild:
   only:
     - develop
     - tags
+    - feat-admin

@@ -1,4 +1,4 @@
-import {Button, Card, Divider, Form, Input} from 'antd';
+import {Button, Card, Form, Input} from 'antd';
 import type {Rule} from 'rc-field-form/lib/interface'
 import './index.less'
 import {useEffect, useState} from "react";

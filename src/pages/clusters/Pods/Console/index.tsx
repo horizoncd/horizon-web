@@ -1,7 +1,7 @@
 import Terminal from '@/components/Terminal';
 import {useModel} from "@@/plugin-model/useModel";
 import {Affix, Card, Select} from "antd";
-import React, {useState} from "react";
+import {useState} from "react";
 import {queryPodContainers} from "@/services/clusters/pods";
 import {useRequest} from "@@/plugin-request/request";
 

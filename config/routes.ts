@@ -5,6 +5,22 @@
     component: 'user/Login',
   },
   {
+    path: '/admin',
+    redirect: '/admin/regions',
+  },
+  {
+    path: '/admin/regions',
+    component: 'admin/Regions',
+  },
+  {
+    path: '/admin/environments',
+    component: 'admin/Environments',
+  },
+  {
+    path: '/admin/harbors',
+    component: 'admin/Harbors',
+  },
+  {
     path: '/',
     menuRender: false,
     redirect: '/dashboard/clusters',
