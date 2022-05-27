@@ -1,14 +1,14 @@
-import {Button, Divider, Table} from "antd";
+import { Button, Divider, Table } from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
-import {useRequest} from "@@/plugin-request/request";
+import { useRequest } from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
-import {queryEnvironments} from "@/services/environments/environments";
-import {queryEnvironmentRegions} from "@/services/environmentregions/environmentregions";
-import {useState} from "react";
+import { queryEnvironments } from "@/services/environments/environments";
+import { queryEnvironmentRegions } from "@/services/environmentregions/environmentregions";
+import { useState } from "react";
 import dashboardStyles from '../../dashboard/index.less';
-import {MinusSquareTwoTone, PlusSquareTwoTone} from "@ant-design/icons";
+import { MinusSquareTwoTone, PlusSquareTwoTone } from "@ant-design/icons";
 import styles from "@/pages/clusters/Pods/PodsTable/index.less";
-import {CheckOutlined} from '@ant-design/icons/lib';
+import { CheckOutlined } from '@ant-design/icons/lib';
 
 export default () => {
   const [envToRegions, setEnvToRegions] = useState<Map<string, SYSTEM.EnvironmentRegion[]>>(new Map());
@@ -43,13 +43,13 @@ export default () => {
           }}>
             添加区域
           </a>
-          <Divider type="vertical"/>
+          <Divider type="vertical" />
           <a type={"primary"} onClick={() => {
 
           }}>
             编辑
           </a>
-          <Divider type="vertical"/>
+          <Divider type="vertical" />
           <a type={"primary"} onClick={() => {
 
           }}>
@@ -60,9 +60,9 @@ export default () => {
     }
   ]
 
-  const {data: environments = []} = useRequest(() => queryEnvironments());
+  const { data: environments = [] } = useRequest(() => queryEnvironments());
 
-  const {data: environmentRegions = []} = useRequest(() => queryEnvironmentRegions(), {
+  const { data: environmentRegions = [] } = useRequest(() => queryEnvironmentRegions(), {
     onSuccess: () => {
       const m = new Map<string, SYSTEM.EnvironmentRegion[]>();
       for (let i = 0; i < environmentRegions.length; i++) {
@@ -85,7 +85,7 @@ export default () => {
       {
         <Button
           type="primary"
-          style={{marginBottom: 10}}
+          style={{ marginBottom: 10 }}
           onClick={() => {
 
           }}
@@ -113,7 +113,7 @@ export default () => {
             </span>
           }
           {
-            index < regions.length - 1 && <br/>
+            index < regions.length - 1 && <br />
           }
         </span>
       })
@@ -157,7 +157,7 @@ export default () => {
                 dataIndex: 'isDefault',
                 key: 'isDefault',
                 render: (text: boolean) => {
-                  return text ? <CheckOutlined/> : ""
+                  return text ? <CheckOutlined /> : ""
                 }
               },
               {
@@ -165,7 +165,7 @@ export default () => {
                 dataIndex: 'disabled',
                 key: 'disabled',
                 render: (text: boolean) => {
-                  return text ? <CheckOutlined/> : ""
+                  return text ? <CheckOutlined /> : ""
                 }
               },
               {
@@ -178,30 +178,16 @@ export default () => {
 
                       }}>
                         设为默认
-                      </a> : <span style={{color: "grey"}}>
+                      </a> : <span style={{ color: "grey" }}>
                         设为默认
                       </span>
                     }
-                    <Divider type="vertical"/>
-                    {
-                      record.disabled ? <a type={"primary"} onClick={() => {
+                    <Divider type="vertical" />
+                    <a onClick={() => {
 
-                        }}>
-                          启用
-                        </a> : <span style={{color: "grey"}}>
-                          启用
-                        </span>
-                    }
-                    <Divider type="vertical"/>
-                    {
-                      (!record.disabled && !record.isDefault) ? <a type={"primary"} onClick={() => {
-
-                        }}>
-                          停用
-                        </a> : <span style={{color: "grey"}}>
-                          停用
-                        </span>
-                    }
+                    }}>
+                      删除
+                    </a>
                   </div>
                 ),
               },
@@ -212,11 +198,11 @@ export default () => {
       },
       onExpand: () => {
       },
-      expandIcon: ({expanded, onExpand, record}) =>
+      expandIcon: ({ expanded, onExpand, record }) =>
         expanded ? (
-          <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
+          <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)} />
         ) : (
-          <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
+          <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)} />
         )
     }}
   />

@@ -107,7 +107,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly || editing}>
+            <Select disabled={!!envFromQuery || readonly}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -116,7 +116,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
-            <Select disabled={readonly || editing}>
+            <Select disabled={readonly}>
               {regions?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
