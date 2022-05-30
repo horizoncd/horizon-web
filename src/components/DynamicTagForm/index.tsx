@@ -1,32 +1,38 @@
 // DynamicTagForm 返回一个标签表单，标签格式为key-value，支持动态增删
 import {useModel} from "@@/plugin-model/useModel";
-import {Button, Form, Input, Space} from "antd";
+import {Button, Form, Input, Select} from "antd";
 import {useRequest} from "@@/plugin-request/request";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 
+export enum ValueType {
+  Single,
+  Multiple
+}
+
 interface Props {
   // tag查询接口
-  queryTags: (clusterID: number) => Promise<any>;
+  queryTags: () => Promise<any>;
   // tag更新接口
-  updateTags: (clusterID: number, param: any) => Promise<any>;
+  updateTags: (param: any) => Promise<any>;
+  // 标签value的类型，如果是multiple，则用select组件，否则用input
+  valueType: ValueType
 }
 
 export default (props: Props) => {
   const [form] = Form.useForm();
   const {successAlert, errorAlert} = useModel("alert")
-  const {initialState} = useModel('@@initialState');
-  const {id: clusterID} = initialState!.resource;
-  const {data, run: refreshTags} = useRequest(() => {
-    return props.queryTags(clusterID);
+  const {queryTags, updateTags, valueType} = props;
+
+  const {data, run: refresh} = useRequest(() => {
+    return queryTags();
   }, {
-    refreshDeps: [clusterID],
     onSuccess: () => {
       form.setFieldsValue(data);
     }
   })
 
-  const {run: updateTags} = useRequest((request) => {
-    return props.updateTags(clusterID, request)
+  const {run: update} = useRequest((request) => {
+    return updateTags(request)
   }, {
     manual: true,
     onSuccess: () => {
@@ -37,11 +43,18 @@ export default (props: Props) => {
     }
   })
 
-  const onFinish = (values: CLUSTER.ClusterTags) => {
-    updateTags(values).then(() => {
-      refreshTags().then();
+  const onFinish = (values: any) => {
+    update(values).then(() => {
+      refresh().then();
     });
   };
+
+  const valueKey = valueType == ValueType.Multiple ? 'values' : 'value';
+  const valueRules = valueType == ValueType.Multiple ? [] : [{
+    required: true,
+    message: '值是必填项，长度不超过1280个字符',
+    max: 1280
+  }];
 
   return (
     <Form
@@ -71,11 +84,14 @@ export default (props: Props) => {
                 <Form.Item
                   style={{flex: 1, marginInline: '10px'}}
                   {...restField}
-                  name={[name, 'value']}
-                  fieldKey={[fieldKey, 'value']}
-                  rules={[{required: true, message: '值是必填项，长度不超过1280个字符', max: 1280}]}
+                  name={[name, valueKey]}
+                  fieldKey={[fieldKey, valueKey]}
+                  rules={valueRules}
                 >
-                  <Input placeholder="value"/>
+                  {
+                    valueType == ValueType.Multiple ? <Select mode="tags" placeholder="support multiple values"/> :
+                      <Input placeholder="value"/>
+                  }
                 </Form.Item>
                 <MinusCircleOutlined onClick={() => remove(name)}/>
               </div>

@@ -226,7 +226,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             <a style={{fontWeight: 'bold'}} href={'/slo'}>SLO</a>
           </Menu.Item>
           {
-            initialState?.currentUser?.isAdmin && <Menu.Item key="5">
+            initialState?.currentUser?.isAdmin && <Menu.Item key="6">
               <a style={{fontWeight: 'bold'}} href={'/admin'}>Admin</a>
             </Menu.Item>
           }

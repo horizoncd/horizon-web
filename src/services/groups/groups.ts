@@ -93,6 +93,16 @@ export async function updateGroupDetail(id: number,
   });
 }
 
+export async function updateGroupRegionSelector(id: number, body: API.regionSelector) {
+  return request(`/apis/core/v1/groups/${id}/regionselectors`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
 export async function transferGroup(applicationID: number, groupID: number) {
   return request(`/apis/core/v1/groups/${applicationID}/transfer`, {
     method: 'PUT',

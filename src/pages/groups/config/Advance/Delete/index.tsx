@@ -32,7 +32,7 @@ export default () => {
   }
 
   return (
-    <Card title="Delete Group" className={'card'}>
+    <Card title="Delete Group">
       <p>
         {intl.formatMessage({id: "pages.group.delete.desc"})}
       </p>

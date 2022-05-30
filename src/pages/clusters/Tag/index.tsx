@@ -1,18 +1,23 @@
 import React from 'react';
 import {Divider} from "antd";
-import DynamicTagForm from '@/components/DynamicTagForm'
+import DynamicTagForm, {ValueType} from '@/components/DynamicTagForm'
 
 import {getClusterTags, updateClusterTags} from "@/services/clusters/clusters";
 import Detail from '@/components/PageWithBreadcrumb'
+import {useModel} from "@@/plugin-model/useModel";
 
 export default (): React.ReactNode => {
+  const {initialState} = useModel('@@initialState');
+  const {id: clusterID} = initialState!.resource;
+
   return (
     <Detail>
       <h1>{"标签管理"}</h1>
       <Divider/>
       <DynamicTagForm
-        queryTags={getClusterTags}
-        updateTags={updateClusterTags}
+        queryTags={() => getClusterTags(clusterID)}
+        updateTags={(data) => updateClusterTags(clusterID, data)}
+        valueType={ValueType.Single}
       />
     </Detail>
   );
