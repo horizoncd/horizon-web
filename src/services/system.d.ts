@@ -1,18 +1,25 @@
 declare namespace SYSTEM {
   type Region = {
+    id: number,
     name: string;
     displayName: string;
     server: string;
     certificate: string;
     ingressDomain: string;
+    harborID: number
     harborName: string
+  }
+
+  type Environment = {
+    name: string,
+    displayName: stirng,
   }
 
   type EnvironmentRegion = {
     id: number,
-    region: string,
+    regionName: string,
     regionDisplayName: string,
-    environment: string,
+    environmentName: string,
     disabled: boolean,
     isDefault: boolean,
   }

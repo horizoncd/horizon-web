@@ -3,12 +3,14 @@ import type {Rule} from 'rc-field-form/lib/interface';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useRequest} from "@@/plugin-request/request";
-import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import {queryEnvironments} from "@/services/environments/environments";
 import {listBranch} from "@/services/code/code";
 import {queryReleases} from "@/services/templates/templates";
 import HForm from '@/components/HForm'
 import type {FieldData} from 'rc-field-form/lib/interface'
 import {history} from "@@/core/history";
+import {queryRegions} from "@/services/applications/applications";
+import {useModel} from "@@/plugin-model/useModel";
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -18,14 +20,15 @@ export default (props: any) => {
   const {query: q} = history.location;
   // @ts-ignore
   const {environment: envFromQuery} = q
-
+  const {initialState} = useModel('@@initialState');
+  const {id} = initialState!.resource;
   const intl = useIntl();
 
   const {data: releases} = useRequest(() => queryReleases(props.template?.name), {
     ready: !!props.template.name && !readonly
   });
 
-  const {data: regions} = useRequest(() => queryRegions(props.form.getFieldValue('environment')), {
+  const {data: regions} = useRequest(() => queryRegions(id, props.form.getFieldValue('environment')), {
     ready: !!props.form.getFieldValue('environment'),
     refreshDeps: [props.form.getFieldValue('environment')]
   });

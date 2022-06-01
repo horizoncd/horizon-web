@@ -205,4 +205,13 @@ declare namespace API {
     overview: string;
     history: string;
   };
+
+  type Tag = {
+    key: string,
+    value: string,
+  }
+
+  type Tags = {
+    tags: Tag[],
+  }
 }

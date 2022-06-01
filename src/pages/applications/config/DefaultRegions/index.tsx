@@ -1,7 +1,7 @@
 import {useRequest} from "@@/plugin-request/request";
-import {getApplicationRegions, updateApplicationRegions} from "@/services/applications/applications";
+import {getApplicationRegions, updateApplicationRegions, queryRegions} from "@/services/applications/applications";
 import {useModel} from "@@/plugin-model/useModel";
-import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import {queryEnvironments} from "@/services/environments/environments";
 import {Card, Select, Table} from "antd";
 import {useState} from "react";
 import SubmitCancelButton from "@/components/SubmitCancelButton";
@@ -25,7 +25,7 @@ export default () => {
       const e = new Map<string, string>();
       envs!.forEach(item => {
         e.set(item.name, item.displayName);
-        queryRegions(item.name).then(({data}) => {
+        queryRegions(id, item.name).then(({data}) => {
           setEnv2Regions(prev => ({...prev, [item.name]: data}))
           data.forEach(region => {
             setRegion2DisplayName(prev => ({...prev, [region.name]: region.displayName}));

@@ -16,12 +16,14 @@ interface Props {
   updateTags: (param: any) => Promise<any>;
   // 标签value的类型，如果是multiple，则用select组件，否则用input
   valueType: ValueType
+  // callback func after update
+  callback?: () => void
 }
 
 export default (props: Props) => {
   const [form] = Form.useForm();
   const {successAlert, errorAlert} = useModel("alert")
-  const {queryTags, updateTags, valueType} = props;
+  const {queryTags, updateTags, valueType, callback} = props;
 
   const {data, run: refresh} = useRequest(() => {
     return queryTags();
@@ -46,6 +48,9 @@ export default (props: Props) => {
   const onFinish = (values: any) => {
     update(values).then(() => {
       refresh().then();
+      if (callback) {
+        callback()
+      }
     });
   };
 

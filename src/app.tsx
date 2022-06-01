@@ -23,6 +23,7 @@ import {stringify} from 'querystring';
 import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
+import Forbidden from "@/pages/403";
 
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
@@ -329,7 +330,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
       setInitialState((s) => ({...s, accordionCollapse: collapsed}));
     },
     // 自定义 403 页面
-    // unAccessible: <div>unAccessible</div>,
+    unAccessible: <Forbidden>unAccessible</Forbidden>,
     ...initialState?.settings,
     logo: <div/>
   };

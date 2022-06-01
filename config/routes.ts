@@ -11,14 +11,23 @@
   {
     path: '/admin/regions',
     component: 'admin/Regions',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
   },
   {
     path: '/admin/environments',
     component: 'admin/Environments',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
   },
   {
     path: '/admin/harbors',
     component: 'admin/Harbors',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
   },
   {
     path: '/',
