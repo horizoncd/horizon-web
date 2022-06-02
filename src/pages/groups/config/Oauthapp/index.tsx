@@ -23,7 +23,11 @@ export default () => {
       title: 'Name',
       dataIndex: 'appName',
       key: 'appName',
-      render: text => <a>{text}</a>,
+      render: (text, row) => {
+        return <a href={`/oauthapps/${row.clientID}`}>
+          {text}
+        </a>
+      }
     },
     {
       title: 'clientID',

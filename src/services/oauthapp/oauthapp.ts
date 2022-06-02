@@ -16,7 +16,9 @@ export async function list(id: number) {
 }
 
 export async function get(clientID: string) {
-  return request(`/apis/core/v1/oauthapps/${clientID}`, {
+  return request<{
+    data: API.APPBasicInfo[];
+  }>(`/apis/core/v1/oauthapps/${clientID}`, {
     method: "GET",
   })
 }
@@ -36,6 +38,27 @@ export async function deleteOauthApp(clientID: string) {
 }
 
 
+export async function createSecret(clientID: string) {
+  return request<{
+    data: API.OauthClientSecretInfo
+  }>(
+    `/apis/core/v1/oauthapps/${clientID}/clientsecret`,
+    {method: "POST"}
+  )
+}
+
+
+export async function listSecret(clientID: string) {
+  return request<{
+    data: API.OauthClientSecretInfo[]
+  }>(`/apis/core/v1/oauthapps/${clientID}/clientsecret`, {method: "GET"})
+}
+
+
+export async function deleteSecret(clientID: string, clientSecretID: number) {
+  return request(`/apis/core/v1/oauthapps/${clientID}/clientsecret/${clientSecretID}`,
+    {method: "DELETE"})
+}
 
 
 

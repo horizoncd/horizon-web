@@ -217,6 +217,10 @@ export const formatQueryParam = (data, options) => {
 
 export const pathnameInStaticRoutes = (): boolean => {
   const {pathname} = history.location;
+
+  if (pathname.startsWith('/oauthapps')) {
+    return true
+  }
   // handle url end with '/'
   let path = pathname;
   if (pathname.endsWith('/')) {

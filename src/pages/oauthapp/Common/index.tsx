@@ -1,6 +1,8 @@
 import {Form, Input} from "antd";
 import {Rule} from "rc-field-form/lib/interface";
 
+const {TextArea} = Input;
+
 export default () => {
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
   const appNameLabel = formatLabel('Application Name')
@@ -26,41 +28,49 @@ export default () => {
   ];
 
   return (
-  <div>
-          <Form.Item
-            label={appNameLabel}
-            name="appName"
-            rules={nameRules}
-            extra={<span style={{color: "black"}}>Something users will recognize and trust.</span>}>
-            <Input
-            />
-          </Form.Item>
-          <Form.Item
-            label={appHomeURLLabel}
-            rules={URLRules}
-            name="homeURL"
-            extra={<span style={{color: "black"}}>The full URL to your application homepage.</span>}
-          >
-            <Input
-            />
-          </Form.Item>
-          <Form.Item
-            label={appDescLabel}
-            name="desc"
-            extra={<span style={{color: "black"}}>This is displayed to all users of your application.</span>}>
-            <TextArea
-              allowClear autoSize={{minRows: 3}} maxLength={255}
-            />
-          </Form.Item>
-          <Form.Item
-            label={appRedirectURL}
-            name="redirectURL"
-            rules={URLRules}
-            extra={<span style={{color: "black"}}>Your application’s callback URL.</span>}>
-            <Input
-            />
-          </Form.Item>
-  </div>
-);
+    <div>
+      <Form.Item
+        label={appNameLabel}
+        name="appName"
+        rules={nameRules}
+        extra={<span style={{color: "black"}}>Something users will recognize and trust.</span>}>
+        <Input
+        />
+      </Form.Item>
+      <Form.Item
+        label={appHomeURLLabel}
+        rules={URLRules}
+        name="homeURL"
+        extra={<span style={{color: "black"}}>The full URL to your application homepage.</span>}
+      >
+        <Input
+        />
+      </Form.Item>
+      <Form.Item
+        label={appDescLabel}
+        name="desc"
+        extra={<span style={{color: "black"}}>This is displayed to all users of your application.</span>}>
+        <TextArea
+          allowClear autoSize={{minRows: 3}} maxLength={255}
+        />
+      </Form.Item>
+      <Form.Item
+        label={appRedirectURL}
+        name="redirectURL"
+        rules={URLRules}
+        extra={<span style={{color: "black"}}>Your application’s callback URL.</span>}>
+        <Input
+        />
+      </Form.Item>
+      <Form.Item
+        hidden={true}
+        name="clientID"
+      />
+      <Form.Item
+        hidden={true}
+        name="appID"
+      />
+    </div>
+  );
 
 }

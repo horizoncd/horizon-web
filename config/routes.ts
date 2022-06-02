@@ -166,11 +166,20 @@ const clusterRoutes = [
   }
 ];
 
+const oauthRoutes = [
+  {
+    path: '/oauthapps/:id',
+    menuRender: false,
+    component: 'oauthapp/Detail',
+  },
+];
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
+allRoute.push(...oauthRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

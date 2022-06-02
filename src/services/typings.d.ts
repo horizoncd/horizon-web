@@ -41,6 +41,14 @@ declare namespace API {
     redirectURL: string;
   }
 
+  type OauthClientSecretInfo = {
+    id: number
+    clientID: string
+    clientSecret: string
+    createdAt: string
+    createdBy: string
+  }
+
   type NewApplication = {
     name: string;
     priority: string;
