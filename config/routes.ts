@@ -184,11 +184,43 @@ const clusterRoutes = [
   }
 ];
 
+const adminRoutes = [
+  {
+    path: '/admin/regions/new',
+    component: 'admin/Regions/New'
+  }, {
+    path: '/admin/regions/:id',
+    component: 'admin/Regions/Detail'
+  }, {
+    path: '/admin/regions/:id/edit',
+    component: 'admin/Regions/Edit'
+  }, {
+    path: '/admin/harbors/new',
+    component: 'admin/Harbors/New'
+  }, {
+    path: '/admin/harbors/:id',
+    component: 'admin/Harbors/Detail'
+  }, {
+    path: '/admin/harbors/:id/edit',
+    component: 'admin/Harbors/Edit'
+  }, {
+    path: '/admin/environments/new',
+    component: 'admin/Environments/New'
+  }, {
+    path: '/admin/environments/:id',
+    component: 'admin/Environments/Detail'
+  }, {
+    path: '/admin/environments/:id/edit',
+    component: 'admin/Environments/Edit'
+  },
+]
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
+allRoute.push(...adminRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

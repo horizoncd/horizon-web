@@ -7,12 +7,17 @@ declare namespace SYSTEM {
     certificate: string;
     ingressDomain: string;
     harborID: number
-    harborName: string
+    harbor: Harbor
+    disabled: boolean
+    createdAt: string,
+    updatedAt: string,
   }
 
   type Environment = {
     name: string,
     displayName: stirng,
+    createdAt: string,
+    updatedAt: string,
   }
 
   type EnvironmentRegion = {
@@ -22,6 +27,8 @@ declare namespace SYSTEM {
     environmentName: string,
     disabled: boolean,
     isDefault: boolean,
+    createdAt: string,
+    updatedAt: string,
   }
 
   type Harbor = {
@@ -30,5 +37,7 @@ declare namespace SYSTEM {
     server: string,
     token: string,
     preheatPolicyID: number,
+    createdAt: string,
+    updatedAt: string,
   }
 }

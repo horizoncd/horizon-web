@@ -67,6 +67,7 @@ export default (props: Props) => {
       onFinish={onFinish}
       autoComplete="off"
       form={form}
+      layout={'vertical'}
     >
       <Form.List name="tags">
         {(fields, {add, remove}) => (
@@ -77,6 +78,7 @@ export default (props: Props) => {
                   {...restField}
                   name={[name, 'key']}
                   fieldKey={[fieldKey, 'key']}
+                  label={'键'}
                   rules={[{
                     required: true,
                     message: '键是必填项，长度不超过63个字符,支持大小写字母、数字开头、横杠、下划线、小数点的组合，且必须以大小写字母、数字开头和结尾',
@@ -92,6 +94,7 @@ export default (props: Props) => {
                   name={[name, valueKey]}
                   fieldKey={[fieldKey, valueKey]}
                   rules={valueRules}
+                  label={'值'}
                 >
                   {
                     valueType == ValueType.Multiple ? <Select mode="tags" placeholder="support multiple values"/> :

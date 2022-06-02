@@ -1,20 +1,23 @@
-import {Button, Divider, Form, Input, Modal, Table, Select} from "antd";
+import {Button, Divider, Form, Input, Modal, Select, Space, Table} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
-import { useRequest } from "@@/plugin-request/request";
+import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
 import {createEnvironment, queryEnvironments, updateEnvironmentByID} from "@/services/environments/environments";
 import {
   createEnvironmentRegion,
   deleteEnvironmentRegionByID,
-  queryEnvironmentRegions, setDefault
+  queryEnvironmentRegions,
+  setDefault
 } from "@/services/environmentregions/environmentregions";
-import { useState } from "react";
+import {useState} from "react";
 import dashboardStyles from '../../dashboard/index.less';
-import { MinusSquareTwoTone, PlusSquareTwoTone } from "@ant-design/icons";
+import {MinusSquareTwoTone, PlusSquareTwoTone} from "@ant-design/icons";
 import styles from "@/pages/clusters/Pods/PodsTable/index.less";
-import { CheckOutlined } from '@ant-design/icons/lib';
+import {CheckOutlined} from '@ant-design/icons/lib';
 import {useModel} from "@@/plugin-model/useModel";
 import {queryRegions} from "@/services/regions/regions";
+import {history} from "@@/core/history";
+
 const {Option} = Select;
 
 export default () => {
@@ -31,6 +34,15 @@ export default () => {
   const {successAlert} = useModel('alert')
 
   const columns = [
+    {
+      title: 'id',
+      dataIndex: 'id',
+      render: (id: number) => {
+        return <Space size="middle">
+          <a onClick={() => history.push(`/admin/environments/${id}`)}>{id}</a>
+        </Space>
+      }
+    },
     {
       title: '环境',
       dataIndex: 'name',
@@ -61,7 +73,7 @@ export default () => {
           }}>
             添加区域
           </a>
-          <Divider type="vertical" />
+          <Divider type="vertical"/>
           <a type={"primary"} onClick={() => {
             setVisible(true)
             setOperation("edit")
@@ -74,10 +86,10 @@ export default () => {
     }
   ]
 
-  const { data: environments = [], run: runEnv } = useRequest(() => queryEnvironments());
+  const {data: environments = [], run: runEnv} = useRequest(() => queryEnvironments());
   const {data: regions} = useRequest(() => queryRegions(), {});
 
-  const { data: environmentRegions = [], run: runEnvRegions } = useRequest(() => queryEnvironmentRegions(), {
+  const {data: environmentRegions = [], run: runEnvRegions} = useRequest(() => queryEnvironmentRegions(), {
     onSuccess: () => {
       const m = new Map<string, SYSTEM.EnvironmentRegion[]>();
       for (let i = 0; i < environmentRegions.length; i++) {
@@ -95,22 +107,17 @@ export default () => {
   });
 
   const queryInput = (
-    // @ts-ignore
-    <div>
-      {
-        <Button
-          type="primary"
-          style={{ marginBottom: 10 }}
-          onClick={() => {
-            setVisible(true)
-            setOperation("create")
-            form.resetFields()
-          }}
-        >
-          创建环境
-        </Button>
-      }
-    </div>
+    <Button
+      type="primary"
+      style={{marginBottom: 10, float: 'right', marginRight: 5}}
+      onClick={() => {
+        setVisible(true)
+        setOperation("create")
+        form.resetFields()
+      }}
+    >
+      创建环境
+    </Button>
   )
 
   const dataSource = environments.map(item => {
@@ -130,7 +137,7 @@ export default () => {
             </span>
           }
           {
-            index < r.length - 1 && <br />
+            index < r.length - 1 && <br/>
           }
         </span>
       })
@@ -154,6 +161,7 @@ export default () => {
     rowKey={"name"}
     dataSource={dataSource}
     locale={locale}
+    pagination={false}
     expandable={{
       expandedRowRender: (row) => {
         return <Table
@@ -171,7 +179,7 @@ export default () => {
                 title: "默认区域",
                 dataIndex: 'isDefault',
                 render: (text: boolean) => {
-                  return text ? <CheckOutlined /> : ""
+                  return text ? <CheckOutlined/> : ""
                 }
               },
               {
@@ -199,11 +207,11 @@ export default () => {
                         })
                       }}>
                         设为默认
-                      </a> : <span style={{ color: "grey" }}>
+                      </a> : <span style={{color: "grey"}}>
                         设为默认
                       </span>
                     }
-                    <Divider type="vertical" />
+                    <Divider type="vertical"/>
                     <a onClick={() => {
                       Modal.confirm({
                         title: `确认删除此关联区域？`,
@@ -228,11 +236,11 @@ export default () => {
       },
       onExpand: () => {
       },
-      expandIcon: ({ expanded, onExpand, record }) =>
+      expandIcon: ({expanded, onExpand, record}) =>
         expanded ? (
-          <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)} />
+          <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
         ) : (
-          <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)} />
+          <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
         )
     }}
   />
@@ -263,7 +271,7 @@ export default () => {
               setRegionModalVisible(false)
             })
           }}
-          >
+        >
           <Form.Item label={"区域"} name={'regionName'} rules={[{required: true}]}>
             <Select>
               {

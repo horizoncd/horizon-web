@@ -1,19 +1,24 @@
-import {Button, Divider, Modal, Table, Form, Input} from "antd";
+import {Button, Space, Table} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
 import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
-import {createHarbor, deleteHarborByID, queryHarbors, updateHarborByID} from "@/services/harbors/harbors";
-import {useState} from "react";
-import {useModel} from "@@/plugin-model/useModel";
+import {queryHarbors} from "@/services/harbors/harbors";
+import {history} from 'umi';
+import Utils from "@/utils";
 
 export default () => {
-  const [visible, setVisible] = useState(false)
-  const [form] = Form.useForm();
-  const {successAlert} = useModel('alert')
-  const {data: harbors, run} = useRequest(() => queryHarbors(), {
-  });
+  const {data: harbors} = useRequest(() => queryHarbors(), {});
 
   const columns = [
+    {
+      title: 'id',
+      dataIndex: 'id',
+      render: (id: number) => {
+        return <Space size="middle">
+          <a onClick={() => history.push(`/admin/harbors/${id}`)}>{id}</a>
+        </Space>
+      }
+    },
     {
       title: 'name',
       dataIndex: 'name',
@@ -25,64 +30,36 @@ export default () => {
       key: 'server',
     },
     {
-      title: 'token',
-      dataIndex: 'token',
-      key: 'token',
-    },
-    {
-      title: 'preheatPolicyID',
+      title: '镜像预热ID',
       dataIndex: 'preheatPolicyID',
       key: 'preheatPolicyID',
     },
     {
-      title: '操作',
-      key: "id",
-      dataIndex: 'id',
-      render: (id: number, r: SYSTEM.Harbor) => {
-        return <div>
-          <a onClick={() => {
-            form.setFieldsValue(r)
-            setVisible(true)
-          }}>
-            编辑
-          </a>
-          <Divider type="vertical"/>
-          <a onClick={() => {
-            Modal.confirm({
-                title: `确认删除Harbor: ${r.name}`,
-                onOk: () => {
-                  deleteHarborByID(id).then(() => {
-                    setVisible(false)
-                    successAlert('Harbor 删除成功')
-                    run()
-                  })
-                }
-              }
-            )}}
-          >
-            删除
-          </a>
-        </div>
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      render: (v: string) => {
+        return Utils.timeToLocal(v)
+      }
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updatedAt',
+      render: (v: string) => {
+        return Utils.timeToLocal(v)
       }
     }
   ]
 
   const queryInput = (
-    // @ts-ignore
-    <div>
-      {
-        <Button
-          type="primary"
-          style={{marginBottom: 10}}
-          onClick={() => {
-            form.resetFields()
-            setVisible(true)
-          }}
-        >
-          创建Harbor
-        </Button>
-      }
-    </div>
+    <Button
+      type="primary"
+      style={{marginBottom: 10, float: 'right', marginRight: 5}}
+      onClick={() => {
+        history.push(`/admin/harbors/new`)
+      }}
+    >
+      创建Harbor
+    </Button>
   )
 
   const locale = {
@@ -95,60 +72,13 @@ export default () => {
     columns={columns}
     dataSource={harbors}
     locale={locale}
+    pagination={false}
   />
-
-  const id = form.getFieldValue("id")
-  const modalTitle = id ? `编辑 Harbor: ${form.getFieldValue("name")}` : '创建 Harbor'
 
   return (
     <PageWithBreadcrumb>
       {queryInput}
       {table}
-      <Modal
-        title={modalTitle}
-        visible={visible}
-        onCancel={() => setVisible(false)}
-        onOk={() => {
-          form.submit()
-        }}
-      >
-        <Form
-          form={form}
-          layout={'vertical'}
-          onFinish={(v) => {
-            const data: SYSTEM.Harbor = {
-              ...v,
-              preheatPolicyID: parseInt(v.preheatPolicyID)
-            }
-            if (id) {
-              updateHarborByID(id, data).then(() => {
-                setVisible(false)
-                successAlert('Harbor 更新成功')
-                run()
-              })
-            } else {
-              createHarbor(data).then(() => {
-                setVisible(false)
-                successAlert('Harbor 创建成功')
-                run()
-              })
-            }
-          }}
-        >
-          <Form.Item label={"name"} name={'name'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item label={"server"} name={'server'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item label={"token"} name={'token'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item label={"preheatPolicyID"} name={'preheatPolicyID'} rules={[{required: true}]} >
-            <Input type={"number"}/>
-          </Form.Item>
-        </Form>
-      </Modal>
     </PageWithBreadcrumb>
   )
 }

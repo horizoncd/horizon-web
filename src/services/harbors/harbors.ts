@@ -8,6 +8,14 @@ export async function queryHarbors() {
   });
 }
 
+export async function getHarborByID(id: number) {
+  return request<{
+    data: SYSTEM.Harbor;
+  }>(`/apis/core/v1/harbors/${id}`, {
+    method: 'GET',
+  });
+}
+
 export async function updateHarborByID(id: number, harbor: SYSTEM.Harbor) {
   return request(`/apis/core/v1/harbors/${id}`, {
     method: 'PUT',

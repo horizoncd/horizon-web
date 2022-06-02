@@ -27,7 +27,7 @@ export default () => {
         e.set(item.name, item.displayName);
         queryRegions(id, item.name).then(({data}) => {
           setEnv2Regions(prev => ({...prev, [item.name]: data}))
-          data.forEach(region => {
+          data?.forEach(region => {
             setRegion2DisplayName(prev => ({...prev, [region.name]: region.displayName}));
           })
         })

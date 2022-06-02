@@ -16,6 +16,14 @@ export async function getRegionByName(name: string) {
   });
 }
 
+export async function getRegionByID(id: number) {
+  return request<{
+    data: SYSTEM.Region
+  }>(`/apis/core/v1/regions/${id}`, {
+    method: 'GET',
+  });
+}
+
 export async function updateRegionByID(id: number, region: SYSTEM.Region) {
   return request(`/apis/core/v1/regions/${id}`, {
     method: 'PUT',
