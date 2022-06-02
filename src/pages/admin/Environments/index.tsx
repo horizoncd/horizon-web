@@ -65,7 +65,7 @@ export default () => {
       title: '操作',
       key: 'operations',
       width: '200px',
-      render: (text: string, r: CLUSTER.Environment) => {
+      render: (text: string, r: SYSTEM.Environment) => {
         return <div>
           <a type={"primary"} onClick={() => {
             setRegionModalVisible(true)
@@ -161,7 +161,12 @@ export default () => {
     rowKey={"name"}
     dataSource={dataSource}
     locale={locale}
-    pagination={false}
+    pagination={{
+      position: ['bottomCenter'],
+      hideOnSinglePage: true,
+      total: dataSource?.length,
+      pageSize: 7
+    }}
     expandable={{
       expandedRowRender: (row) => {
         return <Table

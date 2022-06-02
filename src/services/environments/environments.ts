@@ -2,7 +2,7 @@ import {request} from 'umi';
 
 export async function queryEnvironments() {
   return request<{
-    data: CLUSTER.Environment[];
+    data: SYSTEM.Environment[];
   }>(`/apis/core/v1/environments`, {
     method: 'GET',
   });

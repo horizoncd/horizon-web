@@ -4,11 +4,17 @@ import NotFount from "@/pages/404";
 import {useRequest} from "@@/plugin-request/request";
 import Utils from "@/utils";
 import {history} from "@@/core/history";
-import {Button, Modal, Popover, Space} from "antd";
+import {Button, Card, Modal, Popover, Space} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import {deleteRegionByID, getRegionByID} from "@/services/regions/regions";
+import {
+  deleteRegionByID,
+  getRegionByID,
+  getRegionTags,
+  updateRegionTags
+} from "@/services/regions/regions";
 import TextArea from "antd/es/input/TextArea";
+import DynamicTagForm, {ValueType} from "@/components/DynamicTagForm";
 
 export default () => {
   const params = useParams<{ id: string }>();
@@ -99,5 +105,12 @@ export default () => {
         </Space>
       }
     />
+    <Card title="标签管理">
+      <DynamicTagForm
+        queryTags={() => getRegionTags(regionID)}
+        updateTags={(tags) => updateRegionTags(regionID, tags)}
+        valueType={ValueType.Single}
+      />
+    </Card>
   </PageWithBreadcrumb>
 }

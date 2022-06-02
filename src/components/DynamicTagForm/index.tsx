@@ -72,12 +72,11 @@ export default (props: Props) => {
       <Form.List name="tags">
         {(fields, {add, remove}) => (
           <>
-            {fields.map(({key, name, fieldKey, ...restField}) => (
+            {fields.map(({key, name}) => (
               <div key={key} style={{display: 'flex', marginBottom: 8, alignItems: "baseline"}}>
                 <Form.Item
-                  {...restField}
+                  style={{flex: 1}}
                   name={[name, 'key']}
-                  fieldKey={[fieldKey, 'key']}
                   label={'键'}
                   rules={[{
                     required: true,
@@ -90,9 +89,7 @@ export default (props: Props) => {
                 </Form.Item>
                 <Form.Item
                   style={{flex: 1, marginInline: '10px'}}
-                  {...restField}
                   name={[name, valueKey]}
-                  fieldKey={[fieldKey, valueKey]}
                   rules={valueRules}
                   label={'值'}
                 >

@@ -189,7 +189,7 @@ export async function getDashboards(clusterID: number) {
 export async function getClusterTags(clusterID: number) {
   return request<{
     data: API.Tags
-  }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
+  }>(`/apis/core/v1/tags?resourceID=${clusterID}&resourceType=clusters`, {
     method: 'GET',
   });
 }
@@ -197,7 +197,7 @@ export async function getClusterTags(clusterID: number) {
 export async function updateClusterTags(clusterID: number, data: API.Tags) {
   return request<{
     data: API.Tags
-  }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
+  }>(`/apis/core/v1/tags?resourceID=${clusterID}&resourceType=clusters`, {
     method: 'POST',
     data,
   });

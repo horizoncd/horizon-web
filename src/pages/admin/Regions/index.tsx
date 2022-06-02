@@ -92,7 +92,12 @@ export default () => {
     columns={columns}
     dataSource={regions}
     locale={locale}
-    pagination={false}
+    pagination={{
+      position: ['bottomCenter'],
+      hideOnSinglePage: true,
+      total: regions?.length,
+      pageSize: 7
+    }}
   />
 
   return (

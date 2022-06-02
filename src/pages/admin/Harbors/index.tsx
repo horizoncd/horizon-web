@@ -72,8 +72,12 @@ export default () => {
     columns={columns}
     dataSource={harbors}
     locale={locale}
-    pagination={false}
-  />
+    pagination={{
+      position: ['bottomCenter'],
+      hideOnSinglePage: true,
+      total: harbors?.length,
+      pageSize: 7
+    }}  />
 
   return (
     <PageWithBreadcrumb>

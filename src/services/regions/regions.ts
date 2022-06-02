@@ -53,7 +53,7 @@ export async function createRegion(region: SYSTEM.Region) {
 export async function getRegionTags(regionID: number) {
   return request<{
     data: API.Tags
-  }>(`/apis/core/v1/regions/${regionID}/tags`, {
+  }>(`/apis/core/v1/tags?resourceID=${regionID}&resourceType=regions`, {
     method: 'GET',
   });
 }
@@ -61,7 +61,7 @@ export async function getRegionTags(regionID: number) {
 export async function updateRegionTags(regionID: number, data: API.Tags) {
   return request<{
     data: API.Tags
-  }>(`/apis/core/v1/regions/${regionID}/tags`, {
+  }>(`/apis/core/v1/tags?resourceID=${regionID}&resourceType=regions`, {
     method: 'POST',
     data,
   });
