@@ -16,6 +16,14 @@ export async function queryRegions(environment: string) {
   });
 }
 
+export async function getEnvironmentByID(id: number) {
+  return request<{
+    data: SYSTEM.Environment;
+  }>(`/apis/core/v1/environments/${id}`, {
+    method: 'GET',
+  });
+}
+
 export async function updateEnvironmentByID(id: number, environment: SYSTEM.Environment) {
   return request(`/apis/core/v1/environments/${id}`, {
     method: 'PUT',
@@ -23,6 +31,12 @@ export async function updateEnvironmentByID(id: number, environment: SYSTEM.Envi
       'Content-Type': 'application/json',
     },
     data: environment
+  });
+}
+
+export async function deleteEnvironmentByID(id: number) {
+  return request(`/apis/core/v1/environments/${id}`, {
+    method: 'DELETE',
   });
 }
 

@@ -1,11 +1,11 @@
 import {Button, Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
-import {getHarborByID, updateHarborByID} from "@/services/harbors/harbors";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
 import { useParams } from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
+import {getEnvironmentByID, updateEnvironmentByID} from "@/services/environments/environments";
 
 export default () => {
   const [form] = Form.useForm();
@@ -15,10 +15,10 @@ export default () => {
     return <NotFount/>;
   }
 
-  const harborID = parseInt(params.id)
-  const {data: harbor} = useRequest(() => getHarborByID(harborID), {
+  const environmentID = parseInt(params.id)
+  const {data: environment} = useRequest(() => getEnvironmentByID(environmentID), {
     onSuccess: () => {
-      form.setFieldsValue(harbor)
+      form.setFieldsValue(environment)
     }
   });
 
@@ -29,27 +29,20 @@ export default () => {
           form={form}
           layout={'vertical'}
           onFinish={(v) => {
-            const data: SYSTEM.Harbor = {
+            const data: SYSTEM.Environment = {
               ...v,
-              preheatPolicyID: parseInt(v.preheatPolicyID)
             }
-            updateHarborByID(harborID, data).then(() => {
-              successAlert('Harbor 编辑成功')
-              history.push(`/admin/harbors/${harborID}`)
+            updateEnvironmentByID(environmentID, data).then(() => {
+              successAlert('环境 编辑成功')
+              history.push(`/admin/environments/${environmentID}`)
             })
           }}
         >
           <Form.Item label={"name"} name={'name'} rules={[{required: true}]}>
-            <Input/>
+            <Input disabled/>
           </Form.Item>
-          <Form.Item label={"server"} name={'server'} rules={[{required: true}]}>
+          <Form.Item label={"displayName"} name={'displayName'} rules={[{required: true}]}>
             <Input/>
-          </Form.Item>
-          <Form.Item label={"token"} name={'token'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item label={"preheatPolicyID"} name={'preheatPolicyID'} rules={[{required: true}]}>
-            <Input type={"number"}/>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">

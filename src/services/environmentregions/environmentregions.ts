@@ -1,9 +1,9 @@
 import {request} from "@@/plugin-request/request";
 
-export async function queryEnvironmentRegions() {
+export async function queryEnvironmentRegions(environment: string) {
   return request<{
     data: SYSTEM.EnvironmentRegion[];
-  }>(`/apis/core/v1/environmentregions`, {
+  }>(`/apis/core/v1/environmentregions?environmentName=${environment}`, {
     method: 'GET',
   });
 }
