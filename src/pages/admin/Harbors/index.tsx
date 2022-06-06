@@ -11,21 +11,17 @@ export default () => {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      render: (id: number) => {
+      title: '名称',
+      dataIndex: 'name',
+      key: 'name',
+      render: (name: string, r: SYSTEM.Harbor) => {
         return <Space size="middle">
-          <a onClick={() => history.push(`/admin/harbors/${id}`)}>{id}</a>
+          <a onClick={() => history.push(`/admin/harbors/${r.id}`)}>{name}</a>
         </Space>
       }
     },
     {
-      title: 'name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'server',
+      title: '域名',
       dataIndex: 'server',
       key: 'server',
     },
@@ -63,8 +59,8 @@ export default () => {
   )
 
   const locale = {
-    emptyText: <NoData title={'区域'} desc={
-      '区域指应用集群可供选择的部署目的地，需配置该区域对应的计算K8S信息'}
+    emptyText: <NoData title={'Harbor'} desc={
+      'harbor是一个镜像中心服务，负责存储和分发容器镜像'}
     />
   }
 

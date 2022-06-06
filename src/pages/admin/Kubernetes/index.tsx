@@ -14,20 +14,16 @@ export default () => {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      render: (id: number) => {
+      title: '名称',
+      dataIndex: 'displayName',
+      render: (name: string, r: SYSTEM.Region) => {
         return <Space size="middle">
-          <a onClick={() => history.push(`/admin/kubernetes/${id}`)}>{id}</a>
+          <a onClick={() => history.push(`/admin/kubernetes/${r.id}`)}>{name}</a>
         </Space>
       }
     },
     {
-      title: '名称',
-      dataIndex: 'displayName',
-    },
-    {
-      title: 'server',
+      title: '域名',
       dataIndex: 'server',
     },
     {

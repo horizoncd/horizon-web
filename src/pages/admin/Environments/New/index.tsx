@@ -1,8 +1,9 @@
-import {Button, Col, Form, Input, Row} from "antd";
+import {Col, Form, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
 import {createEnvironment} from "@/services/environments/environments";
+import EnvForm from '../Form'
 
 export default () => {
   const [form] = Form.useForm();
@@ -24,17 +25,7 @@ export default () => {
             })
           }}
         >
-          <Form.Item label={"name"} name={'name'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item label={"displayName"} name={'displayName'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
+          <EnvForm/>
         </Form>
       </Col>
     </Row>

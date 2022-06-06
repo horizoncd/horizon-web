@@ -16,28 +16,21 @@ export default () => {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      render: (id: number) => {
+      title: '名称',
+      dataIndex: 'name',
+      render: (name: number, r: SYSTEM.Environment) => {
         return <Space size="middle">
-          <a onClick={() => history.push(`/admin/environments/${id}`)}>{id}</a>
+          <a onClick={() => history.push(`/admin/environments/${r.id}`)}>{name}</a>
         </Space>
       }
     },
     {
-      title: '环境',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: '环境名',
+      title: '展示名',
       dataIndex: 'displayName',
-      key: 'displayName',
     },
     {
       title: 'Kubernetes',
       dataIndex: 'regionTexts',
-      key: 'regionTexts',
       render: (text: any) => {
         return text
       }

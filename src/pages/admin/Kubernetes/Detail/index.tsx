@@ -89,7 +89,7 @@ export default () => {
           <Button danger onClick={() => {
             Modal.confirm({
                 title: `确认删除Kubernetes: ${region?.name}`,
-                content: `此为危险操作！如果某个环境已将此kubernetes设置为默认部署Kubernetes，将导致该环境失去默认部署kubernetes，需要选择其他区域作为默认部署Kubernetes`,
+                content: `此为危险操作！如果某个环境已将此kubernetes设置为默认部署Kubernetes，将导致该环境失去默认部署kubernetes，需要选择其他Kubernetes作为默认部署Kubernetes`,
                 onOk: () => {
                   deleteRegionByID(regionID).then(() => {
                     successAlert('Kubernetes 删除成功')

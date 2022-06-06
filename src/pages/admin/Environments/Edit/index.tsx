@@ -1,16 +1,16 @@
-import {Button, Col, Form, Input, Row} from "antd";
+import {Col, Form, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
-import {history} from 'umi';
+import {history, useParams} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import { useParams } from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
 import {getEnvironmentByID, updateEnvironmentByID} from "@/services/environments/environments";
+import EnvForm from "@/pages/admin/Environments/Form";
 
 export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert')
-  const params = useParams<{id: string}>();
+  const params = useParams<{ id: string }>();
   if (!params.id || isNaN(parseInt(params.id))) {
     return <NotFount/>;
   }
@@ -38,17 +38,7 @@ export default () => {
             })
           }}
         >
-          <Form.Item label={"name"} name={'name'} rules={[{required: true}]}>
-            <Input disabled/>
-          </Form.Item>
-          <Form.Item label={"displayName"} name={'displayName'} rules={[{required: true}]}>
-            <Input/>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
+          <EnvForm/>
         </Form>
       </Col>
     </Row>

@@ -98,11 +98,7 @@ export default () => {
         columns={
           [
             {
-              title: "区域",
-              dataIndex: 'regionName',
-            },
-            {
-              title: "区域名",
+              title: "Kubernetes",
               dataIndex: 'regionDisplayName',
             },
             {
@@ -144,7 +140,7 @@ export default () => {
                   <Divider type="vertical"/>
                   <a onClick={() => {
                     Modal.confirm({
-                      title: `确认删除此关联区域？`,
+                      title: `确认删除此关联Kubernetes？`,
                       onOk: () => {
                         deleteEnvironmentRegionByID(id).then(() => {
                           successAlert("删除成功")

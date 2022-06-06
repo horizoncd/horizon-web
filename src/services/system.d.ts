@@ -14,6 +14,7 @@ declare namespace SYSTEM {
   }
 
   type Environment = {
+    id: number,
     name: string,
     displayName: stirng,
     createdAt: string,
