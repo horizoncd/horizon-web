@@ -21,7 +21,7 @@ export default () => {
             }
             createHarbor(data).then(({data: id}) => {
               successAlert('Harbor 创建成功')
-              history.push(`/admin/harbors${id}`)
+              history.push(`/admin/harbors/${id}`)
             })
           }}
         >

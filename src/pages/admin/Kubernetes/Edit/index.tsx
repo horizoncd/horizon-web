@@ -3,15 +3,27 @@ import {useModel} from "@@/plugin-model/useModel";
 import {queryHarbors} from "@/services/harbors/harbors";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
+import { useParams } from 'umi';
 import {useRequest} from "@@/plugin-request/request";
-import {createRegion} from "@/services/regions/regions";
+import NotFount from "@/pages/404";
+import {getRegionByID, updateRegionByID} from "@/services/kubernetes/kubernetes";
 import TextArea from "antd/es/input/TextArea";
 const {Option} = Select;
 
 export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert')
+  const params = useParams<{id: string}>();
+  if (!params.id || isNaN(parseInt(params.id))) {
+    return <NotFount/>;
+  }
 
+  const regionID = parseInt(params.id)
+  const {data: region} = useRequest(() => getRegionByID(regionID), {
+    onSuccess: () => {
+      form.setFieldsValue(region)
+    }
+  });
   const {data: harbors} = useRequest(() => queryHarbors(), {});
 
   return <PageWithBreadcrumb>
@@ -21,14 +33,14 @@ export default () => {
           form={form}
           layout={'vertical'}
           onFinish={(v) => {
-            createRegion(v).then(({data: id}) => {
-              successAlert('Region 创建成功')
-              history.push(`/admin/regions/${id}`)
+            updateRegionByID(regionID, v).then(() => {
+              successAlert('Kubernetes 更新成功')
+              history.push(`/admin/kubernetes/${regionID}`)
             })
           }}
         >
           <Form.Item label={"name"} name={'name'} rules={[{required: true}]}>
-            <Input/>
+            <Input disabled/>
           </Form.Item>
           <Form.Item label={"displayName"} name={'displayName'} rules={[{required: true}]}>
             <Input/>

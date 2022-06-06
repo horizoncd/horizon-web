@@ -9,7 +9,7 @@ export default () => {
   const {id} = initialState!.resource
 
   return (
-    <Card title="关联区域">
+    <Card title="关联Kubernetes">
       <DynamicTagForm
         queryTags={() => getGroupByID(id).then(({data}) => {
           return {

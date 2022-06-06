@@ -16,7 +16,7 @@ import {
 } from "@/services/environmentregions/environmentregions";
 import {CheckOutlined} from "@ant-design/icons";
 import {useState} from "react";
-import {queryRegions} from "@/services/regions/regions";
+import {queryRegions} from "@/services/kubernetes/kubernetes";
 const {Option} = Select;
 
 export default () => {
@@ -106,7 +106,7 @@ export default () => {
               dataIndex: 'regionDisplayName',
             },
             {
-              title: "默认区域",
+              title: "默认",
               dataIndex: 'isDefault',
               render: (text: boolean) => {
                 return text ? <CheckOutlined/> : ""
@@ -127,10 +127,10 @@ export default () => {
                   {
                     (!record.isDefault && !record.disabled) ? <a type={"primary"} onClick={() => {
                       Modal.confirm({
-                        title: `确认将此区域设置为默认区域？`,
+                        title: `确认将此Kubernetes设置为默认Kubernetes？`,
                         onOk: () => {
                           setDefault(id).then(() => {
-                            successAlert("设置默认区域成功")
+                            successAlert("设置默认Kubernetes成功")
                             runEnvRegions()
                           })
                         }

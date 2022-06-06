@@ -12,7 +12,7 @@ import {
   getRegionByID,
   getRegionTags,
   updateRegionTags
-} from "@/services/regions/regions";
+} from "@/services/kubernetes/kubernetes";
 import TextArea from "antd/es/input/TextArea";
 import DynamicTagForm, {ValueType} from "@/components/DynamicTagForm";
 
@@ -82,18 +82,18 @@ export default () => {
       extra={
         <Space>
           <Button type='primary' onClick={() => {
-            history.push(`/admin/regions/${regionID}/edit`)
+            history.push(`/admin/kubernetes/${regionID}/edit`)
           }}>
             编辑
           </Button>
           <Button danger onClick={() => {
             Modal.confirm({
-                title: `确认删除Region: ${region?.name}`,
-                content: `此为危险操作！如果某个环境已将此区域设置为默认部署区域，将导致该环境失去默认部署区域，需要选择其他区域作为默认部署区域`,
+                title: `确认删除Kubernetes: ${region?.name}`,
+                content: `此为危险操作！如果某个环境已将此kubernetes设置为默认部署Kubernetes，将导致该环境失去默认部署kubernetes，需要选择其他区域作为默认部署Kubernetes`,
                 onOk: () => {
                   deleteRegionByID(regionID).then(() => {
-                    successAlert('Region 删除成功')
-                    history.push(`/admin/regions`)
+                    successAlert('Kubernetes 删除成功')
+                    history.push(`/admin/kubernetes`)
                   })
                 }
               }

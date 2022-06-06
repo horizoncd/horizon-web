@@ -296,8 +296,8 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
               name: 'Harbors',
               icon: 'appstore',
             }, {
-              path: `/admin/regions`,
-              name: 'Regions',
+              path: `/admin/kubernetes`,
+              name: 'Kubernetes',
               icon: 'appstore',
             }, {
               path: `/admin/environments`,

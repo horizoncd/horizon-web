@@ -4,7 +4,7 @@ import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
 import {
   queryRegions,
-} from "@/services/regions/regions";
+} from "@/services/kubernetes/kubernetes";
 import CollapseList from "@/components/CollapseList";
 import {history} from "@@/core/history";
 import Utils from "@/utils";
@@ -18,12 +18,12 @@ export default () => {
       dataIndex: 'id',
       render: (id: number) => {
         return <Space size="middle">
-          <a onClick={() => history.push(`/admin/regions/${id}`)}>{id}</a>
+          <a onClick={() => history.push(`/admin/kubernetes/${id}`)}>{id}</a>
         </Space>
       }
     },
     {
-      title: '区域名',
+      title: '名称',
       dataIndex: 'displayName',
     },
     {
@@ -74,7 +74,7 @@ export default () => {
       type="primary"
       style={{marginBottom: 10, float: 'right', marginRight: 5}}
       onClick={() => {
-        history.push(`/admin/regions/new`)
+        history.push(`/admin/kubernetes/new`)
       }}
     >
       创建区域

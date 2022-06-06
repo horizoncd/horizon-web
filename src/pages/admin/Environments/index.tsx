@@ -35,7 +35,7 @@ export default () => {
       key: 'displayName',
     },
     {
-      title: '部署区域',
+      title: 'Kubernetes',
       dataIndex: 'regionTexts',
       key: 'regionTexts',
       render: (text: any) => {
@@ -96,7 +96,7 @@ export default () => {
           {region.regionDisplayName}
           {
             region.isDefault && <span className={dashboardStyles.userAccessRole}>
-              默认区域
+              默认
             </span>
           }
           {

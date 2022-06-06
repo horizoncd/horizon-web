@@ -6,11 +6,11 @@
   },
   {
     path: '/admin',
-    redirect: '/admin/regions',
+    redirect: '/admin/kubernetes',
   },
   {
-    path: '/admin/regions',
-    component: 'admin/Regions',
+    path: '/admin/kubernetes',
+    component: 'admin/Kubernetes',
     wrappers: [
       '@/wrappers/auth',
     ],
@@ -186,14 +186,14 @@ const clusterRoutes = [
 
 const adminRoutes = [
   {
-    path: '/admin/regions/new',
-    component: 'admin/Regions/New'
+    path: '/admin/kubernetes/new',
+    component: 'admin/Kubernetes/New'
   }, {
-    path: '/admin/regions/:id',
-    component: 'admin/Regions/Detail'
+    path: '/admin/kubernetes/:id',
+    component: 'admin/Kubernetes/Detail'
   }, {
-    path: '/admin/regions/:id/edit',
-    component: 'admin/Regions/Edit'
+    path: '/admin/kubernetes/:id/edit',
+    component: 'admin/Kubernetes/Edit'
   }, {
     path: '/admin/harbors/new',
     component: 'admin/Harbors/New'
