@@ -4,7 +4,7 @@ import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
 import {
   queryRegions,
-} from "@/services/kubernetes/kubernetes";
+} from "@/services/regions/regions";
 import CollapseList from "@/components/CollapseList";
 import {history} from "@@/core/history";
 import Utils from "@/utils";

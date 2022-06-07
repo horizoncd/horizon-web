@@ -113,7 +113,7 @@ declare namespace API {
     updatedAt: string;
   };
 
-  type kubernetesSelectors = [{
+  type regionSelectors = [{
     key: string,
     values: string[]
   }]
@@ -124,7 +124,7 @@ declare namespace API {
     fullName: string;
     fullPath: string;
     path: string;
-    kubernetesSelectors: kubernetesSelectors
+    regionSelectors: regionSelectors
     description?: string;
     visibilityLevel?: number;
   };

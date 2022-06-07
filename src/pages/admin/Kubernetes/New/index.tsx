@@ -2,7 +2,7 @@ import {Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import {createRegion} from "@/services/kubernetes/kubernetes";
+import {createRegion} from "@/services/regions/regions";
 import KubernetesForm from '../Form'
 
 export default () => {

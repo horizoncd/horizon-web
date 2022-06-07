@@ -2,6 +2,7 @@ import {Card} from 'antd';
 import DynamicTagForm, {ValueType} from "@/components/DynamicTagForm";
 import {useModel} from "@@/plugin-model/useModel";
 import {getGroupByID, updateGroupRegionSelector} from "@/services/groups/groups";
+import RBAC from "@/rbac";
 
 export default () => {
 
@@ -14,12 +15,13 @@ export default () => {
         queryTags={() => getGroupByID(id).then(({data}) => {
           return {
             data: {
-              tags: data.kubernetesSelectors
+              tags: data.regionSelectors
             }
           }
         })}
         updateTags={(data) => updateGroupRegionSelector(id, data.tags)}
         valueType={ValueType.Multiple}
+        disabled={!RBAC.Permissions.setRegionSelector.allowed}
       />
     </Card>
   )

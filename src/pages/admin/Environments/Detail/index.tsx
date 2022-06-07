@@ -16,7 +16,7 @@ import {
 } from "@/services/environmentregions/environmentregions";
 import {CheckOutlined} from "@ant-design/icons";
 import {useState} from "react";
-import {queryRegions} from "@/services/kubernetes/kubernetes";
+import {queryRegions} from "@/services/regions/regions";
 const {Option} = Select;
 
 export default () => {

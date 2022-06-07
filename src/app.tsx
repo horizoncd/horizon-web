@@ -127,10 +127,6 @@ export async function getInitialState(): Promise<{
     }
   }
 
-  if (!currentUser?.isAdmin) {
-    settings.menuRender = false;
-  }
-
   return {
     currentUser,
     roles,
@@ -240,6 +236,10 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     rightContentRender: () => <RightContent/>,
     footerRender: () => <Footer/>,
     onPageChange: () => {
+      if (!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith("/admin/")) {
+        // @ts-ignore
+        setInitialState((s) => ({...s, settings: {...s.settings, menuRender: false}}));
+      }
     },
     menuHeaderRender: () => {
       const {name: t, fullPath: f} = initialState?.resource || {};

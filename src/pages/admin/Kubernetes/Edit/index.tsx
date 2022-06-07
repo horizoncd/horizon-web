@@ -5,7 +5,7 @@ import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
 import { useParams } from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
-import {getRegionByID, updateRegionByID} from "@/services/kubernetes/kubernetes";
+import {getRegionByID, updateRegionByID} from "@/services/regions/regions";
 import KubernetesForm from "@/pages/admin/Kubernetes/Form";
 
 export default () => {

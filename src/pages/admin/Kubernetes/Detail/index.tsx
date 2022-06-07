@@ -12,7 +12,7 @@ import {
   getRegionByID,
   getRegionTags,
   updateRegionTags
-} from "@/services/kubernetes/kubernetes";
+} from "@/services/regions/regions";
 import TextArea from "antd/es/input/TextArea";
 import DynamicTagForm, {ValueType} from "@/components/DynamicTagForm";
 

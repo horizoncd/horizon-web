@@ -18,12 +18,13 @@ interface Props {
   valueType: ValueType
   // callback func after update
   callback?: () => void
+  disabled?: boolean
 }
 
 export default (props: Props) => {
   const [form] = Form.useForm();
   const {successAlert, errorAlert} = useModel("alert")
-  const {queryTags, updateTags, valueType, callback} = props;
+  const {queryTags, updateTags, valueType, callback, disabled = false} = props;
 
   const {data, run: refresh} = useRequest(() => {
     return queryTags();
@@ -107,7 +108,7 @@ export default (props: Props) => {
                       },
                     })]}
                   >
-                    <Input placeholder="key"/>
+                    <Input disabled={disabled} placeholder="key"/>
                   </Form.Item>
                   <Form.Item
                     style={{flex: 1, marginInline: '10px'}}
@@ -115,15 +116,15 @@ export default (props: Props) => {
                     rules={valueRules}
                   >
                     {
-                      valueType == ValueType.Multiple ? <Select mode="tags" placeholder="support multiple values"/> :
-                        <Input placeholder="value"/>
+                      valueType == ValueType.Multiple ? <Select disabled={disabled} mode="tags" placeholder="support multiple values"/> :
+                        <Input disabled={disabled} placeholder="value"/>
                     }
                   </Form.Item>
                   <MinusCircleOutlined onClick={() => remove(name)}/>
                 </div>
               ))}
               <Form.Item>
-                <Button type="dashed" onClick={() => {
+                <Button disabled={disabled} type="dashed" onClick={() => {
                   if (fields.length >= 20) {
                     errorAlert("标签最多允许创建20个")
                   } else {
@@ -137,7 +138,7 @@ export default (props: Props) => {
           )}
         </Form.List>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button disabled={disabled} type="primary" htmlType="submit">
             保存
           </Button>
         </Form.Item>
