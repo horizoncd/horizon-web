@@ -23,7 +23,6 @@ import {stringify} from 'querystring';
 import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
-import Forbidden from "@/pages/403";
 
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
@@ -126,6 +125,10 @@ export async function getInitialState(): Promise<{
     } catch (e) {
       settings.menuRender = false;
     }
+  }
+
+  if (!currentUser?.isAdmin) {
+    settings.menuRender = false;
   }
 
   return {
@@ -304,7 +307,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
               name: 'Environments',
               icon: 'appstore',
             },
-          ])
+          ]);
         }
 
         if (pathnameInStaticRoutes() || !initialState) {
@@ -329,8 +332,6 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
       // @ts-ignore
       setInitialState((s) => ({...s, accordionCollapse: collapsed}));
     },
-    // 自定义 403 页面
-    unAccessible: <Forbidden>unAccessible</Forbidden>,
     ...initialState?.settings,
     logo: <div/>
   };

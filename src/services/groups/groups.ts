@@ -93,8 +93,8 @@ export async function updateGroupDetail(id: number,
   });
 }
 
-export async function updateGroupRegionSelector(id: number, body: API.regionSelectors) {
-  return request(`/apis/core/v1/groups/${id}/regionselectors`, {
+export async function updateGroupRegionSelector(id: number, body: API.kubernetesSelectors) {
+  return request(`/apis/core/v1/groups/${id}/kubernetesselectors`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

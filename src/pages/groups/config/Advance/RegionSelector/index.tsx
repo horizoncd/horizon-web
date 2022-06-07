@@ -14,7 +14,7 @@ export default () => {
         queryTags={() => getGroupByID(id).then(({data}) => {
           return {
             data: {
-              tags: data.regionSelectors
+              tags: data.kubernetesSelectors
             }
           }
         })}
