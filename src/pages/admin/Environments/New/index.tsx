@@ -1,4 +1,4 @@
-import {Col, Form, Row} from "antd";
+import {Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
@@ -25,6 +25,9 @@ export default () => {
             })
           }}
         >
+          <Form.Item label={"名称"} name={'name'} rules={[{required: true}]} extra={'环境唯一名称标识'}>
+            <Input/>
+          </Form.Item>
           <EnvForm/>
         </Form>
       </Col>

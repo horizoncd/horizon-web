@@ -61,6 +61,7 @@ export default (props: Props) => {
     max: 1280
   }];
 
+  const keyRuleMessage = '键是必填项，长度不超过63个字符,支持大小写字母、数字开头、横杠、斜杠、下划线、小数点的组合，且必须以大小写字母、数字开头和结尾'
   return (
     <Form
       name="dynamic_form_nest_item"
@@ -80,10 +81,23 @@ export default (props: Props) => {
                   label={'键'}
                   rules={[{
                     required: true,
-                    message: '键是必填项，长度不超过63个字符,支持大小写字母、数字开头、横杠、下划线、小数点的组合，且必须以大小写字母、数字开头和结尾',
+                    message: keyRuleMessage,
                     max: 63,
-                    pattern: new RegExp('^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$')
-                  }]}
+                  }, () => ({
+                    validator(_, value) {
+                      const arr = value.split("/")
+                      if (arr.length > 2) {
+                        return Promise.reject(new Error(keyRuleMessage));
+                      }
+                      const reg = new RegExp('^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$')
+                      for (let i = 0; i < arr.length; i++) {
+                        if (!arr[i] || !reg.test(arr[i])) {
+                          return Promise.reject(new Error(keyRuleMessage));
+                        }
+                      }
+                      return Promise.resolve();
+                    },
+                  })]}
                 >
                   <Input placeholder="key"/>
                 </Form.Item>
