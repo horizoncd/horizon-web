@@ -18,14 +18,14 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
       </Tag>
     )
     // 折叠状态下，只显示前两个
-    if (!showAll && items.length >= 2) {
+    if (!showAll && items.length >= props.defaultCount) {
       break
     }
   }
   return <div>
     {items}
     {
-      !showAll && items.length >= props.defaultCount && <a
+      !showAll && ks.length > props.defaultCount && <a
         style={{padding: '0'}}
         onClick={() => {
           setShowAll(true)
@@ -35,7 +35,7 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
       </a>
     }
     {
-      showAll && items.length >= props.defaultCount && <a
+      showAll && ks.length > props.defaultCount && <a
         style={{padding: '0'}}
         onClick={() => {
           setShowAll(false)

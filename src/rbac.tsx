@@ -31,7 +31,8 @@ const Resource = {
   pause: 'pause',
   resume: 'resume',
   promote: 'promote',
-  transfer: 'transfer'
+  transfer: 'transfer',
+  regionselectors: 'regionselectors'
 }
 
 // 操作
@@ -77,6 +78,12 @@ const Permissions = {
     resource: `${Resource.group}/${Resource.transfer}`,
     action: Action.update,
     allowed: true,
+  },
+  // 更新regionSelector
+  setRegionSelector: {
+    resource: `${Resource.group}/${Resource.regionselectors}`,
+    action: Action.update,
+    allowed: false,
   },
   // 创建应用
   createApplication: {
