@@ -113,12 +113,18 @@ declare namespace API {
     updatedAt: string;
   };
 
+  type regionSelectors = [{
+    key: string,
+    values: string[]
+  }]
+
   type Group = {
     id: number;
     name: string;
     fullName: string;
     fullPath: string;
     path: string;
+    regionSelectors: regionSelectors
     description?: string;
     visibilityLevel?: number;
   };
@@ -199,4 +205,13 @@ declare namespace API {
     overview: string;
     history: string;
   };
+
+  type Tag = {
+    key: string,
+    value: string,
+  }
+
+  type Tags = {
+    tags: Tag[],
+  }
 }

@@ -116,7 +116,7 @@ const TaskDetailMonitor = ({location, history}) => {
     }
 
     let containerQuery = '';
-    if (monitor === 'container') {
+    if (monitor === 'container' && container) {
       podNamesQuery = `&var-pod=${container.split("/")[0]}`;
       containerQuery = `&var-container=${container.split("/")[1]}`;
     }

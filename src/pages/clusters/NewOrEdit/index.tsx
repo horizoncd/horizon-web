@@ -281,6 +281,8 @@ export default (props: any) => {
         subfolder: form.getFieldValue(subfolder) || '',
         branch: form.getFieldValue(branch),
       },
+      environment: form.getFieldValue(environment),
+      region: form.getFieldValue(region),
       templateInput: config,
     }
     if (creating) {

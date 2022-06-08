@@ -48,7 +48,7 @@ export default (props: any) => {
       }
       <div className={styles.pageContainer}>
         <PageContainer
-          header={isStaticRoute ? {} : {
+          header={{
             breadcrumb: {
               routes: utils.getBreadcrumbs(fullName),
               itemRender
@@ -56,9 +56,7 @@ export default (props: any) => {
           }}
           title={false}
         >
-          {
-            !isStaticRoute && <Divider className={styles.divider}/>
-          }
+          <Divider className={styles.divider}/>
           {props.children}
         </PageContainer>
       </div>
