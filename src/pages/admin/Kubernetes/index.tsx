@@ -28,7 +28,7 @@ export default () => {
     },
     {
       title: '标签',
-      width: '150px',
+      width: '250px',
       dataIndex: 'tags',
       render: (tags: [API.Tag]) => {
         if (tags) {
@@ -43,7 +43,7 @@ export default () => {
     },
     {
       title: '启用状态',
-      width: '80px',
+      width: '100px',
       dataIndex: 'disabled',
       render: (disabled: boolean) => {
         return disabled ? <span style={{color: 'red'}}>已禁用</span> : "启用中"

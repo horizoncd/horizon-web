@@ -15,6 +15,9 @@ import {
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
+  DatabaseOutlined,
+  EnvironmentOutlined,
+  ClusterOutlined,
   TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
@@ -36,7 +39,10 @@ const IconMap = {
   bank: <BankOutlined/>,
   appstore: <AppstoreOutlined/>,
   fundout: <FundOutlined/>,
-  tags: <TagsOutlined/>
+  tags: <TagsOutlined/>,
+  cluster: <ClusterOutlined/>,
+  environment: <EnvironmentOutlined/>,
+  database: <DatabaseOutlined/>
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -137,22 +143,6 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
-  requestInterceptors: [
-    (url, options) => {
-      return {
-        url: url,
-        options: {
-          ...options, interceptors: true, headers: {
-            ...options.headers,
-            "X-HORIZON-OIDC-EMAIL": "wurongjun@corp.netease.com",
-            "X-HORIZON-OIDC-FULLNAME": "wrj",
-            "X-HORIZON-OIDC-TYPE": "netease",
-            "X-HORIZON-OIDC-USER": "wrj"
-          }
-        },
-      };
-    },
-  ],
   responseInterceptors: [
     (response) => {
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
@@ -243,8 +233,8 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     },
     menuHeaderRender: () => {
       const {name: t, fullPath: f} = initialState?.resource || {};
-      const title = t ? t : "admin";
-      const fullPath = f ? f : "/admin"
+      const title = t || "admin";
+      const fullPath = f || "/admin"
 
       const {accordionCollapse = false} = initialState || {};
       const firstLetter = title.substring(0, 1).toUpperCase();
@@ -297,15 +287,15 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             {
               path: `/admin/harbors`,
               name: 'Harbors',
-              icon: 'appstore',
+              icon: 'database',
             }, {
               path: `/admin/kubernetes`,
               name: 'Kubernetes',
-              icon: 'appstore',
+              icon: 'cluster',
             }, {
               path: `/admin/environments`,
               name: 'Environments',
-              icon: 'appstore',
+              icon: 'environment',
             },
           ]);
         }
