@@ -21,6 +21,19 @@ const getResourcePath = () => {
 const getBreadcrumbs = (fullName: string) => {
   const result = [];
   const {pathname} = history.location;
+  if (pathname.startsWith("/admin/")) {
+    const filteredPath = pathname.split('/').filter((item) => item !== '')
+    let currentLink = '';
+    for (let i = 0; i < filteredPath.length; i += 1) {
+      const item = filteredPath[i];
+      currentLink += `/${item}`;
+      result.push({
+        path: currentLink,
+        breadcrumbName: item,
+      });
+    }
+    return result
+  }
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');
   const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
@@ -223,6 +236,9 @@ export const pathnameInStaticRoutes = (): boolean => {
   }
   // handle url end with '/'
   let path = pathname;
+  if (pathname.startsWith("/admin/")) {
+    return true
+  }
   if (pathname.endsWith('/')) {
     path = pathname.substring(0, pathname.length - 1);
   }

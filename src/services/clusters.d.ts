@@ -100,15 +100,6 @@ declare namespace CLUSTER {
     templateInput: any
   }
 
-  type ClusterTag = {
-    key: string,
-    value: string,
-  }
-
-  type ClusterTags = {
-    tags: ClusterTag[],
-  }
-
   type UpdateCluster = {
     description?: string;
     git: {

@@ -5,6 +5,31 @@
     component: 'user/Login',
   },
   {
+    path: '/admin',
+    redirect: '/admin/kubernetes',
+  },
+  {
+    path: '/admin/kubernetes',
+    component: 'admin/Kubernetes',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
+  },
+  {
+    path: '/admin/environments',
+    component: 'admin/Environments',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
+  },
+  {
+    path: '/admin/harbors',
+    component: 'admin/Harbors',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
+  },
+  {
     path: '/',
     menuRender: false,
     redirect: '/dashboard/clusters',
@@ -170,20 +195,43 @@ const clusterRoutes = [
   }
 ];
 
-const oauthRoutes = [
+const adminRoutes = [
   {
-    path: '/groups/*/-/settings/oauthapp/:id',
-    menuRender: false,
-    component: 'oauthapp/Detail',
+    path: '/admin/kubernetes/new',
+    component: 'admin/Kubernetes/New'
+  }, {
+    path: '/admin/kubernetes/:id',
+    component: 'admin/Kubernetes/Detail'
+  }, {
+    path: '/admin/kubernetes/:id/edit',
+    component: 'admin/Kubernetes/Edit'
+  }, {
+    path: '/admin/harbors/new',
+    component: 'admin/Harbors/New'
+  }, {
+    path: '/admin/harbors/:id',
+    component: 'admin/Harbors/Detail'
+  }, {
+    path: '/admin/harbors/:id/edit',
+    component: 'admin/Harbors/Edit'
+  }, {
+    path: '/admin/environments/new',
+    component: 'admin/Environments/New'
+  }, {
+    path: '/admin/environments/:id',
+    component: 'admin/Environments/Detail'
+  }, {
+    path: '/admin/environments/:id/edit',
+    component: 'admin/Environments/Edit'
   },
-];
+]
 
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
-// allRoute.push(...oauthRoutes);
+allRoute.push(...adminRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

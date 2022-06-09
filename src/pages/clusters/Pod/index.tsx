@@ -9,7 +9,6 @@ import DetailCard, {Param} from "@/components/DetailCard";
 import styles from "@/pages/clusters/Pods/PodsTable/index.less";
 import Utils from '@/utils'
 import {Card, Collapse, Table} from "antd";
-import {PodError, PodPending, PodRunning} from "@/components/State";
 
 const {Panel} = Collapse;
 export default (): React.ReactNode => {

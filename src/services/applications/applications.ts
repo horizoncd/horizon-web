@@ -105,3 +105,11 @@ export async function updateApplicationEnvTemplate(applicationID: number, enviro
     data
   });
 }
+
+export async function queryRegions(applicationID: number, env: string) {
+  return request<{
+    data: CLUSTER.Region[];
+  }>(`/apis/core/v1/applications/${applicationID}/selectableregions?env=${env}`, {
+    method: 'GET',
+  });
+}

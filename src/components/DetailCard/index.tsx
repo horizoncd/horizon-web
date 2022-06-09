@@ -6,6 +6,7 @@ import {QuestionCircleOutlined} from "@ant-design/icons";
 
 enum ValueType {
   String = 'string',
+  Number = 'number',
   Array = 'array',
   Object = 'object',
 }
@@ -58,7 +59,7 @@ export default (props: Props) => {
               // 获取参数类型，string/array/object
               const valueType = getType(param.value);
               // 根据参数类型返回不同的格式
-              if (valueType === ValueType.String) {
+              if (valueType === ValueType.String || valueType === ValueType.Number) {
                 itemContents.push(<div key={col2++} className={styles.textValue}>{param.value}</div>)
               } else if (valueType === ValueType.Array) {
                 itemContents.push((param.value as string[]).map((v) => {

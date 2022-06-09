@@ -188,15 +188,15 @@ export async function getDashboards(clusterID: number) {
 
 export async function getClusterTags(clusterID: number) {
   return request<{
-    data: CLUSTER.ClusterTags
+    data: API.Tags
   }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
     method: 'GET',
   });
 }
 
-export async function updateClusterTags(clusterID: number, data: CLUSTER.ClusterTags) {
+export async function updateClusterTags(clusterID: number, data: API.Tags) {
   return request<{
-    data: CLUSTER.ClusterTags
+    data: API.Tags
   }>(`/apis/core/v1/clusters/${clusterID}/tags`, {
     method: 'POST',
     data,
@@ -205,15 +205,15 @@ export async function updateClusterTags(clusterID: number, data: CLUSTER.Cluster
 
 export async function getClusterTemplateSchemaTags(clusterID: number) {
   return request<{
-    data: CLUSTER.ClusterTags
+    data: API.Tags
   }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
     method: 'GET',
   });
 }
 
-export async function updateClusterTemplateSchemaTags(clusterID: number, data: CLUSTER.ClusterTags) {
+export async function updateClusterTemplateSchemaTags(clusterID: number, data: API.Tags) {
   return request<{
-    data: CLUSTER.ClusterTags
+    data: API.Tags
   }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
     method: 'POST',
     data,

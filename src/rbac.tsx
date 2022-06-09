@@ -34,6 +34,7 @@ const Resource = {
   transfer: 'transfer',
   oauthApplication: 'oauthapps',
   oauthClientSecret: 'clientsecret',
+  regionselectors: 'regionselectors'
 }
 
 // 操作
@@ -79,6 +80,12 @@ const Permissions = {
     resource: `${Resource.group}/${Resource.transfer}`,
     action: Action.update,
     allowed: true,
+  },
+  // 更新regionSelector
+  setRegionSelector: {
+    resource: `${Resource.group}/${Resource.regionselectors}`,
+    action: Action.update,
+    allowed: false,
   },
   // 创建应用
   createApplication: {
