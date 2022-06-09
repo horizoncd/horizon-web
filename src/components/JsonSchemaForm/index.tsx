@@ -34,6 +34,8 @@ export default (props: FormProps) => {
         onChange={props.onChange}
         liveValidate={props.liveValidate}
         showErrorList={props.showErrorList}
+        omitExtraData={true}
+        liveOmit={true}
       >
         <div/>
       </Form>
