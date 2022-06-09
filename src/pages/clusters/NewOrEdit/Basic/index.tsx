@@ -21,14 +21,16 @@ export default (props: any) => {
   // @ts-ignore
   const {environment: envFromQuery} = q
   const {initialState} = useModel('@@initialState');
-  const {id} = initialState!.resource;
+  const {id, parentID} = initialState!.resource;
   const intl = useIntl();
 
   const {data: releases} = useRequest(() => queryReleases(props.template?.name), {
     ready: !!props.template.name && !readonly
   });
 
-  const {data: regions} = useRequest(() => queryRegions(id, props.form.getFieldValue('environment')), {
+  // query application's selectable regions when creating cluster
+  const applicationID = editing ? parentID : id
+  const {data: regions} = useRequest(() => queryRegions(applicationID, props.form.getFieldValue('environment')), {
     ready: !!props.form.getFieldValue('environment'),
     refreshDeps: [props.form.getFieldValue('environment')]
   });
@@ -110,7 +112,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly}>
+            <Select disabled={!!envFromQuery || readonly || editing}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -119,7 +121,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
-            <Select disabled={readonly}>
+            <Select disabled={readonly || editing}>
               {regions?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
