@@ -355,7 +355,7 @@ function formatGroupMenu(fullPath: string) {
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps`,
-          name: 'OauthApp'
+          name: '开发者设置'
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,
