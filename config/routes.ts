@@ -83,12 +83,13 @@ const groupRoutes = [
   {
     path: '/groups/*/-/settings/basic',
     component: 'groups/config/Basic',
-  },{
+  },
+  {
     path: '/groups/*/-/settings/advance',
     component: 'groups/config/Advance'
-  },{
+  }, {
     path: '/groups/*/-/settings/oauthapps',
-    component: 'groups/config/oauthapp'
+    component: 'groups/config/Oauthapp'
   }, {
     path: '/groups/*/-/settings/oauthapps/:id',
     component: 'oauthapp/Detail',
@@ -108,7 +109,7 @@ const groupRoutes = [
     component: 'applications/NewOrEdit',
   },
   {
-    path:`/groups/*/-/newoauthapp`,
+    path: `/groups/*/-/newoauthapp`,
     menuRender: false,
     component: 'oauthapp/New'
   }
