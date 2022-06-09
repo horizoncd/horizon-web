@@ -7,10 +7,11 @@ import {useParams} from 'umi';
 import {useEffect} from "react";
 import {useModel} from "@@/plugin-model/useModel";
 import ClientPage from "@/pages/oauthapp/ClientIDSecret"
+import RBAC from "@/rbac";
 
 
 export default () => {
-  const {initialState, refresh} = useModel('@@initialState');
+  const {refresh} = useModel('@@initialState');
   const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
   const params = useParams<{ id: string }>();
@@ -38,16 +39,12 @@ export default () => {
       refresh()
     })
   }
-
-  const tailLayout = {
-    wrapperCol: {offset: 8, span: 16},
-  };
   return (
     // TODO( have not show breadcrub)
     <PageWithBreadcrumb>
       <Row>
-        <Col span={8}/>
-        <Col span={8}>
+        <Col span={6}/>
+        <Col span={12}>
           <div>
             <ClientPage/>
             <Form
@@ -58,10 +55,15 @@ export default () => {
             >
               <h2> Application Basic</h2>
               <FormCommon/>
-              <Form.Item {...tailLayout}>
-                <Button type="primary" htmlType="submit">
-                  Update Application
-                </Button>
+              <Form.Item>
+                <div style={{textAlign: "center"}}>
+                  <Button
+                    type="primary"
+                    disabled={!RBAC.Permissions.updateOauthApplication.allowed}
+                  >
+                    Update Application
+                  </Button>
+                </div>
               </Form.Item>
             </Form>
           </div>

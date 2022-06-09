@@ -62,9 +62,13 @@ const groupRoutes = [
     path: '/groups/*/-/settings/advance',
     component: 'groups/config/Advance'
   },{
-    path: '/groups/*/-/settings/oauthapp',
+    path: '/groups/*/-/settings/oauthapps',
     component: 'groups/config/oauthapp'
   }, {
+    path: '/groups/*/-/settings/oauthapps/:id',
+    component: 'oauthapp/Detail',
+  },
+  {
     path: '/groups/*/-/activity',
     component: 'groups/Activity',
   },
@@ -168,7 +172,7 @@ const clusterRoutes = [
 
 const oauthRoutes = [
   {
-    path: '/oauthapps/:id',
+    path: '/groups/*/-/settings/oauthapp/:id',
     menuRender: false,
     component: 'oauthapp/Detail',
   },
@@ -179,7 +183,7 @@ allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
-allRoute.push(...oauthRoutes);
+// allRoute.push(...oauthRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

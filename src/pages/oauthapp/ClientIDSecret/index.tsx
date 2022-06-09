@@ -7,6 +7,7 @@ import {useModel} from "@@/plugin-model/useModel";
 import {useRequest} from "@@/plugin-request/request";
 import {useState} from "react";
 import copy from "copy-to-clipboard";
+import RBAC from "@/rbac";
 
 export default () => {
   const params = useParams<{ id: string }>();
@@ -40,7 +41,8 @@ export default () => {
         }
 
         return <Button
-          style={{backgroundColor: '#dd2b0e', color: 'white'}}
+          disabled={!RBAC.Permissions.deleteOauthClientSecret.allowed}
+          style={RBAC.Permissions.deleteOauthClientSecret.allowed ? {backgroundColor: '#dd2b0e', color: 'white'} : {}}
           onClick={() => {
             Modal.confirm({
               title: 'Revoke',
@@ -73,7 +75,6 @@ export default () => {
   const onCopyClick = (text: string) => {
     copy(text)
     successAlert("复制成功")
-
   }
 
   return (
@@ -108,9 +109,12 @@ export default () => {
           </h2>
 
         </div>
-        <Button
-          onClick={onGenerate}
-          type="primary">Generate a new client secret</Button>
+        <div style={{textAlign: "center"}}>
+          <Button
+            disabled={!RBAC.Permissions.createOauthClientSecret.allowed}
+            onClick={onGenerate}
+            type="primary">Generate a new client secret</Button>
+        </div>
       </div>
 
     </div>

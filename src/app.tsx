@@ -323,9 +323,13 @@ function formatGroupMenu(fullPath: string) {
           name: 'Advance',
         },
         {
-          path: `/groups${fullPath}/-/settings/oauthapp`,
+          path: `/groups${fullPath}/-/settings/oauthapps`,
           name: 'OauthApp'
-        }
+        },
+        {
+          path: `/groups${fullPath}/-/settings/oauthapps/:id`,
+          parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
+        },
       ],
     },
     {
@@ -339,7 +343,7 @@ function formatGroupMenu(fullPath: string) {
     {
       path: `/groups${fullPath}/-/newoauthapp`,
       menuRender: false,
-    }
+    },
   ];
 }
 
