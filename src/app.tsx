@@ -353,6 +353,14 @@ function formatGroupMenu(fullPath: string) {
           path: `/groups${fullPath}/-/settings/advance`,
           name: 'Advance',
         },
+        {
+          path: `/groups${fullPath}/-/settings/oauthapps`,
+          name: '开发者设置'
+        },
+        {
+          path: `/groups${fullPath}/-/settings/oauthapps/:id`,
+          parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
+        },
       ],
     },
     {
@@ -361,6 +369,10 @@ function formatGroupMenu(fullPath: string) {
     },
     {
       path: `/groups${fullPath}/-/newapplication`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newoauthapp`,
       menuRender: false,
     },
   ];
