@@ -13,7 +13,7 @@ export default () => {
     <Form.Item label={"展示名"} name={'displayName'} rules={[{required: true}]} extra={'系统内部展示名称，一般可填为中文名'}>
       <Input/>
     </Form.Item>
-    <Form.Item label={"访问地址"} name={'server'} rules={common.formRules.domain} extra={'api-server访问地址，一般建议填为域名'}>
+    <Form.Item label={"访问地址"} name={'server'} rules={common.formRules.url} extra={'api-server访问地址，一般建议填为域名'}>
       <Input/>
     </Form.Item>
     <Form.Item label={"certificate"} name={'certificate'} rules={[{required: true}]} extra={'访问Kubernetes所需的配置文件，即kubeconfig'}>
