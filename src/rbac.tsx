@@ -269,7 +269,7 @@ const Permissions = {
     action: Action.delete,
     allowed: false,
   },
-  // 删除Oauth应用
+  // 更新Oauth应用
   updateOauthApplication: {
     resource: `${Resource.group}/${Resource.oauthApplication}`,
     action: Action.update,
