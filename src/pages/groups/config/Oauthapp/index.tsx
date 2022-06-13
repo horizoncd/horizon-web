@@ -83,7 +83,7 @@ export default () => {
         <Button
           type="primary"
           className={styles.flex}
-          disabled={!RBAC.Permissions.createApplication.allowed}
+          disabled={!RBAC.Permissions.createOauthApplication.allowed}
           onClick={() => {
             history.push({
               pathname: newOauthApp,

@@ -89,7 +89,7 @@ const Permissions = {
   },
   // 创建应用
   createApplication: {
-    resource: `${Resource.group}/${Resource.oauthApplication}`,
+    resource: `${Resource.group}/${Resource.application}`,
     action: Action.create,
     allowed: false,
   },
@@ -269,7 +269,7 @@ const Permissions = {
     action: Action.delete,
     allowed: false,
   },
-  // 删除Oauth应用
+  // 更新Oauth应用
   updateOauthApplication: {
     resource: `${Resource.group}/${Resource.oauthApplication}`,
     action: Action.update,
