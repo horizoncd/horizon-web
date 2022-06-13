@@ -32,6 +32,8 @@ const Resource = {
   resume: 'resume',
   promote: 'promote',
   transfer: 'transfer',
+  oauthApplication: 'oauthapps',
+  oauthClientSecret: 'clientsecret',
   regionselectors: 'regionselectors'
 }
 
@@ -253,6 +255,36 @@ const Permissions = {
   promoteCluster: {
     resource: `${Resource.cluster}/${Resource.promote}`,
     action: Action.create,
+    allowed: false,
+  },
+  // 创建Oauth应用
+  createOauthApplication: {
+    resource: `${Resource.group}/${Resource.oauthApplication}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 删除Oauth应用
+  deleteOauthApplication: {
+    resource: `${Resource.group}/${Resource.oauthApplication}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  // 更新Oauth应用
+  updateOauthApplication: {
+    resource: `${Resource.group}/${Resource.oauthApplication}`,
+    action: Action.update,
+    allowed: false,
+  },
+  // 创建Oauth应用ClientSecret
+  createOauthClientSecret: {
+    resource: `${Resource.oauthApplication}/${Resource.oauthClientSecret}`,
+    action: Action.create,
+    allowed: false,
+  },
+  // 删除Oauth应用ClientSecret
+  deleteOauthClientSecret: {
+    resource: `${Resource.oauthApplication}/${Resource.oauthClientSecret}`,
+    action: Action.delete,
     allowed: false,
   },
 }

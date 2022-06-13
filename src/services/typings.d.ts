@@ -25,6 +25,30 @@ declare namespace API {
     parentID?: number;
   };
 
+  type NewOauthApp = {
+    name: string;
+    desc: string;
+    homeURL: string;
+    redirectURL: string;
+  }
+
+  type APPBasicInfo = {
+    appID: number;
+    clientID: string;
+    appName: string;
+    desc: string;
+    homeURL: string;
+    redirectURL: string;
+  }
+
+  type OauthClientSecretInfo = {
+    id: number
+    clientID: string
+    clientSecret: string
+    createdAt: string
+    createdBy: string
+  }
+
   type NewApplication = {
     name: string;
     priority: string;
