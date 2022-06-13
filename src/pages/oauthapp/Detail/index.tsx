@@ -34,13 +34,11 @@ export default () => {
       redirectURL: values.redirectURL
     }
     update(values.clientID, appInfo).then(() => {
-      // TODO( have not shown alert)
       successAlert("Oauth App" + appInfo.appName + " have successful updated")
       refresh()
     })
   }
   return (
-    // TODO( have not show breadcrub)
     <PageWithBreadcrumb>
       <Row>
         <Col span={6}/>

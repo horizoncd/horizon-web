@@ -89,7 +89,7 @@ const Permissions = {
   },
   // 创建应用
   createApplication: {
-    resource: `${Resource.group}/${Resource.oauthApplication}`,
+    resource: `${Resource.group}/${Resource.application}`,
     action: Action.create,
     allowed: false,
   },
