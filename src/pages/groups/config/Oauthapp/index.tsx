@@ -48,7 +48,6 @@ export default () => {
     {
       render: (text, row) => {
         function onDelete() {
-          console.log(row)
           deleteOauthApp(row.clientID).then(() => {
             runList()
           });

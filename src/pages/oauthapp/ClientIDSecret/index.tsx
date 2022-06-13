@@ -34,7 +34,6 @@ export default () => {
     {
       render: (text, row) => {
         function onDelete() {
-          console.log(row)
           deleteSecret(params.id, row.id).then(() => {
             runListSerect()
           });
