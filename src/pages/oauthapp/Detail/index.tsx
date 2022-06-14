@@ -58,6 +58,7 @@ export default () => {
                   <Button
                     type="primary"
                     disabled={!RBAC.Permissions.updateOauthApplication.allowed}
+                    htmlType={"submit"}
                   >
                     Update Application
                   </Button>
