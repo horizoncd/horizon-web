@@ -20,13 +20,14 @@ import {
 import RBAC from '@/rbac';
 import {ResourceType} from "@/const";
 import copy from "copy-to-clipboard";
-import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import {queryEnvironments} from "@/services/environments/environments";
+import {queryRegions} from "@/services/applications/applications";
 
 export default () => {
   const intl = useIntl();
   const history = useHistory();
   const {initialState} = useModel("@@initialState")
-  const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type} = initialState!.resource
+  const {id: clusterID, name: clusterName, fullPath: clusterFullPath, type, parentID} = initialState!.resource
   const {successAlert} = useModel('alert')
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();const defaultCluster: CLUSTER.Cluster = {
@@ -70,7 +71,8 @@ export default () => {
       setEnv2DisplayName(e)
     }
   });
-  const {data: regions} = useRequest(() => queryRegions(cluster!.scope.environment), {
+  const applicationID = parentID
+  const {data: regions} = useRequest(() => queryRegions(applicationID, cluster!.scope.environment), {
     onSuccess: () => {
       const e = new Map<string, string>();
       regions!.forEach(item => e.set(item.name, item.displayName))

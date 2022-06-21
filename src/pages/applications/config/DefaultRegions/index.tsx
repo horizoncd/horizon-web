@@ -77,8 +77,9 @@ export default () => {
             }}>
               {
                 env2Regions?.[record.environment]?.map(item => {
-                  return <Option key={item.name} value={item.name}>
-                    {item.displayName}
+                  const text = item.disabled ? `${item.displayName} (disabled)` : item.displayName
+                  return <Option key={item.name} value={item.name} disabled={item.disabled}>
+                    {text}
                   </Option>
                 })
               }
