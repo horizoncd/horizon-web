@@ -123,8 +123,9 @@ export default (props: any) => {
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
             <Select disabled={readonly || editing}>
               {regions?.map((item) => {
-                return <Option key={item.name} value={item.name}>
-                  {item.displayName}
+                const text = item.disabled ? `${item.displayName}(已禁用)` : item.displayName
+                return <Option key={item.name} value={item.name} disabled={item.disabled}>
+                  {text}
                 </Option>
               })}
             </Select>
