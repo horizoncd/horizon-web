@@ -19,6 +19,7 @@ declare namespace CLUSTER {
   type Region = {
     name: string;
     displayName: string;
+    disabled: boolean;
   };
 
   type ClusterFilter = {

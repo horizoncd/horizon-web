@@ -40,7 +40,8 @@ import {stringify} from "querystring";
 import Utils from '@/utils'
 import {getStatusComponent, isRestrictedStatus} from "@/components/State";
 import RBAC from '@/rbac'
-import {queryEnvironments, queryRegions} from "@/services/environments/environments";
+import {queryEnvironments} from "@/services/environments/environments";
+import {queryRegions} from "@/services/applications/applications";
 import copy from "copy-to-clipboard";
 import FullscreenModal from "@/components/FullscreenModal";
 
@@ -93,7 +94,7 @@ export default () => {
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
   const {successAlert, errorAlert} = useModel('alert')
-  const {id, fullPath} = initialState!.resource;
+  const {id, fullPath, parentID} = initialState!.resource;
   const [current, setCurrent] = useState(0);
   const [userClickedCurrent, setUserClickedCurrent] = useState(-1);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
@@ -110,7 +111,8 @@ export default () => {
       setEnv2DisplayName(e)
     }
   });
-  const {data: regions} = useRequest(() => queryRegions(cluster!.scope.environment), {
+  const applicationID = parentID
+  const {data: regions} = useRequest(() => queryRegions(applicationID, cluster!.scope.environment), {
     onSuccess: () => {
       const e = new Map<string, string>();
       regions!.forEach(item => e.set(item.name, item.displayName))
