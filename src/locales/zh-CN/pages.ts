@@ -111,6 +111,7 @@ export default {
   'pages.cluster.podsTable.online': '上线',
   'pages.cluster.podsTable.offline': '下线',
   'pages.cluster.podsTable.restartPod': '重启Pod',
+  'pages.cluster.podsTable.reschedulePod': '销毁重建',
 
   'pages.pipelineNew.submit': '流水线创建成功，开始发布',
   'pages.pipelineNew.title': '标题',
