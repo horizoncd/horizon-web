@@ -12,6 +12,7 @@ const Resource = {
   cluster: 'clusters',
   member: 'members',
   buildDeploy: 'builddeploy',
+  pods: 'pods',
   deploy: 'deploy',
   diff: 'diff',
   next: 'next',
@@ -165,6 +166,12 @@ const Permissions = {
   buildAndDeployCluster: {
     resource: `${Resource.cluster}/${Resource.buildDeploy}`,
     action: Action.create,
+    allowed: false,
+  },
+  // 删除Pods
+  deletePods: {
+    resource: `${Resource.cluster}/${Resource.pods}`,
+    action: Action.delete,
     allowed: false,
   },
   // 直接发布
