@@ -294,6 +294,7 @@ declare namespace CLUSTER {
     result: boolean,
     stdout: string,
     stderr: string,
+    errorMsg: string,
     error: {
       ErrStatus: {
         message: string
