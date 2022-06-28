@@ -281,7 +281,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       if (obj.result) {
         succeedList.push(item)
       } else {
-        const errMsg = obj.error?.ErrStatus?.message || obj.stderr || obj.stdout
+        const errMsg = obj.error?.ErrStatus?.message || obj.stderr || obj.stdout || obj.errorMsg
         failedList.push({
           name: item,
           err: errMsg
