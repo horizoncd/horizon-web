@@ -45,6 +45,15 @@ export async function offline(clusterID: number, pods: string[]) {
   });
 }
 
+export async function deletePods(clusterID: number, pods: string[]) {
+  return request(`/apis/core/v1/clusters/${clusterID}/pods`, {
+    method: 'DELETE',
+    params: {
+      podName: pods
+    }
+  });
+}
+
 export async function queryPodEvents(clusterID: number, podName: string) {
   return request(`/apis/core/v1/clusters/${clusterID}/events`, {
     method: 'GET',
