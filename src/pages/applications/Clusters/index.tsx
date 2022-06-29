@@ -13,11 +13,16 @@ import RBAC from '@/rbac'
 import Utils from '@/utils'
 import NoData from "@/components/NoData";
 import withTrim from "@/components/WithTrim";
+import '@gitlab/ui/dist/index.css';
+import '@gitlab/ui/dist/utility_classes.css';
+// import { GlFilteredSearchSuggestion } from '@gitlab/ui';
+import { GlFilteredSearchToken } from '@gitlab/ui';
 import { GlFilteredSearch } from '@gitlab/ui';
 import { applyVueInReact } from 'vuereact-combined'
 
 
 const FilteredSearch = applyVueInReact(GlFilteredSearch)
+const FilteredSearchToken = applyVueInReact(GlFilteredSearchToken)
 
 const { TabPane } = Tabs;
 const Search = withTrim(Input.Search);
@@ -111,10 +116,83 @@ export default (props: any) => {
 
   }
 
+  const testToken = <FilteredSearchToken
+    config={{ "title": "Confidential", "operators": [{ "value": "^", "description": "or" }, { "value": "!", "description": "is not", "default": "true" }] }}
+  >
+  </FilteredSearchToken>
+
+  // const availableTokens = [
+  //   { type: 'static', title: 'aaaa', token: testToken }
+  // ];
+  const availableTokens = [
+    {
+      type: 'aaaa',
+      title: 'aaaa',
+      // multiSelect: true,
+      token: GlFilteredSearchToken,
+      operators: [
+        {
+          value: "=",
+          description: "equal"
+        },
+        {
+          value: "!=",
+          description: "not equal"
+        }
+      ],
+      options: [
+        {
+          value: "11111",
+          title: "11111",
+        },
+        {
+          value: "22222",
+          title: "22222",
+        }
+      ]
+    },
+    {
+      type: 'bbb',
+      title: 'bbb',
+      token: GlFilteredSearchToken,
+      // multiSelect: true,
+      operators: [
+        {
+          value: "=",
+          title: "=",
+          description: "equal"
+        },
+        {
+          value: "!=",
+          title: "!=",
+          description: "not equal"
+        }
+      ],
+      options: [
+        {
+          value: "11111",
+          title: "11111",
+        },
+        {
+          value: "22222",
+          title: "22222",
+        }
+      ]
+    }
+  ];
+
+  const submit = (value: any) => {
+    console.log("onFilteredSearch: ", value)
+  }
   const queryInput = (
     // @ts-ignore
     <div >
-      <FilteredSearch style={{height: '10px'}}>
+      <FilteredSearch
+        style={{ height: '10px' }}
+        availableTokens={availableTokens}
+        v-model={"value"}
+        on={{ submit }}
+      >
       </FilteredSearch>
       {/* <Select style={{width: "150px"}} disabled={false} mode="tags" placeholder="support multiple values" /> */}
       {/* <Select
