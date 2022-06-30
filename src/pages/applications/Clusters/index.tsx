@@ -13,16 +13,11 @@ import RBAC from '@/rbac'
 import Utils from '@/utils'
 import NoData from "@/components/NoData";
 import withTrim from "@/components/WithTrim";
-import '@gitlab/ui/dist/index.css';
-import '@gitlab/ui/dist/utility_classes.css';
-// import { GlFilteredSearchSuggestion } from '@gitlab/ui';
-import { GlFilteredSearchToken } from '@gitlab/ui';
-import { GlFilteredSearch } from '@gitlab/ui';
-import { applyVueInReact } from 'vuereact-combined'
-
-
-const FilteredSearch = applyVueInReact(GlFilteredSearch)
-const FilteredSearchToken = applyVueInReact(GlFilteredSearchToken)
+import TagSearch, { SearchInputType } from "@/components/TagSearch";
+import { SearchInput, MultiValueTag } from "@/components/TagSearch";
+import { querySubresourceTags } from "@/services/tags/tags";
+import { ResourceType } from "@/const";
+import { Tag } from "sax";
 
 const { TabPane } = Tabs;
 const Search = withTrim(Input.Search);
@@ -81,6 +76,8 @@ export default (props: any) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [query, setQuery] = useState(0);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [tags, setTags] = useState<MultiValueTag[]>([]);
+  const [tagSelectors, setTagSelectors] = useState<TAG.TagSelector[]>([]);
 
   const { data: envs } = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -89,14 +86,40 @@ export default (props: any) => {
       setEnv2DisplayName(e)
     }
   });
-  const { data: clusters } = useRequest(() => queryClusters(id, environment ? {
-    filter, pageNumber, pageSize, environment
-  } : {
-    filter, pageNumber, pageSize,
-  }
+  const { data: clusters } = useRequest(() => queryClusters(id, { filter, pageNumber, pageSize, environment, tagSelectors }
   ), {
-    refreshDeps: [query, filter, environment, pageNumber],
+    refreshDeps: [query, filter, environment, pageNumber, tagSelectors],
     debounceInterval: 200,
+  });
+  // 查询应用下的集群标签列表
+  const { data: tagsResp } = useRequest(() => querySubresourceTags("applications", id), {
+    onSuccess: () => {
+      const tMap = new Map<string, string[]>();
+      const ts: MultiValueTag[] = []
+      tagsResp?.tags.forEach(
+        (tag) => {
+          if (tag.key == 'jvmExtra' || tag.key.length > 16 || tag.value.length > 16) {
+            return
+          }
+          if (tMap.has(tag.key)) {
+            const values = tMap.get(tag.key) as string[]
+            values.push(tag.value)
+            tMap.set(tag.key, values)
+          } else {
+            tMap.set(tag.key, [tag.value])
+          }
+        }
+      )
+      tMap.forEach(
+        (value, key) => {
+          ts.push({
+            key: key,
+            values: value,
+          })
+        }
+      )
+      setTags(ts)
+    }
   });
 
   const onChange = (e: any) => {
@@ -116,99 +139,30 @@ export default (props: any) => {
 
   }
 
-  const testToken = <FilteredSearchToken
-    config={{ "title": "Confidential", "operators": [{ "value": "^", "description": "or" }, { "value": "!", "description": "is not", "default": "true" }] }}
-  >
-  </FilteredSearchToken>
-
-  // const availableTokens = [
-  //   { type: 'static', title: 'aaaa', token: testToken }
-  // ];
-  const availableTokens = [
-    {
-      type: 'aaaa',
-      title: 'aaaa',
-      // multiSelect: true,
-      token: GlFilteredSearchToken,
-      operators: [
-        {
-          value: "=",
-          description: "equal"
-        },
-        {
-          value: "!=",
-          description: "not equal"
-        }
-      ],
-      options: [
-        {
-          value: "11111",
-          title: "11111",
-        },
-        {
-          value: "22222",
-          title: "22222",
-        }
-      ]
-    },
-    {
-      type: 'bbb',
-      title: 'bbb',
-      token: GlFilteredSearchToken,
-      // multiSelect: true,
-      operators: [
-        {
-          value: "=",
-          title: "=",
-          description: "equal"
-        },
-        {
-          value: "!=",
-          title: "!=",
-          description: "not equal"
-        }
-      ],
-      options: [
-        {
-          value: "11111",
-          title: "11111",
-        },
-        {
-          value: "22222",
-          title: "22222",
-        }
-      ]
-    }
-  ];
-
-  const submit = (value: any) => {
-    console.log("onFilteredSearch: ", value)
+  const onTagSearch = (values: SearchInput[]) => {
+    const ts: TAG.TagSelector[] = []
+    let ft = ""
+    values.forEach((v) => {
+      if (v.type == SearchInputType.Tag) {
+        ts.push(
+          {
+            key: v.key!,
+            operator: v.operator!,
+            values: [v.value]
+          }
+        )
+      } else {
+        ft = v.value
+      }
+    })
+    setTagSelectors(ts)
+    setFilter(ft)
   }
+
   const queryInput = (
     // @ts-ignore
-    <div >
-      <FilteredSearch
-        style={{ height: '10px' }}
-        availableTokens={availableTokens}
-        v-model={"value"}
-        on={{ submit }}
-      >
-      </FilteredSearch>
-      {/* <Select style={{width: "150px"}} disabled={false} mode="tags" placeholder="support multiple values" /> */}
-      {/* <Select
-        style={{ width: '80px', marginRight: '5px' }}
-        defaultValue="filter"
-        onChange={onSearchChange}
-      >
-        <Option value='filter'>名称</Option>
-        <Option value='label'>标签</Option>
-      </Select>
-
-      <Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter} value={filter}
-        onSearch={onSearch}
-        onChange={onChange}
-      /> */}
-      {/* {
+    <div style={{ display: 'flex' }}>
+      {
         <Button
           type="primary"
           disabled={!RBAC.Permissions.createCluster.allowedEnv(environment)}
@@ -225,7 +179,26 @@ export default (props: any) => {
         >
           {intl.formatMessage({ id: 'pages.groups.New cluster' })}
         </Button>
-      } */}
+      }
+      <TagSearch
+        className={styles.antInputGroupWrapper}
+        tagSelectors={tags}
+        onSearch={onTagSearch}
+      />
+      {/* <Select style={{ width: "150px" }} disabled={false} mode="tags" placeholder="support multiple values" /> */}
+      {/* <Select
+        style={{ width: '80px', marginRight: '5px' }}
+        defaultValue="filter"
+        onChange={onSearchChange}
+      >
+        <Option value='filter'>名称</Option>
+        <Option value='label'>标签</Option>
+      </Select> */}
+
+      {/* <Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter} value={filter}
+        onSearch={onSearch}
+        onChange={onChange}
+      /> */}
     </div>
   )
 

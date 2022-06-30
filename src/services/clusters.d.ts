@@ -27,6 +27,7 @@ declare namespace CLUSTER {
     pageNumber: number;
     pageSize: number;
     environment?: string
+    tagSelectors?: TAG.TagSelector[]
   };
 
   type Scope = {

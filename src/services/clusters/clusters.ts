@@ -1,11 +1,26 @@
-import {request} from 'umi';
+import { request } from 'umi';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
+  console.log(params)
+  let ts: string[] = []
+  params.tagSelectors?.forEach((t) => {
+    ts.push(t.key + t.operator + t.values.join(","))
+  })
+  const queryParams: any = {
+    filter: params.filter,
+    pageNumber: params.pageNumber,
+    pageSize: params.pageSize,
+    tagSelector: ts.join(","),
+  }
+  if (params.environment != undefined && params.environment != "") {
+    queryParams.environment == params.environment
+  }
+
   return request<{
     data: API.PageResult<CLUSTER.ClusterBase>;
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'GET',
-    params
+    params: queryParams
   });
 }
 
