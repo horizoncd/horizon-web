@@ -32,7 +32,18 @@ export default (props: any) => {
   const applicationID = editing ? parentID : id
   const {data: regions} = useRequest(() => queryRegions(applicationID, props.form.getFieldValue('environment')), {
     ready: !!props.form.getFieldValue('environment'),
-    refreshDeps: [props.form.getFieldValue('environment')]
+    refreshDeps: [props.form.getFieldValue('environment')],
+    onSuccess: () => {
+      if (!editing) {
+        regions?.forEach(r => {
+          if (r.isDefault && !r.disabled) {
+            props.form.setFields([{
+              name: 'region', value: r.name
+            }])
+          }
+        });
+      }
+    }
   });
 
   const {data: environments} = useRequest(() => queryEnvironments());
