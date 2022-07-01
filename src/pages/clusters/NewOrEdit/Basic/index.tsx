@@ -34,8 +34,16 @@ export default (props: any) => {
     ready: !!props.form.getFieldValue('environment'),
     refreshDeps: [props.form.getFieldValue('environment')],
     onSuccess: () => {
-      if (!editing) {
-        regions?.forEach(r => {
+      if (!editing && regions) {
+        // put default region on top of the list
+        regions.sort((a, b) => {
+          return Number(b.isDefault) - Number(a.isDefault)
+        })
+        // put disabled regions on bottom of the list
+        regions.sort((a, b) => {
+          return Number(a.disabled) - Number(b.disabled)
+        })
+        regions.forEach(r => {
           if (r.isDefault && !r.disabled) {
             props.form.setFields([{
               name: 'region', value: r.name
@@ -134,7 +142,8 @@ export default (props: any) => {
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
             <Select disabled={readonly || editing}>
               {regions?.map((item) => {
-                const text = item.disabled ? `${item.displayName} (disabled)` : item.displayName
+                const defaultText = item.isDefault ? `${item.displayName} (default)` : item.displayName
+                const text = item.disabled ? `${defaultText} (disabled)` : defaultText
                 return <Option key={item.name} value={item.name} disabled={item.disabled}>
                   {text}
                 </Option>
