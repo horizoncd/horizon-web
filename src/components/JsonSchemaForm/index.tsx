@@ -1,7 +1,5 @@
-import Form from '@rjsf/core';
 import 'bootstrap/dist/css/bootstrap.css'
-// import 'antd/lib/form/style'
-// import 'antd/lib/input-number/style'
+import Form from '@rjsf/bootstrap-4';
 
 // member组件入参
 interface FormProps {

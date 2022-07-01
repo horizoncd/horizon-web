@@ -1,35 +1,36 @@
-import { Button, Dropdown, Input, Menu, Select, Table, Tabs } from "antd";
+import {Button, Dropdown, Input, Menu, Select, Table, Tabs, Tooltip} from "antd";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
-import { useState } from "react";
-import { history } from "@@/core/history";
-import { stringify } from "querystring";
-import { useIntl } from "@@/plugin-locale/localeExports";
-import { useModel } from "@@/plugin-model/useModel";
+import {useState} from "react";
+import {history} from "@@/core/history";
+import {stringify} from "querystring";
+import {useIntl} from "@@/plugin-locale/localeExports";
+import {useModel} from "@@/plugin-model/useModel";
 import styles from './index.less'
-import { useRequest } from "@@/plugin-request/request";
-import { queryEnvironments } from "@/services/environments/environments";
-import { queryClusters } from "@/services/clusters/clusters";
+import {useRequest} from "@@/plugin-request/request";
+import {queryEnvironments} from "@/services/environments/environments";
+import {queryClusters} from "@/services/clusters/clusters";
 import RBAC from '@/rbac'
 import Utils from '@/utils'
 import NoData from "@/components/NoData";
 import withTrim from "@/components/WithTrim";
-import TagSearch, { SearchInputType } from "@/components/TagSearch";
-import { SearchInput, MultiValueTag } from "@/components/TagSearch";
-import { querySubresourceTags } from "@/services/tags/tags";
-import { ResourceType } from "@/const";
-import { Tag } from "sax";
+import TagSearch, {SearchInputType} from "@/components/TagSearch";
+import type {SearchInput, MultiValueTag} from "@/components/TagSearch";
+import {querySubresourceTags} from "@/services/tags/tags";
+import {ResourceType} from "@/const";
+import {Tag} from "sax";
+import {QuestionCircleOutlined} from "@ant-design/icons";
 
-const { TabPane } = Tabs;
+const {TabPane} = Tabs;
 const Search = withTrim(Input.Search);
-const { Option } = Select;
+const {Option} = Select;
 
 export default (props: any) => {
-  const { query: q } = props.location;
-  const { environment = '' } = q
+  const {query: q} = props.location;
+  const {environment = ''} = q
 
   const intl = useIntl();
-  const { initialState } = useModel('@@initialState');
-  const { id, name: application, fullPath } = initialState!.resource;
+  const {initialState} = useModel('@@initialState');
+  const {id, name: application, fullPath} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
 
   const pageSize = 10;
@@ -79,20 +80,20 @@ export default (props: any) => {
   const [tags, setTags] = useState<MultiValueTag[]>([]);
   const [tagSelectors, setTagSelectors] = useState<TAG.TagSelector[]>([]);
 
-  const { data: envs } = useRequest(queryEnvironments, {
+  const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
       const e = new Map<string, string>();
       envs!.forEach(item => e.set(item.name, item.displayName))
       setEnv2DisplayName(e)
     }
   });
-  const { data: clusters } = useRequest(() => queryClusters(id, { filter, pageNumber, pageSize, environment, tagSelectors }
+  const {data: clusters} = useRequest(() => queryClusters(id, {filter, pageNumber, pageSize, environment, tagSelectors}
   ), {
     refreshDeps: [query, filter, environment, pageNumber, tagSelectors],
     debounceInterval: 200,
   });
   // 查询应用下的集群标签列表
-  const { data: tagsResp } = useRequest(() => querySubresourceTags("applications", id), {
+  const {data: tagsResp} = useRequest(() => querySubresourceTags("applications", id), {
     onSuccess: () => {
       const tMap = new Map<string, string[]>();
       const ts: MultiValueTag[] = []
@@ -123,7 +124,7 @@ export default (props: any) => {
   });
 
   const onChange = (e: any) => {
-    const { value } = e.target;
+    const {value} = e.target;
     setFilter(value);
   };
 
@@ -161,7 +162,7 @@ export default (props: any) => {
 
   const queryInput = (
     // @ts-ignore
-    <div style={{ display: 'flex' }}>
+    <div style={{display: 'flex'}}>
       {
         <Button
           type="primary"
@@ -177,33 +178,14 @@ export default (props: any) => {
             });
           }}
         >
-          {intl.formatMessage({ id: 'pages.groups.New cluster' })}
+          {intl.formatMessage({id: 'pages.groups.New cluster'})}
         </Button>
       }
-      <TagSearch
-        className={styles.antInputGroupWrapper}
-        tagSelectors={tags}
-        onSearch={onTagSearch}
-      />
-      {/* <Select style={{ width: "150px" }} disabled={false} mode="tags" placeholder="support multiple values" /> */}
-      {/* <Select
-        style={{ width: '80px', marginRight: '5px' }}
-        defaultValue="filter"
-        onChange={onSearchChange}
-      >
-        <Option value='filter'>名称</Option>
-        <Option value='label'>标签</Option>
-      </Select> */}
-
-      {/* <Search className={styles.antInputGroupWrapper} placeholder="Search" onPressEnter={onPressEnter} value={filter}
-        onSearch={onSearch}
-        onChange={onChange}
-      /> */}
     </div>
   )
 
   const data = clusters?.items.map(item => {
-    const { name, scope, template, updatedAt, createdAt } = item
+    const {name, scope, template, updatedAt, createdAt} = item
     return {
       key: name,
       name: name,
@@ -256,17 +238,33 @@ export default (props: any) => {
     })
   }
 
+  const tagSearch = <div style={{display: "flex", alignItems: 'baseline'}}>
+    <TagSearch
+      tagSelectors={tags}
+      onSearch={onTagSearch}
+    />
+    <div style={{marginLeft: '10px'}}>
+      <Tooltip
+        title={<span>键/值长度超过16个字符的标签不会自动提示</span>}>
+        <QuestionCircleOutlined style={{display: 'block'}}
+        />
+      </Tooltip>
+    </div>
+  </div>
+
   return (
     <PageWithBreadcrumb>
       <Tabs activeKey={environment} size={'large'} tabBarExtraContent={queryInput} onChange={tabOnChange}
         animated={false}>
         <TabPane tab={'所有'} key={''}>
+          {tagSearch}
           {table}
         </TabPane>
         {
           envs?.map(item => {
-            const { name, displayName } = item
+            const {name, displayName} = item
             return <TabPane tab={displayName} key={name}>
+              {tagSearch}
               {table}
             </TabPane>
           })

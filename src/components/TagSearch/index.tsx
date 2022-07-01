@@ -1,6 +1,6 @@
 // @ts-ignore
-import { GlFilteredSearch, GlFilteredSearchToken } from '@gitlab/ui';
-import { applyVueInReact } from 'vuereact-combined'
+import {GlFilteredSearch, GlFilteredSearchToken} from '@gitlab/ui';
+import {applyVueInReact} from 'vuereact-combined'
 import '@gitlab/ui/dist/index.css';
 import '@gitlab/ui/dist/utility_classes.css';
 
@@ -26,11 +26,11 @@ export type MultiValueTag = {
 
 export enum SearchInputType {
   Tag = 'tag',
-  String = 'string',
+  Value = 'value',
 }
 
 export default (props: Props) => {
-  const { tagSelectors, onSearch } = props;
+  const {tagSelectors, onSearch} = props;
   const tokens = tagSelectors.map((tag) => {
     const options = tag.values.map((v) => {
       return {
@@ -41,8 +41,8 @@ export default (props: Props) => {
     return {
       type: tag.key,
       title: tag.key,
-      // multiSelect: true,
       token: GlFilteredSearchToken,
+      unique: true,
       operators: [
         {
           value: "=",
@@ -52,29 +52,31 @@ export default (props: Props) => {
       options: options
     }
   })
-  return <ReactFilteredSearch
-    availableTokens={tokens}
-    v-model={"value"}
-    on={{
-      submit: (inputs: any[]) => {
-        const results = inputs.map((input) => {
-          if (typeof (input) == 'string') {
-            return {
-              type: SearchInputType.String,
-              value: input,
+  return <div style={{flex: 1, marginBottom: '20px'}}>
+    <ReactFilteredSearch
+      placeholder={"Search by tags or name"}
+      availableTokens={tokens}
+      on={{
+        submit: (inputs: any[]) => {
+          const results = inputs.map((input) => {
+            if (typeof (input) == 'string') {
+              return {
+                type: SearchInputType.Value,
+                value: input,
+              }
+            } else {
+              return {
+                type: SearchInputType.Tag,
+                key: input.type,
+                operator: input.value.operator,
+                value: input.value.data,
+              }
             }
-          } else {
-            return {
-              type: SearchInputType.Tag,
-              key: input.type,
-              operator: input.value.operator,
-              value: input.value.data,
-            }
-          }
-        })
-        onSearch(results)
-      }
-    }}
-  >
-  </ReactFilteredSearch>
+          })
+          onSearch(results)
+        }
+      }}
+    >
+    </ReactFilteredSearch>
+  </div>
 }
