@@ -10,6 +10,7 @@ interface Props {
   // selector array, selector example: a=b,c,d
   tagSelectors: MultiValueTag[];
   onSearch: (inputs: SearchInput[]) => void;
+  onClear: () => void;
 }
 
 export type SearchInput = {
@@ -30,7 +31,7 @@ export enum SearchInputType {
 }
 
 export default (props: Props) => {
-  const {tagSelectors, onSearch} = props;
+  const {tagSelectors, onSearch, onClear} = props;
   const tokens = tagSelectors.map((tag) => {
     const options = tag.values.map((v) => {
       return {
@@ -57,6 +58,7 @@ export default (props: Props) => {
       placeholder={"Search by tags or name"}
       availableTokens={tokens}
       on={{
+        clear: onClear,
         submit: (inputs: any[]) => {
           const results = inputs.map((input) => {
             if (typeof (input) == 'string') {
@@ -76,7 +78,6 @@ export default (props: Props) => {
           onSearch(results)
         }
       }}
-    >
-    </ReactFilteredSearch>
+     />
   </div>
 }

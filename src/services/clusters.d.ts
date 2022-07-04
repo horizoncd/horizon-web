@@ -44,8 +44,9 @@ declare namespace CLUSTER {
       name: string;
       release: string;
     };
-    updatedAt: string
-    createdAt: string
+    tags: TAG.Tag[];
+    updatedAt: string;
+    createdAt: string;
   }
 
   type ClusterOutputs = Record<string, ClusterOutput>

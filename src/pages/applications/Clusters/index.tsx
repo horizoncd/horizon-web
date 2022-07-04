@@ -19,6 +19,7 @@ import {querySubresourceTags} from "@/services/tags/tags";
 import {ResourceType} from "@/const";
 import {Tag} from "sax";
 import {QuestionCircleOutlined} from "@ant-design/icons";
+import CollapseList from "@/components/CollapseList";
 
 const {TabPane} = Tabs;
 const Search = withTrim(Input.Search);
@@ -62,6 +63,34 @@ export default (props: any) => {
       key: 'template',
     },
     {
+      title: <div className={styles.tagTitle}>
+      <div>标签</div>
+      <Tooltip
+        title={<span>键/值长度超过16个字符的标签请到集群主页查看</span>}>
+        <QuestionCircleOutlined style={{display: 'block', marginLeft: '5px'}}
+        />
+      </Tooltip>
+    </div>,
+      dataIndex: 'tag',
+      key: 'tag',
+      width: '15%',
+      render: (text: any, record: any) => {
+        const data = {};
+        if (record.tags && Object.keys(record.tags).length > 0) {
+          for (const tag of record.tags) {
+            if (!Utils.tagShouldOmit(tag)) {
+              data[tag.key] = tag.value
+            }
+          }
+          return <div>
+              <CollapseList defaultCount={3} data={data}/>
+            </div>
+        } else {
+          return <div/>
+        }
+      },
+    },
+    {
       title: '创建时间',
       dataIndex: 'createdTime',
       key: 'createdTime',
@@ -99,7 +128,7 @@ export default (props: any) => {
       const ts: MultiValueTag[] = []
       tagsResp?.tags.forEach(
         (tag) => {
-          if (tag.key == 'jvmExtra' || tag.key.length > 16 || tag.value.length > 16) {
+          if (tag.key == 'jvmExtra' || Utils.tagShouldOmit(tag)) {
             return
           }
           if (tMap.has(tag.key)) {
@@ -138,6 +167,11 @@ export default (props: any) => {
 
   const onSearchChange = (value: string) => {
 
+  }
+
+  const onTagClear = () => {
+    setTagSelectors([])
+    setFilter("")
   }
 
   const onTagSearch = (values: SearchInput[]) => {
@@ -185,7 +219,7 @@ export default (props: any) => {
   )
 
   const data = clusters?.items.map(item => {
-    const {name, scope, template, updatedAt, createdAt} = item
+    const {name, scope, template, updatedAt, createdAt, tags: tagList} = item
     return {
       key: name,
       name: name,
@@ -194,6 +228,7 @@ export default (props: any) => {
       template: `${template.name}-${template.release}`,
       createdTime: Utils.timeToLocal(createdAt),
       updatedTime: Utils.timeToLocal(updatedAt),
+      tags: tagList,
     }
   }).sort((a, b) => {
     if (a.updatedTime < b.updatedTime) {
@@ -242,6 +277,7 @@ export default (props: any) => {
     <TagSearch
       tagSelectors={tags}
       onSearch={onTagSearch}
+      onClear={onTagClear}
     />
     <div style={{marginLeft: '10px'}}>
       <Tooltip
