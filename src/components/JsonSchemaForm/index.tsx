@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css'
+import './index.less'
 import Form from '@rjsf/bootstrap-4';
 
 // member组件入参
