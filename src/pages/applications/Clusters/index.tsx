@@ -16,8 +16,6 @@ import withTrim from "@/components/WithTrim";
 import TagSearch, {SearchInputType} from "@/components/TagSearch";
 import type {SearchInput, MultiValueTag} from "@/components/TagSearch";
 import {querySubresourceTags} from "@/services/tags/tags";
-import {ResourceType} from "@/const";
-import {Tag} from "sax";
 import {QuestionCircleOutlined} from "@ant-design/icons";
 import CollapseList from "@/components/CollapseList";
 
@@ -27,14 +25,63 @@ const {Option} = Select;
 
 export default (props: any) => {
   const {query: q} = props.location;
-  const {environment = ''} = q
+  const {environment = '', tagSelector = "", filter = ""} = q
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
   const {id, name: application, fullPath} = initialState!.resource;
   const newCluster = `/applications${fullPath}/-/clusters/new`;
+  const [tagSelectorState, setTagSelectorState] = useState(tagSelector)
+  const [filterState, setFilterState] = useState(filter)
 
   const pageSize = 10;
+
+  const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
+    if (!ts) {
+      return []
+    }
+    return ts.map((t)=>{
+      return {
+        type: SearchInputType.Tag,
+        key: t.key,
+        operator: t.operator,
+        value: t.values.length>0 ? t.values[0]: ""
+      }
+    })
+  }
+
+  const encodeTagSelector = (ts: TAG.TagSelector[] | undefined) => {
+    if (!ts) {
+      return ""
+    }
+    return ts?.map((t) => {
+      return t.key + t.operator + t.values.join(",")
+    }).join(",")
+  }
+
+  const decodeTagSelector = (tss: string | undefined)  => {
+    if (!tss) {
+      return []
+    }
+   
+    const ts = tss?.split(",", -1)
+
+    return ts.filter((t)=>{
+        const parts = t.split("=", -1)
+        if (parts.length != 2) {
+          return false
+        }
+        return true
+      }
+    ).map((t) => {
+      const parts = t.split("=", -1)
+      return {
+        key: parts[0],
+        operator: "=",
+        values: [parts[1]],
+      }
+    })
+  }
 
   const columns = [
     {
@@ -102,12 +149,9 @@ export default (props: any) => {
     },
   ]
 
-  const [filter, setFilter] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [query, setQuery] = useState(0);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [tags, setTags] = useState<MultiValueTag[]>([]);
-  const [tagSelectors, setTagSelectors] = useState<TAG.TagSelector[]>([]);
 
   const {data: envs} = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -116,9 +160,10 @@ export default (props: any) => {
       setEnv2DisplayName(e)
     }
   });
-  const {data: clusters} = useRequest(() => queryClusters(id, {filter, pageNumber, pageSize, environment, tagSelectors}
+  const {data: clusters} = useRequest(() => queryClusters(id, 
+    {filter, pageNumber, pageSize, environment, tagSelector: tagSelector}
   ), {
-    refreshDeps: [query, filter, environment, pageNumber, tagSelectors],
+    refreshDeps: [filter, environment, pageNumber, tagSelector],
     debounceInterval: 200,
   });
   // 查询应用下的集群标签列表
@@ -152,26 +197,17 @@ export default (props: any) => {
     }
   });
 
-  const onChange = (e: any) => {
-    const {value} = e.target;
-    setFilter(value);
-  };
-
-  const onPressEnter = () => {
-    setQuery(prev => prev + 1)
-  }
-
-  const onSearch = () => {
-    setQuery(prev => prev + 1)
-  }
-
-  const onSearchChange = (value: string) => {
-
-  }
-
   const onTagClear = () => {
-    setTagSelectors([])
-    setFilter("")
+    setTagSelectorState("")
+    setFilterState("")
+    history.replace({
+      pathname: `/applications${fullPath}/-/clusters`,
+      query: {
+        environment: environment,
+        filter: "",
+        tagSelector: ""
+      }
+    })
   }
 
   const onTagSearch = (values: SearchInput[]) => {
@@ -190,8 +226,20 @@ export default (props: any) => {
         ft = v.value
       }
     })
-    setTagSelectors(ts)
-    setFilter(ft)
+
+    const tsEncode = encodeTagSelector(ts)
+    
+    setTagSelectorState(tsEncode)
+    setFilterState(ft)
+
+    history.replace({
+      pathname: `/applications${fullPath}/-/clusters`,
+      query: {
+        environment: environment,
+        filter: ft,
+        tagSelector: tsEncode
+      }
+    })
   }
 
   const queryInput = (
@@ -265,23 +313,31 @@ export default (props: any) => {
   />
 
   const tabOnChange = (key: string) => {
+    setFilterState(filter)
+    setTagSelectorState(tagSelector)
     history.replace({
       pathname: `/applications${fullPath}/-/clusters`,
-      query: key ? {
-        environment: key
-      } : {}
+      query: {
+        environment: key,
+        filter: filterState,
+        tagSelector: tagSelectorState,
+      }
     })
   }
 
   const tagSearch = <div style={{display: "flex", alignItems: 'baseline'}}>
     <TagSearch
+      defaultValues={[
+        ...TagSelector2SearchInput(decodeTagSelector(tagSelectorState)), 
+        {value: filterState}
+      ]}
       tagSelectors={tags}
       onSearch={onTagSearch}
       onClear={onTagClear}
     />
     <div style={{marginLeft: '10px'}}>
       <Tooltip
-        title={<span>键/值长度超过16个字符的标签不会自动提示</span>}>
+        title={<span>多个搜索条件之间是“与”的关系，键/值长度超过16个字符的标签不会自动提示</span>}>
         <QuestionCircleOutlined style={{display: 'block'}}
         />
       </Tooltip>

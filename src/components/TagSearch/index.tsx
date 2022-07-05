@@ -7,6 +7,7 @@ import '@gitlab/ui/dist/utility_classes.css';
 const ReactFilteredSearch = applyVueInReact(GlFilteredSearch)
 
 interface Props {
+  defaultValues?: SearchInput[] | undefined
   // selector array, selector example: a=b,c,d
   tagSelectors: MultiValueTag[];
   onSearch: (inputs: SearchInput[]) => void;
@@ -14,7 +15,7 @@ interface Props {
 }
 
 export type SearchInput = {
-  type: SearchInputType,
+  type?: SearchInputType,
   key?: string,
   operator?: string,
   value: string,
@@ -31,7 +32,7 @@ export enum SearchInputType {
 }
 
 export default (props: Props) => {
-  const {tagSelectors, onSearch, onClear} = props;
+  const {defaultValues, tagSelectors, onSearch, onClear} = props;
   const tokens = tagSelectors.map((tag) => {
     const options = tag.values.map((v) => {
       return {
@@ -53,10 +54,33 @@ export default (props: Props) => {
       options: options
     }
   })
+
+  let values: any[]  = []
+  if (defaultValues) {
+    values = defaultValues.filter(
+      (defaultValue) => {
+        return defaultValue && defaultValue.value != ""
+      }
+    ).map((defaultValue) => {
+        if (defaultValue.key) {
+          return {
+            type: defaultValue.key,
+            value: {
+              data: defaultValue.value,
+              operator: defaultValue.operator
+            }
+          }
+        } else {
+          return defaultValue.value
+        }
+    })
+  }
+
   return <div style={{flex: 1, marginBottom: '20px'}}>
     <ReactFilteredSearch
       placeholder={"Search by tags or name"}
       availableTokens={tokens}
+      value={values}
       on={{
         clear: onClear,
         submit: (inputs: any[]) => {
