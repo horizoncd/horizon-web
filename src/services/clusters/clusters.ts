@@ -1,11 +1,15 @@
 import {request} from 'umi';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
+  if (!params.environment) {
+    delete params.environment
+  }
+
   return request<{
     data: API.PageResult<CLUSTER.ClusterBase>;
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'GET',
-    params
+    params 
   });
 }
 

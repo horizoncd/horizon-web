@@ -269,6 +269,10 @@ export const handleHref = (event: any, link: string) => {
   window.location.href = link
 }
 
+export const tagShouldOmit = (tag: TAG.Tag) => {
+  return (tag.key.length > 16 || tag.value.length > 16)
+}
+
 export default {
   getResourcePath,
   getBreadcrumbs,
@@ -277,4 +281,5 @@ export default {
   timeFromNowEnUS,
   timeToLocal,
   timeSecondsDuration,
+  tagShouldOmit,
 };

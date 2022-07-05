@@ -232,6 +232,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         <Button
           className={styles.copyButtonClass}
           onClick={() => onCopyClick(text)}
+          type={'text'}
         >
           <CopyOutlined/>
         </Button>
@@ -259,6 +260,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       <Button
         className={styles.copyButtonClass}
         onClick={() => onCopyClick(text)}
+        type={'text'}
       >
         <CopyOutlined/>
       </Button>

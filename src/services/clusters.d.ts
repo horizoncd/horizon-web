@@ -20,6 +20,7 @@ declare namespace CLUSTER {
     name: string;
     displayName: string;
     disabled: boolean;
+    isDefault: boolean
   };
 
   type ClusterFilter = {
@@ -27,6 +28,7 @@ declare namespace CLUSTER {
     pageNumber: number;
     pageSize: number;
     environment?: string
+    tagSelector?: string
   };
 
   type Scope = {
@@ -43,8 +45,9 @@ declare namespace CLUSTER {
       name: string;
       release: string;
     };
-    updatedAt: string
-    createdAt: string
+    tags: TAG.Tag[];
+    updatedAt: string;
+    createdAt: string;
   }
 
   type ClusterOutputs = Record<string, ClusterOutput>
