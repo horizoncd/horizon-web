@@ -26,7 +26,7 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
     {items}
     {
       !showAll && ks.length > props.defaultCount && <a
-        style={{padding: '0'}}
+        className={styles.buttonText}
         onClick={() => {
           setShowAll(true)
         }}
@@ -36,7 +36,7 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
     }
     {
       showAll && ks.length > props.defaultCount && <a
-        style={{padding: '0'}}
+        className={styles.buttonText}
         onClick={() => {
           setShowAll(false)
         }}
