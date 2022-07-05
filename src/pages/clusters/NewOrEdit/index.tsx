@@ -9,7 +9,7 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
-import {getApplication, getApplicationEnvTemplate, getApplicationRegions} from "@/services/applications/applications";
+import {getApplication, getApplicationEnvTemplate} from "@/services/applications/applications";
 import HSteps from "@/components/HSteps";
 import {PublishType} from "@/const";
 import type {FieldData} from 'rc-field-form/lib/interface'
@@ -77,18 +77,6 @@ export default (props: any) => {
     ready: creating,
     manual: true,
   });
-
-  const {data: defaultRegions = []} = useRequest(() => getApplicationRegions(id), {
-    refreshDeps: [],
-    ready: creating,
-    onSuccess: () => {
-      defaultRegions.forEach(item => {
-        if (item.environment === envFromQuery) {
-          setBasic(b => ([...b, {name: region, value: item.region}]))
-        }
-      })
-    }
-  })
 
   // query application if creating
   if (creating) {
@@ -240,18 +228,6 @@ export default (props: any) => {
     if (changingFiled[0].name[0] === 'environment') {
       // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value)
-
-      // 创建集群时 环境切换，查询应用在该环境下的默认部署区域并设置为当前集群的区域
-      defaultRegions.forEach(item => {
-        if (item.environment === changingFiled[0].value) {
-          for (let i = 0; i < allFields.length; i++) {
-            if (allFields[i].name[0] === 'region') {
-              allFields[i].value = item.region
-              form.validateFields(basicNeedValidFields)
-            }
-          }
-        }
-      })
     }
     setBasic(allFields)
   }

@@ -20,6 +20,7 @@ declare namespace CLUSTER {
     name: string;
     displayName: string;
     disabled: boolean;
+    isDefault: boolean
   };
 
   type ClusterFilter = {
