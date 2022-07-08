@@ -46,7 +46,7 @@ export default (props: any) => {
         regions.forEach(r => {
           if (r.isDefault && !r.disabled) {
             props.form.setFields([{
-              name: 'region', value: r.name
+              name: ['region'], value: r.name, errors: []
             }])
           }
         });
