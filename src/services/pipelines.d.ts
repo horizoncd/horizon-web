@@ -5,8 +5,8 @@ declare namespace PIPELINES {
     action: string,
     title: string,
     description?: string,
-    gitBranch: string,
-    gitCommit: string,
+    gitRefType: string,
+    gitRef: string,
     configCommit?: string,
     rollbackFrom?: number,
     createdBy: {

@@ -27,6 +27,7 @@ import {history} from "@@/core/history";
 import FullscreenModal from "@/components/FullscreenModal";
 import moment from "moment";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
+import {GitRefType} from '@/services/code/code';
 
 export default (props: any) => {
   const params = useParams<{ id: string }>();
@@ -54,6 +55,19 @@ export default (props: any) => {
     return intl.formatMessage({id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg})
   }
 
+  let refType = 'branch'
+  let refValue= ''
+  if (pipeline?.gitBranch) {
+    refType = GitRefType.Branch
+    refValue = pipeline?.gitBranch
+  } else if (pipeline?.gitTag) {
+    refType = GitRefType.Tag
+    refValue = pipeline?.gitTag
+  } else {
+    refType = GitRefType.Commit
+    refValue = pipeline?.gitCommit
+  }
+
   const data: Param[][] = [
     [
       {
@@ -77,7 +91,7 @@ export default (props: any) => {
       {
         key: 'Git info',
         value: {
-          'Branch': pipeline?.gitBranch || '',
+          [intl.formatMessage({id: 'pages.clusterDetail.basic.'+refType})]: refValue || '',
           'Commit ID': pipeline?.gitCommit || '',
         }
       }

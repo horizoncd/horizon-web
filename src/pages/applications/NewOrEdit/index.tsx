@@ -12,6 +12,7 @@ import {useIntl} from "@@/plugin-locale/localeExports";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {useModel} from "@@/plugin-model/useModel";
 import type {FieldData} from 'rc-field-form/lib/interface'
+import {parseGitRef} from '@/services/code/code';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -23,6 +24,8 @@ export default (props: any) => {
   const branch = 'branch'
   const description = 'description'
   const subfolder = 'subfolder'
+  const refType = 'refType'
+  const ref = 'ref'
   const basicNeedValidFields = [
     name, release, priority, url, branch
   ]
@@ -55,16 +58,17 @@ export default (props: any) => {
           templateInput,
           template: t,
         } = app!
-        const {url: u, branch: b, subfolder: s} = git
         const {release: r, name: tn} = t
+        const {gitRefType, gitRef} = parseGitRef(git)
         const bas = [
           {name, value: n},
           {name: description, value: d},
           {name: release, value: r},
           {name: priority, value: p},
-          {name: url, value: u},
-          {name: branch, value: b},
-          {name: subfolder, value: s},
+          {name: url, value: git.url},
+          {name: 'refType', value: gitRefType},
+          {name: 'refValue', value: gitRef},
+          {name: subfolder, value: git.subfolder},
         ]
         setBasic(bas)
         form.setFields(bas)
@@ -185,7 +189,7 @@ export default (props: any) => {
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',
-        branch: form.getFieldValue(branch),
+        [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
       },
       templateInput: config,
     }

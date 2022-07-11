@@ -4,13 +4,14 @@ import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {useRequest} from "@@/plugin-request/request";
 import {queryEnvironments} from "@/services/environments/environments";
-import {listBranch} from "@/services/code/code";
+import {listGitRef, GitRefType, gitRefTypeList} from "@/services/code/code";
 import {queryReleases} from "@/services/templates/templates";
 import HForm from '@/components/HForm'
 import type {FieldData} from 'rc-field-form/lib/interface'
 import {history} from "@@/core/history";
 import {queryRegions} from "@/services/applications/applications";
 import {useModel} from "@@/plugin-model/useModel";
+import {useState} from "react";
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -56,13 +57,18 @@ export default (props: any) => {
 
   const {data: environments} = useRequest(() => queryEnvironments());
 
-  const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
-    giturl: props.form.getFieldValue('url'),
-    filter,
-    pageNumber: 1,
-    pageSize: 50,
-  }), {
-    debounceInterval: 500,
+  const {data: gitRefList = [], run: refreshGitRefList} = useRequest((filter?: string) => {
+    const giturl = props.form.getFieldValue('url')
+    const refType = props.form.getFieldValue('refType')
+    return listGitRef({
+      refType,
+      giturl,
+      filter,
+      pageNumber: 1,
+      pageSize: 50,
+    })
+  }, {
+    debounceInterval: 100,
     ready: !!props.form.getFieldValue('url') && !readonly,
   })
 
@@ -76,6 +82,15 @@ export default (props: any) => {
       pattern: new RegExp('^(?=[a-z0-9])(([a-z0-9][-a-z0-9]*)?[a-z0-9])?$'),
       message: formatMessage('name.ruleMessage'),
       max: 64,
+    },
+  ];
+
+  const urlRules: Rule[] = [
+    {
+      pattern: new RegExp('^ssh://.+[.]git$'),
+      required: true,
+      message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
+      max: 128,
     },
   ];
 
@@ -101,20 +116,22 @@ export default (props: any) => {
     <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}
            disabled={readonly}/>;
 
+
   return (
     <div>
       <HForm layout={'vertical'} form={props.form}
-            onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-              props.setFormData(a, b)
-            }}
-            fields={props.formData}
+             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
+               props.setFormData(a, b)
+             }}
+             fields={props.formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
             {name}
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
-            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly} autoSize={{minRows: 3}} />
+            <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
+                      autoSize={{minRows: 3}}/>
           </Form.Item>
           <Form.Item label={formatMessage('template', '模版')}>
             <Input disabled={true} value={props.template?.name}/>
@@ -153,23 +170,57 @@ export default (props: any) => {
         </Card>
 
         <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>
-          <Form.Item label={formatMessage('url')} name={'url'} rules={requiredRule}>
+          <Form.Item label={formatMessage('url')} name={'url'} rules={urlRules}>
             <Input disabled={readonly}/>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
             <Input disabled={readonly}/>
           </Form.Item>
-          <Form.Item label={formatMessage('branch')} name={'branch'} rules={requiredRule}>
-            <Select disabled={readonly} showSearch
-                    onSearch={(item) => {
-                      refreshBranchList(item);
-                    }}>
+          <Form.Item
+            style={{display: 'flex'}}
+            label={"版本"}
+            name={'ref'}
+            rules={[{required: true, message: "git ref required"}]}
+          >
+            <Form.Item
+              name={"refType"}
+              rules={[{required: true, message: "git ref is required"}]}
+              style={{display: 'inline-block', width: '100px'}}
+            >
+              <Select disabled={readonly} defaultValue={gitRefTypeList[0]}
+                      onSelect={(key: any) => {
+                        // props.form.setFieldsValue({"refValue": ""})
+                        if (key != GitRefType.Commit) {
+                          refreshGitRefList();
+                        }
+                      }}
+              >
+                {
+                  gitRefTypeList.map((item) => {
+                    return <Option key={item.key} value={item.key}>{item.displayName}</Option>
+                  })
+                }
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name={"refValue"}
+              rules={[{required: true, message: "git ref is required"}]}
+              style={{display: 'inline-block', width: 'calc(100% - 100px)'}}
+            >
               {
-                branchList.map((item: string) => {
-                  return <Option key={item} value={item}>{item}</Option>
-                })
+                props.form.getFieldValue('refType') == GitRefType.Commit ?
+                  <Input/> : <Select disabled={readonly} showSearch
+                                     onSearch={(item) => {
+                                       refreshGitRefList(item);
+                                     }}>
+                    {
+                      gitRefList.map((item: string) => {
+                        return <Option key={item} value={item}>{item}</Option>
+                      })
+                    }
+                  </Select>
               }
-            </Select>
+            </Form.Item>
           </Form.Item>
         </Card>
       </HForm>
