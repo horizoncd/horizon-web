@@ -336,7 +336,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           style={{marginLeft: '10px'}}
           onClick={() => {
             Modal.confirm({
-              title:  `此操作将导致所有被选中的Pod（共${selectedPods.length}台）立刻被销毁，并创建出同等数量的新Pod，请注意评估流量风险！`,
+              title: `此操作将导致所有被选中的Pod（共${selectedPods.length}台）立刻被销毁，并创建出同等数量的新Pod，请注意评估流量风险！`,
               onOk() {
                 deletePods(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
                   hookAfterBatchOps("销毁重建", d)
@@ -646,7 +646,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
                   href={formatConsoleURL(record)}
                   target="_blank">Terminal</Button>
-          <a onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
+          <a style={{color: '#1890ff'}} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             <a>
               More <DownOutlined/>

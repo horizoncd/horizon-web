@@ -87,6 +87,8 @@ export default {
   'pages.clusterDetail.basic.url': 'url',
   'pages.clusterDetail.basic.subfolder': 'subfolder',
   'pages.clusterDetail.basic.branch': 'branch',
+  'pages.clusterDetail.basic.tag': 'tag',
+  'pages.clusterDetail.basic.commit': 'commit',
   'pages.clusterDetail.basic.createTime': 'create time',
   'pages.clusterDetail.basic.updateTime': 'update time',
   'pages.clusterDelete.success': 'delete cluster succeed',

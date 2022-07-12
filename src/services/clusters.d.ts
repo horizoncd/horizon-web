@@ -1,3 +1,5 @@
+import {GitInfo} from '@/services/code/code'
+
 declare namespace CLUSTER {
   type PodQuery = {
     // podName=&containerName=(&tailLine=)
@@ -72,12 +74,7 @@ declare namespace CLUSTER {
       name: string;
       release: string;
     };
-    git: {
-      url: string;
-      subfolder: string;
-      branch: string;
-      commit: string;
-    };
+    git: GitInfo;
     scope: Scope
     templateInput: any;
     latestDeployedCommit: string;

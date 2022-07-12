@@ -1,4 +1,5 @@
-import DetailCard, {Param} from '@/components/DetailCard'
+import type {Param} from '@/components/DetailCard';
+import DetailCard from '@/components/DetailCard'
 import {useState} from "react";
 import {Avatar, Button, Card, Divider, Table, Tooltip} from 'antd';
 import {querySchema} from '@/services/templates/templates';
@@ -22,6 +23,7 @@ import {ResourceType} from "@/const";
 import copy from "copy-to-clipboard";
 import {queryEnvironments} from "@/services/environments/environments";
 import {queryRegions} from "@/services/applications/applications";
+import {parseGitRef} from '@/services/code/code';
 
 export default () => {
   const intl = useIntl();
@@ -80,6 +82,7 @@ export default () => {
     },
     ready: !!cluster.scope.environment
   });
+  const {gitRefType, gitRef} = parseGitRef(cluster.git)
   const serviceDetail: Param[][] = [
     [
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.name'}), value: cluster.name},
@@ -100,8 +103,14 @@ export default () => {
         value: `${cluster.template.name}-${cluster.template.release}`
       },
       {key: intl.formatMessage({id: 'pages.clusterDetail.basic.url'}), value: cluster.git.url},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.branch'}), value: cluster.git.branch},
-      {key: intl.formatMessage({id: 'pages.clusterDetail.basic.subfolder'}), value: cluster.git.subfolder},
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.'+gitRefType}), 
+        value: gitRef, 
+      },
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.subfolder'}), 
+        value: cluster.git.subfolder
+      }
     ],
     [
       {
@@ -122,6 +131,8 @@ export default () => {
       },
     ],
   ]
+
+
 
   const {run: refreshCluster} = useRequest(() => {
     return getCluster(clusterID).then(({data: result}) => {

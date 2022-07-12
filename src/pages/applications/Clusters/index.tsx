@@ -313,6 +313,7 @@ export default (props: any) => {
   />
 
   const tabOnChange = (key: string) => {
+    setPageNumber(1);
     setFilterState(filter)
     setTagSelectorState(tagSelector)
     history.replace({
