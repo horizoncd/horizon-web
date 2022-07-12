@@ -625,18 +625,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           <div style={{whiteSpace: 'nowrap'}}>{times[1]}</div>
         </>
       }
-      // defaultSortOrder: 'descend',
-      // sortDirections: ['ascend', 'descend', 'ascend'],
-      // sorter: (a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
-      //   if (a.createTime < b.createTime) {
-      //     return -1;
-      //   }
-      //   if (a.createTime > b.createTime) {
-      //     return 1;
-      //   }
-      //
-      //   return 0;
-      // },
     },
     {
       title: formatMessage('action', '操作'),

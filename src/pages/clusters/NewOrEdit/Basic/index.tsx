@@ -44,13 +44,15 @@ export default (props: any) => {
         regions.sort((a, b) => {
           return Number(a.disabled) - Number(b.disabled)
         })
-        regions.forEach(r => {
-          if (r.isDefault && !r.disabled) {
-            props.form.setFields([{
-              name: ['region'], value: r.name, errors: []
-            }])
-          }
-        });
+        if (!props.form.getFieldValue('region')) {
+          regions.forEach(r => {
+            if (r.isDefault && !r.disabled) {
+              props.form.setFields([{
+                name: ['region'], value: r.name, errors: []
+              }])
+            }
+          });
+        }
       }
     }
   });
