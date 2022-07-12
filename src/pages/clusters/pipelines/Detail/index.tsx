@@ -91,12 +91,15 @@ export default (props: any) => {
       {
         key: 'Git info',
         value: {
-          [intl.formatMessage({id: 'pages.clusterDetail.basic.'+refType})]: refValue || '',
           'Commit ID': pipeline?.gitCommit || '',
         }
       }
     ]
   ]
+
+  if (refType !== GitRefType.Commit) {
+    data[1][1].value[intl.formatMessage({id: 'pages.clusterDetail.basic.'+refType})] = refValue
+  }
 
   const cardTab = (pipeline && pipeline.action === PublishType.BUILD_DEPLOY) ? [
     {
