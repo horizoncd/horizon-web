@@ -13,10 +13,12 @@ import {history} from 'umi'
 import {useRequest} from "@@/plugin-request/request";
 import type {FieldData} from 'rc-field-form/lib/interface'
 import type {Rule} from "rc-field-form/lib/interface";
-import {listBranch} from "@/services/code/code";
+import {gitRefTypeList, listGitRef, parseGitRef, GitRefType} from "@/services/code/code";
+import {useState} from "react";
 import HForm from '@/components/HForm'
 
 const {Option} = Select;
+
 
 export default (props: any) => {
   const intl = useIntl();
@@ -27,6 +29,7 @@ export default (props: any) => {
   const {location} = props;
   const {query} = location;
   const {type} = query;
+  const [refType, setRefType] = useState('');
   if (!type) {
     return <NotFount/>;
   }
@@ -35,25 +38,32 @@ export default (props: any) => {
     return intl.formatMessage({id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg})
   }
 
-  const {data, run: refreshDiff} = useRequest((branch) => diffsOfCode(id!, branch), {
+  const {data, run: refreshDiff} = useRequest((gitRef) => diffsOfCode(id!, form.getFieldValue('refType'), gitRef), {
     manual: true,
   })
 
-  const {data: cluster} = useRequest(() => getCluster(id!), {
-    onSuccess: () => {
-      form.setFieldsValue({branch: cluster!.git.branch})
-      refreshDiff(cluster!.git.branch)
-    }
-  });
-
-  const {data: branchList = [], run: refreshBranchList} = useRequest((filter) => listBranch({
+  const {data: gitRefList = [], run: refreshGitRefList} = useRequest((filter?: string) => listGitRef({
+    refType: form.getFieldValue('refType'),
     giturl: cluster!.git.url,
     filter,
     pageNumber: 1,
     pageSize: 50,
   }), {
-    debounceInterval: 500,
+    debounceInterval: 100,
   })
+
+  const {data: cluster} = useRequest(() => getCluster(id!), {
+    onSuccess: () => {
+      const {gitRefType, gitRef} = parseGitRef(cluster.git)
+      setRefType(gitRefType)
+      form.setFieldsValue({
+        refType: gitRefType,
+        refValue: gitRef,
+      })
+      refreshDiff(gitRef)
+      refreshGitRefList();
+    }
+  });
 
   const hookAfterSubmit = () => {
     successAlert(formatMessage('submit', 'Pipeline Started'))
@@ -67,14 +77,20 @@ export default (props: any) => {
     },
   ];
 
-  const {run: startBuildDeploy, loading: buildDeployLoading} = useRequest((clusterID: number, d: CLUSTER.ClusterBuildDeploy) => buildDeploy(clusterID, d), {
+  const {
+    run: startBuildDeploy,
+    loading: buildDeployLoading
+  } = useRequest((clusterID: number, d: CLUSTER.ClusterBuildDeploy) => buildDeploy(clusterID, d), {
     onSuccess: () => {
       hookAfterSubmit()
     },
     manual: true
   })
 
-  const {run: startDeploy, loading: deployLoading} = useRequest((clusterID: number, d: CLUSTER.ClusterDeploy) => deploy(clusterID, d), {
+  const {
+    run: startDeploy,
+    loading: deployLoading
+  } = useRequest((clusterID: number, d: CLUSTER.ClusterDeploy) => deploy(clusterID, d), {
     onSuccess: () => {
       hookAfterSubmit()
     },
@@ -87,11 +103,11 @@ export default (props: any) => {
       description: form.getFieldValue('description') || '',
     }
     if (type === PublishType.BUILD_DEPLOY) {
-      form.validateFields(['title', 'branch']).then(() => {
+      form.validateFields(['title', 'refType', 'refValue']).then(() => {
         startBuildDeploy(id!, {
           ...info,
           git: {
-            branch: form.getFieldValue('branch'),
+            [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
           }
         })
       })
@@ -124,17 +140,57 @@ export default (props: any) => {
           </Form.Item>
           {
             type === PublishType.BUILD_DEPLOY && (
-              <Form.Item label={formatMessage('branch', 'branch')} name={'branch'} rules={requiredRule}>
-                <Select placeholder="master" showSearch
-                        onSearch={(item) => {
-                          refreshBranchList(item);
-                        }}>
+              <Form.Item
+                style={{display: 'flex'}}
+                label={"版本"} name={'ref'}
+                rules={requiredRule}
+              >
+                <Form.Item
+                  name={"refType"}
+                  style={{display: 'inline-block', width: '100px'}}
+                >
+                  <Select 
+                      onSelect={(key: any) => {
+                        setRefType(key);
+                        form.setFieldsValue({"refValue": ""})
+                        if (key != GitRefType.Commit) {
+                          refreshGitRefList();
+                        }
+                      }}
+                  >
+                    {
+                      gitRefTypeList.map((item) => {
+                        return <Option key={item.key} value={item.key}>{item.displayName}</Option>
+                      })
+                    }
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name={"refValue"}
+                  style={{display: 'inline-block', width: 'calc(100% - 100px)'}}
+                >
                   {
-                    branchList.map((item: string) => {
-                      return <Option key={item} value={item}>{item}</Option>
-                    })
+                    refType==GitRefType.Commit ? <Input
+                      onPressEnter={()=>{
+                        refreshDiff(form.getFieldValue('refValue'))
+                      }}
+                    /> : <Select 
+                           allowClear
+                           onSelect={(key: any) => {
+                              refreshDiff(key);
+                           }}
+                           showSearch
+                           onSearch={(item) => {
+                             refreshGitRefList(item);
+                          }}>
+                      {
+                        gitRefList.map((item: string) => {
+                          return <Option key={item} value={item}>{item}</Option>
+                        })
+                      }
+                    </Select>
                   }
-                </Select>
+                </Form.Item>
               </Form.Item>
             )
           }

@@ -1,9 +1,62 @@
 import {request} from 'umi';
 
-export async function listBranch(params: API.CodeBranchSearchParam) {
+export enum GitRefType {
+  Branch = "branch",
+  Tag = "tag",
+  Commit = "commit"
+}
+
+export type GitInfo = {
+  url: string
+  subfolder: string
+  branch: string
+  tag: string
+  commit: string
+}
+
+export const parseGitRef = (gitInfo: GitInfo) => {
+  if (gitInfo.tag) {
+    return {
+      gitRefType: GitRefType.Tag,
+      gitRef: gitInfo.tag
+    }
+  } else if (gitInfo.branch) {
+    return {
+      gitRefType: GitRefType.Branch,
+      gitRef: gitInfo.branch
+    }
+  } else if (gitInfo.commit) {
+    return {
+      gitRefType: GitRefType.Commit,
+      gitRef: gitInfo.commit
+    }
+  }
+  return {}
+}
+
+export const gitRefTypeList = [
+  {
+    displayName: "分支",
+    key: GitRefType.Branch,
+  },
+  {
+    displayName: "Tag",
+    key: GitRefType.Tag,
+  },
+  {
+    displayName: "Commit",
+    key: GitRefType.Commit,
+  },
+]
+
+export async function listGitRef(params: API.CodeBranchSearchParam) {
+  let url = `/apis/front/v1/code/listbranch`
+  if (params.refType == "tag") {
+    url = `/apis/front/v1/code/listtag`
+  }
   return request<{
     data: string[];
-  }>(`/apis/front/v1/code/listbranch`, {
+  }>(url, {
     method: 'GET',
     params,
   });

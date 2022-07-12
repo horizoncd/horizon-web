@@ -4,9 +4,9 @@ import {useRequest} from 'umi';
 import {queryReleases} from '@/services/templates/templates';
 import styles from '../index.less';
 import {useIntl} from "@@/plugin-locale/localeExports";
-import {listBranch} from '@/services/code/code'
+import {listGitRef, GitRefType} from '@/services/code/code'
 import HForm from '@/components/HForm'
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -16,21 +16,26 @@ export default (props: any) => {
 
   // query release version
   const {data: releases} = useRequest(() => queryReleases(props.template?.name));
-  const {data: branchList = [], run: refreshBranchList} = useRequest((giturl, filter) => listBranch({
-    giturl,
-    filter,
-    pageNumber: 1,
-    pageSize: 50,
-  }), {
-    manual: true,
-    debounceInterval: 500,
+  const {data: gitRefList = [], run: refreshGitRefList} = useRequest((filter?: string) => {
+    const giturl = props.form.getFieldValue('url')
+    const refType = props.form.getFieldValue('refType')
+    return listGitRef({
+      refType,
+      giturl,
+      filter,
+      pageNumber: 1,
+      pageSize: 50,
+    })
+  }, {
+    debounceInterval: 100,
+    ready: !!props.form.getFieldValue('url') && !readonly,
   })
 
   useEffect(() => {
     if (props.editing) {
-      refreshBranchList(props.form.getFieldValue('url'), '')
+      refreshGitRefList(props.form.getFieldValue('url'), '')
     }
-  }, [props.editing, props.form, refreshBranchList])
+  }, [props.editing, props.form, refreshGitRefList])
 
   const formatMessage = (suffix: string, defaultMsg?: string) => {
     return intl.formatMessage({id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg})
@@ -55,7 +60,7 @@ export default (props: any) => {
     },
   ];
 
-  const gitBranchRules: Rule[] = [
+  const gitRevisionRules: Rule[] = [
     {
       max: 128,
     },
@@ -83,14 +88,26 @@ export default (props: any) => {
 
   const {readonly = false, editing = false} = props;
 
+  const gitRefTypeList = [
+    {
+      displayName: "分支",
+      key: "branch",
+    },
+    {
+      displayName: "Tag",
+      key: "tag",
+    },
+    {
+      displayName: "Commit",
+      key: "commit",
+    },
+  ]
+
   return (
     <div>
       <HForm layout={'vertical'} form={props.form}
              onFieldsChange={(a: FieldData[], b: FieldData[]) => {
                props.setFormData(a, b)
-               if (a[0].name[0] === 'url' && (gitURLRegExp.test(a[0].value))) {
-                 refreshBranchList(a[0].value, '')
-               }
              }}
              fields={props.formData}
       >
@@ -107,7 +124,7 @@ export default (props: any) => {
           </Form.Item>
           <Form.Item label={formatMessage('release')} name={'release'} rules={requiredRule}>
             <Select disabled={readonly}>
-              {releases?.map((item) => {
+              {releases?.map((item: { name: any; description?: string; recommended?: boolean; }) => {
                 return (
                   <Option key={item.name} value={item.name}>
                     {formatReleaseOption(item)}
@@ -136,20 +153,45 @@ export default (props: any) => {
               disabled={readonly}
             />
           </Form.Item>
-          <Form.Item label={formatMessage('branch')} name={'branch'} rules={gitBranchRules}>
-            <Select disabled={readonly} showSearch
-                    onSearch={(item) => {
-                      const url = props.form.getFieldValue('url')
-                      if (gitURLRegExp.test(url)) {
-                        refreshBranchList(url, item);
-                      }
-                    }}>
+          <Form.Item
+            style={{display: 'flex'}}
+            label={"版本"} name={'refType'} rules={gitRevisionRules}>
+            <Form.Item
+              name={"refType"}
+              style={{display: 'inline-block', width: '100px'}}
+            >
+              <Select disabled={readonly} defaultValue={gitRefTypeList[0]}
+                      onSelect={(key: any) => {
+                        if (key != GitRefType.Commit) {
+                          refreshGitRefList();
+                        }
+                      }}
+              >
+                {
+                  gitRefTypeList.map((item) => {
+                    return <Option key={item.key} value={item.key}>{item.displayName}</Option>
+                  })
+                }
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name={"refValue"}
+              style={{display: 'inline-block', width: 'calc(100% - 100px)'}}
+            >
               {
-                branchList.map((item: string) => {
-                  return <Option key={item} value={item}>{item}</Option>
-                })
+                props.form.getFieldValue('refType') == GitRefType.Commit ? 
+                <Input/> : <Select disabled={readonly} showSearch
+                  onSearch={(item) => {
+                      refreshGitRefList(item);
+                  }}>
+                  {
+                    gitRefList.map((item: string) => {
+                      return <Option key={item} value={item}>{item}</Option>
+                    })
+                  }
+                </Select>
               }
-            </Select>
+            </Form.Item>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name={'subfolder'}>
             <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'}/>

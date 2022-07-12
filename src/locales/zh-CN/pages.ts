@@ -91,6 +91,8 @@ export default {
   'pages.clusterDetail.basic.url': '地址',
   'pages.clusterDetail.basic.subfolder': '代码目录',
   'pages.clusterDetail.basic.branch': '分支',
+  'pages.clusterDetail.basic.tag': 'Tag',
+  'pages.clusterDetail.basic.commit': 'Commit',
   'pages.clusterDetail.basic.createTime': '创建时间',
   'pages.clusterDetail.basic.updateTime': '修改时间',
   'pages.clusterDelete.success': '集群删除成功',

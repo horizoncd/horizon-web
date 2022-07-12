@@ -1,3 +1,4 @@
+import {GitInfo} from '@/services/code/code'
 // @ts-ignore
 /* eslint-disable */
 declare namespace API {
@@ -127,11 +128,7 @@ declare namespace API {
       release: string;
       recommendedRelease: string;
     };
-    git: {
-      url: string;
-      subfolder: string;
-      branch: string;
-    };
+    git: GitInfo;
     templateInput: any;
     createdAt: string;
     updatedAt: string;
@@ -214,6 +211,7 @@ declare namespace API {
   }
 
   type CodeBranchSearchParam = {
+    refType: string,
     giturl: string,
     pageNumber: number,
     pageSize: number,

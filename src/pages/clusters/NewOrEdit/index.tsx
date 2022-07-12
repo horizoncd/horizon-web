@@ -5,6 +5,7 @@ import Audit from './Audit';
 import {useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
+import {parseGitRef} from '@/services/code/code'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import {createCluster, getCluster, updateCluster} from "@/services/clusters/clusters";
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -84,13 +85,14 @@ export default (props: any) => {
       onSuccess: () => {
         const {template: t, git, name: n} = data!
         setTemplate(t)
-        const {url: u, subfolder: s, branch: b} = git
         const {release: r} = t
+        const {gitRefType, gitRef} = parseGitRef(git)
         setBasic(prevBasic => [
             ...prevBasic,
-            {name: url, value: u},
-            {name: subfolder, value: s},
-            {name: branch, value: b},
+            {name: url, value: git.url},
+            {name: subfolder, value: git.subfolder},
+            {name: 'refType', value: gitRefType},
+            {name: 'refValue', value: gitRef},
             {name: release, value: r},
           ]
         )
@@ -115,10 +117,12 @@ export default (props: any) => {
         const {url: u, branch: b, subfolder: s} = git
         const {environment: e, region: r} = scope
         const {release: rel} = t
+        const {gitRefType, gitRef} = parseGitRef(git)
         setBasic([
             {name, value: n},
             {name: description, value: d},
-            {name: branch, value: b},
+            {name: 'refType', value: gitRefType},
+            {name: 'refValue', value: gitRef},
             {name: environment, value: e},
             {name: region, value: r},
             {name: url, value: u},
@@ -255,7 +259,7 @@ export default (props: any) => {
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',
-        branch: form.getFieldValue(branch),
+        [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
       },
       environment: form.getFieldValue(environment),
       region: form.getFieldValue(region),

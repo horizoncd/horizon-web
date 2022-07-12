@@ -21,6 +21,7 @@ import {useRequest} from '@@/plugin-request/request';
 import RBAC from '@/rbac'
 import {queryEnvironments} from "@/services/environments/environments";
 import copy from "copy-to-clipboard";
+import {parseGitRef} from '@/services/code/code';
 const {Option} = Select;
 
 export default () => {
@@ -56,6 +57,7 @@ export default () => {
   const [templateInput, setTemplateInput] = useState({})
   const [templateInputError, setTemplateInputError] = useState({})
   const [currentEnv, setCurrentEnv] = useState('')
+  const {gitRefType, gitRef} = parseGitRef(application.git)
   const serviceDetail: Param[][] = [
     [
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.name'}), value: application.name},
@@ -74,8 +76,11 @@ export default () => {
         hidden: application.template.release === application.template.recommendedRelease,
       },
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.url'}), value: application.git.url},
+      {
+        key: intl.formatMessage({id: 'pages.clusterDetail.basic.'+gitRefType}), 
+        value: gitRef, 
+      },
       {key: intl.formatMessage({id: 'pages.applicationNew.basic.subfolder'}), value: application.git.subfolder},
-      {key: intl.formatMessage({id: 'pages.applicationNew.basic.branch'}), value: application.git.branch},
     ],
     [
       {
