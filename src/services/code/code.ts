@@ -31,7 +31,10 @@ export const parseGitRef = (gitInfo: GitInfo) => {
       gitRef: gitInfo.commit
     }
   }
-  return {}
+  return {
+    gitRefType: GitRefType.Branch,
+    gitRef: ""
+  }
 }
 
 export const gitRefTypeList = [
