@@ -33,6 +33,7 @@ export default (props: any) => {
   const newCluster = `/applications${fullPath}/-/clusters/new`;
   const [tagSelectorState, setTagSelectorState] = useState(tagSelector)
   const [filterState, setFilterState] = useState(filter)
+  const [selectedCluster, setSelectedCluster] = useState()
 
   const pageSize = 10;
 
@@ -263,12 +264,29 @@ export default (props: any) => {
           {intl.formatMessage({id: 'pages.groups.New cluster'})}
         </Button>
       }
+      {
+        <Button
+          disabled={!RBAC.Permissions.createCluster.allowedEnv(environment) || !selectedCluster}
+          className={styles.createClusterBtn}
+          onClick={() => {
+            history.push({
+              pathname: newCluster,
+              search: stringify({
+                sourceClusterID: selectedCluster?.id
+              }),
+            });
+          }}
+        >
+          复制集群
+        </Button>
+      }
     </div>
   )
 
   const data = clusters?.items.map(item => {
-    const {name, scope, template, updatedAt, createdAt, tags: tagList} = item
+    const {id, name, scope, template, updatedAt, createdAt, tags: tagList} = item
     return {
+      id: id,
       key: name,
       name: name,
       environment: env2DisplayName?.get(scope.environment),
@@ -298,7 +316,15 @@ export default (props: any) => {
     />
   }
 
+  const onClusterSelected = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+    setSelectedCluster(selectedRows[0])
+  };
+
   const table = <Table
+    rowSelection={{
+      type: 'radio',
+      onChange: onClusterSelected
+    }}
     columns={columns}
     dataSource={data}
     locale={locale}
