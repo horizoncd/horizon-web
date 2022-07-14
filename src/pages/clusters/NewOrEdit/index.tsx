@@ -52,9 +52,10 @@ export default (props: any) => {
 
   const {location} = props;
   const {query, pathname} = location;
-  const {environment: envFromQuery} = query;
+  const {environment: envFromQuery, sourceClusterID} = query;
   const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
+  const copying = !!sourceClusterID
 
   const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
@@ -78,6 +79,42 @@ export default (props: any) => {
     ready: creating,
     manual: true,
   });
+
+  // query source cluster if copying
+  if (copying) {
+    const {data: clusterData} = useRequest(() => getCluster(sourceClusterID), {
+      onSuccess: () => {
+        const {
+          description: d,
+          git,
+          template: t,
+          templateInput,
+          scope
+        } = clusterData!
+        const {url: u, branch: b, subfolder: s} = git
+        const {environment: e, region: r} = scope
+        const {release: rel} = t
+        const {gitRefType, gitRef} = parseGitRef(git)
+        setBasic([
+            {name: description, value: d},
+            {name: 'refType', value: gitRefType},
+            {name: 'refValue', value: gitRef},
+            {name: environment, value: e},
+            {name: region, value: r},
+            {name: url, value: u},
+            {name: branch, value: b},
+            {name: subfolder, value: s},
+            {name: release, value: rel},
+          ]
+        )
+        setOriginConfig(templateInput)
+        setConfig(templateInput)
+        setTemplate(t)
+        setCluster(clusterData)
+      }
+    });
+  }
+
 
   // query application if creating
   if (creating) {
