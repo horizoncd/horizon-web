@@ -105,7 +105,7 @@ export default {
   'pages.clusterDetail.basic.delete': '删除',
 
   'pages.cluster.podsTable.podName': '副本',
-  'pages.cluster.podsTable.status': '状态',
+  'pages.cluster.podsTable.status': 'pod 状态',
   'pages.cluster.podsTable.onlineStatus': '上线状态',
   'pages.cluster.podsTable.restartCount': '重启次数',
   'pages.cluster.podsTable.createTime': '创建时间',
