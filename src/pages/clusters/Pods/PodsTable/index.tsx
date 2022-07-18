@@ -533,7 +533,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       render: (text: any) => renderPodNameAndIP("podName", text)
     },
     {
-      title: formatMessage('status', '状态'),
+      title: formatMessage('status', 'pod 状态'),
       dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
