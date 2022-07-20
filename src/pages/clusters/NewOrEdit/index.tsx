@@ -100,42 +100,40 @@ export default (props: any) => {
             ]
           )
           refreshAppEnvTemplate(envFromQuery)
+        } else {
+          // query source cluster if copying
+          getCluster(sourceClusterID).then(
+            ({data: clusterData}) => {
+              const {
+                description: d,
+                git: gitInfo,
+                template: tpl,
+                templateInput,
+                scope
+              } = clusterData!
+              const {url: u, branch: b, subfolder: s} = gitInfo
+              const {environment: e, region: r} = scope
+              const {release: rel} = tpl
+              const {gitRefType, gitRef} = parseGitRef(gitInfo)
+              setBasic([
+                  {name: description, value: d},
+                  {name: 'refType', value: gitRefType},
+                  {name: 'refValue', value: gitRef},
+                  {name: environment, value: e},
+                  {name: region, value: r},
+                  {name: url, value: u},
+                  {name: branch, value: b},
+                  {name: subfolder, value: s},
+                  {name: release, value: rel},
+                ]
+              )
+              setOriginConfig(templateInput)
+              setConfig(templateInput)
+              setTemplate(tpl)
+              setCluster(clusterData)
+            }
+          )
         }
-      }
-    });
-  }
-
-  // query source cluster if copying
-  if (copying) {
-    const {data: clusterData} = useRequest(() => getCluster(sourceClusterID), {
-      onSuccess: () => {
-        const {
-          description: d,
-          git,
-          template: t,
-          templateInput,
-          scope
-        } = clusterData!
-        const {url: u, branch: b, subfolder: s} = git
-        const {environment: e, region: r} = scope
-        const {release: rel} = t
-        const {gitRefType, gitRef} = parseGitRef(git)
-        setBasic([
-            {name: description, value: d},
-            {name: 'refType', value: gitRefType},
-            {name: 'refValue', value: gitRef},
-            {name: environment, value: e},
-            {name: region, value: r},
-            {name: url, value: u},
-            {name: branch, value: b},
-            {name: subfolder, value: s},
-            {name: release, value: rel},
-          ]
-        )
-        setOriginConfig(templateInput)
-        setConfig(templateInput)
-        setTemplate(t)
-        setCluster(clusterData)
       }
     });
   }
