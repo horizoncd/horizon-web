@@ -54,8 +54,8 @@ export default (props: any) => {
   const {query, pathname} = location;
   const {environment: envFromQuery, sourceClusterID} = query;
   const editing = pathname.endsWith('edit')
+  const creating = pathname.endsWith('new')
   const copying = !!sourceClusterID
-  const creating = !copying && pathname.endsWith('new')
 
   const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
@@ -79,6 +79,31 @@ export default (props: any) => {
     ready: creating,
     manual: true,
   });
+
+  // query application if creating
+  if (creating) {
+    const {data} = useRequest(() => getApplication(id), {
+      onSuccess: () => {
+        const {template: t, git, name: n} = data!
+        setApplicationName(n)
+        if (!copying) {
+          setTemplate(t)
+          const {release: r} = t
+          const {gitRefType, gitRef} = parseGitRef(git)
+          setBasic(prevBasic => [
+              ...prevBasic,
+              {name: url, value: git.url},
+              {name: subfolder, value: git.subfolder},
+              {name: 'refType', value: gitRefType},
+              {name: 'refValue', value: gitRef},
+              {name: release, value: r},
+            ]
+          )
+          refreshAppEnvTemplate(envFromQuery)
+        }
+      }
+    });
+  }
 
   // query source cluster if copying
   if (copying) {
@@ -111,29 +136,6 @@ export default (props: any) => {
         setConfig(templateInput)
         setTemplate(t)
         setCluster(clusterData)
-      }
-    });
-  }
-
-  // query application if creating
-  if (creating) {
-    const {data} = useRequest(() => getApplication(id), {
-      onSuccess: () => {
-        const {template: t, git, name: n} = data!
-        setTemplate(t)
-        const {release: r} = t
-        const {gitRefType, gitRef} = parseGitRef(git)
-        setBasic(prevBasic => [
-            ...prevBasic,
-            {name: url, value: git.url},
-            {name: subfolder, value: git.subfolder},
-            {name: 'refType', value: gitRefType},
-            {name: 'refValue', value: gitRef},
-            {name: release, value: r},
-          ]
-        )
-        setApplicationName(n)
-        refreshAppEnvTemplate(envFromQuery)
       }
     });
   }
