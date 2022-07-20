@@ -53,9 +53,9 @@ export default (props: any) => {
   const {location} = props;
   const {query, pathname} = location;
   const {environment: envFromQuery, sourceClusterID} = query;
-  const creating = pathname.endsWith('new')
   const editing = pathname.endsWith('edit')
   const copying = !!sourceClusterID
+  const creating = !copying && pathname.endsWith('new')
 
   const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
@@ -114,7 +114,6 @@ export default (props: any) => {
       }
     });
   }
-
 
   // query application if creating
   if (creating) {
