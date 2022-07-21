@@ -54,8 +54,8 @@ export default (props: any) => {
   const {query, pathname} = location;
   const {environment: envFromQuery, sourceClusterID} = query;
   const editing = pathname.endsWith('edit')
+  const creating = pathname.endsWith('new')
   const copying = !!sourceClusterID
-  const creating = !copying && pathname.endsWith('new')
 
   const {successAlert} = useModel('alert')
   const [form] = Form.useForm();
@@ -80,60 +80,60 @@ export default (props: any) => {
     manual: true,
   });
 
-  // query source cluster if copying
-  if (copying) {
-    const {data: clusterData} = useRequest(() => getCluster(sourceClusterID), {
-      onSuccess: () => {
-        const {
-          description: d,
-          git,
-          template: t,
-          templateInput,
-          scope
-        } = clusterData!
-        const {url: u, branch: b, subfolder: s} = git
-        const {environment: e, region: r} = scope
-        const {release: rel} = t
-        const {gitRefType, gitRef} = parseGitRef(git)
-        setBasic([
-            {name: description, value: d},
-            {name: 'refType', value: gitRefType},
-            {name: 'refValue', value: gitRef},
-            {name: environment, value: e},
-            {name: region, value: r},
-            {name: url, value: u},
-            {name: branch, value: b},
-            {name: subfolder, value: s},
-            {name: release, value: rel},
-          ]
-        )
-        setOriginConfig(templateInput)
-        setConfig(templateInput)
-        setTemplate(t)
-        setCluster(clusterData)
-      }
-    });
-  }
-
   // query application if creating
   if (creating) {
     const {data} = useRequest(() => getApplication(id), {
       onSuccess: () => {
         const {template: t, git, name: n} = data!
-        setTemplate(t)
-        const {release: r} = t
-        const {gitRefType, gitRef} = parseGitRef(git)
-        setBasic(prevBasic => [
-            ...prevBasic,
-            {name: url, value: git.url},
-            {name: subfolder, value: git.subfolder},
-            {name: 'refType', value: gitRefType},
-            {name: 'refValue', value: gitRef},
-            {name: release, value: r},
-          ]
-        )
         setApplicationName(n)
-        refreshAppEnvTemplate(envFromQuery)
+        if (!copying) {
+          setTemplate(t)
+          const {release: r} = t
+          const {gitRefType, gitRef} = parseGitRef(git)
+          setBasic(prevBasic => [
+              ...prevBasic,
+              {name: url, value: git.url},
+              {name: subfolder, value: git.subfolder},
+              {name: 'refType', value: gitRefType},
+              {name: 'refValue', value: gitRef},
+              {name: release, value: r},
+            ]
+          )
+          refreshAppEnvTemplate(envFromQuery)
+        } else {
+          // query source cluster if copying
+          getCluster(sourceClusterID).then(
+            ({data: clusterData}) => {
+              const {
+                description: d,
+                git: gitInfo,
+                template: tpl,
+                templateInput,
+                scope
+              } = clusterData!
+              const {url: u, branch: b, subfolder: s} = gitInfo
+              const {environment: e, region: r} = scope
+              const {release: rel} = tpl
+              const {gitRefType, gitRef} = parseGitRef(gitInfo)
+              setBasic([
+                  {name: description, value: d},
+                  {name: 'refType', value: gitRefType},
+                  {name: 'refValue', value: gitRef},
+                  {name: environment, value: e},
+                  {name: region, value: r},
+                  {name: url, value: u},
+                  {name: branch, value: b},
+                  {name: subfolder, value: s},
+                  {name: release, value: rel},
+                ]
+              )
+              setOriginConfig(templateInput)
+              setConfig(templateInput)
+              setTemplate(tpl)
+              setCluster(clusterData)
+            }
+          )
+        }
       }
     });
   }
