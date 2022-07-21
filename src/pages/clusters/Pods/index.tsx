@@ -555,6 +555,7 @@ export default () => {
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.3.1 确认健康检查端口配置 <br/>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.3.2 确认上线接口调用耗时是否过长 <br/>
         &nbsp; 2. 点击 {strongTxt('Monitor')} 查看资源使用是否存在瓶颈，如存在瓶颈可考虑升级规格 <br/>
+        &nbsp; 3. Java应用可检查jvm参数中是否正确配置 -Dserver.port，并与健康检查端口保持一致 <br/>
         <br/>
         <br/>
         【 {strongTxt('温馨提示2')} 】集群处于【 {strongTxt('人工暂停')} 】状态时，
