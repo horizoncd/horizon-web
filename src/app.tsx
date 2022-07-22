@@ -10,14 +10,15 @@ import {currentUser as queryCurrentUser} from './services/login/login';
 import {
   AppstoreOutlined,
   BankOutlined,
+  ClusterOutlined,
   ContactsOutlined,
+  DatabaseOutlined,
   DownOutlined,
+  EnvironmentOutlined,
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  DatabaseOutlined,
-  EnvironmentOutlined,
-  ClusterOutlined,
+  SnippetsOutlined,
   TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
@@ -42,7 +43,8 @@ const IconMap = {
   tags: <TagsOutlined/>,
   cluster: <ClusterOutlined/>,
   environment: <EnvironmentOutlined/>,
-  database: <DatabaseOutlined/>
+  database: <DatabaseOutlined/>,
+  templates: <SnippetsOutlined/>
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -143,6 +145,22 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
+  requestInterceptors: [
+    (url, options) => {
+      return {
+        url: url,
+        options: {
+          ...options, interceptors: true, headers: {
+            ...options.headers,
+            "X-HORIZON-OIDC-EMAIL": "wurongjun@corp.netease.com",
+            "X-HORIZON-OIDC-FULLNAME": "wrj",
+            "X-HORIZON-OIDC-TYPE": "netease",
+            "X-HORIZON-OIDC-USER": "wrj"
+          }
+        },
+      };
+    },
+  ],
   responseInterceptors: [
     (response) => {
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
@@ -297,6 +315,11 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
               name: 'Environments',
               icon: 'environment',
             },
+            {
+              path: `/admin/templates`,
+              name: 'Templates',
+              icon: "templates",
+            }
           ]);
         }
 

@@ -30,6 +30,13 @@
     ],
   },
   {
+    path: '/admin/templates',
+    component: "admin/Templates",
+    wrappers: [
+      '@/wrappers/auth',
+    ]
+  },
+  {
     path: '/',
     menuRender: false,
     redirect: '/dashboard/clusters',
@@ -224,6 +231,38 @@ const adminRoutes = [
   }, {
     path: '/admin/environments/:id/edit',
     component: 'admin/Environments/Edit'
+  },
+  {
+    path: '/admin/templates/new',
+    component: 'admin/Templates/New',
+  },
+  {
+    path: '/admin/templates/:id',
+    component: 'admin/Templates/Detail',
+  },
+  {
+    path: '/admin/templates/:id/edit',
+    component: 'admin/Templates/Edit',
+  },
+  {
+    path: '/admin/templates/:id/members',
+    component: 'admin/Templates/Member',
+  },
+  {
+    path: '/admin/templates/:id/releases',
+    component: 'admin/Templates/Releases',
+  },
+  {
+    path: '/admin/templates/:template/releases/new',
+    component: 'admin/Templates/Releases/New',
+  },
+  {
+    path: '/admin/templates/:template/releases/:id',
+    component: 'admin/Templates/Releases/Detail',
+  },
+  {
+    path: '/admin/templates/:template/releases/:id/edit',
+    component: 'admin/Templates/Releases/Edit',
   },
 ]
 

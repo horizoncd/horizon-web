@@ -108,3 +108,24 @@ export async function querySelfMember(resourceType: string, resourceID: number) 
     }
   });
 }
+
+export async function queryTemplateMembers(resourceID: string | number, filter?: string) {
+  const params: any = {}
+  if (filter) {
+    params.filter = filter
+  }
+  return request(`/apis/core/v1/templates/${resourceID}/members`, {
+    method: 'GET',
+    params,
+  });
+}
+
+export async function inviteTemplateMember(body: API.NewMember) {
+  return request(`/apis/core/v1/templates/${body.resourceID}/members`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}

@@ -2,6 +2,7 @@ export enum ResourceType {
   GROUP = 'group',
   APPLICATION = 'application',
   CLUSTER = 'cluster',
+  TEMPLATE = 'template',
 }
 
 export enum PublishType {

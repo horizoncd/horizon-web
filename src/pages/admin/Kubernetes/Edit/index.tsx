@@ -2,7 +2,7 @@ import {Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import { useParams } from 'umi';
+import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
 import {getRegionByID, updateRegionByID} from "@/services/regions/regions";
