@@ -2,21 +2,25 @@ import {Button, Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
 import {queryTemplate, updateTemplate} from "@/services/templates/templates";
-import {TemplateForm} from "../form";
+import {TemplateForm} from "../components/form";
+import {hasPermission} from "../utils";
+import rbac from "@/rbac";
 
 export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert')
-  const params = useParams<{id: string,template: string}>();
-  if (!params.id || isNaN(parseInt(params.id))) {
-    return <NotFount/>;
+
+  const {initialState} = useModel("@@initialState")
+
+  if (!initialState?.resource.id || !initialState.currentUser) {
+    return <NotFount />;
   }
 
-  const templateID = parseInt(params.id)
+  const templateID = initialState.resource.id
+  const fullName = initialState.resource.fullName
   const {data: template} = useRequest(() => queryTemplate(templateID), {
     onSuccess: () => {
       form.setFieldsValue(template)
@@ -32,19 +36,17 @@ export default () => {
           onFinish={(v) => {
             updateTemplate(templateID, v).then(() => {
               successAlert('更新成功')
-              history.push(`/admin/templates/${templateID}`)
+              history.push(`/templates/${fullName}/-/detail`)
             })
           }}
         >
           <Form.Item label={"名称"} name={'name'} rules={[{required: true}]} extra={'Templates唯一名称标识'}>
             <Input disabled/>
           </Form.Item>
-          <TemplateForm/>
-          <Form.Item label={"gitlab访问令牌"} name={'token'} extra={'具有对应gitlab仓库访问权限的令牌'}>
-            <Input/>
-          </Form.Item>
+          <TemplateForm onRepositoryBlur={()=>{}} isAdmin={initialState.currentUser.isAdmin}/>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.updateTemplate.allowed)} 
+            htmlType="submit">
               Submit
             </Button>
           </Form.Item>

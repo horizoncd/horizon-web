@@ -1,4 +1,6 @@
-﻿export const routes = [
+﻿import component from "@/locales/en-US/component";
+
+export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -30,11 +32,14 @@
     ],
   },
   {
-    path: '/admin/templates',
-    component: "admin/Templates",
-    wrappers: [
-      '@/wrappers/auth',
-    ]
+    path: '/templates',
+    menuRender: false,
+    component: "templates",
+  },
+  {
+    path: '/templates/new',
+    menuRender: false,
+    component: 'templates/New',
   },
   {
     path: '/',
@@ -232,38 +237,45 @@ const adminRoutes = [
     path: '/admin/environments/:id/edit',
     component: 'admin/Environments/Edit'
   },
+]
+
+const templateRoutes = [
   {
-    path: '/admin/templates/new',
-    component: 'admin/Templates/New',
+    path: '/groups/*/-/templates',
+    component: 'templates'
   },
   {
-    path: '/admin/templates/:id',
-    component: 'admin/Templates/Detail',
+    path: '/groups/*/-/newtemplate',
+    component: 'templates/New'
   },
   {
-    path: '/admin/templates/:id/edit',
-    component: 'admin/Templates/Edit',
+    path: '/templates/*/-/detail',
+    component: 'templates/Detail',
   },
   {
-    path: '/admin/templates/:id/members',
-    component: 'admin/Templates/Member',
+    path: '/templates/*/-/edit',
+    component: 'templates/Edit',
   },
   {
-    path: '/admin/templates/:id/releases',
-    component: 'admin/Templates/Releases',
+    path: '/templates/*/-/members',
+    component: 'templates/Member',
   },
   {
-    path: '/admin/templates/:template/releases/new',
-    component: 'admin/Templates/Releases/New',
+    path: '/templates/*/-/releases',
+    component: 'templates/Releases',
   },
   {
-    path: '/admin/templates/:template/releases/:id',
-    component: 'admin/Templates/Releases/Detail',
+    path: '/templates/*/-/newrelease',
+    component: 'templates/Releases/New',
   },
   {
-    path: '/admin/templates/:template/releases/:id/edit',
-    component: 'admin/Templates/Releases/Edit',
+    path: '/releases/*/-/detail',
+    component: 'templates/Releases/Detail',
   },
+  {
+    path: '/releases/*/-/edit',
+    component: 'templates/Releases/Edit',
+  }
 ]
 
 const allRoute = [];
@@ -272,6 +284,7 @@ allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
+allRoute.push(...templateRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

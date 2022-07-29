@@ -18,6 +18,8 @@ import {queryEnvironments} from "@/services/environments/environments";
 import {queryReleases, queryTemplates} from '@/services/templates/templates';
 import {FundOutlined, GitlabOutlined, RocketTwoTone} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
+import type {CLUSTER} from '@/services/clusters';
+import type {API} from '@/services/typings';
 
 const {Option} = Select;
 
@@ -108,7 +110,7 @@ export default (props: any) => {
     }
   });
 
-  const {data: tpls} = useRequest(queryTemplates, {
+  const {data: tpls} = useRequest(()=>queryTemplates(false), {
     onSuccess: () => {
       const t: CLUSTER.TemplateOptions[] = []
       tpls?.forEach((item) => {

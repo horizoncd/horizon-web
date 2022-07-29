@@ -14,6 +14,7 @@ import {
   ContactsOutlined,
   DatabaseOutlined,
   DownOutlined,
+  EditOutlined,
   EnvironmentOutlined,
   FundOutlined,
   SettingOutlined,
@@ -27,6 +28,7 @@ import {stringify} from 'querystring';
 import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
+import type {API} from './services/typings';
 
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
@@ -44,7 +46,8 @@ const IconMap = {
   cluster: <ClusterOutlined/>,
   environment: <EnvironmentOutlined/>,
   database: <DatabaseOutlined/>,
-  templates: <SnippetsOutlined/>
+  templates: <SnippetsOutlined/>,
+  edit: <EditOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -100,8 +103,6 @@ export async function getInitialState(): Promise<{
 
     const {data: rolesData} = await queryRoles()
     roles = rolesData
-
-
   } catch (e) {
     currentUser = undefined
   }
@@ -110,7 +111,11 @@ export async function getInitialState(): Promise<{
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
-      const {data: resourceData} = await queryResource(path);
+      const {data: resourceData} = history.location.pathname.startsWith('/templates')?
+       await queryResource(path,"templates") :
+      history.location.pathname.startsWith('/releases') ? 
+      await queryResource(path,"releases"): await queryResource(path,"");
+
       resource.id = resourceData.id;
       resource.name = resourceData.name;
       resource.type = resourceData.type;
@@ -152,7 +157,7 @@ export const request: RequestConfig = {
         options: {
           ...options, interceptors: true, headers: {
             ...options.headers,
-            "X-HORIZON-OIDC-EMAIL": "wurongjun@corp.netease.com",
+            "X-HORIZON-OIDC-EMAIL": "chenzhixiang@corp.netease.com",
             "X-HORIZON-OIDC-FULLNAME": "wrj",
             "X-HORIZON-OIDC-TYPE": "netease",
             "X-HORIZON-OIDC-USER": "wrj"
@@ -226,6 +231,9 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         </Menu.Item>
         <Menu.Item key="3">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/explore/groups")}>Groups</a>
+        </Menu.Item>
+        <Menu.Item key="7">
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push('/templates')}>Templates</a>
         </Menu.Item>
         <SubMenu key="4" title={<span style={{fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)'}}>
           More <DownOutlined style={{fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)'}}/>
@@ -336,6 +344,10 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             return loopMenuItem(formatApplicationMenu(fullPath));
           case ResourceType.CLUSTER:
             return loopMenuItem(formatClusterMenu(fullPath));
+          case ResourceType.TEMPLATE:
+            return loopMenuItem(formatTemplateMenu(fullPath));
+          case ResourceType.RELEASE:
+            return loopMenuItem(formatReleaseMenu(fullPath))
           default:
             return defaultMenuData;
         }
@@ -349,6 +361,38 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     logo: <div/>
   };
 };
+
+function formatTemplateMenu(fullPath: string): MenuDataItem[] {
+  return [
+    ...routes,
+    {
+      name: 'Template detail',
+      icon: 'templates',
+      path: `/templates${fullPath}/-/detail`
+    },
+    {
+      name: 'Members',
+      icon: 'contacts',
+      path: `/templates${fullPath}/-/members`,
+    },
+  ]
+}
+
+function formatReleaseMenu(fullPath: string): MenuDataItem[] {
+  return [
+    ...routes,
+    {
+      name: 'Release detail',
+      icon: 'templates',
+      path: `/releases${fullPath}/-/detail`
+    },
+    {
+      name: 'Release edit',
+      path: `/releases${fullPath}/-/edit`,
+      icon: 'edit',
+    }
+  ]
+}
 
 function formatGroupMenu(fullPath: string) {
   return [
@@ -398,6 +442,11 @@ function formatGroupMenu(fullPath: string) {
       path: `/groups${fullPath}/-/newoauthapp`,
       menuRender: false,
     },
+    {
+      name: 'Templates',
+      path: `/groups${fullPath}/-/templates`,
+      icon: 'templates',
+    }
   ];
 }
 

@@ -5,12 +5,17 @@ import Member from '@/components/Member'
 import {ResourceType} from '@/const'
 import {useIntl} from "@@/plugin-locale/localeExports";
 import RBAC from "@/rbac";
-import {useParams, useRequest} from 'umi';
+import {useModel, useRequest} from 'umi';
+import {NotFount} from '@/components/State';
 
 export default (): React.ReactNode => {
   const intl = useIntl();
-  const params = useParams<{id: string}>()
-  const templateID = params.id
+  const {initialState} = useModel("@@initialState")
+
+  if (!initialState?.resource.id) {
+    return <NotFount />;
+  }
+  const templateID = initialState.resource.id
   const {data:template} = useRequest(()=>queryTemplate(templateID))
 
   return (

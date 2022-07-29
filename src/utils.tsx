@@ -6,7 +6,7 @@ import {routes} from "../config/routes";
 const getResourcePath = () => {
   const {pathname} = history.location;
   const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
-    item !== 'applications' && item !== 'clusters');
+    item !== 'applications' && item !== 'clusters' && item !== 'templates' && item !== 'releases');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -32,6 +32,56 @@ const getBreadcrumbs = (fullName: string) => {
         breadcrumbName: item,
       });
     }
+    return result
+  }
+
+  if (pathname.startsWith("/releases")) {
+    const path = pathname.replace(/\/-.+$/,"")
+    const filteredPath = path.split('/').filter((item)=>item != '' && item != 'releases')
+    let currentLink = ''
+    for(const x of filteredPath.slice(0,filteredPath.length-2)) {
+      currentLink += `/${x}`
+      result.push({
+        path: currentLink,
+        breadcrumbName: x,
+      })
+    }
+    let item = filteredPath[filteredPath.length-2]
+    currentLink = currentLink + `/${item}`
+    result.push({
+      path: '/templates' + currentLink + '/-/detail',
+      breadcrumbName: item,
+    })
+    item = filteredPath[filteredPath.length-1]
+    currentLink += `/${item}`
+    result.push({
+      path: '/releases' +currentLink + '/-/detail',
+      breadcrumbName: item,
+    })
+    return result
+  }
+
+  if (pathname.startsWith("/templates")) {
+    if(pathname === '/templates/new') {
+      return result
+    }
+    const path = pathname.replace(/\/-.+$/,"")
+    const filteredPath = path.split('/').filter((item)=>item != '' && item != 'templates')
+    console.log(filteredPath)
+    let currentLink = ''
+    for(const x of filteredPath.slice(0,filteredPath.length-1)) {
+      currentLink += `/${x}`
+      result.push({
+        path: currentLink,
+        breadcrumbName: x,
+      })
+    }
+    const item = filteredPath[filteredPath.length-1]
+    currentLink += `/${item}`
+    result.push({
+      path: '/templates' +currentLink + '/-/detail',
+      breadcrumbName: item,
+    })
     return result
   }
 

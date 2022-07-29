@@ -4,15 +4,15 @@ import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
 import {history} from "@@/core/history";
 import {deleteRelease, queryReleases, syncReleaseToRepo} from "@/services/templates/templates"
-import {useParams} from "umi";
 import {FireFilled} from "@ant-design/icons";
+import {NotFount} from '@/components/State';
+import {useModel} from 'umi';
+import type {API} from '@/services/typings';
+import RBAC from '@/rbac'
+import {hasPermission} from "../utils";
 
-
-export const ReleasesTable = () => {
-  const params = useParams<{id: string}>()
-  const templateID = parseInt(params.id)
-  const {data: releases} = useRequest(() => queryReleases(templateID))
-
+export const ReleasesTable = (props: {fullName: string, releases: Templates.Release[], currentUser: API.CurrentUser}) => {
+  const {releases,fullName} = props
 
   const columns = [
     {
@@ -20,13 +20,9 @@ export const ReleasesTable = () => {
       dataIndex: 'name',
       render: (name: string, t: Templates.Release) => {
         return <Space size="middle">
-          <a onClick={() => history.push(`/admin/templates/${templateID}/releases/${t.id}`)}>{name}</a>
+          <a href={`/releases/${fullName}/${t.name}/-/detail`}>{name}</a>
         </Space>
       }
-    },
-    {
-      title: '描述',
-      dataIndex: 'description'
     },
     {
       title: '推荐',
@@ -36,11 +32,29 @@ export const ReleasesTable = () => {
       dataIndex: 'recommended'
     },
     {
+      title: 'Commit ID',
+      dataIndex: 'commitID'
+    },
+    {
+      title: '同步状态',
+      dataIndex: 'syncStatus'
+    },
+    {
+      title: '最后同步时间',
+      dataIndex: 'lastSyncAt',
+      render: (syncTime: string) => {
+        return new Date(syncTime).toLocaleString()
+      }
+    },
+    {
       title: '操作',
       dataIndex: 'name',
       render: (name: string, r: Templates.Release) => {
         return <Space size="middle">
-          <Button type='primary' onClick={() => {
+          <Button type='primary' 
+          disabled={r.syncStatus === "Succeed" || 
+          !hasPermission(props.currentUser,RBAC.Permissions.syncRelease.allowed)} 
+          onClick={() => {
             syncReleaseToRepo(r.id).then(()=>{
                     Modal.success({
                       title: 'Release',
@@ -49,8 +63,10 @@ export const ReleasesTable = () => {
             })
           }}>同步</Button>
 
-          <Button type='primary' onClick={()=>{history.push(`/admin/templates/${templateID}/releases/${r.id}/edit`)}}>修改</Button>
-          <Button type='primary' danger onClick={()=>{
+          <Button type='primary' disabled={!hasPermission(props.currentUser,RBAC.Permissions.updateRelease.allowed)}
+           href={`/releases/${fullName}/${r.name}/-/edit`}>修改</Button>
+          <Button type='primary' disabled={!hasPermission(props.currentUser,RBAC.Permissions.deleteRelease.allowed)}
+          danger onClick={()=>{
             Modal.confirm({
                 title: `确认删除Release: ${r.name}`,
                 content: `该release有可能正在被application或cluster使用，删除前请确认`,
@@ -74,17 +90,21 @@ export const ReleasesTable = () => {
     }
   ]
 
-  const queryInput = (
+  let queryInput = (
     <Button
       type="primary"
       style={{marginBottom: 10, float: 'right', marginRight: 5}}
       onClick={() => {
-        history.push(`/admin/templates/${templateID}/releases/new`)
+        history.push(`/templates/${fullName}/-/newrelease`)
       }}
     >
       创建release
     </Button>
   )
+
+  if(!hasPermission(props.currentUser,RBAC.Permissions.createRelease.allowed)) {
+    queryInput = <></>
+  }
 
   const locale = {
     emptyText: <NoData title={'releases'} desc={
@@ -113,7 +133,20 @@ export const ReleasesTable = () => {
 
 
 export default () => {
+  const {initialState} = useModel("@@initialState")
+
+  if (!initialState) {
+    return <NotFount />;
+  }
+
+  const {fullName,id} = initialState.resource
+  const {data: releases} = useRequest(() => queryReleases(id))
+
+  if (!releases || !initialState.currentUser) {
+    return <NotFount />;
+  }
+
   return <PageWithBreadcrumb>
-    <ReleasesTable/>
+    <ReleasesTable fullName={fullName} releases={releases} currentUser={initialState.currentUser}/>
   </PageWithBreadcrumb>
 }

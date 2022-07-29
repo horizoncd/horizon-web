@@ -5,7 +5,10 @@ declare namespace Templates {
         chartName: string
         description?: string
         repository: string
-        inGroup:     number
+        group:     number
+        fullpath?: string
+        createAt: string
+        updateAt: string
         createdBy: number
         updatedBy: number
         releases:    Release[]
@@ -16,10 +19,26 @@ declare namespace Templates {
         name:       string
         description: string
         recommended: boolean
+        templateID: number,
+        commitID: string,
+        chartVersion: string,
+        syncStatus: string,
+        syncStatusCode: StatusCode,
+        lastSyncAt: string,
+        failedReason: string,
         createdBy?: number
         updatedBy?: number
+        createAt: string
+        updateAt: string
     }
 
+
+    enum StatusCode {
+        StatusSucceed = 1,
+        StatusUnknown,
+        StatusFailed,
+        StatusOutOfSync,
+    }
 
     type CreateTemplateRequest  = {
         name:     string

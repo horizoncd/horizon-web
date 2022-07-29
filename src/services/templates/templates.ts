@@ -1,11 +1,14 @@
-import Templates from '@/pages/admin/Templates';
 import {request} from 'umi';
+import type {API} from '../typings';
 
-export async function queryTemplates() {
+export async function queryTemplates(fullpath: boolean) {
   return request<{
     data: Templates.Template[];
   }>(`/apis/core/v1/templates`, {
     method: 'GET',
+    params: {
+      fullpath
+    }
   });
 }
 
@@ -97,10 +100,13 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
 }
 
 
-export async function getTemplates(group: number) {
+export async function getTemplates(group: number, fullpath: boolean = false) {
   const path = `/apis/core/v1/groups/${group}/templates` 
   const config = {
-    method: 'GET'
+    method: 'GET',
+    params: {
+      fullpath,
+      },
   }
   type returnType = {
     data: Templates.Template[]   

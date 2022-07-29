@@ -11,4 +11,5 @@ export default {
   'menu.Cluster overview': '集群主页',
   'menu.Pods': 'Pods',
   'menu.Monitoring': '监控',
+  'menu.Template overview': '模板主页',
 };

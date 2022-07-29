@@ -2,25 +2,28 @@ import {Button, Col, Form, Input, Row} from "antd";
 import {useModel} from "@@/plugin-model/useModel";
 import {history} from 'umi';
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import {useParams} from 'umi';
 import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
 import {getRelease, updateRelease} from "@/services/templates/templates";
-import {ReleaseForm} from "../../form";
+import {ReleaseForm} from "../../components/form";
+import rbac from "@/rbac";
+import {hasPermission} from "../../utils";
 
 export default () => {
   const [form] = Form.useForm();
   const {successAlert} = useModel('alert')
-  const params = useParams<{id: string, template: string}>();
-  if (!params.id || isNaN(parseInt(params.id))) {
-    return <NotFount/>;
+
+  const {initialState} = useModel("@@initialState")
+
+  if (!initialState?.resource.id || !initialState.currentUser) {
+    return <NotFount />;
   }
 
-  const templateID = params.template
-  const releaseID = parseInt(params.id)
-  const {data: template} = useRequest(() => getRelease(releaseID), {
+  const releaseID = initialState.resource.id
+  const {fullName} = initialState.resource
+  const {data: release} = useRequest(() => getRelease(releaseID), {
     onSuccess: () => {
-      form.setFieldsValue(template)
+      form.setFieldsValue(release)
     }
   });
 
@@ -33,16 +36,17 @@ export default () => {
           onFinish={(v) => {
             updateRelease(releaseID, v).then(() => {
               successAlert('Release 更新成功')
-              history.push(`/admin/templates/${templateID}/releases/${releaseID}`)
+              history.push(`/releases/${fullName}/-/detail`)
             })
           }}
         >
           <Form.Item label={"名称"} name={'name'} rules={[{required: true}]} extra={'release对应的tag名称'}>
             <Input disabled/>
           </Form.Item>
-          <ReleaseForm/>
+          <ReleaseForm prefix={[]} isAdmin={initialState.currentUser.isAdmin}/>
             <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.updateRelease.allowed)}
+            htmlType="submit">
                 Submit
             </Button>
             </Form.Item>

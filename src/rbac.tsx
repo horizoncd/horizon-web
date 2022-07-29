@@ -296,6 +296,41 @@ const Permissions = {
     action: Action.delete,
     allowed: false,
   },
+  createTemplate: {
+    resource: `${Resource.group}/${Resource.template}`,
+    action: Action.create,
+    allowed: false,
+  },
+  updateTemplate: {
+    resource: `${Resource.template}`,
+    action: Action.update,
+    allowed: false,
+  },
+  deleteTemplate: {
+    resource: `${Resource.template}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  syncRelease: {
+    resource: `${Resource.release}/sync`,
+    action: Action.create,
+    allowed: false,
+  },
+  updateRelease: {
+    resource: `${Resource.release}`,
+    action: Action.update,
+    allowed: false,
+  },
+  deleteRelease: {
+    resource: `${Resource.release}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  createRelease: {
+    resource: `${Resource.template}/${Resource.release}`,
+    action: Action.create,
+    allowed: false,
+  },
   createTemplateMember: {
     resource: `${Resource.template}/${Resource.member}`,
     action: Action.create,
