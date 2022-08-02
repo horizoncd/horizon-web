@@ -1,4 +1,4 @@
-import {Space,Button,Table, Row, Col,Tabs, Popover} from "antd";
+import {Space,Button,Table, Row, Col,Tabs, Popover, Tooltip} from "antd";
 import {useRequest} from "@@/plugin-request/request";
 import NoData from "@/components/NoData";
 import {history} from "@@/core/history";
@@ -10,6 +10,7 @@ import {NotFount} from "@/components/State";
 import RBAC from '@/rbac'
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
 import {hasPermission} from "./utils";
+import utils from "@/utils";
 
 const {TabPane} = Tabs
 
@@ -20,6 +21,7 @@ export default () => {
   if(loading) {
     return <></>
   }
+
   if(!initialState) {
     return <NotFount/>
   }
@@ -53,6 +55,15 @@ export default () => {
         return   <Popover content={desc} >
           {desc.substring(0,50)+'...'}
   </Popover>
+      }
+    },
+    {
+      title: '时间',
+      dataIndex: 'updateAt',
+      render: (updatedAt: string) => { 
+        return <Tooltip title={utils.timeToLocal(updatedAt)}>
+            Updated {utils.timeFromNowEnUS(updatedAt)}
+          </Tooltip>
       }
     }
   ]

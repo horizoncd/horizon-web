@@ -1,6 +1,5 @@
 import DetailCard, {Param} from "@/components/DetailCard";
 import {useModel} from "umi";
-import NotFount from "@/pages/404";
 import {useRequest} from "@@/plugin-request/request";
 import {history} from "@@/core/history";
 import {Button, Modal, Space} from "antd";
@@ -17,17 +16,9 @@ import rbac from "@/rbac";
 export default () => {
   const {initialState} = useModel("@@initialState")
 
-  if (!initialState?.resource.id || !initialState.currentUser) {
-    return <NotFount />;
-  }
-
   const releaseID = initialState.resource.id
   const {fullName} = initialState.resource
   const {data: release} = useRequest(() => getRelease(releaseID))
-
-  if (!release) {
-    return <NotFount />;
-  }
 
   const data: Param[][] = [
     [
@@ -70,7 +61,7 @@ export default () => {
     ]
   ]
 
-  if(release?.syncStatus === "Failed") {
+  if(!release || release.syncStatus === "Failed") {
     data[1].push({
       key: '失败原因',
       value: release?.failedReason,
@@ -83,7 +74,7 @@ export default () => {
       data={data}
       extra={
         <Space>
-          <Button type='primary' disabled={release.syncStatus === 'Succeed' ||
+          <Button type='primary' disabled={!release || release.syncStatus === 'Succeed' ||
            !hasPermission(initialState.currentUser,rbac.Permissions.syncRelease.allowed)}
            onClick={() => {
             syncReleaseToRepo(release?.id).then(()=>{

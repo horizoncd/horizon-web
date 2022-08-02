@@ -1,7 +1,6 @@
 import type {Param} from "@/components/DetailCard";
 import DetailCard from "@/components/DetailCard";
 import {useModel} from "umi";
-import NotFount from "@/pages/404";
 import {useRequest} from "@@/plugin-request/request";
 import {history} from "@@/core/history";
 import {Button, Card, Modal, Space} from "antd";
@@ -16,18 +15,10 @@ import {ResourceType} from "@/const";
 export default () => {
   const {initialState} = useModel("@@initialState")
 
-  if (!initialState || !initialState.currentUser) {
-    return <NotFount />;
-  }
-
   const {type, fullName, id: templateID} = initialState?.resource
   const {data: template} = useRequest(() => queryTemplate(templateID), {});
   const {data: releases} = useRequest(() => queryReleases(templateID))
   const isRootGroup = type === ResourceType.GROUP && template?.group === 0
-
-  if (!template || !releases) {
-    return <NotFount />;
-  }
 
   const data: Param[][] = [
     [
@@ -47,11 +38,11 @@ export default () => {
     [
       {
         key: '创建日期',
-        value: new Date(template?.createAt).toLocaleString(),
+        value: new Date(template?.createAt || "").toLocaleString(),
       },
       {
         key: '更新日期',
-        value: new Date(template?.updateAt).toLocaleString(),
+        value: new Date(template?.updateAt || "").toLocaleString(),
       },
       {
         key: '仓库',
