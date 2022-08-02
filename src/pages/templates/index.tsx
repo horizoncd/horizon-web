@@ -14,9 +14,12 @@ import {hasPermission} from "./utils";
 const {TabPane} = Tabs
 
 export default () => {
-  const {initialState} = useModel('@@initialState')
+  const {initialState,loading} = useModel('@@initialState')
   const currentUser = initialState?.currentUser as API.CurrentUser;
   
+  if(loading) {
+    return <></>
+  }
   if(!initialState) {
     return <NotFount/>
   }

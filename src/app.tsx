@@ -150,22 +150,6 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
-  requestInterceptors: [
-    (url, options) => {
-      return {
-        url: url,
-        options: {
-          ...options, interceptors: true, headers: {
-            ...options.headers,
-            "X-HORIZON-OIDC-EMAIL": "chenzhixiang@corp.netease.com",
-            "X-HORIZON-OIDC-FULLNAME": "wrj",
-            "X-HORIZON-OIDC-TYPE": "netease",
-            "X-HORIZON-OIDC-USER": "wrj"
-          }
-        },
-      };
-    },
-  ],
   responseInterceptors: [
     (response) => {
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
