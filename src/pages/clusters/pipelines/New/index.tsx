@@ -141,7 +141,6 @@ export default (props: any) => {
           {
             type === PublishType.BUILD_DEPLOY && (
               <Form.Item
-                style={{display: 'flex'}}
                 label={"版本"} name={'ref'}
                 rules={requiredRule}
               >
