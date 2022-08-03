@@ -61,7 +61,7 @@ export default () => {
           编辑
         </Button>
         <Button danger
-          disabled={!hasPermission(initialState.currentUser, RBAC.Permissions.deleteTemplate.allowed)}
+          disabled={!RBAC.Permissions.deleteTemplate.allowed}
           onClick={() => {
             Modal.confirm({
               title: `确认删除Templates: ${template?.name}`,

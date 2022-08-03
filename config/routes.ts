@@ -269,11 +269,11 @@ const templateRoutes = [
     component: 'templates/Releases/New',
   },
   {
-    path: '/releases/*/-/detail',
+    path: '/templates/*/-/*/detail',
     component: 'templates/Releases/Detail',
   },
   {
-    path: '/releases/*/-/edit',
+    path: '/templates/*/-/*/edit',
     component: 'templates/Releases/Edit',
   }
 ]

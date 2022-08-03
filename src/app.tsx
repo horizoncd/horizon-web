@@ -111,10 +111,16 @@ export async function getInitialState(): Promise<{
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
+      const isReleasePath = /\/templates\/(.*?)\/-\/.*\/(?:edit|detail)\/?/
+      const pathArr = isReleasePath.exec(history.location.pathname)
+      console.log(pathArr)
+      const isRelease = pathArr != null
       const {data: resourceData} = history.location.pathname.startsWith('/templates')?
+       isRelease ? await queryResource(path,"templatereleases") : 
+        await queryResource(path,"templates") : 
        await queryResource(path,"templates") :
-      history.location.pathname.startsWith('/releases') ? 
-      await queryResource(path,"releases"): await queryResource(path,"");
+        await queryResource(path,"templates") : 
+        await queryResource(path,"");
 
       resource.id = resourceData.id;
       resource.name = resourceData.name;
@@ -123,7 +129,14 @@ export async function getInitialState(): Promise<{
       resource.fullPath = resourceData.fullPath;
       resource.parentID = resourceData.parentID;
 
-      const {data: memberData} = await querySelfMember(resource.type, resource.id)
+      let memberData =  null;
+      
+      if(isRelease) {
+        const {data: template} = await queryResource(pathArr[1],"templates");
+        ({data: memberData} = await querySelfMember("template", template.id))
+      }else{
+        ({data: memberData} = await querySelfMember(resource.type, resource.id))
+      }
       if (memberData.total > 0) {
         currentUser!.role = memberData.items[0].role;
       } else {

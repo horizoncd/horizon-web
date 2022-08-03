@@ -53,7 +53,7 @@ export default () => {
         }
         return   <Popover content={desc} >
           {desc.substring(0,50)+'...'}
-  </Popover>
+        </Popover>
       }
     },
     {

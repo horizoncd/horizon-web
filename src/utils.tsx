@@ -5,8 +5,14 @@ import {routes} from "../config/routes";
 
 const getResourcePath = () => {
   const {pathname} = history.location;
+  if(pathname.startsWith('/templates')){
+    const pathArr = /templates\/(.*?)\/-\/(.*)\/(?:edit|detail)\/?/ .exec(pathname)
+    if(pathArr != null) {
+      return `/${pathArr[1]}/${pathArr[2]}`
+    }
+  }
   const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
-    item !== 'applications' && item !== 'clusters' && item !== 'templates' && item !== 'releases');
+    item !== 'applications' && item !== 'clusters' && item !== 'templates');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];

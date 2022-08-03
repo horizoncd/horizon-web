@@ -19,7 +19,7 @@ export const ReleasesTable = (props: {fullName: string, releases: Templates.Rele
       dataIndex: 'name',
       render: (name: string, t: Templates.Release) => {
         return <Space size="middle">
-          <a href={`/releases/${fullName}/${t.name}/-/detail`}>{name}</a>
+          <a href={`/templates/${fullName}/-/${t.name}/detail`}>{name}</a>
         </Space>
       }
     },
@@ -63,7 +63,7 @@ export const ReleasesTable = (props: {fullName: string, releases: Templates.Rele
           }}>同步</Button>
 
           <Button type='primary' disabled={!RBAC.Permissions.updateRelease.allowed}
-           onClick={() => window.location.href=`/releases/${fullName}/${r.name}/-/edit`}>修改</Button>
+           onClick={() => window.location.href=`/templates/${fullName}/-/${r.name}/edit`}>修改</Button>
           <Button type='primary' disabled={!RBAC.Permissions.deleteRelease.allowed}
           danger onClick={()=>{
             Modal.confirm({
