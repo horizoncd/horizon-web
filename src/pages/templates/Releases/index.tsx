@@ -9,7 +9,6 @@ import {NotFount} from '@/components/State';
 import {useModel} from 'umi';
 import type {API} from '@/services/typings';
 import RBAC from '@/rbac'
-import {hasPermission} from "../utils";
 
 export const ReleasesTable = (props: {fullName: string, releases: Templates.Release[], currentUser: API.CurrentUser}) => {
   const {releases,fullName} = props
@@ -53,7 +52,7 @@ export const ReleasesTable = (props: {fullName: string, releases: Templates.Rele
         return <Space size="middle">
           <Button type='primary' 
           disabled={r.syncStatus === "Succeed" || 
-          !hasPermission(props.currentUser,RBAC.Permissions.syncRelease.allowed)} 
+          !RBAC.Permissions.syncRelease.allowed} 
           onClick={() => {
             syncReleaseToRepo(r.id).then(()=>{
                     Modal.success({
@@ -63,9 +62,9 @@ export const ReleasesTable = (props: {fullName: string, releases: Templates.Rele
             })
           }}>同步</Button>
 
-          <Button type='primary' disabled={!hasPermission(props.currentUser,RBAC.Permissions.updateRelease.allowed)}
-           href={`/releases/${fullName}/${r.name}/-/edit`}>修改</Button>
-          <Button type='primary' disabled={!hasPermission(props.currentUser,RBAC.Permissions.deleteRelease.allowed)}
+          <Button type='primary' disabled={!RBAC.Permissions.updateRelease.allowed}
+           onClick={() => window.location.href=`/releases/${fullName}/${r.name}/-/edit`}>修改</Button>
+          <Button type='primary' disabled={!RBAC.Permissions.deleteRelease.allowed}
           danger onClick={()=>{
             Modal.confirm({
                 title: `确认删除Release: ${r.name}`,
@@ -102,7 +101,7 @@ export const ReleasesTable = (props: {fullName: string, releases: Templates.Rele
     </Button>
   )
 
-  if(!hasPermission(props.currentUser,RBAC.Permissions.createRelease.allowed)) {
+  if(!RBAC.Permissions.createRelease.allowed) {
     queryInput = <></>
   }
 

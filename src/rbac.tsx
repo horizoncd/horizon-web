@@ -37,7 +37,7 @@ const Resource = {
   oauthClientSecret: 'clientsecret',
   regionselectors: 'regionselectors',
   template: 'templates',
-  release: 'releases',
+  templaterelease: 'templatereleases',
 }
 
 // 操作
@@ -312,22 +312,22 @@ const Permissions = {
     allowed: false,
   },
   syncRelease: {
-    resource: `${Resource.release}/sync`,
+    resource: `${Resource.templaterelease}/sync`,
     action: Action.create,
     allowed: false,
   },
   updateRelease: {
-    resource: `${Resource.release}`,
+    resource: `${Resource.templaterelease}`,
     action: Action.update,
     allowed: false,
   },
   deleteRelease: {
-    resource: `${Resource.release}`,
+    resource: `${Resource.templaterelease}`,
     action: Action.delete,
     allowed: false,
   },
   createRelease: {
-    resource: `${Resource.template}/${Resource.release}`,
+    resource: `${Resource.template}/${Resource.templaterelease}`,
     action: Action.create,
     allowed: false,
   },

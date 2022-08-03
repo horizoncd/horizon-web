@@ -9,7 +9,6 @@ import {ResourceType} from "@/const";
 import {NotFount} from "@/components/State";
 import RBAC from '@/rbac'
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
-import {hasPermission} from "./utils";
 import utils from "@/utils";
 
 const {TabPane} = Tabs
@@ -79,7 +78,7 @@ export default () => {
   if(isRootPage) {
     queryInput = currentUser.isAdmin ? queryInput : <></>
   }else{
-    queryInput = hasPermission(currentUser,RBAC.Permissions.createTemplate.allowed) ? 
+    queryInput = RBAC.Permissions.createTemplate.allowed ? 
       <Button
         type="primary"
         style={{marginBottom: 10, float: 'right', marginRight: 5}}
