@@ -26,6 +26,8 @@ export default () => {
     }
   });
 
+  const [_,templatePath, releasePath] = /(.*)\/(.*?)$/.exec(fullName)!
+
   return <PageWithBreadcrumb>
     <Row>
       <Col offset={6} span={12}>
@@ -35,7 +37,7 @@ export default () => {
           onFinish={(v) => {
             updateRelease(releaseID, v).then(() => {
               successAlert('Release 更新成功')
-              history.push(`/releases/${fullName}/-/detail`)
+              history.push(`/templates/${templatePath}/-/${releasePath}/detail`)
             })
           }}
         >

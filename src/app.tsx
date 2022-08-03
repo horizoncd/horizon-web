@@ -111,14 +111,12 @@ export async function getInitialState(): Promise<{
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
-      const isReleasePath = /\/templates\/(.*?)\/-\/.*\/(?:edit|detail)\/?/
+      const isReleasePath = /\/templates(.*)\/-\/.*?\/(?:edit|detail)\/?/
       const pathArr = isReleasePath.exec(history.location.pathname)
       console.log(pathArr)
       const isRelease = pathArr != null
       const {data: resourceData} = history.location.pathname.startsWith('/templates')?
        isRelease ? await queryResource(path,"templatereleases") : 
-        await queryResource(path,"templates") : 
-       await queryResource(path,"templates") :
         await queryResource(path,"templates") : 
         await queryResource(path,"");
 
@@ -163,6 +161,22 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
+  requestInterceptors: [
+    (url, options) => {
+      return {
+        url: url,
+        options: {
+          ...options, interceptors: true, headers: {
+            ...options.headers,
+            "X-HORIZON-OIDC-EMAIL": "wurongjun@corp.netease.com",
+            "X-HORIZON-OIDC-FULLNAME": "wrj",
+            "X-HORIZON-OIDC-TYPE": "netease",
+            "X-HORIZON-OIDC-USER": "wrj"
+          }
+        },
+      };
+    },
+  ],
   responseInterceptors: [
     (response) => {
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
