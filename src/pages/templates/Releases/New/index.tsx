@@ -6,7 +6,6 @@ import {ReleaseForm} from '../../components/form'
 import {TagSelector} from "../../components/tagSelector";
 import {createRelease, queryTemplate} from "@/services/templates/templates";
 import {NotFount} from "@/components/State";
-import {hasPermission} from "../../utils";
 import rbac from "@/rbac";
 
 export default () => {
@@ -40,7 +39,7 @@ export default () => {
           <TagSelector prefix={[]} repository={template.repository}/>
           <ReleaseForm prefix={[]} isAdmin={initialState.currentUser.isAdmin} />
           <Form.Item>
-            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.createRelease.allowed)}
+            <Button type="primary" disabled={!rbac.Permissions.createRelease.allowed}
              htmlType="submit">
               Submit
             </Button>

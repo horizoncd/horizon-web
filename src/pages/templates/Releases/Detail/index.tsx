@@ -10,7 +10,6 @@ import {
     syncReleaseToRepo,
 } from '@/services/templates/templates'
 import {FireFilled} from "@ant-design/icons";
-import {hasPermission} from "../../utils";
 import rbac from "@/rbac";
 
 export default () => {
@@ -75,7 +74,7 @@ export default () => {
       extra={
         <Space>
           <Button type='primary' disabled={!release || release.syncStatus === 'Succeed' ||
-           !hasPermission(initialState.currentUser,rbac.Permissions.syncRelease.allowed)}
+           rbac.Permissions.syncRelease.allowed}
            onClick={() => {
             syncReleaseToRepo(release?.id).then(()=>{
                     Modal.success({
@@ -87,13 +86,13 @@ export default () => {
                     })
             })
           }}>同步</Button>
-          <Button type='primary' disabled={!hasPermission(initialState.currentUser,rbac.Permissions.updateRelease.allowed)}
+          <Button type='primary' disabled={!rbac.Permissions.updateRelease.allowed}
            onClick={() => {
             history.push(`/releases/${fullName}/-/edit`)
           }}>
             编辑
           </Button>
-          <Button danger disabled={!hasPermission(initialState.currentUser,rbac.Permissions.deleteRelease.allowed)} 
+          <Button danger disabled={!rbac.Permissions.deleteRelease.allowed} 
           onClick={() => {
             Modal.confirm({
                 title: `确认删除Release: ${release?.name}`,

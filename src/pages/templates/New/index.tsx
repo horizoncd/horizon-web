@@ -7,12 +7,11 @@ import {createTemplate} from "@/services/templates/templates";
 import {TagSelector} from "../components/tagSelector";
 import {NotFount} from "@/components/State";
 import {useState} from "react";
-import {hasPermission} from "../utils";
 import rbac from "@/rbac";
 
 export default () => {
   const {initialState} = useModel('@@initialState')
-  if(!initialState || !initialState.currentUser || !initialState.currentUser.isAdmin) {
+  if(!initialState || !initialState.currentUser) {
     return <NotFount/>
   }
 
@@ -68,7 +67,7 @@ export default () => {
           <Release repository={repo} />
 
           <Form.Item>
-            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.createTemplate.allowed)}
+            <Button type="primary" disabled={!rbac.Permissions.createTemplate.allowed}
              htmlType="submit">
               Submit
             </Button>

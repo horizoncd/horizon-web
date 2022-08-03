@@ -12,4 +12,5 @@ export default {
   'menu.Pods': 'Pods',
   'menu.Monitoring': '监控',
   'menu.Template overview': '模板主页',
+  'menu.Templates': '模板'
 };

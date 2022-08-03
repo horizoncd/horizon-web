@@ -6,7 +6,6 @@ import {useRequest} from "@@/plugin-request/request";
 import NotFount from "@/pages/404";
 import {queryTemplate, updateTemplate} from "@/services/templates/templates";
 import {TemplateForm} from "../components/form";
-import {hasPermission} from "../utils";
 import rbac from "@/rbac";
 
 export default () => {
@@ -45,7 +44,7 @@ export default () => {
           </Form.Item>
           <TemplateForm onRepositoryBlur={()=>{}} isAdmin={initialState.currentUser.isAdmin}/>
           <Form.Item>
-            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.updateTemplate.allowed)} 
+            <Button type="primary" disabled={!rbac.Permissions.updateTemplate.allowed} 
             htmlType="submit">
               Submit
             </Button>

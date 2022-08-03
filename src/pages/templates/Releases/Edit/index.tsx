@@ -7,7 +7,6 @@ import NotFount from "@/pages/404";
 import {getRelease, updateRelease} from "@/services/templates/templates";
 import {ReleaseForm} from "../../components/form";
 import rbac from "@/rbac";
-import {hasPermission} from "../../utils";
 
 export default () => {
   const [form] = Form.useForm();
@@ -45,7 +44,7 @@ export default () => {
           </Form.Item>
           <ReleaseForm prefix={[]} isAdmin={initialState.currentUser.isAdmin}/>
             <Form.Item>
-            <Button type="primary" disabled={!hasPermission(initialState.currentUser,rbac.Permissions.updateRelease.allowed)}
+            <Button type="primary" disabled={!rbac.Permissions.updateRelease.allowed}
             htmlType="submit">
                 Submit
             </Button>

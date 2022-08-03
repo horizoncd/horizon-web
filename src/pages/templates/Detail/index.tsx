@@ -8,7 +8,6 @@ import {deleteTemplate, queryReleases, queryTemplate} from '@/services/templates
 import {ReleasesTable} from "../Releases";
 import PageWithBreadcrumb from "@/components/PageWithBreadcrumb";
 import RBAC from '@/rbac'
-import {hasPermission} from "../utils";
 import {ResourceType} from "@/const";
 
 
@@ -56,7 +55,7 @@ export default () => {
     data={data}
     extra={
       <Space>
-        <Button type='primary' disabled={!hasPermission(initialState.currentUser, RBAC.Permissions.updateTemplate.allowed)} onClick={() => {
+        <Button type='primary' disabled={! RBAC.Permissions.updateTemplate.allowed} onClick={() => {
           history.push(`/templates/${fullName}/-/edit`)
         }}>
           编辑
