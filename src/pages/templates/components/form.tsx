@@ -43,9 +43,6 @@ export const ReleaseForm = (props: {prefix: string[], isAdmin: boolean}) => {
     return [...props.prefix,name]
   }
   return <div>
-    <Form.Item label={"名称"} name={calculateName('name')} extra={'release的名称，非唯一'}>
-      <Input/>
-    </Form.Item>
     <Form.Item label={"描述"} name={calculateName('description')} extra={'对release的详细描述'}>
       <Input/>
     </Form.Item>

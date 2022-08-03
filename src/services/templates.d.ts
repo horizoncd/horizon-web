@@ -49,7 +49,7 @@ declare namespace Templates {
     }
 
     type CreateReleaseRequest = {
-        repoTag:     string
+        name:     string
         isRecommend:  bool
         description?: string
     }

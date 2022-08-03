@@ -115,7 +115,7 @@ export async function getTemplates(group: number, fullpath: boolean = false) {
 }
 
 export async function getSchema(release: number) {
-  const path = `/apis/core/v1/releases/${release}/schema`
+  const path = `/apis/core/v1/templatereleases/${release}/schema`
   const config = {
     method: 'GET'
   }
@@ -123,7 +123,7 @@ export async function getSchema(release: number) {
 }
 
 export async function getRelease(release: number) {
-  const path = `/apis/core/v1/releases/${release}` 
+  const path = `/apis/core/v1/templatereleases/${release}` 
   const config = {
     method: 'GET'
   }
@@ -135,7 +135,7 @@ export async function getRelease(release: number) {
 
 
 export async function updateRelease(release: number, data: Templates.UpdateReleaseRequest) {
-  const path = `/apis/core/v1/releases/${release}`
+  const path = `/apis/core/v1/templatereleases/${release}`
   const  config = {
     method: 'PUT',
     Headers: {
@@ -148,7 +148,7 @@ export async function updateRelease(release: number, data: Templates.UpdateRelea
 
 
 export async function deleteRelease(release: number){
-  const path = `/apis/core/v1/releases/${release}`
+  const path = `/apis/core/v1/templatereleases/${release}`
   const  config = {
     method: 'DELETE',
   }
@@ -156,7 +156,7 @@ export async function deleteRelease(release: number){
 }
 
 export async function syncReleaseToRepo(release: number){
-  const path = `/apis/core/v1/releases/${release}/sync`
+  const path = `/apis/core/v1/templatereleases/${release}/sync`
   const  config = {
     method: 'POST',
   }

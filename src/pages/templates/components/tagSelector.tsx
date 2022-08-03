@@ -19,8 +19,8 @@ export const TagSelector = (props: {repository: string, prefix: string[] }) => {
 
 
 
-    return <Form.Item label={"Tag"} name={props.prefix.length === 0 ? 'tag' :[...props.prefix,'tag']} 
-    required={true} extra={'release对应的tag名称'}>
+    return <Form.Item label={"Name"} name={props.prefix.length === 0 ? 'name' :[...props.prefix,'name']} 
+    required={true} extra={'指定release的唯一名称'}>
     <Select>
         {tags === undefined ? <></> : tags.map(s => <Option key={s} value={s}>{s}</Option>)}
     </Select>
