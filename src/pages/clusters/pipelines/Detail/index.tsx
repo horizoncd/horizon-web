@@ -65,7 +65,7 @@ export default (props: any) => {
     refValue = pipeline?.gitTag
   } else {
     refType = GitRefType.Commit
-    refValue = pipeline?.gitCommit
+    refValue = pipeline?.gitCommit || ""
   }
 
   const data: Param[][] = [
@@ -168,7 +168,7 @@ export default (props: any) => {
           <br/>
           <b>Commit History</b>
           <br/>
-          <a href={diff?.codeInfo.link}>Link</a>
+          <a onClick={() => window.open(diff?.codeInfo.link)}>Link</a>
         </Card>
       }
       <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>

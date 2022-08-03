@@ -149,7 +149,7 @@ export default (props: any) => {
                   name={"refType"}
                   style={{display: 'inline-block', width: '100px'}}
                 >
-                  <Select 
+                  <Select
                       onSelect={(key: any) => {
                         setRefType(key);
                         form.setFieldsValue({"refValue": ""})
@@ -174,7 +174,7 @@ export default (props: any) => {
                       onPressEnter={()=>{
                         refreshDiff(form.getFieldValue('refValue'))
                       }}
-                    /> : <Select 
+                    /> : <Select
                            allowClear
                            onSelect={(key: any) => {
                               refreshDiff(key);
@@ -213,7 +213,7 @@ export default (props: any) => {
             <br/>
             <b>Commit History</b>
             <br/>
-            <a href={data?.codeInfo.link}>Link</a>
+            <a onClick={() => window.open(data?.codeInfo.link)}>Link</a>
           </Card>
         }
         <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
