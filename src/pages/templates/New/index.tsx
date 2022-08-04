@@ -67,7 +67,7 @@ export default () => {
           <Release repository={repo} />
 
           <Form.Item>
-            <Button type="primary" disabled={!rbac.Permissions.createTemplate.allowed}
+            <Button type="primary" disabled={!isAdmin && !rbac.Permissions.createTemplate.allowed}
              htmlType="submit">
               Submit
             </Button>
