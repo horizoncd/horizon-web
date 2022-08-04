@@ -8,4 +8,5 @@ export default {
   'menu.Pipelines': 'Pipelines',
   'menu.Pods': 'Pods',
   'menu.Monitoring': 'Monitoring',
+  'menu.Template overview': 'Template overview'
 };

@@ -292,7 +292,7 @@ export default (props: MemberProps) => {
           <span className={styles.alertSpan}>{intl.formatMessage({id: "pages.members.user.anonymous.alert"})}</span>)}
       />}
       {
-        props.allowInvite && <Card
+        (currentUser.isAdmin || props.allowInvite) && <Card
           tabList={inviteTabList}
           activeTabKey={inviteMemberKey}
         >
@@ -325,7 +325,7 @@ export default (props: MemberProps) => {
               <List.Item.Meta
                 title={<span>{item.memberName}<span hidden={item.resourceID === resourceID}/>
                   {(currentUser.id === item.memberNameID) ?
-                    <span className={styles.textSelfAnnotation}>It's you</span> : null}
+                    <span className={styles.textSelfAnnotation}>It&apos;s you</span> : null}
                 </span>}
                 className={styles.memberListPadding}
                 description={(

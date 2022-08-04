@@ -1,10 +1,11 @@
-import { Card, Col, Row, Radio } from 'antd';
-import { useRequest } from 'umi';
-import { queryTemplates } from '@/services/templates/templates';
+import {Card, Col, Row, Radio} from 'antd';
+import {useRequest} from 'umi';
+import {queryTemplates} from '@/services/templates/templates';
 import './index.less';
+import type {API} from '@/services/typings';
 
 export default (props: any) => {
-  const { data } = useRequest(queryTemplates);
+  const {data} = useRequest(() => queryTemplates(false));
 
   const isClicked = (item: API.Template) => {
     return item.name === props.template?.name;

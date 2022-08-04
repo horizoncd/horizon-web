@@ -35,7 +35,9 @@ const Resource = {
   transfer: 'transfer',
   oauthApplication: 'oauthapps',
   oauthClientSecret: 'clientsecret',
-  regionselectors: 'regionselectors'
+  regionselectors: 'regionselectors',
+  template: 'templates',
+  templaterelease: 'templatereleases',
 }
 
 // 操作
@@ -294,6 +296,46 @@ const Permissions = {
     action: Action.delete,
     allowed: false,
   },
+  createTemplate: {
+    resource: `${Resource.group}/${Resource.template}`,
+    action: Action.create,
+    allowed: false,
+  },
+  updateTemplate: {
+    resource: `${Resource.template}`,
+    action: Action.update,
+    allowed: false,
+  },
+  deleteTemplate: {
+    resource: `${Resource.template}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  syncRelease: {
+    resource: `${Resource.templaterelease}/sync`,
+    action: Action.create,
+    allowed: false,
+  },
+  updateRelease: {
+    resource: `${Resource.templaterelease}`,
+    action: Action.update,
+    allowed: false,
+  },
+  deleteRelease: {
+    resource: `${Resource.templaterelease}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  createRelease: {
+    resource: `${Resource.template}/${Resource.templaterelease}`,
+    action: Action.create,
+    allowed: false,
+  },
+  createTemplateMember: {
+    resource: `${Resource.template}/${Resource.member}`,
+    action: Action.create,
+    allowed: false,
+  } 
 }
 
 

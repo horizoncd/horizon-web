@@ -179,7 +179,6 @@ export default (props: any) => {
             <Input disabled={readonly}/>
           </Form.Item>
           <Form.Item
-            style={{display: 'flex'}}
             label={"版本"}
             name={'ref'}
             rules={[{required: true, message: "git ref required"}]}

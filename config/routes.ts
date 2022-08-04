@@ -1,4 +1,6 @@
-﻿export const routes = [
+﻿import component from "@/locales/en-US/component";
+
+export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -28,6 +30,16 @@
     wrappers: [
       '@/wrappers/auth',
     ],
+  },
+  {
+    path: '/templates',
+    menuRender: false,
+    component: "templates",
+  },
+  {
+    path: '/templates/new',
+    menuRender: false,
+    component: 'templates/New',
   },
   {
     path: '/',
@@ -227,12 +239,52 @@ const adminRoutes = [
   },
 ]
 
+const templateRoutes = [
+  {
+    path: '/groups/*/-/templates',
+    component: 'templates'
+  },
+  {
+    path: '/groups/*/-/newtemplate',
+    component: 'templates/New'
+  },
+  {
+    path: '/templates/*/-/detail',
+    component: 'templates/Detail',
+  },
+  {
+    path: '/templates/*/-/edit',
+    component: 'templates/Edit',
+  },
+  {
+    path: '/templates/*/-/members',
+    component: 'templates/Member',
+  },
+  {
+    path: '/templates/*/-/releases',
+    component: 'templates/Releases',
+  },
+  {
+    path: '/templates/*/-/newrelease',
+    component: 'templates/Releases/New',
+  },
+  {
+    path: '/templates/*/-/releases/*/edit',
+    component: 'templates/Releases/Edit',
+  },
+  {
+    path: '/templates/*/-/releases/*',
+    component: 'templates/Releases/Detail',
+  },
+]
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
+allRoute.push(...templateRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
