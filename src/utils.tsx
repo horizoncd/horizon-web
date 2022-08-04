@@ -6,7 +6,7 @@ import {routes} from "../config/routes";
 const getResourcePath = () => {
   const {pathname} = history.location;
   if(pathname.startsWith('/templates')){
-    const pathArr = /templates\/(.*?)\/-\/(.*)\/(?:edit|detail)\/?/ .exec(pathname)
+    const pathArr = /templates\/(.*?)\/-\/releases\/(.*?)(?:\/edit)?\/?$/ .exec(pathname)
     if(pathArr != null) {
       return `/${pathArr[1]}/${pathArr[2]}`
     }
@@ -41,54 +41,44 @@ const getBreadcrumbs = (fullName: string) => {
     return result
   }
 
-  if (pathname.startsWith("/releases")) {
-    const path = pathname.replace(/\/-.+$/,"")
-    const filteredPath = path.split('/').filter((item)=>item != '' && item != 'releases')
-    let currentLink = ''
-    for(const x of filteredPath.slice(0,filteredPath.length-2)) {
-      currentLink += `/${x}`
-      result.push({
-        path: currentLink,
-        breadcrumbName: x,
-      })
-    }
-    let item = filteredPath[filteredPath.length-2]
-    currentLink = currentLink + `/${item}`
-    result.push({
-      path: '/templates' + currentLink + '/-/detail',
-      breadcrumbName: item,
-    })
-    item = filteredPath[filteredPath.length-1]
-    currentLink += `/${item}`
-    result.push({
-      path: '/releases' +currentLink + '/-/detail',
-      breadcrumbName: item,
-    })
-    return result
-  }
-
   if (pathname.startsWith("/templates")) {
-    if(pathname === '/templates/new') {
-      return result
-    }
-    const path = pathname.replace(/\/-.+$/,"")
-    const filteredPath = path.split('/').filter((item)=>item != '' && item != 'templates')
-    console.log(filteredPath)
-    let currentLink = ''
-    for(const x of filteredPath.slice(0,filteredPath.length-1)) {
-      currentLink += `/${x}`
+   if(pathname === '/templates/new') {
+     return result
+   }
+   const releasePattern =  /\/templates\/.*\/-\/releases\/(.*?)(\/edit)?\/?$/
+   const isRelease = releasePattern.test(pathname)
+   const path = pathname.replace(/\/-.+$/,"")
+   const filteredPath = path.split('/').filter((item)=>item != '' && item != 'templates')
+   let currentLink = ''
+   for(const x of filteredPath.slice(0,filteredPath.length-1)) {
+     currentLink += `/${x}`
+     result.push({
+       path: currentLink,
+       breadcrumbName: x,
+     })
+   }
+   const item = filteredPath[filteredPath.length-1]
+   currentLink += `/${item}`
+   result.push({
+     path: '/templates' +currentLink + '/-/detail',
+     breadcrumbName: item,
+   })
+   const res =  releasePattern.exec(pathname)
+   if(isRelease) {
+      currentLink += `/-/releases/${res[1]}`
       result.push({
-        path: currentLink,
-        breadcrumbName: x,
+        path: '/templates' +currentLink,
+        breadcrumbName: res[1]
       })
+      if(pathname.endsWith('/edit')) {
+        currentLink += "/edit"
+        result.push({
+          path: '/templates' +currentLink,
+          breadcrumbName: "edit",
+        })
+      }
     }
-    const item = filteredPath[filteredPath.length-1]
-    currentLink += `/${item}`
-    result.push({
-      path: '/templates' +currentLink + '/-/detail',
-      breadcrumbName: item,
-    })
-    return result
+   return result
   }
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');

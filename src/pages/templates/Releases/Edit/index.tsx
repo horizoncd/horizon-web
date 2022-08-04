@@ -37,7 +37,7 @@ export default () => {
           onFinish={(v) => {
             updateRelease(releaseID, v).then(() => {
               successAlert('Release 更新成功')
-              history.push(`/templates/${templatePath}/-/${releasePath}/detail`)
+              history.push(`/templates/${templatePath}/-/releases/${releasePath}`)
             })
           }}
         >

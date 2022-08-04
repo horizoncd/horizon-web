@@ -111,7 +111,7 @@ export async function getInitialState(): Promise<{
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
-      const isReleasePath = /\/templates(.*)\/-\/.*?\/(?:edit|detail)\/?/
+      const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/
       const pathArr = isReleasePath.exec(history.location.pathname)
       console.log(pathArr)
       const isRelease = pathArr != null

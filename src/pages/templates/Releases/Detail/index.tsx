@@ -18,7 +18,7 @@ export default () => {
   const releaseID = initialState.resource.id
   const {fullName} = initialState.resource
   const {data: release} = useRequest(() => getRelease(releaseID))
-  const [_, templatePath, releasePath] = /(.*?)\/(.*?)\/?$/.exec(fullName)
+  const [_, templatePath, releasePath] = /(.*)\/(.*?)\/?$/.exec(fullName)
 
   const data: Param[][] = [
     [
@@ -89,7 +89,7 @@ export default () => {
           }}>同步</Button>
           <Button type='primary' disabled={!rbac.Permissions.updateRelease.allowed}
            onClick={() => {
-            history.push(`/templates/${templatePath}/-/${releasePath}/edit`)
+            history.push(`/templates/${templatePath}/-/releases/${releasePath}/edit`)
           }}>
             编辑
           </Button>
@@ -104,7 +104,7 @@ export default () => {
                     title: 'Release',
                     content: '删除Release成功！',
                     afterClose: () => {
-                      history.push(`/templates/${templatePath}/-/${releasePath}/detail`)
+                      history.push(`/templates/${templatePath}/-/releases/${releasePath}/edit`)
                     }
                   })
                 })
