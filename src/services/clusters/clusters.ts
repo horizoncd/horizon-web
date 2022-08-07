@@ -244,3 +244,17 @@ export async function getClusterPods(clusterID: number, start: number, end: numb
     }
   });
 }
+
+export async function getClusterPod(clusterID: number, podName: string) {
+  return request<{
+    data: {
+      pods: CLUSTER.MonitorContainer[]
+    }
+  }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
+    method: 'GET',
+    params: {
+      start,
+      end
+    }
+  });
+}

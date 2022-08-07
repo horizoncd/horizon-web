@@ -18,14 +18,17 @@ import type {SearchInput, MultiValueTag} from "@/components/TagSearch";
 import {querySubresourceTags} from "@/services/tags/tags";
 import {QuestionCircleOutlined} from "@ant-design/icons";
 import CollapseList from "@/components/CollapseList";
+import { useParams } from "umi";
 
 const {TabPane} = Tabs;
 const Search = withTrim(Input.Search);
 const {Option} = Select;
 
-export default (props: any) => {
-  const {query: q} = props.location;
-  const {environment = '', tagSelector = "", filter = ""} = q
+export default () => {
+  const params = new URLSearchParams(window.location.search) 
+  const environment = params.get('environment')
+  const tagSelector = params.get('tagSelector')
+  const filter = params.get('filter')
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
@@ -68,12 +71,12 @@ export default (props: any) => {
     const ts = tss?.split(",", -1)
 
     return ts.filter((t)=>{
-        const parts = t.split("=", -1)
-        if (parts.length != 2) {
-          return false
-        }
-        return true
+      const parts = t.split("=", -1)
+      if (parts.length != 2) {
+        return false
       }
+      return true
+    }
     ).map((t) => {
       const parts = t.split("=", -1)
       return {
@@ -90,7 +93,7 @@ export default (props: any) => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => {
-        return <a href={`/clusters${fullPath}/${text}/-/pods`}>
+        return <a href={`${fullPath}/${text}`}>
           {text}
         </a>
       }
@@ -112,13 +115,13 @@ export default (props: any) => {
     },
     {
       title: <div className={styles.tagTitle}>
-      <div>标签</div>
-      <Tooltip
-        title={<span>键/值长度超过16个字符的标签请到集群主页查看</span>}>
-        <QuestionCircleOutlined style={{display: 'block', marginLeft: '5px'}}
-        />
-      </Tooltip>
-    </div>,
+        <div>标签</div>
+        <Tooltip
+          title={<span>键/值长度超过16个字符的标签请到集群主页查看</span>}>
+          <QuestionCircleOutlined style={{display: 'block', marginLeft: '5px'}}
+          />
+        </Tooltip>
+      </div>,
       dataIndex: 'tag',
       key: 'tag',
       width: '15%',
@@ -131,8 +134,8 @@ export default (props: any) => {
             }
           }
           return <div>
-              <CollapseList defaultCount={3} data={data}/>
-            </div>
+            <CollapseList defaultCount={3} data={data}/>
+          </div>
         } else {
           return <div/>
         }
@@ -202,7 +205,7 @@ export default (props: any) => {
     setTagSelectorState("")
     setFilterState("")
     history.replace({
-      pathname: `/applications${fullPath}/-/clusters`,
+      pathname: `${fullPath}`,
       query: {
         environment: environment,
         filter: "",
@@ -234,7 +237,7 @@ export default (props: any) => {
     setFilterState(ft)
 
     history.replace({
-      pathname: `/applications${fullPath}/-/clusters`,
+      pathname: `${fullPath}`,
       query: {
         environment: environment,
         filter: ft,
@@ -343,7 +346,7 @@ export default (props: any) => {
     setFilterState(filter)
     setTagSelectorState(tagSelector)
     history.replace({
-      pathname: `/applications${fullPath}/-/clusters`,
+      pathname: `${fullPath}`,
       query: {
         environment: key,
         filter: filterState,

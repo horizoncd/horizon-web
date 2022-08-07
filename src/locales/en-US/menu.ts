@@ -3,7 +3,7 @@ export default {
   'menu.Members': 'Members',
   'menu.Settings': 'Settings',
   'menu.Settings.General': 'General',
-  'menu.Application overview': 'Application overview',
+  'menu.Application configs': 'Application configs',
   'menu.Clusters': 'Clusters',
   'menu.Pipelines': 'Pipelines',
   'menu.Pods': 'Pods',

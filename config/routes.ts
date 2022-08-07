@@ -133,8 +133,8 @@ const applicationRoutes = [
     component: 'applications/Member',
   },
   {
-    path: '/applications/*/-/clusters',
-    component: 'applications/Clusters',
+    path: '/applications/*/-/configs',
+    component: 'applications/Detail',
   },
   {
     path: '/applications/*/-/pipelines',
@@ -163,8 +163,8 @@ const clusterRoutes = [
     component: 'clusters/NewOrEdit',
   },
   {
-    path: '/clusters/*/-/pods',
-    component: 'clusters/Pods',
+    path: '/clusters/*/-/configs',
+    component: 'clusters/Detail',
   },
   {
     path: '/clusters/*/-/pods/:name',

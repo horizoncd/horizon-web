@@ -83,7 +83,7 @@ export default (props: any) => {
     return <span onClick={(nativeEvent) => {
       let targetPath = fullPath
       if (type === 'application') {
-        targetPath = `/applications${fullPath}/-/clusters`
+        targetPath = `${fullPath}`
       }
       handleHref(nativeEvent, targetPath)
     }}>
@@ -139,7 +139,7 @@ export default (props: any) => {
       // title变为了element对象，需要注意下
       let targetPath = fullPath
       if (type === 'application') {
-        targetPath = `/applications${fullPath}/-/clusters`
+        targetPath = `${fullPath}`
       }
       handleHref(nativeEvent, targetPath)
     } else if (!expanded) {

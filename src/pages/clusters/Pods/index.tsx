@@ -512,7 +512,7 @@ export default () => {
       onOk() {
         deleteCluster(cluster!.id).then(() => {
           successAlert('开始删除集群')
-          window.location.href = `/applications${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}/-/clusters`
+          window.location.href = `${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}`
         })
       },
     });

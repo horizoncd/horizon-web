@@ -1,4 +1,5 @@
 import {request} from 'umi';
+import type {V1Pod} from '@kubernetes/client-node'
 
 export async function queryTerminalSessionID(clusterID: number, params: CLUSTER.SessionQuery) {
   return request<{
@@ -56,6 +57,17 @@ export async function deletePods(clusterID: number, pods: string[]) {
 
 export async function queryPodEvents(clusterID: number, podName: string) {
   return request(`/apis/core/v1/clusters/${clusterID}/events`, {
+    method: 'GET',
+    params: {
+      podName
+    }
+  });
+}
+
+export async function queryPodDetail(clusterID: number, podName: string) {
+  return request<{
+    data: V1Pod
+  }>(`/apis/core/v1/clusters/${clusterID}/pod`, {
     method: 'GET',
     params: {
       podName

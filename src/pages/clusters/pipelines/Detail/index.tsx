@@ -196,7 +196,7 @@ export default (props: any) => {
             setLoading(true)
             rollback(id, {pipelinerunID: pipelineID}).then(() => {
               successAlert('提交回滚成功')
-              history.push(`/clusters${fullPath}/-/pods`)
+              history.push(`${fullPath}`)
             });
           }
         });
