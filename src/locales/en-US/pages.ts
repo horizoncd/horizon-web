@@ -78,7 +78,7 @@ export default {
   'pages.clusterEdit.prompt.deploy.content': 'Build and Deploy: rebuild and deploy with latest settings.\nDeploy: deploy with latest settings.',
 
   'pages.clusterDetail.basic.detail': 'Application Cluster Detail',
-  'pages.clusterDetail.basic.config': 'Application Cluster Config',
+  'pages.clusterDetail.basic.config': 'Application Cluster Configs',
   'pages.clusterDetail.basic.name': 'name',
   'pages.clusterDetail.basic.description': 'description',
   'pages.clusterDetail.basic.release': 'release ',

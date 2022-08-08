@@ -68,7 +68,7 @@ export default (props: any) => {
   const hookAfterSubmit = () => {
     successAlert(formatMessage('submit', 'Pipeline Started'))
     // jump to pods' url
-    history.push(`/clusters${fullPath}/-/pods`)
+    history.push(`${fullPath}`)
   }
 
   const requiredRule: Rule[] = [

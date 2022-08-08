@@ -317,11 +317,6 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
               path: `/admin/environments`,
               name: 'Environments',
               icon: 'environment',
-            },
-            {
-              path: `/admin/templates`,
-              name: 'Templates',
-              icon: "templates",
             }
           ]);
         }
@@ -449,14 +444,14 @@ function formatApplicationMenu(fullPath: string) {
   return [
     ...routes,
     {
-      name: 'Application overview',
-      icon: 'bank',
       path: `${fullPath}`,
-    },
-    {
-      path: `/applications${fullPath}/-/clusters`,
       name: 'Clusters',
       icon: 'appstore',
+    },
+    {
+      name: 'Application configs',
+      icon: 'bank',
+      path: `/applications${fullPath}/-/configs`,
     },
     {
       path: `/applications${fullPath}/-/members`,
@@ -468,7 +463,7 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/applications${fullPath}/-/clusters/new`,
+      path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
     },
     {
@@ -489,14 +484,14 @@ function formatClusterMenu(fullPath: string) {
   return [
     ...routes,
     {
-      name: 'Cluster overview',
-      icon: 'bank',
       path: `${fullPath}`,
-    },
-    {
-      path: `/clusters${fullPath}/-/pods`,
       name: 'Pods',
       icon: 'appstore',
+    },
+    {
+      name: 'Cluster configs',
+      icon: 'bank',
+      path: `/clusters${fullPath}/-/configs`,
     },
     {
       path: `/clusters${fullPath}/-/edit`,
