@@ -18,6 +18,7 @@ import {StreamLanguage} from '@codemirror/language';
 import {json} from '@codemirror/lang-json';
 import {history} from "@@/core/history";
 import PodsTable from '../Pods/PodsTable';
+import copy from 'copy-to-clipboard'
 
 const {Panel} = Collapse;
 export default (props: any): React.ReactNode => {
@@ -31,6 +32,7 @@ export default (props: any): React.ReactNode => {
 
   const [containerStatus, setContainerStatus] = useState<Record<string, V1ContainerStatus>>({})
   const [initContainerStatus, setInitContainerStatus] = useState<Record<string, V1ContainerStatus>>({})
+  const {successAlert, errorAlert} = useModel("alert")
 
 
   const {data: pod} = useRequest(() => queryPodDetail(clusterID, podName), {
@@ -158,9 +160,25 @@ export default (props: any): React.ReactNode => {
     </div>
   }
 
+  const onCopyClick = () => {
+    if (copy(JSON.stringify(pod, null, 2))) {
+      successAlert('复制成功')
+    } else {
+      errorAlert('复制失败')
+    }
+  }
+
   return (
     <Detail>
       <div style={{marginBottom: '5px', textAlign: 'right'}}>
+        {
+          jsonMode && <Button
+            style={{marginRight: '10px'}}
+            onClick={onCopyClick} 
+          >
+            复制
+          </Button>
+        }
         {
           jsonMode ? <Button
             type="primary" onClick={() => {
@@ -191,6 +209,7 @@ export default (props: any): React.ReactNode => {
         jsonMode ? <CodeMirror
           value={JSON.stringify(pod, null, 2)} 
           theme={"dark"}
+          readOnly={true}
           extensions={[json()]}
         />: <div>
           <DetailCard
