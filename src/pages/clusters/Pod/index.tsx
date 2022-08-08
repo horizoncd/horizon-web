@@ -10,7 +10,7 @@ import DetailCard from "@/components/DetailCard";
 import styles from "@/pages/clusters/Pods/PodsTable/index.less";
 import podStyles from "./index.less";
 import Utils from '@/utils'
-import type {V1Handler, V1Probe} from '@kubernetes/client-node';
+import type {V1ContainerState, V1ContainerStatus, V1Handler, V1Probe} from '@kubernetes/client-node';
 import {V1VolumeMount} from '@kubernetes/client-node'
 import {Button, Card, Collapse, Table, Tag} from "antd";
 import CodeMirror from '@uiw/react-codemirror';
@@ -29,11 +29,48 @@ export default (props: any): React.ReactNode => {
   const {query: q} = props.location;
   const {jsonMode = false} = q
 
+  const [containerStatus, setContainerStatus] = useState<Record<string, V1ContainerStatus>>({})
+  const [initContainerStatus, setInitContainerStatus] = useState<Record<string, V1ContainerStatus>>({})
+
+
   const {data: pod} = useRequest(() => queryPodDetail(clusterID, podName), {
-    refreshDeps: [podName]
+    refreshDeps: [podName],
+    onSuccess: ()=>{
+      const st = {}
+      pod?.status?.containerStatuses?.forEach(
+        (s)=>{
+          st[s.name] = s
+        }
+      )
+      console.log(st)
+      setContainerStatus(st)
+      const ist = {}
+      pod?.status?.initContainerStatuses?.forEach(
+        (s)=>{
+          ist[s.name] = s
+        }
+      )
+      setInitContainerStatus(ist)
+    }
   })
 
+  const omitAnnotations = [
+    'cloudnative.music.netease.com/http-probe.sh',
+    'cloudnative.music.netease.com/offline-once.sh',
+    'cloudnative.music.netease.com/offline.sh',
+    'cloudnative.music.netease.com/online-once.sh',
+    'cloudnative.music.netease.com/online.sh',
+    'cloudnative.music.netease.com/startup.sh',
+    'cloudnative.music.netease.com/status.sh',
+  ]
+
   const lifecycleTable = (name: string, handler: V1Handler) => {
+    let check = ""
+    if (handler.exec?.command) {
+      check = handler.exec.command.join(" ")
+    } else if (handler.httpGet) {
+      check = (handler.httpGet.scheme || '' ) + handler.httpGet.host + handler.httpGet.path
+    }
     return <div>
       <span className={styles.containerDetailHeading}>{name}</span>
       <Table
@@ -51,15 +88,23 @@ export default (props: any): React.ReactNode => {
             key: 'check',
           },
         ]}
-        dataSource={handler.exec? [{
-          check: handler.exec?.command ? handler.exec.command.join(" ") :
-            handler.httpGet?.path || "",
-        }] : []}
+        dataSource={[{
+          check: check,
+        }]}
       />
     </div>
   }
 
   const probeTable = (name: string, probe: V1Probe) => {
+    let check = ""
+    if (probe.exec?.command) {
+      check = probe.exec.command.join(" ")
+    } else if (probe.httpGet) {
+      check = (probe.httpGet.scheme?.toLocaleLowerCase() || 'http' ) + '://' + 
+      (probe.httpGet.host || 'localhost') + ':' +
+      (probe.httpGet.port) + 
+      probe.httpGet.path
+    }
     return <div>
       <span className={styles.containerDetailHeading}>{name}</span>
       <Table
@@ -87,12 +132,12 @@ export default (props: any): React.ReactNode => {
             key: 'period',
           },
           {
-            title: "Success Threshold (Seconds)",
+            title: "Success Threshold",
             dataIndex: 'success',
             key: 'success',
           },
           {
-            title: "Failure Threshold (Seconds)",
+            title: "Failure Threshold",
             dataIndex: 'failure',
             key: 'failure',
           },
@@ -102,15 +147,14 @@ export default (props: any): React.ReactNode => {
             key: 'check',
           },
         ]}
-        dataSource={probe? [{
+        dataSource={[{
           delay: probe.initialDelaySeconds || 0,
           timeout: probe.timeoutSeconds,
           period: probe.periodSeconds,
           success: probe.successThreshold,
           failure: probe.failureThreshold,
-          check: probe.exec?.command ? probe.exec.command.join(" ") :
-            probe.httpGet?.path || "",
-        }] : []}
+          check: check
+        }]}
       />
     </div>
   }
@@ -199,12 +243,7 @@ export default (props: any): React.ReactNode => {
                     value: <div>
                       {
                         Object.keys(pod?.metadata?.annotations|| {}).filter((k) => {
-                          return !(k.startsWith("cloudnative.music.netease.com/http") ||
-                           k.startsWith("cloudnative.music.netease.com/status") ||
-                           k.startsWith("cloudnative.music.netease.com/startup") ||
-                           k.startsWith("cloudnative.music.netease.com/offline") ||
-                           k.startsWith("cloudnative.music.netease.com/online")
-                          )
+                          return omitAnnotations.indexOf(k) < 0
                         }).map(
                           (k) => {
                             return <Tag
@@ -301,7 +340,7 @@ export default (props: any): React.ReactNode => {
                   key: 'lastProbeTime',
                 },
                 {
-                  title: "最后迁移时间",
+                  title: "最后转变时间",
                   dataIndex: 'lastTransitionTime',
                   key: 'lastTransitionTime',
                 },
@@ -330,9 +369,10 @@ export default (props: any): React.ReactNode => {
             <Collapse>
               {
                 pod?.spec?.containers?.map((container) => {
-                  const containerHeader: Param[][] = [[]]
-                  if (container.status) {
-                    const stateKey = Object.keys(container?.status?.state)
+                  const containerHeader: Param[][] = [[]];
+                  const cs = containerStatus![container.name]
+                  if (cs) {
+                    const stateKey = Object.keys(cs.state)
                     if (stateKey.length > 0) {
                       containerHeader[0].push(
                         {
@@ -341,30 +381,48 @@ export default (props: any): React.ReactNode => {
                         }
                       )
                     }
-                    if (container?.status?.state?.waiting) {
+                    if (cs.state?.waiting) {
                       containerHeader[0].push(
                         {
                           key: "原因",
-                          value: container?.status?.state?.waiting?.reason || '',
+                          value: cs.state.waiting.reason || '',
                         })
-                    } else if (container?.status?.state?.terminated) {
+                    } else if (cs.state?.terminated) {
                       containerHeader[0].push(
                         {
                           key: "原因",
-                          value: container?.status?.state?.terminated?.reason || '',
+                          value: cs.state.terminated.reason || '',
                         },
                         {
                           key: "信息",
-                          value: container?.status?.state?.terminated?.message || '',
+                          value: cs.state.terminated.message || '',
                         },
                       )
                     }
                   }
                   containerHeader[0].push(
-                    {key: "是否就绪", value: container?.status?.ready?.toString() || '未就绪'},
-                    {key: "是否启动", value: container?.status?.started?.toString() || '未就绪'},
+                    {key: "是否就绪", value: containerStatus![container.name]?.ready?.toString() || '未就绪'},
+                    {key: "是否启动", value: containerStatus![container.name]?.started?.toString() || '未启动'},
                   )
-                  containerHeader.push([{key: "镜像", value: container?.image}])
+                  containerHeader.push([
+                    {key: "镜像", value: container?.image},
+                  ])
+                  
+                  if (container.ports) {
+                    const ports: Param[] = container.ports.map(
+                      (port)=>{
+                        return {
+                          key: port.name,
+                          value: {
+                            "port": port.containerPort,
+                            "protocal": port.protocol,
+                          }
+                        }
+                      }
+                    )
+                    containerHeader[1].push(...ports)
+                  }
+
 
                   return <Panel
                     key={container.name}
@@ -404,7 +462,7 @@ export default (props: any): React.ReactNode => {
                         return env.name
                       }}
                     />
-                    <span className={styles.containerDetailHeading}>存储挂载</span>
+                    <span className={styles.containerDetailHeading}>Volume Mount</span>
                     <Table
                       className={styles.containerDetailTable}
                       pagination={

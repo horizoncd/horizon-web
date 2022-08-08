@@ -352,7 +352,7 @@ export default (props: any) => {
             {
               current === 0 &&
               <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
-                     editing={editing} template={template} cluster={cluster}/>
+                     editing={editing} template={template} status={cluster?.status}/>
             }
             {
               current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}

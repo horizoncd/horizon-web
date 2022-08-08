@@ -151,7 +151,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly || (editing && props?.cluster?.status != ClusterStatus.FREED )}>
+            <Select disabled={!!envFromQuery || readonly || (editing && props?.status != ClusterStatus.FREED )}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -160,7 +160,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
-            <Select disabled={readonly || (editing && props?.cluster?.status != ClusterStatus.FREED )}>
+            <Select disabled={readonly || (editing && props?.status != ClusterStatus.FREED )}>
               {regions?.map((item) => {
                 const defaultText = item.isDefault ? `${item.displayName} (default)` : item.displayName
                 const text = item.disabled ? `${defaultText} (disabled)` : defaultText

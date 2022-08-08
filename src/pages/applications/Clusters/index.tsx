@@ -26,9 +26,9 @@ const {Option} = Select;
 
 export default () => {
   const params = new URLSearchParams(window.location.search) 
-  const environment = params.get('environment')
-  const tagSelector = params.get('tagSelector')
-  const filter = params.get('filter')
+  const environment = params.get('environment') || ''
+  const tagSelector = params.get('tagSelector') || ''
+  const filter = params.get('filter') || ''
 
   const intl = useIntl();
   const {initialState} = useModel('@@initialState');
