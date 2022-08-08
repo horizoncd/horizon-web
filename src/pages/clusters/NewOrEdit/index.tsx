@@ -54,7 +54,7 @@ export default (props: any) => {
   const {query, pathname} = location;
   const {environment: envFromQuery, sourceClusterID} = query;
   const editing = pathname.endsWith('edit')
-  const creating = pathname.endsWith('new')
+  const creating = pathname.endsWith('newcluster')
   const copying = !!sourceClusterID
 
   const {successAlert} = useModel('alert')

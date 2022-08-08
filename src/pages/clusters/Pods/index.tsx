@@ -193,7 +193,16 @@ export default () => {
               Object.assign(state, containerStatuses[0].state)
 
               restartCount = containerStatuses[0].restartCount
-              onlineStatus = containerStatuses[0].ready ? onlineState : offlineState
+              if (containerStatuses.length == containers.length) {
+                onlineStatus = onlineState 
+                containerStatuses.forEach(
+                  (containerStatus: any) => {
+                    if (!containerStatus.ready) {
+                      onlineStatus = offlineState
+                    }
+                  }
+                )
+              }
             }
 
             const podInTable: CLUSTER.PodInTable = {
@@ -334,45 +343,45 @@ export default () => {
       <div style={{textAlign: 'center'}}>
         {
           status.clusterStatus.manualPaused ? <Button type="primary"
-                                                      disabled={!status.clusterStatus.manualPaused ||
+            disabled={!status.clusterStatus.manualPaused ||
                                                       !RBAC.Permissions.resumeCluster.allowed
-                                                      }
-                                                      style={{margin: '0 8px'}} onClick={onResume}>
+            }
+            style={{margin: '0 8px'}} onClick={onResume}>
             取消暂停
           </Button> : <Button type="primary"
-                              disabled={status.clusterStatus.manualPaused ||
+            disabled={status.clusterStatus.manualPaused ||
                               status.clusterStatus.status === ClusterStatus.SUSPENDED ||
                               !RBAC.Permissions.pauseCluster.allowed
-                              }
-                              style={{margin: '0 8px'}} onClick={onPause}>
+            }
+            style={{margin: '0 8px'}} onClick={onPause}>
             人工暂停
           </Button>
         }
 
         <Button type="primary"
-                disabled={
-                  !RBAC.Permissions.deployClusterNext.allowed ||
+          disabled={
+            !RBAC.Permissions.deployClusterNext.allowed ||
                   status.clusterStatus.status !== ClusterStatus.SUSPENDED ||
                   status.clusterStatus.manualPaused
-                }
-                style={{margin: '0 8px'}} onClick={onNext}>
+          }
+          style={{margin: '0 8px'}} onClick={onNext}>
           {intl.formatMessage({id: 'pages.pods.nextStep'})}
         </Button>
         <Button type="primary"
-                disabled={
-                  !RBAC.Permissions.promoteCluster.allowed ||
+          disabled={
+            !RBAC.Permissions.promoteCluster.allowed ||
                   status.clusterStatus.status !== ClusterStatus.SUSPENDED ||
                   status.clusterStatus.manualPaused
-                }
-                style={{margin: '0 8px'}} onClick={onPromote}>
+          }
+          style={{margin: '0 8px'}} onClick={onPromote}>
           全部发布
         </Button>
         <Button danger
-                disabled={
-                  !RBAC.Permissions.rollbackCluster.allowed ||
+          disabled={
+            !RBAC.Permissions.rollbackCluster.allowed ||
                   !RBAC.Permissions.freeCluster.allowed
-                }
-                style={{margin: '0 8px'}} onClick={onCancelDeploy}>
+          }
+          style={{margin: '0 8px'}} onClick={onCancelDeploy}>
           取消发布
         </Button>
       </div>
@@ -437,51 +446,51 @@ export default () => {
 
   const onClickOperation = ({key}: { key: string }) => {
     switch (key) {
-      case 'builddeploy':
-        history.push({
-          pathname: `/clusters${fullPath}/-/pipelines/new`,
-          search: stringify({
-            type: PublishType.BUILD_DEPLOY,
-          })
+    case 'builddeploy':
+      history.push({
+        pathname: `/clusters${fullPath}/-/pipelines/new`,
+        search: stringify({
+          type: PublishType.BUILD_DEPLOY,
         })
-        break;
-      case 'deploy':
-        history.push({
-          pathname: `/clusters${fullPath}/-/pipelines/new`,
-          search: stringify({
-            type: PublishType.DEPLOY,
-          })
+      })
+      break;
+    case 'deploy':
+      history.push({
+        pathname: `/clusters${fullPath}/-/pipelines/new`,
+        search: stringify({
+          type: PublishType.DEPLOY,
         })
-        break;
-      case 'restart':
-        Modal.confirm({
-          title: '确定重启所有Pods?',
-          onOk() {
-            restart(id).then(() => {
-              successAlert('重启操作提交成功')
-            })
-          },
-        });
-        break;
-      case 'rollback':
-        history.push(`/clusters${fullPath}/-/pipelines?category=rollback`)
-        successAlert('请选择流水线进行回滚')
-        break;
-      case 'editCluster':
-        history.push(`/clusters${fullPath}/-/edit`)
-        break;
-      case 'freeCluster':
-        Modal.confirm({
-          title: '确定释放集群?',
-          content: '销毁所有pod并归还资源，保留集群配置',
-          onOk() {
-            freeCluster(id).then(() => {
-              successAlert('开始释放集群...')
-            })
-          },
-        });
-        break;
-      default:
+      })
+      break;
+    case 'restart':
+      Modal.confirm({
+        title: '确定重启所有Pods?',
+        onOk() {
+          restart(id).then(() => {
+            successAlert('重启操作提交成功')
+          })
+        },
+      });
+      break;
+    case 'rollback':
+      history.push(`/clusters${fullPath}/-/pipelines?category=rollback`)
+      successAlert('请选择流水线进行回滚')
+      break;
+    case 'editCluster':
+      history.push(`/clusters${fullPath}/-/edit`)
+      break;
+    case 'freeCluster':
+      Modal.confirm({
+        title: '确定释放集群?',
+        content: '销毁所有pod并归还资源，保留集群配置',
+        onOk() {
+          freeCluster(id).then(() => {
+            successAlert('开始释放集群...')
+          })
+        },
+      });
+      break;
+    default:
     }
   }
 
@@ -530,8 +539,8 @@ export default () => {
     <Tooltip title={clusterStatus !== ClusterStatus.FREED && '请先释放集群，再进行删除'}>
       <div>
         <Menu.Item onClick={onDeleteCluster}
-                   disabled={!RBAC.Permissions.deleteCluster.allowed || clusterStatus !== ClusterStatus.FREED}
-                   key="deleteCluster">
+          disabled={!RBAC.Permissions.deleteCluster.allowed || clusterStatus !== ClusterStatus.FREED}
+          key="deleteCluster">
           删除集群
         </Menu.Item>
       </div>
@@ -589,23 +598,23 @@ export default () => {
           <Button
             disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(clusterStatus)}
             type="primary" onClick={() => {
-            onClickOperationWithResumePrompt({key: 'builddeploy'})
-          }}
+              onClickOperationWithResumePrompt({key: 'builddeploy'})
+            }}
             style={{marginRight: '10px'}}>
             构建发布
           </Button>
           <Button disabled={!RBAC.Permissions.deployCluster.allowed || isRestrictedStatus(clusterStatus)}
-                  onClick={() => {
-                    onClickOperationWithResumePrompt({key: 'deploy'})
-                  }}
-                  style={{marginRight: '10px'}}>
+            onClick={() => {
+              onClickOperationWithResumePrompt({key: 'deploy'})
+            }}
+            style={{marginRight: '10px'}}>
             直接发布
           </Button>
           <Button disabled={!RBAC.Permissions.restartCluster.allowed || isRestrictedStatus(clusterStatus)}
-                  onClick={() => {
-                    onClickOperationWithResumePrompt({key: 'restart'})
-                  }}
-                  style={{marginRight: '10px'}}>
+            onClick={() => {
+              onClickOperationWithResumePrompt({key: 'restart'})
+            }}
+            style={{marginRight: '10px'}}>
             重新启动
           </Button>
           <Dropdown overlay={operateDropdown} trigger={["click"]} overlayStyle={{}}>

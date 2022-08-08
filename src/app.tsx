@@ -463,7 +463,7 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/applications${fullPath}/-/clusters/new`,
+      path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
     },
     {

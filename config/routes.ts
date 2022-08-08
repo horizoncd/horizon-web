@@ -146,7 +146,7 @@ const applicationRoutes = [
     component: 'applications/NewOrEdit',
   },
   {
-    path: '/applications/*/-/clusters/new',
+    path: '/applications/*/-/newcluster',
     menuRender: false,
     component: 'clusters/NewOrEdit',
   },

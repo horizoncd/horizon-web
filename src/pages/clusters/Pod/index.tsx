@@ -42,7 +42,6 @@ export default (props: any): React.ReactNode => {
           st[s.name] = s
         }
       )
-      console.log(st)
       setContainerStatus(st)
       const ist = {}
       pod?.status?.initContainerStatuses?.forEach(
