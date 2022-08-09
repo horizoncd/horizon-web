@@ -54,7 +54,7 @@ export default (props: any) => {
   const {query, pathname} = location;
   const {environment: envFromQuery, sourceClusterID} = query;
   const editing = pathname.endsWith('edit')
-  const creating = pathname.endsWith('new')
+  const creating = pathname.endsWith('newcluster')
   const copying = !!sourceClusterID
 
   const {successAlert} = useModel('alert')
@@ -352,7 +352,7 @@ export default (props: any) => {
             {
               current === 0 &&
               <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
-                     editing={editing} template={template}/>
+                     editing={editing} template={template} status={cluster?.status}/>
             }
             {
               current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}

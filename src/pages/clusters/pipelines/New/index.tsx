@@ -68,7 +68,7 @@ export default (props: any) => {
   const hookAfterSubmit = () => {
     successAlert(formatMessage('submit', 'Pipeline Started'))
     // jump to pods' url
-    history.push(`/clusters${fullPath}/-/pods`)
+    history.push(`${fullPath}`)
   }
 
   const requiredRule: Rule[] = [
@@ -141,7 +141,6 @@ export default (props: any) => {
           {
             type === PublishType.BUILD_DEPLOY && (
               <Form.Item
-                style={{display: 'flex'}}
                 label={"版本"} name={'ref'}
                 rules={requiredRule}
               >

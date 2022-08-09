@@ -1,4 +1,4 @@
-import {GitInfo} from '@/services/code/code'
+import type {GitInfo} from '@/services/code/code'
 
 declare namespace CLUSTER {
   type PodQuery = {

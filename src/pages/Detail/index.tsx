@@ -1,6 +1,6 @@
 import GroupDetail from '../groups/Detail'
-import ApplicationDetail from '../applications/Detail'
-import ClusterDetail from '../clusters/Detail'
+import Pods from '../clusters/Pods'
+import Clusters from '../applications/Clusters'
 import NotFount from '@/pages/404'
 import {useModel} from "@@/plugin-model/useModel";
 import {ResourceType} from '@/const'
@@ -15,9 +15,9 @@ export default () => {
     case ResourceType.GROUP:
       return (<GroupDetail/>)
     case ResourceType.APPLICATION:
-      return (<ApplicationDetail/>);
+      return (<Clusters/>);
     case ResourceType.CLUSTER:
-      return (<ClusterDetail/>);
+      return (<Pods/>);
     default:
       return <NotFount/>
   }

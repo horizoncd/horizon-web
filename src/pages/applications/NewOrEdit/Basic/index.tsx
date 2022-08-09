@@ -154,7 +154,6 @@ export default (props: any) => {
             />
           </Form.Item>
           <Form.Item
-            style={{display: 'flex'}}
             label={"版本"} name={'refType'} rules={gitRevisionRules}>
             <Form.Item
               name={"refType"}

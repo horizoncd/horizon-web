@@ -12,6 +12,7 @@ import {history} from "@@/core/history";
 import {queryRegions} from "@/services/applications/applications";
 import {useModel} from "@@/plugin-model/useModel";
 import {useState} from "react";
+import {ClusterStatus} from '@/const';
 
 const {TextArea} = Input;
 const {Option} = Select;
@@ -150,7 +151,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly || editing}>
+            <Select disabled={!!envFromQuery || readonly || (editing && props?.status != ClusterStatus.FREED )}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -159,7 +160,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('region')} name={'region'} rules={requiredRule}>
-            <Select disabled={readonly || editing}>
+            <Select disabled={readonly || (editing && props?.status != ClusterStatus.FREED )}>
               {regions?.map((item) => {
                 const defaultText = item.isDefault ? `${item.displayName} (default)` : item.displayName
                 const text = item.disabled ? `${defaultText} (disabled)` : defaultText
@@ -179,7 +180,6 @@ export default (props: any) => {
             <Input disabled={readonly}/>
           </Form.Item>
           <Form.Item
-            style={{display: 'flex'}}
             label={"版本"}
             name={'ref'}
             rules={[{required: true, message: "git ref required"}]}

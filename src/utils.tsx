@@ -5,8 +5,14 @@ import {routes} from "../config/routes";
 
 const getResourcePath = () => {
   const {pathname} = history.location;
+  if(pathname.startsWith('/templates')){
+    const pathArr = /templates\/(.*?)\/-\/releases\/(.*?)(?:\/edit)?\/?$/ .exec(pathname)
+    if(pathArr != null) {
+      return `/${pathArr[1]}/${pathArr[2]}`
+    }
+  }
   const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
-    item !== 'applications' && item !== 'clusters');
+    item !== 'applications' && item !== 'clusters' && item !== 'templates');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -33,6 +39,46 @@ const getBreadcrumbs = (fullName: string) => {
       });
     }
     return result
+  }
+
+  if (pathname.startsWith("/templates")) {
+   if(pathname === '/templates/new') {
+     return result
+   }
+   const releasePattern =  /\/templates\/.*\/-\/releases\/(.*?)(\/edit)?\/?$/
+   const isRelease = releasePattern.test(pathname)
+   const path = pathname.replace(/\/-.+$/,"")
+   const filteredPath = path.split('/').filter((item)=>item != '' && item != 'templates')
+   let currentLink = ''
+   for(const x of filteredPath.slice(0,filteredPath.length-1)) {
+     currentLink += `/${x}`
+     result.push({
+       path: currentLink,
+       breadcrumbName: x,
+     })
+   }
+   const item = filteredPath[filteredPath.length-1]
+   currentLink += `/${item}`
+   result.push({
+     path: '/templates' +currentLink + '/-/detail',
+     breadcrumbName: item,
+   })
+   const res =  releasePattern.exec(pathname)
+   if(isRelease) {
+      currentLink += `/-/releases/${res[1]}`
+      result.push({
+        path: '/templates' +currentLink,
+        breadcrumbName: res[1]
+      })
+      if(pathname.endsWith('/edit')) {
+        currentLink += "/edit"
+        result.push({
+          path: '/templates' +currentLink,
+          breadcrumbName: "edit",
+        })
+      }
+    }
+   return result
   }
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');

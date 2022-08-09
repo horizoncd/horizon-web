@@ -10,14 +10,16 @@ import {currentUser as queryCurrentUser} from './services/login/login';
 import {
   AppstoreOutlined,
   BankOutlined,
+  ClusterOutlined,
   ContactsOutlined,
+  DatabaseOutlined,
   DownOutlined,
+  EditOutlined,
+  EnvironmentOutlined,
   FundOutlined,
   SettingOutlined,
   SmileOutlined,
-  DatabaseOutlined,
-  EnvironmentOutlined,
-  ClusterOutlined,
+  SnippetsOutlined,
   TagsOutlined
 } from '@ant-design/icons/lib';
 import Utils, {pathnameInStaticRoutes} from '@/utils';
@@ -26,6 +28,7 @@ import {stringify} from 'querystring';
 import {routes} from '../config/routes';
 import {ResourceType} from '@/const'
 import {queryRoles, querySelfMember} from "@/services/members/members";
+import type {API} from './services/typings';
 
 const loginPath = '/user/login';
 const queryUserPath = '/apis/login/v1/status';
@@ -42,7 +45,9 @@ const IconMap = {
   tags: <TagsOutlined/>,
   cluster: <ClusterOutlined/>,
   environment: <EnvironmentOutlined/>,
-  database: <DatabaseOutlined/>
+  database: <DatabaseOutlined/>,
+  templates: <SnippetsOutlined/>,
+  edit: <EditOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -98,8 +103,6 @@ export async function getInitialState(): Promise<{
 
     const {data: rolesData} = await queryRoles()
     roles = rolesData
-
-
   } catch (e) {
     currentUser = undefined
   }
@@ -108,7 +111,15 @@ export async function getInitialState(): Promise<{
   if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
-      const {data: resourceData} = await queryResource(path);
+      const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/
+      const pathArr = isReleasePath.exec(history.location.pathname)
+      console.log(pathArr)
+      const isRelease = pathArr != null
+      const {data: resourceData} = history.location.pathname.startsWith('/templates')?
+       isRelease ? await queryResource(path,"templatereleases") : 
+        await queryResource(path,"templates") : 
+        await queryResource(path,"");
+
       resource.id = resourceData.id;
       resource.name = resourceData.name;
       resource.type = resourceData.type;
@@ -116,7 +127,14 @@ export async function getInitialState(): Promise<{
       resource.fullPath = resourceData.fullPath;
       resource.parentID = resourceData.parentID;
 
-      const {data: memberData} = await querySelfMember(resource.type, resource.id)
+      let memberData =  null;
+      
+      if(isRelease) {
+        const {data: template} = await queryResource(pathArr[1],"templates");
+        ({data: memberData} = await querySelfMember("template", template.id))
+      }else{
+        ({data: memberData} = await querySelfMember(resource.type, resource.id))
+      }
       if (memberData.total > 0) {
         currentUser!.role = memberData.items[0].role;
       } else {
@@ -209,6 +227,9 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
         <Menu.Item key="3">
           <a style={{fontWeight: 'bold'}} onClick={() => history.push("/explore/groups")}>Groups</a>
         </Menu.Item>
+        <Menu.Item key="7">
+          <a style={{fontWeight: 'bold'}} onClick={() => history.push('/templates')}>Templates</a>
+        </Menu.Item>
         <SubMenu key="4" title={<span style={{fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)'}}>
           More <DownOutlined style={{fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)'}}/>
         </span>}>
@@ -296,7 +317,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
               path: `/admin/environments`,
               name: 'Environments',
               icon: 'environment',
-            },
+            }
           ]);
         }
 
@@ -313,6 +334,10 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
             return loopMenuItem(formatApplicationMenu(fullPath));
           case ResourceType.CLUSTER:
             return loopMenuItem(formatClusterMenu(fullPath));
+          case ResourceType.TEMPLATE:
+            return loopMenuItem(formatTemplateMenu(fullPath));
+          case ResourceType.RELEASE:
+            return loopMenuItem(formatReleaseMenu(fullPath))
           default:
             return defaultMenuData;
         }
@@ -326,6 +351,38 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     logo: <div/>
   };
 };
+
+function formatTemplateMenu(fullPath: string): MenuDataItem[] {
+  return [
+    ...routes,
+    {
+      name: 'Template detail',
+      icon: 'templates',
+      path: `/templates${fullPath}/-/detail`
+    },
+    {
+      name: 'Members',
+      icon: 'contacts',
+      path: `/templates${fullPath}/-/members`,
+    },
+  ]
+}
+
+function formatReleaseMenu(fullPath: string): MenuDataItem[] {
+  return [
+    ...routes,
+    {
+      name: 'Release detail',
+      icon: 'templates',
+      path: `/releases${fullPath}/-/detail`
+    },
+    {
+      name: 'Release edit',
+      path: `/releases${fullPath}/-/edit`,
+      icon: 'edit',
+    }
+  ]
+}
 
 function formatGroupMenu(fullPath: string) {
   return [
@@ -375,6 +432,11 @@ function formatGroupMenu(fullPath: string) {
       path: `/groups${fullPath}/-/newoauthapp`,
       menuRender: false,
     },
+    {
+      name: 'Templates',
+      path: `/groups${fullPath}/-/templates`,
+      icon: 'templates',
+    }
   ];
 }
 
@@ -382,14 +444,14 @@ function formatApplicationMenu(fullPath: string) {
   return [
     ...routes,
     {
-      name: 'Application overview',
-      icon: 'bank',
       path: `${fullPath}`,
-    },
-    {
-      path: `/applications${fullPath}/-/clusters`,
       name: 'Clusters',
       icon: 'appstore',
+    },
+    {
+      name: 'Application configs',
+      icon: 'bank',
+      path: `/applications${fullPath}/-/configs`,
     },
     {
       path: `/applications${fullPath}/-/members`,
@@ -401,7 +463,7 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/applications${fullPath}/-/clusters/new`,
+      path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
     },
     {
@@ -422,14 +484,14 @@ function formatClusterMenu(fullPath: string) {
   return [
     ...routes,
     {
-      name: 'Cluster overview',
-      icon: 'bank',
       path: `${fullPath}`,
-    },
-    {
-      path: `/clusters${fullPath}/-/pods`,
       name: 'Pods',
       icon: 'appstore',
+    },
+    {
+      name: 'Cluster configs',
+      icon: 'bank',
+      path: `/clusters${fullPath}/-/configs`,
     },
     {
       path: `/clusters${fullPath}/-/edit`,

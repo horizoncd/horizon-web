@@ -36,6 +36,7 @@ import {
   PlusSquareTwoTone,
 } from "@ant-design/icons";
 import copy from "copy-to-clipboard";
+import type {CLUSTER} from "@/services/clusters";
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -292,16 +293,16 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     })
     if (failedList.length > 0) {
       errorAlert(<span>{ops}操作执行结果
-                  <br/>
+        <br/>
                   成功列表:  [ {succeedList.join(",")} ]
-                  <br/>
+        <br/>
                   失败列表:
-                  <br/>
+        <br/>
         {failedList.map(item => <div>Pod: {item.name} Error: {item.err}<br/></div>)}
       </span>)
     } else {
       successAlert(<span>{ops}操作执行结果
-                  <br/>
+        <br/>
                   成功列表: [ {succeedList.join(",")} ]
       </span>)
     }
@@ -458,70 +459,70 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
     const lifeCycle: any = []
     podInfo.lifeCycle.forEach((value) => {
-        if (value.message === '') {
-          switch (value.status) {
-            case LifeCycleItemSuccess:
-              value.message = '成功';
-              break;
-            case LifeCycleItemAbnormal:
-              switch (value.type) {
-                case 'ContainerStartup':
-                  value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
-                  break;
-                case 'ContainerOnline':
-                  value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
-                  break;
-                case 'HealthCheck':
-                  value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
-                  break;
-                default:
-                  value.message = '执行失败，请联系管理员。'
-              }
-              break;
-            case LifeCycleItemRunning:
-              switch (value.type) {
-                case 'PreStop':
-                  value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。'
-                  break;
-              }
-              break;
-            default:
-              break;
+      if (value.message === '') {
+        switch (value.status) {
+        case LifeCycleItemSuccess:
+          value.message = '成功';
+          break;
+        case LifeCycleItemAbnormal:
+          switch (value.type) {
+          case 'ContainerStartup':
+            value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
+            break;
+          case 'ContainerOnline':
+            value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
+            break;
+          case 'HealthCheck':
+            value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
+            break;
+          default:
+            value.message = '执行失败，请联系管理员。'
           }
+          break;
+        case LifeCycleItemRunning:
+          switch (value.type) {
+          case 'PreStop':
+            value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。'
+            break;
+          }
+          break;
+        default:
+          break;
         }
-        lifeCycle.push({
-            type: <div
-              className={podLifeCycleStatusMap[value.status].style}
-            >{value.type}</div>,
-            task: <div
-              className={podLifeCycleStatusMap[value.status].style}
-              key={value.type}
-            >
-              {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
-            </div>,
-            message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
-          }
-        )
       }
+      lifeCycle.push({
+        type: <div
+          className={podLifeCycleStatusMap[value.status].style}
+        >{value.type}</div>,
+        task: <div
+          className={podLifeCycleStatusMap[value.status].style}
+          key={value.type}
+        >
+          {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
+        </div>,
+        message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
+      }
+      )
+    }
     )
     setPodLifeCycle(lifeCycle);
     setShowLifeCycle(true);
   }
 
   const otherOperations = (record: CLUSTER.PodInTable) => (<Menu>
-      <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
-                 onClick={() => onClickStdout(record)}>
-        <div style={{color: "#1890ff"}}>Stdout</div>
-      </Menu.Item>
-      <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
-                 onClick={() => onClickMlog(record)}>
-        <div style={{color: "#1890ff"}}>Mlog</div>
-      </Menu.Item>
-      <Menu.Item disabled={!RBAC.Permissions.getEvents.allowed}
-                 onClick={() => onClickEvents(record)}>
-        <div style={{color: "#1890ff"}}>Events</div>
-      </Menu.Item>
-    </Menu>
+    <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
+      onClick={() => onClickStdout(record)}>
+      <div style={{color: "#1890ff"}}>Stdout</div>
+    </Menu.Item>
+    <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
+      onClick={() => onClickMlog(record)}>
+      <div style={{color: "#1890ff"}}>Mlog</div>
+    </Menu.Item>
+    <Menu.Item disabled={!RBAC.Permissions.getEvents.allowed}
+      onClick={() => onClickEvents(record)}>
+      <div style={{color: "#1890ff"}}>Events</div>
+    </Menu.Item>
+  </Menu>
   )
 
   // @ts-ignore
@@ -544,23 +545,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         const {message} = record.state
         let status: JSX.Element
         switch (text) {
-          case 'PodInitializing':
-            status = <PodPending text={'PodInitializing'} message={message}/>
-            break;
-          case 'PostStartHookError':
-            status = <PodError text={'PostStartHookError'} message={message}/>
-            break;
-          case 'CrashLoopBackOff':
-            status = <PodError text={'CrashLoopBackOff'} message={message}/>
-            break;
-          case 'Running':
-            status = <PodRunning text={'Running'}/>
-            break;
-          case 'Terminated':
-            status = <PodPending text={'Terminated'} message={message}/>
-            break;
-          default:
-            status = <PodPending text={'Pending'}/>
+        case 'PodInitializing':
+          status = <PodPending text={'PodInitializing'} message={message}/>
+          break;
+        case 'PostStartHookError':
+          status = <PodError text={'PostStartHookError'} message={message}/>
+          break;
+        case 'CrashLoopBackOff':
+          status = <PodError text={'CrashLoopBackOff'} message={message}/>
+          break;
+        case 'Running':
+          status = <PodRunning text={'Running'}/>
+          break;
+        case 'Terminated':
+          status = <PodPending text={'Terminated'} message={message}/>
+          break;
+        default:
+          status = <PodPending text={'Pending'}/>
         }
         let lifeCycleButtonStyle = styles.lifecycleButtonBlue
         for (const lifeCycleItem of record.lifeCycle) {
@@ -632,8 +633,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size='small' style={{maxWidth: '200px', whiteSpace: 'nowrap'}}>
           <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
-                  href={formatConsoleURL(record)}
-                  target="_blank">Terminal</Button>
+            href={formatConsoleURL(record)}
+            target="_blank">Terminal</Button>
           <a style={{color: '#1890ff'}} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             <a>
@@ -709,7 +710,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   width: '50%'
                 },
                 {
-                  title: "状态",
+                  title: "容器状态",
                   dataIndex: 'status',
                   key: 'status',
                   width: '5%',
@@ -722,13 +723,25 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                       return <div/>
                     }
                     switch (stateKey[0]) {
-                      case 'running':
-                        return <PodRunning text={'Running'}/>
-                      case 'terminated':
-                        return <PodError text={'Terminated'}/>
-                      default:
-                        return <PodPending text={'Waiting'}/>
+                    case 'running':
+                      return <PodRunning text={'Running'}/>
+                    case 'terminated':
+                      return <PodError text={'Terminated'}/>
+                    default:
+                      return <PodPending text={'Waiting'}/>
                     }
+                  }
+                },
+                {
+                  title: formatMessage('onlineStatus', '上线状态'),
+                  dataIndex: 'onlineStatus',
+                  key: 'onlineStatus',
+                  render: (text: string, container: CLUSTER.ContainerDetail) => 
+                  {
+                    if (container?.status?.ready) {
+                      return status2StateNode.get('online')
+                    }
+                    return status2StateNode.get('offline')
                   }
                 },
                 {
@@ -767,6 +780,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
                     <a
+                      style={{color: '#1890ff'}} 
                       onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}>Monitor</a>
                   ),
                 },

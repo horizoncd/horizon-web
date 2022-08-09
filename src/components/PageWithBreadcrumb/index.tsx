@@ -21,11 +21,9 @@ export default (props: any) => {
   const itemRender = (route: any) => {
     const {path, breadcrumbName, subResource} = route;
     if (subResource) {
-      return <a onClick={() => history.push(path)}>{breadcrumbName}
-      </a>
+      return <a onClick={() => history.push(path)}>{breadcrumbName}</a>
     }
-    return <a href={path}>{breadcrumbName}
-    </a>;
+    return <a href={path}>{breadcrumbName}</a>;
   }
 
   useEffect(() => {

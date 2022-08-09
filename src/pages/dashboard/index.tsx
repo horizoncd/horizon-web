@@ -18,6 +18,8 @@ import {queryEnvironments} from "@/services/environments/environments";
 import {queryReleases, queryTemplates} from '@/services/templates/templates';
 import {FundOutlined, GitlabOutlined, RocketTwoTone} from '@ant-design/icons/lib';
 import styles from "@/pages/clusters/Pods/index.less";
+import type {CLUSTER} from '@/services/clusters';
+import type {API} from '@/services/typings';
 
 const {Option} = Select;
 
@@ -108,7 +110,7 @@ export default (props: any) => {
     }
   });
 
-  const {data: tpls} = useRequest(queryTemplates, {
+  const {data: tpls} = useRequest(()=>queryTemplates(false), {
     onSuccess: () => {
       const t: CLUSTER.TemplateOptions[] = []
       tpls?.forEach((item) => {
@@ -207,13 +209,13 @@ export default (props: any) => {
     const afterStr = name.substr(index + filter.length);
     const tmp =
       filter && index > -1 ? (
-        <a className="group-title" href={`/clusters${fullPath}/-/pods`}>
+        <a className="group-title" href={`/clusters${fullPath}`}>
           {beforeStr}
           <span className="site-tree-search-value">{filter}</span>
           {afterStr}
         </a>
       ) : (
-        <a href={`/clusters${fullPath}/-/pods`} className="group-title">{name}</a>
+        <a href={`${fullPath}`} className="group-title">{name}</a>
       );
     const firstLetter = name.substring(0, 1).toUpperCase()
 
@@ -387,7 +389,7 @@ export default (props: any) => {
     const {node, nativeEvent} = info;
     const {fullPath} = node;
 
-    handleHref(nativeEvent, `/applications${fullPath}/-/clusters`)
+    handleHref(nativeEvent, `${fullPath}`)
   };
 
   const queryInput = (groupsDashboard && isAdmin) ?
