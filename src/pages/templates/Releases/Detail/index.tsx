@@ -75,7 +75,7 @@ export default () => {
       extra={
         <Space>
           <Button type='primary' disabled={!release || release.syncStatus === 'Succeed' ||
-           rbac.Permissions.syncRelease.allowed}
+           !rbac.Permissions.syncRelease.allowed}
            onClick={() => {
             syncReleaseToRepo(release?.id).then(()=>{
                     Modal.success({
