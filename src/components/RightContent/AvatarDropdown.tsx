@@ -24,7 +24,7 @@ const logout = async () => {
     history.replace({
       pathname: '/user/login',
       search: stringify({
-        redirect: pathname,
+        redirect: `${window.location.protocol}//${window.location.host}${pathname}`
       }),
     });
   }

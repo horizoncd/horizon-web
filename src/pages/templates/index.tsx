@@ -21,7 +21,7 @@ export default () => {
     return <></>
   }
 
-  if(!initialState) {
+  if(!initialState || !currentUser || currentUser.isAdmin === undefined) {
     return <NotFount/>
   }
 
