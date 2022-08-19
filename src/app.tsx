@@ -31,7 +31,6 @@ import {queryRoles, querySelfMember} from "@/services/members/members";
 import type {API} from './services/typings';
 
 const loginPath = '/user/login';
-const queryUserPath = '/apis/login/v1/status';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
 const {SubMenu} = Menu;
 
@@ -113,7 +112,6 @@ export async function getInitialState(): Promise<{
     try {
       const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/
       const pathArr = isReleasePath.exec(history.location.pathname)
-      console.log(pathArr)
       const isRelease = pathArr != null
       const {data: resourceData} = history.location.pathname.startsWith('/templates')?
        isRelease ? await queryResource(path,"templatereleases") : 
@@ -163,20 +161,28 @@ export async function getInitialState(): Promise<{
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
+      if(history.location.pathname === "/user/login/callback" ||
+      history.location.pathname === "/user/login") {
+        return response
+      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
-      if (response.headers.get(sessionExpireHeaderKey) && response.url.endsWith(queryUserPath)) {
+      if (response.headers.get(sessionExpireHeaderKey)) {
+        let u = new URL(window.location.toString())
+
+        const redirect = u.searchParams.get('redirect')??''
+        if (redirect === '') {
+          u.searchParams.delete('redirect')
+        }else{
+          u = new URL(redirect)
+        }
+        
         history.push({
           pathname: loginPath,
           search: stringify({
-            redirect: history.location.pathname + history.location.search,
+            redirect:  u.toString(),
           }),
         });
         return response
-      }
-      // 其他接口请求（在非登陆页面下），如果响应里有session过期的头，调一次查询用户接口，进行一次二次确认
-      if (response.headers.get(sessionExpireHeaderKey) && !history.location.pathname.startsWith(loginPath)) {
-        // double check session
-        queryCurrentUser()
       }
       return response;
     },

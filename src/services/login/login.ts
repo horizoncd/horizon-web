@@ -1,4 +1,5 @@
-import { request } from 'umi';
+import {request} from 'umi';
+import {API} from '../typings';
 
 export async function login(params: { redirectUrl: string, fromHost: string }) {
   return request<{
@@ -11,8 +12,28 @@ export async function login(params: { redirectUrl: string, fromHost: string }) {
   });
 }
 
+export async function loginCallback(code: string, state: string) {
+  return request('/apis/core/v1/login/callback',{
+    method: 'GET',
+    params: {
+      code,state,
+    }
+  })
+}
+
+export async function getAuthEndpoints(redirectUrl: string) {
+  return request<{
+    data: API.IDP[],
+  }>('/apis/core/v1/idps/endpoints', {
+    method: 'GET',
+    params: {
+      redirectUrl,
+    },
+  });
+}
+
 export async function outLogin() {
-  return request('/apis/login/v1/logout', {
+  return request('/apis/core/v1/logout', {
     method: 'POST',
   });
 }
