@@ -31,6 +31,7 @@ import {queryRoles, querySelfMember} from "@/services/members/members";
 import type {API} from './services/typings';
 
 const loginPath = '/user/login';
+const callbackPath = '/user/login/callback';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
 const {SubMenu} = Menu;
 
@@ -81,6 +82,10 @@ export async function getInitialState(): Promise<{
     type: 'group',
     parentID: 0,
   };
+  if(history.location.pathname === loginPath || 
+    history.location.pathname === callbackPath) {
+    return {resource, accordionCollapse: false}
+  }
   let currentUser: API.CurrentUser | undefined = {
     id: 0,
     name: "",

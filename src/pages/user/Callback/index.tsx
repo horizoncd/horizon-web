@@ -24,11 +24,9 @@ export default () => {
         }
     })
 
-    return <>
-<Spin style={ {
+    return <Spin style={ {
     float: "left",
     marginLeft: "50%",
     marginTop: "50%",
     }}></Spin>
-    </>
 }
