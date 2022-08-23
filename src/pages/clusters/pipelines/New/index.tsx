@@ -212,7 +212,7 @@ export default (props: any) => {
             <br/>
             <b>Commit History</b>
             <br/>
-            <a onClick={() => window.open(data?.codeInfo.link)}>Link</a>
+            <a style={{color: '#1890ff'}} onClick={() => window.open(data?.codeInfo.link)}>Link</a>
           </Card>
         }
         <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
