@@ -25,7 +25,7 @@ export default (props: any) => {
       <Basic form={form} template={template} readonly/>
 
       <Config template={template} release={release} config={config} ref={props.formRef} 
-        setConfig={props.setConfig} setConfigErrors={props.setConfigErrors} onSubmit={props.onSubmit} readonly/>
+        onSubmit={props.onSubmit} readonly/>
     </div>
   );
 };

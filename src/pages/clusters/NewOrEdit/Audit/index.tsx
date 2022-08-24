@@ -9,9 +9,7 @@ export default (props: any) => {
       <Basic editing={editing} applicationName={applicationName} form={form} template={template} readonly/>
 
       <Config template={template} release={release} config={config} clusterID={clusterID} 
-        ref={props.formRef} setConfig={props.setConfig} 
-        setConfigErrors={props.setConfigErrors} 
-        onSubmit={props.onSubmit}
+        ref={props.formRef} onSubmit={props.onSubmit}
         readonly/>
     </div>
   );

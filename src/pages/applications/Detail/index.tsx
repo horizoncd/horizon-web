@@ -228,6 +228,7 @@ export default () => {
           <Button type={editing? 'primary' : 'default'} disabled={editing && templateInputHasError()} onClick={() => {
             // 提交模版
             if (editing) {
+              // 触发整个rjsf表单组的事件
               formRefs.current.forEach((formRef)=>{
                 formRef.submit();
               })

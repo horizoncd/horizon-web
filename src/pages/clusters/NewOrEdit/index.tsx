@@ -125,8 +125,7 @@ export default (props: any) => {
                 {name: branch, value: b},
                 {name: subfolder, value: s},
                 {name: release, value: rel},
-              ]
-              )
+              ])
               setOriginConfig(templateInput)
               setConfig(templateInput)
               setTemplate(tpl)
@@ -217,20 +216,20 @@ export default (props: any) => {
   const currentIsValid = async () => {
     let valid: boolean;
     switch (current) {
-    case 0:
-      try {
-        await form.validateFields(basicNeedValidFields)
+      case 0:
+        try {
+          await form.validateFields(basicNeedValidFields)
+          valid = true
+        } catch (e: any) {
+          const {errorFields} = e
+          valid = !errorFields.length
+        }
+        break;
+      case 1:
+        valid = !configHasError()
+        break;
+      default:
         valid = true
-      } catch (e: any) {
-        const {errorFields} = e
-        valid = !errorFields.length
-      }
-      break;
-    case 1:
-      valid = !configHasError()
-      break;
-    default:
-      valid = true
     }
 
     return valid
@@ -250,12 +249,12 @@ export default (props: any) => {
 
   const nextBtnDisabled = () => {
     switch (current) {
-    case 0:
-      return basicHasError()
-    case 1:
-      return configHasError()
-    default:
-      return false;
+      case 0:
+        return basicHasError()
+      case 1:
+        return configHasError()
+      default:
+        return false;
     }
   };
 
@@ -370,7 +369,7 @@ export default (props: any) => {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
                 release={form.getFieldValue(release)} config={config} clusterID={cluster?.id} 
-                formRef={configRef} setConfig={setConfig} setConfigErrors={setConfigErrors} onSubmit={onSubmit}/>
+                formRef={configRef} onSubmit={onSubmit}/>
             }
           </div>
           <div className={styles.stepsAction}>

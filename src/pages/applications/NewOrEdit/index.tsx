@@ -248,7 +248,7 @@ export default (props: any) => {
             {
               current === 3 &&
               <Audit form={form} template={template} release={form.getFieldValue(release)} 
-                formRef={configRef} config={config} setConfig={setConfig} setConfigErrors={setConfigErrors} onSubmit={onSubmit}/>
+                formRef={configRef} config={config} onSubmit={onSubmit}/>
             }
           </div>
           <div className={styles.stepsAction}>
