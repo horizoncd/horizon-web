@@ -7,6 +7,12 @@ module.exports = {
   },
   rules: {
     'object-curly-spacing': ['error', 'never'],
-    "indent": ['error', 2]
+    "indent": [
+      'error', 
+      2,
+      {
+        "SwitchCase": 1
+      },
+    ],
   }
 };
