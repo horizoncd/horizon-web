@@ -4,7 +4,7 @@ import Template from './Template';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {createApplication, getApplication, updateApplication} from '@/services/applications/applications';
@@ -132,27 +132,29 @@ export default (props: any) => {
   const currentIsValid = async () => {
     let valid: boolean;
     switch (current) {
-      case 0:
-        valid = !!template.name
-        break;
-      case 1:
-        try {
-          await form.validateFields(basicNeedValidFields)
-          valid = true
-        } catch (e: any) {
-          const {errorFields} = e
-          valid = !errorFields.length
-        }
-        break;
-      case 2:
-        valid = !configHasError()
-        break;
-      default:
+    case 0:
+      valid = !!template.name
+      break;
+    case 1:
+      try {
+        await form.validateFields(basicNeedValidFields)
         valid = true
+      } catch (e: any) {
+        const {errorFields} = e
+        valid = !errorFields.length
+      }
+      break;
+    case 2:
+      valid = !configHasError()
+      break;
+    default:
+      valid = true
     }
 
     return valid
   }
+
+  const configRef= useRef()
 
   const next = async () => {
     if (await currentIsValid()) {
@@ -166,18 +168,18 @@ export default (props: any) => {
 
   const nextBtnDisabled = () => {
     switch (current) {
-      case 0:
-        return !template.name;
-      case 1:
-        return basicHasError()
-      case 2:
-        return configHasError()
-      default:
-        return false;
+    case 0:
+      return !template.name;
+    case 1:
+      return basicHasError()
+    case 2:
+      return configHasError()
+    default:
+      return false;
     }
   };
 
-  const {loading, run: onSubmit} = useRequest(() => {
+  const {loading, run: submitApp} = useRequest((cfg: any) => {
     const info = {
       name: form.getFieldValue(name),
       description: form.getFieldValue(description) || '',
@@ -191,7 +193,7 @@ export default (props: any) => {
         subfolder: form.getFieldValue(subfolder) || '',
         [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
       },
-      templateInput: config,
+      templateInput: cfg || config,
     }
     if (creating) {
       return createApplication(id, info)
@@ -206,6 +208,10 @@ export default (props: any) => {
     }
   });
 
+  const onSubmit = (formData: any) => {
+    submitApp(formData);
+  }
+
   const onCurrentChange = async (cur: number) => {
     if (cur < current || await currentIsValid()) {
       setCurrent(cur);
@@ -215,6 +221,7 @@ export default (props: any) => {
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     setBasic(allFields)
   }
+
 
   return (
     <PageWithBreadcrumb>
@@ -231,16 +238,17 @@ export default (props: any) => {
             }
             {
               current === 1 && <Basic form={form} template={template} formData={basic} setFormData={setBasicFormData}
-                                      editing={editing}/>
+                editing={editing}/>
             }
             {
               current === 2 && <Config template={template} release={form.getFieldValue(release)} config={config}
-                                       setConfig={setConfig} setConfigErrors={setConfigErrors}
+                setConfig={setConfig} setConfigErrors={setConfigErrors}
               />
             }
             {
               current === 3 &&
-              <Audit form={form} template={template} release={form.getFieldValue(release)} config={config}/>
+              <Audit form={form} template={template} release={form.getFieldValue(release)} 
+                formRef={configRef} config={config} onSubmit={onSubmit}/>
             }
           </div>
           <div className={styles.stepsAction}>
@@ -250,7 +258,7 @@ export default (props: any) => {
               </Button>
             )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={onSubmit} loading={loading}>
+              <Button type="primary" onClick={()=>{configRef.current.submit()}} loading={loading}>
                 {intl.formatMessage({id: 'pages.common.submit'})}
               </Button>
             )}

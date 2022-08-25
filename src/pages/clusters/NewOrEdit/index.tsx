@@ -2,7 +2,7 @@ import {Button, Col, Form, Modal, Row} from 'antd';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {useRequest} from 'umi';
 import styles from './index.less';
 import {parseGitRef} from '@/services/code/code'
@@ -91,13 +91,13 @@ export default (props: any) => {
           const {release: r} = t
           const {gitRefType, gitRef} = parseGitRef(git)
           setBasic(prevBasic => [
-              ...prevBasic,
-              {name: url, value: git.url},
-              {name: subfolder, value: git.subfolder},
-              {name: 'refType', value: gitRefType},
-              {name: 'refValue', value: gitRef},
-              {name: release, value: r},
-            ]
+            ...prevBasic,
+            {name: url, value: git.url},
+            {name: subfolder, value: git.subfolder},
+            {name: 'refType', value: gitRefType},
+            {name: 'refValue', value: gitRef},
+            {name: release, value: r},
+          ]
           )
           refreshAppEnvTemplate(envFromQuery)
         } else {
@@ -116,17 +116,16 @@ export default (props: any) => {
               const {release: rel} = tpl
               const {gitRefType, gitRef} = parseGitRef(gitInfo)
               setBasic([
-                  {name: description, value: d},
-                  {name: 'refType', value: gitRefType},
-                  {name: 'refValue', value: gitRef},
-                  {name: environment, value: e},
-                  {name: region, value: r},
-                  {name: url, value: u},
-                  {name: branch, value: b},
-                  {name: subfolder, value: s},
-                  {name: release, value: rel},
-                ]
-              )
+                {name: description, value: d},
+                {name: 'refType', value: gitRefType},
+                {name: 'refValue', value: gitRef},
+                {name: environment, value: e},
+                {name: region, value: r},
+                {name: url, value: u},
+                {name: branch, value: b},
+                {name: subfolder, value: s},
+                {name: release, value: rel},
+              ])
               setOriginConfig(templateInput)
               setConfig(templateInput)
               setTemplate(tpl)
@@ -155,17 +154,17 @@ export default (props: any) => {
         const {release: rel} = t
         const {gitRefType, gitRef} = parseGitRef(git)
         setBasic([
-            {name, value: n},
-            {name: description, value: d},
-            {name: 'refType', value: gitRefType},
-            {name: 'refValue', value: gitRef},
-            {name: environment, value: e},
-            {name: region, value: r},
-            {name: url, value: u},
-            {name: branch, value: b},
-            {name: subfolder, value: s},
-            {name: release, value: rel},
-          ]
+          {name, value: n},
+          {name: description, value: d},
+          {name: 'refType', value: gitRefType},
+          {name: 'refValue', value: gitRef},
+          {name: environment, value: e},
+          {name: region, value: r},
+          {name: url, value: u},
+          {name: branch, value: b},
+          {name: subfolder, value: s},
+          {name: release, value: rel},
+        ]
         )
         setOriginConfig(templateInput)
         setConfig(templateInput)
@@ -236,6 +235,8 @@ export default (props: any) => {
     return valid
   }
 
+  const configRef= useRef()
+
   const next = async () => {
     if (await currentIsValid()) {
       setCurrent(current + 1);
@@ -285,7 +286,8 @@ export default (props: any) => {
     window.location.href = cluster!.fullPath
   }
 
-  const {loading, run: onSubmit} = useRequest(() => {
+  const {loading, run: submitCluster} = useRequest((cfg?: any) => {
+    // 触发json schema表单submit事件，更新数据
     const info = {
       name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
       description: form.getFieldValue(description),
@@ -299,7 +301,7 @@ export default (props: any) => {
       },
       environment: form.getFieldValue(environment),
       region: form.getFieldValue(region),
-      templateInput: config,
+      templateInput: cfg || config,
     }
     if (creating) {
       return createCluster(id, `${form.getFieldValue(environment)}/${form.getFieldValue(region)}`, info)
@@ -339,6 +341,10 @@ export default (props: any) => {
     }
   });
 
+  const onSubmit = (formData: any) => {
+    submitCluster(formData);
+  }
+
   return (
     <PageWithBreadcrumb>
       <Row>
@@ -352,17 +358,18 @@ export default (props: any) => {
             {
               current === 0 &&
               <Basic form={form} applicationName={applicationName} formData={basic} setFormData={setBasicFormData}
-                     editing={editing} template={template} status={cluster?.status}/>
+                editing={editing} template={template} status={cluster?.status}/>
             }
             {
               current === 1 && <Config template={template} release={form.getFieldValue(release)} config={config}
-                                       setConfig={setConfig} setConfigErrors={setConfigErrors} clusterID={cluster?.id}
+                setConfig={setConfig} setConfigErrors={setConfigErrors} clusterID={cluster?.id} 
               />
             }
             {
               current === 2 &&
               <Audit template={template} editing={editing} form={form} applicationName={applicationName}
-                     release={form.getFieldValue(release)} config={config} clusterID={cluster?.id}/>
+                release={form.getFieldValue(release)} config={config} clusterID={cluster?.id} 
+                formRef={configRef} onSubmit={onSubmit}/>
             }
           </div>
           <div className={styles.stepsAction}>
@@ -372,7 +379,7 @@ export default (props: any) => {
               </Button>
             )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={onSubmit} loading={loading}>
+              <Button type="primary" onClick={()=>{configRef.current.submit()}} loading={loading}>
                 {intl.formatMessage({id: 'pages.common.submit'})}
               </Button>
             )}
@@ -397,8 +404,8 @@ export default (props: any) => {
             >
               <div
                 className={styles.modalContent}>{creating ?
-                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.create.content'}) :
-                intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.edit.content'})}
+                  intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.create.content'}) :
+                  intl.formatMessage({id: 'pages.clusterEdit.prompt.buildDeploy.edit.content'})}
               </div>
             </Modal>
             <Modal
@@ -417,8 +424,8 @@ export default (props: any) => {
             >
               <div
                 className={styles.modalContent}>{creating ?
-                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.create.content'}) :
-                intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.edit.content'})}
+                  intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.create.content'}) :
+                  intl.formatMessage({id: 'pages.clusterEdit.prompt.deploy.edit.content'})}
               </div>
             </Modal>
           </div>

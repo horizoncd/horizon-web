@@ -1,6 +1,6 @@
 import type {Param} from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard'
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
   deleteApplication,
   getApplication,
@@ -96,16 +96,22 @@ export default () => {
 
   const {data: environments} = useRequest(() => queryEnvironments());
 
+  const formRefs = useRef([])
   const {run: refreshApplication} = useRequest(() => {
     return getApplication(id).then(({data: result}) => {
       setApplication(result);
       setTemplateInput(result.templateInput)
+      formRefs.current = formRefs.current.slice(0, Object.keys(result.templateInput).length)
       // query schema by template and release
       querySchema(result.template.name, result.template.release).then(({data}) => {
         setTemplate(data);
       });
     });
-  }, {manual: true})
+  }, 
+  {
+    manual: true,
+  }
+  )
 
   const {run: delApplication} = useRequest(() => {
     return deleteApplication(id).then(() => {
@@ -154,12 +160,25 @@ export default () => {
     return hasError;
   };
 
+  const [totalFormData, setTotalFormData] = useState({});
+  // 所有表单提交完成后，才会调用最终的onSubmit
+  useEffect(()=>{
+    const cfgLength = Object.keys(templateInput).length
+    if (cfgLength > 0 && (Object.keys(totalFormData).length >= cfgLength)){
+      updateApplicationEnvTemplate(id, currentEnv, totalFormData).then(() => {
+        successAlert('模版更新成功')
+      })
+    }
+
+  }, [totalFormData])
+
+
   return (
     <Detail>
       <div>
         <div className={styles.avatarBlock}>
           <Avatar className={`${styles.avatar} identicon bg${utils.getAvatarColorIndex(applicationName)}`} size={64}
-                  shape={"square"}>
+            shape={"square"}>
             <span className={styles.avatarFont}>{firstLetter}</span>
           </Avatar>
           <div className={styles.flexColumn}>
@@ -192,7 +211,7 @@ export default () => {
           }
           {
             <Dropdown className={styles.button} overlay={operateDropdown}
-                      trigger={["click"]}>
+              trigger={["click"]}>
               <Button
               >{intl.formatMessage({id: 'pages.applicationDetail.basic.operate'})}<DownOutlined/></Button></Dropdown>
           }
@@ -201,16 +220,17 @@ export default () => {
       <Divider className={styles.groupDivider}/>
       <DetailCard title={(
         <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.applicationDetail.basic.detail'})}</span>)}
-                  data={serviceDetail}/>
+      data={serviceDetail}/>
       <Card title={(
         <span className={styles.cardTitle}>{intl.formatMessage({id: 'pages.applicationDetail.basic.config'})}</span>)}
-            type={"inner"} extra={
+      type={"inner"} extra={
         <div>
           <Button type={editing? 'primary' : 'default'} disabled={editing && templateInputHasError()} onClick={() => {
             // 提交模版
             if (editing) {
-              updateApplicationEnvTemplate(id, currentEnv, templateInput).then(() => {
-                successAlert('模版更新成功')
+              // 触发整个rjsf表单组的事件
+              formRefs.current.forEach((formRef)=>{
+                formRef.submit();
               })
             }
             setEditing(prev => !prev)
@@ -245,10 +265,13 @@ export default () => {
         </div>
       }>
         {
-          template && Object.keys(template).map((item) => {
+          template && Object.keys(template).map((item, i) => {
             return (
               <JsonSchemaForm
                 key={item}
+                ref={(dom)=>{
+                  formRefs.current[i] = dom
+                }}
                 disabled={!editing}
                 uiSchema={template[item].uiSchema}
                 formData={templateInput[item]}
@@ -256,6 +279,9 @@ export default () => {
                 onChange={({formData, errors}: any) => {
                   setTemplateInput((config: any) => ({...config, [item]: formData}));
                   setTemplateInputError((configErrors: any) => ({...configErrors, [item]: errors}));
+                }}
+                onSubmit={(schema: any)=>{
+                  setTotalFormData((config: any) => ({...config, [item]: schema.formData}));
                 }}
                 liveValidate={true}
                 showErrorList={false}
