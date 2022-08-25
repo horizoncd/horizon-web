@@ -117,16 +117,16 @@ export default (props: any) => {
 
   const name = editing ? <Input disabled/> :
     <Input addonBefore={`${props.applicationName}-`} placeholder={formatMessage('name.ruleMessage')}
-           disabled={readonly}/>;
+      disabled={readonly}/>;
 
 
   return (
     <div>
       <HForm layout={'vertical'} form={props.form}
-             onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-               props.setFormData(a, b)
-             }}
-             fields={props.formData}
+        onFieldsChange={(a: FieldData[], b: FieldData[]) => {
+          props.setFormData(a, b)
+        }}
+        fields={props.formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name={'name'} rules={nameRules}>
@@ -134,7 +134,7 @@ export default (props: any) => {
           </Form.Item>
           <Form.Item label={formatMessage('description')} name={'description'}>
             <TextArea placeholder={formatMessage('description.ruleMessage')} maxLength={255} disabled={readonly}
-                      autoSize={{minRows: 3}}/>
+              autoSize={{minRows: 3}}/>
           </Form.Item>
           <Form.Item label={formatMessage('template', '模版')}>
             <Input disabled={true} value={props.template?.name}/>
@@ -151,7 +151,7 @@ export default (props: any) => {
             </Select>
           </Form.Item>
           <Form.Item label={formatMessage('environment')} name={'environment'} rules={requiredRule}>
-            <Select disabled={!!envFromQuery || readonly || (editing && props?.status != ClusterStatus.FREED )}>
+            <Select disabled={!!envFromQuery || readonly || editing}>
               {environments?.map((item) => {
                 return <Option key={item.name} value={item.name}>
                   {item.displayName}
@@ -190,12 +190,12 @@ export default (props: any) => {
               style={{display: 'inline-block', width: '100px'}}
             >
               <Select disabled={readonly} defaultValue={gitRefTypeList[0]}
-                      onSelect={(key: any) => {
-                        // props.form.setFieldsValue({"refValue": ""})
-                        if (key != GitRefType.Commit) {
-                          refreshGitRefList();
-                        }
-                      }}
+                onSelect={(key: any) => {
+                  // props.form.setFieldsValue({"refValue": ""})
+                  if (key != GitRefType.Commit) {
+                    refreshGitRefList();
+                  }
+                }}
               >
                 {
                   gitRefTypeList.map((item) => {
@@ -212,9 +212,9 @@ export default (props: any) => {
               {
                 props.form.getFieldValue('refType') == GitRefType.Commit ?
                   <Input/> : <Select disabled={readonly} showSearch
-                                     onSearch={(item) => {
-                                       refreshGitRefList(item);
-                                     }}>
+                    onSearch={(item) => {
+                      refreshGitRefList(item);
+                    }}>
                     {
                       gitRefList.map((item: string) => {
                         return <Option key={item} value={item}>{item}</Option>
