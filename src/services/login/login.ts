@@ -21,7 +21,7 @@ export async function loginCallback(code: string, state: string) {
   })
 }
 
-export async function getAuthEndpoints(redirectUrl: string) {
+export async function getAuthEndpoints(redirectUrl: string = "") {
   return request<{
     data: API.IDP[],
   }>('/apis/core/v1/idps/endpoints', {

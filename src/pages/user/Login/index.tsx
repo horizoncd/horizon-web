@@ -6,10 +6,12 @@ import {history} from "@@/core/history";
 import './index.less'
 import {Button, Space} from "antd";
 
+const redirectURL = window.location.protocol+"//"+window.location.host+"/user/login/callback"
+
 const Login = () => {
 
   const {data: endpoints} = useRequest(() => {
-    return getAuthEndpoints(window.location.protocol+"//"+window.location.host+"/user/login/callback")
+    return getAuthEndpoints()
   })
 
   const handleURL = (u: string) => {
@@ -21,6 +23,7 @@ const Login = () => {
     stateParams.set('redirect', history.location.query.redirect?? `${window.location.protocol}//${window.location.host}`)
 
     url.searchParams.set('state',window.btoa(stateParams.toString()))
+    url.searchParams.set('redirect_uri',redirectURL)
     return url.toString()
   }
 
