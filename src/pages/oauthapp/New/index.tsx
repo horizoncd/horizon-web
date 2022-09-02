@@ -20,7 +20,6 @@ export default () => {
       homeURL: values.homeURL,
       redirectURL: values.redirectURL
     }
-    console.log(values);
     create(groupID, newOauthApp).then(() => {
       successAlert("Oauth App" + newOauthApp.name + "have successful created")
       history.back()

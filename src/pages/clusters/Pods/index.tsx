@@ -496,7 +496,6 @@ export default () => {
 
   const onClickOperationWithResumePrompt = ({key}: { key: string }) => {
     const needResumePrompt = ['builddeploy', 'deploy', 'restart', 'rollback']
-    console.log(key)
     if (clusterStatus === ClusterStatus.MANUALPAUSED && needResumePrompt.includes(key)) {
       Modal.info({
         title: '该集群处于人工暂停状态，该操作会在取消暂停之后生效。',
