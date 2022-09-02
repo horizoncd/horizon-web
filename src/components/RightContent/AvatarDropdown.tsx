@@ -15,7 +15,7 @@ export type GlobalHeaderRightProps = {
 /**
  * 退出登录，并且将当前的 url 保存
  */
-const loginOut = async () => {
+const logout = async () => {
   await outLogin();
   const {query = {}, pathname} = history.location;
   const {redirect} = query;
@@ -24,7 +24,7 @@ const loginOut = async () => {
     history.replace({
       pathname: '/user/login',
       search: stringify({
-        redirect: pathname,
+        redirect: `${window.location.protocol}//${window.location.host}${pathname}`
       }),
     });
   }
@@ -39,7 +39,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu}) => {
       if (key === 'logout') {
         // @ts-ignore
         setInitialState((s) => ({...s, currentUser: undefined}));
-        loginOut();
+        logout();
         return;
       }
       history.push(`/account/${key}`);

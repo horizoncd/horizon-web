@@ -7,6 +7,11 @@ export const routes = [
     component: 'user/Login',
   },
   {
+    path: '/user/login/callback',
+    layout: false,
+    component: 'user/Callback',
+  },
+  {
     path: '/admin',
     redirect: '/admin/kubernetes',
   },

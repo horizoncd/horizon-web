@@ -236,4 +236,9 @@ declare namespace API {
   type Tags = {
     tags: Tag[],
   }
+
+  type IDP = {
+    authURL: string,
+    displayName: string,
+  }
 }
