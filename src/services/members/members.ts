@@ -1,21 +1,20 @@
-import {request} from 'umi';
-
+import { request } from 'umi';
 
 export async function queryUsers(pageNumber: number, pageSize: number, filter?: string) {
-  const params: any = {pageNumber: pageNumber, pageSize: pageSize}
+  const params: any = { pageNumber, pageSize };
   if (filter) {
-    params.filter = filter
+    params.filter = filter;
   }
-  return request(`/apis/front/v1/users/search`, {
+  return request('/apis/front/v1/users/search', {
     method: 'GET',
     params,
   });
 }
 
 export async function queryGroupMembers(resourceID: number, filter?: string) {
-  const params: any = {}
+  const params: any = {};
   if (filter) {
-    params.filter = filter
+    params.filter = filter;
   }
   return request(`/apis/core/v1/groups/${resourceID}/members`, {
     method: 'GET',
@@ -34,9 +33,9 @@ export async function inviteGroupMember(body: API.NewMember) {
 }
 
 export async function queryApplicationMembers(resourceID: number, filter?: string) {
-  const params: any = {}
+  const params: any = {};
   if (filter) {
-    params.filter = filter
+    params.filter = filter;
   }
   return request(`/apis/core/v1/applications/${resourceID}/members`, {
     method: 'GET',
@@ -45,9 +44,9 @@ export async function queryApplicationMembers(resourceID: number, filter?: strin
 }
 
 export async function queryApplicationClusterMembers(resourceID: number, filter?: string) {
-  const params: any = {}
+  const params: any = {};
   if (filter) {
-    params.filter = filter
+    params.filter = filter;
   }
   return request(`/apis/core/v1/clusters/${resourceID}/members`, {
     method: 'GET',
@@ -79,8 +78,8 @@ export async function removeMember(memberID: number) {
   return request(`/apis/core/v1/members/${memberID}`, {
     method: 'DELETE',
     params: {
-      resourceType: "group"
-    }
+      resourceType: 'group',
+    },
   });
 }
 
@@ -90,12 +89,12 @@ export async function updateMember(memberID: number, body: API.UpdateMember) {
     headers: {
       'Content-Type': 'application/json',
     },
-    data: body
+    data: body,
   });
 }
 
 export async function queryRoles() {
-  return request(`/apis/core/v1/roles`, {
+  return request('/apis/core/v1/roles', {
     method: 'GET',
   });
 }
@@ -104,15 +103,15 @@ export async function querySelfMember(resourceType: string, resourceID: number) 
   return request(`/apis/core/v1/${resourceType}s/${resourceID}/members?`, {
     method: 'GET',
     params: {
-      self: 'true'
-    }
+      self: 'true',
+    },
   });
 }
 
 export async function queryTemplateMembers(resourceID: string | number, filter?: string) {
-  const params: any = {}
+  const params: any = {};
   if (filter) {
-    params.filter = filter
+    params.filter = filter;
   }
   return request(`/apis/core/v1/templates/${resourceID}/members`, {
     method: 'GET',

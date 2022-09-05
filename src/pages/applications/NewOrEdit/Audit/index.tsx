@@ -1,14 +1,16 @@
-import {Card, Radio} from 'antd';
+import { Card, Radio } from 'antd';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import Basic from '../Basic';
 import Config from '../Config';
 import styles from '../index.less';
-import {useIntl} from "@@/plugin-locale/localeExports";
 
 export default (props: any) => {
-  const {template, form, release, config} = props;
+  const {
+    template, form, release, config,
+  } = props;
   const intl = useIntl();
 
-  const templateTitle = intl.formatMessage({id: 'pages.applicationNew.step.one'})
+  const templateTitle = intl.formatMessage({ id: 'pages.applicationNew.step.one' });
 
   return (
     <div>
@@ -16,16 +18,22 @@ export default (props: any) => {
         <div className="awsui-cards-card-header">
           <span className="awsui-cards-card-header-inner">{template.name}</span>
           <span className="radio">
-            <Radio checked={true}/>
+            <Radio checked />
           </span>
         </div>
         <h4>{template.description}</h4>
       </Card>
 
-      <Basic form={form} template={template} readonly/>
+      <Basic form={form} template={template} readonly />
 
-      <Config template={template} release={release} config={config} ref={props.formRef} 
-        onSubmit={props.onSubmit} readonly/>
+      <Config
+        template={template}
+        release={release}
+        config={config}
+        ref={props.formRef}
+        onSubmit={props.onSubmit}
+        readonly
+      />
     </div>
   );
 };

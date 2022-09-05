@@ -1,10 +1,10 @@
-import {request} from 'umi';
+import { request } from 'umi';
 import { API } from '../typings';
 
 export enum GitRefType {
-  Branch = "branch",
-  Tag = "tag",
-  Commit = "commit"
+  Branch = 'branch',
+  Tag = 'tag',
+  Commit = 'commit',
 }
 
 export type GitInfo = {
@@ -13,50 +13,50 @@ export type GitInfo = {
   branch: string
   tag: string
   commit: string
-}
+};
 
 export const parseGitRef = (gitInfo: GitInfo) => {
   if (gitInfo.tag) {
     return {
       gitRefType: GitRefType.Tag,
-      gitRef: gitInfo.tag
-    }
-  } else if (gitInfo.branch) {
+      gitRef: gitInfo.tag,
+    };
+  } if (gitInfo.branch) {
     return {
       gitRefType: GitRefType.Branch,
-      gitRef: gitInfo.branch
-    }
-  } else if (gitInfo.commit) {
+      gitRef: gitInfo.branch,
+    };
+  } if (gitInfo.commit) {
     return {
       gitRefType: GitRefType.Commit,
-      gitRef: gitInfo.commit
-    }
+      gitRef: gitInfo.commit,
+    };
   }
   return {
     gitRefType: GitRefType.Branch,
-    gitRef: ""
-  }
-}
+    gitRef: '',
+  };
+};
 
 export const gitRefTypeList = [
   {
-    displayName: "分支",
+    displayName: '分支',
     key: GitRefType.Branch,
   },
   {
-    displayName: "Tag",
+    displayName: 'Tag',
     key: GitRefType.Tag,
   },
   {
-    displayName: "Commit",
+    displayName: 'Commit',
     key: GitRefType.Commit,
   },
-]
+];
 
 export async function listGitRef(params: API.CodeBranchSearchParam) {
-  let url = `/apis/front/v1/code/listbranch`
-  if (params.refType == "tag") {
-    url = `/apis/front/v1/code/listtag`
+  let url = '/apis/front/v1/code/listbranch';
+  if (params.refType == 'tag') {
+    url = '/apis/front/v1/code/listtag';
   }
   return request<{
     data: string[];

@@ -1,29 +1,12 @@
-import {Button, Input, Menu, Modal, Space, Table, Tooltip} from "antd";
-import {useIntl} from "@@/plugin-locale/localeExports";
-import React, {useState} from "react";
-import {useModel} from "@@/plugin-model/useModel";
-import './index.less'
-import FullscreenModal from "@/components/FullscreenModal";
-import {useRequest} from "@@/plugin-request/request";
 import {
-  deletePods,
-  offline,
-  online,
-  queryPodContainers,
-  queryPodEvents,
-  queryPodStdout
-} from "@/services/clusters/pods";
-import CodeEditor from '@/components/CodeEditor'
-import {history} from 'umi';
-import NoData from "@/components/NoData";
-import {Offline, Online, PodError, PodPending, PodRunning} from '@/components/State'
-import RBAC from '@/rbac'
-import withTrim from "@/components/WithTrim";
-import CollapseList from '@/components/CollapseList'
-import styles from './index.less'
-import Utils from '@/utils'
-import {env2MlogEnv} from "@/const";
-import Dropdown from "antd/es/dropdown";
+  Button, Input, Menu, Modal, Space, Table, Tooltip,
+} from 'antd';
+import { useIntl } from '@@/plugin-locale/localeExports';
+import React, { useState } from 'react';
+import { useModel } from '@@/plugin-model/useModel';
+import { useRequest } from '@@/plugin-request/request';
+import { history } from 'umi';
+import Dropdown from 'antd/es/dropdown';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -34,43 +17,62 @@ import {
   MinusSquareTwoTone,
   PauseCircleOutlined,
   PlusSquareTwoTone,
-} from "@ant-design/icons";
-import copy from "copy-to-clipboard";
-import type {CLUSTER} from "@/services/clusters";
+} from '@ant-design/icons';
+import copy from 'copy-to-clipboard';
+import styles from './index.less';
+import FullscreenModal from '@/components/FullscreenModal';
+import {
+  deletePods,
+  offline,
+  online,
+  queryPodContainers,
+  queryPodEvents,
+  queryPodStdout,
+} from '@/services/clusters/pods';
+import CodeEditor from '@/components/CodeEditor';
+import NoData from '@/components/NoData';
+import {
+  Offline, Online, PodError, PodPending, PodRunning,
+} from '@/components/State';
+import RBAC from '@/rbac';
+import withTrim from '@/components/WithTrim';
+import CollapseList from '@/components/CollapseList';
+import Utils from '@/utils';
+import { env2MlogEnv } from '@/const';
+import type { CLUSTER } from '@/services/clusters';
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
 
 const status2StateNode = new Map(
   [
-    ['online', <Online/>],
-    ['offline', <Offline/>],
-  ]
-)
+    ['online', <Online />],
+    ['offline', <Offline />],
+  ],
+);
 
-const LifeCycleItemAbnormal = 'Abnormal'
-const LifeCycleItemSuccess = 'Success'
-const LifeCycleItemWaiting = 'Waiting'
-const LifeCycleItemRunning = 'Running'
-const noWrap = () => ({style: {whiteSpace: 'nowrap'}})
-
+const LifeCycleItemAbnormal = 'Abnormal';
+const LifeCycleItemSuccess = 'Success';
+const LifeCycleItemWaiting = 'Waiting';
+const LifeCycleItemRunning = 'Running';
+const noWrap = () => ({ style: { whiteSpace: 'nowrap' } });
 
 export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
-  const {data, cluster} = props;
+  const { data, cluster } = props;
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
-  const {initialState} = useModel('@@initialState');
-  const {fullPath} = initialState!.resource;
-  const [fullscreen, setFullscreen] = useState(false)
-  const [pod, setPod] = useState<CLUSTER.PodInTable>()
-  const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([])
-  const {successAlert, errorAlert} = useModel('alert')
-  const [showEvents, setShowEvents] = useState(false)
-  const [showLifeCycle, setShowLifeCycle] = useState(false)
-  const [events, setEvents] = useState([])
-  const [podLog, setPodLog] = useState("")
-  const [autoRefreshPodLog, setAutoRefreshPodLog] = useState(true)
+  const { initialState } = useModel('@@initialState');
+  const { fullPath } = initialState!.resource;
+  const [fullscreen, setFullscreen] = useState(false);
+  const [pod, setPod] = useState<CLUSTER.PodInTable>();
+  const [selectedPods, setSelectedPods] = useState<CLUSTER.PodInTable[]>([]);
+  const { successAlert, errorAlert } = useModel('alert');
+  const [showEvents, setShowEvents] = useState(false);
+  const [showLifeCycle, setShowLifeCycle] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [podLog, setPodLog] = useState('');
+  const [autoRefreshPodLog, setAutoRefreshPodLog] = useState(true);
 
   const {
     data: podLogInterval,
@@ -82,14 +84,12 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   }), {
     manual: true,
     ready: !!cluster,
-    formatResult: (res) => {
-      return res
-    },
+    formatResult: (res) => res,
     pollingInterval: 5000,
     onSuccess: () => {
-      setPodLog(podLogInterval)
-    }
-  })
+      setPodLog(podLogInterval);
+    },
+  });
 
   const {
     data: podLogOnce,
@@ -100,13 +100,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   }), {
     manual: true,
     ready: !!cluster,
-    formatResult: (res) => {
-      return res
-    },
+    formatResult: (res) => res,
     onSuccess: () => {
-      setPodLog(podLogOnce)
-    }
-  })
+      setPodLog(podLogOnce);
+    },
+  });
 
   const {
     run: refreshEvents,
@@ -114,9 +112,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
   } = useRequest((podName) => queryPodEvents(cluster!.id, podName), {
     pollingInterval,
     manual: true,
-    formatResult: (res: any) => {
-      return res
-    },
+    formatResult: (res: any) => res,
     onSuccess: (eventsResp: any) => {
       setEvents(eventsResp.data.map((v: any, idx: number) => ({
         key: idx,
@@ -125,29 +121,27 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         message: v.message,
         count: v.count,
         eventTimestamp: Utils.timeToLocal(v.eventTimestamp),
-      })))
-    }
-  })
+      })));
+    },
+  });
 
-  const formatMessage = (suffix: string, defaultMsg: string) => {
-    return intl.formatMessage({id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg})
-  }
+  const formatMessage = (suffix: string, defaultMsg: string) => intl.formatMessage({ id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg });
 
   const formatConsoleURL = (p: CLUSTER.PodInTable) => {
-    const {environment} = cluster?.scope || {}
-    return `/clusters${fullPath}/-/webconsole?namespace=${p.namespace}&podName=${p.podName}&containerName=${p.containerName}&environment=${environment}`
-  }
+    const { environment } = cluster?.scope || {};
+    return `/clusters${fullPath}/-/webconsole?namespace=${p.namespace}&podName=${p.podName}&containerName=${p.containerName}&environment=${environment}`;
+  };
 
   const onClickStdout = (p: CLUSTER.PodInTable) => {
     setFullscreen(true);
-    setPod(p)
+    setPod(p);
     refreshPodLog(p.podName, p.containerName).then();
-  }
+  };
 
   const onClickMlog = (p: CLUSTER.PodInTable) => {
-    const link = `http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&hostname=${p.podName}`
-    window.open(link)
-  }
+    const link = `http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&hostname=${p.podName}`;
+    window.open(link);
+  };
 
   const eventTableColumns = [
     {
@@ -157,9 +151,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       width: '70px',
       render: (text: any) => {
         if (text === 'Warning') {
-          return <span style={{color: 'red'}}>{text}</span>
+          return <span style={{ color: 'red' }}>{text}</span>;
         }
-        return <span style={{color: 'green'}}>{text}</span>
+        return <span style={{ color: 'green' }}>{text}</span>;
       },
     },
     {
@@ -176,36 +170,32 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: <span className={styles.tableColumnTitle}>数量</span>,
       dataIndex: 'count',
       key: 'count',
-      width: '70px'
+      width: '70px',
     },
     {
       title: <span className={styles.tableColumnTitle}>时间</span>,
       dataIndex: 'eventTimestamp',
       key: 'eventTimestamp',
-      width: '200px'
+      width: '200px',
     },
-  ]
+  ];
 
   const onClickEvents = (p: CLUSTER.PodInTable) => {
     refreshEvents(p.podName).then();
     setShowEvents(true);
-  }
+  };
 
-  const formatPodMonitorURL = (p: CLUSTER.PodInTable) => {
-    return `/clusters${fullPath}/-/monitoring?podName=${p.podName}`
-  }
+  const formatPodMonitorURL = (p: CLUSTER.PodInTable) => `/clusters${fullPath}/-/monitoring?podName=${p.podName}`;
 
-  const formatContainerMonitorURL = (podName: string, container: string) => {
-    return `/clusters${fullPath}/-/monitoring?monitor=container&container=${podName}%2f${container}`
-  }
+  const formatContainerMonitorURL = (podName: string, container: string) => `/clusters${fullPath}/-/monitoring?monitor=container&container=${podName}%2f${container}`;
 
   const onCopyClick = (text: string) => {
     if (copy(text)) {
-      successAlert("复制成功")
+      successAlert('复制成功');
     } else {
-      errorAlert("复制失败")
+      errorAlert('复制失败');
     }
-  }
+  };
 
   const renderPodNameAndIP = (type: string, text: string) => {
     if (filter && text && text.indexOf(filter) > -1) {
@@ -213,109 +203,136 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       const beforeStr = text.substring(0, index);
       const afterStr = text.substring(index + filter.length);
 
-      return <div
-        className={styles.podnameClass}
-      >
-        <Button
-          type={"link"}
-          onClick={
+      return (
+        <div
+          className={styles.podnameClass}
+        >
+          <Button
+            type="link"
+            onClick={
             () => {
               history.push({
                 pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
-              })
+              });
             }
           }
-        >
-          {beforeStr}
-          <span style={{color: '#f50'}}>{filter}</span>
-          {afterStr}
-        </Button>
+          >
+            {beforeStr}
+            <span style={{ color: '#f50' }}>{filter}</span>
+            {afterStr}
+          </Button>
+          <Button
+            className={styles.copyButtonClass}
+            onClick={() => onCopyClick(text)}
+            type="text"
+          >
+            <CopyOutlined />
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={styles.podnameClass}
+      >
+        {
+        type === 'podName' ? (
+          <Button
+            type="link"
+            className={styles.podnameButtonClass}
+            onClick={
+            () => {
+              history.push({
+                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
+              });
+            }
+          }
+          >
+            <span>{text}</span>
+          </Button>
+        ) : <span className={styles.ipClass}>{text}</span>
+      }
         <Button
           className={styles.copyButtonClass}
           onClick={() => onCopyClick(text)}
-          type={'text'}
+          type="text"
         >
-          <CopyOutlined/>
+          <CopyOutlined />
         </Button>
       </div>
-    }
-
-    return <div
-      className={styles.podnameClass}
-    >
-      {
-        type === "podName" ? <Button
-          type={"link"}
-          className={styles.podnameButtonClass}
-          onClick={
-            () => {
-              history.push({
-                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
-              })
-            }
-          }
-        >
-          <span>{text}</span>
-        </Button> : <span className={styles.ipClass}>{text}</span>
-      }
-      <Button
-        className={styles.copyButtonClass}
-        onClick={() => onCopyClick(text)}
-        type={'text'}
-      >
-        <CopyOutlined/>
-      </Button>
-    </div>
-  }
+    );
+  };
 
   const onChange = (e: any) => {
-    const {value} = e.target;
+    const { value } = e.target;
     setFilter(value);
   };
 
   const hookAfterBatchOps = (ops: string, res: any) => {
-    const succeedList: string[] = []
+    const succeedList: string[] = [];
     const failedList: {
       name: string,
       err: string,
-    }[] = []
-    Object.keys(res).forEach(item => {
-      const obj: CLUSTER.PodOnlineOfflineResult = res[item]
+    }[] = [];
+    Object.keys(res).forEach((item) => {
+      const obj: CLUSTER.PodOnlineOfflineResult = res[item];
       if (obj.result) {
-        succeedList.push(item)
+        succeedList.push(item);
       } else {
-        const errMsg = obj.error?.ErrStatus?.message || obj.stderr || obj.stdout || obj.errorMsg
+        const errMsg = obj.error?.ErrStatus?.message || obj.stderr || obj.stdout || obj.errorMsg;
         failedList.push({
           name: item,
-          err: errMsg
-        })
+          err: errMsg,
+        });
       }
-    })
+    });
     if (failedList.length > 0) {
-      errorAlert(<span>{ops}操作执行结果
-        <br/>
-                  成功列表:  [ {succeedList.join(",")} ]
-        <br/>
-                  失败列表:
-        <br/>
-        {failedList.map(item => <div>Pod: {item.name} Error: {item.err}<br/></div>)}
-      </span>)
+      errorAlert(<span>
+        {ops}
+        操作执行结果
+        <br />
+        成功列表:  [
+        {' '}
+        {succeedList.join(',')}
+        {' '}
+        ]
+        <br />
+        失败列表:
+        <br />
+        {failedList.map((item) => (
+          <div>
+            Pod:
+            {item.name}
+            {' '}
+            Error:
+            {item.err}
+            <br />
+          </div>
+        ))}
+      </span>);
     } else {
-      successAlert(<span>{ops}操作执行结果
-        <br/>
-                  成功列表: [ {succeedList.join(",")} ]
-      </span>)
+      successAlert(<span>
+        {ops}
+        操作执行结果
+        <br />
+        成功列表: [
+        {' '}
+        {succeedList.join(',')}
+        {' '}
+        ]
+      </span>);
     }
-  }
+  };
 
-  const renderTile = () => {
-    // @ts-ignore
-    return <div><Search placeholder="Search" onChange={onChange} style={{width: '300px'}} value={filter}/>
-      <div style={{float: 'right'}}>
+  const renderTile = () => (
+    <div>
+      <Search placeholder="Search" onChange={onChange} style={{ width: '300px' }} value={filter} />
+      <div style={{ float: 'right' }}>
         <Button
           onClick={() => {
-            online(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
-              hookAfterBatchOps("Online", d)
+            online(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
+              hookAfterBatchOps('Online', d);
             });
           }}
           disabled={!selectedPods.length || !RBAC.Permissions.onlineCluster.allowed}
@@ -323,10 +340,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           {formatMessage('online', '上线')}
         </Button>
         <Button
-          style={{marginLeft: '10px'}}
+          style={{ marginLeft: '10px' }}
           onClick={() => {
-            offline(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
-              hookAfterBatchOps("Offline", d)
+            offline(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
+              hookAfterBatchOps('Offline', d);
             });
           }}
           disabled={!selectedPods.length || !RBAC.Permissions.offlineCluster.allowed}
@@ -334,13 +351,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           {formatMessage('offline', '下线')}
         </Button>
         <Button
-          style={{marginLeft: '10px'}}
+          style={{ marginLeft: '10px' }}
           onClick={() => {
             Modal.confirm({
               title: `此操作将导致所有被选中的Pod（共${selectedPods.length}台）在优雅停机后被销毁，并创建出同等数量的新Pod，请注意评估流量风险！`,
               onOk() {
-                deletePods(cluster!.id, selectedPods.map(item => item.podName)).then(({data: d}) => {
-                  hookAfterBatchOps("销毁重建", d)
+                deletePods(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
+                  hookAfterBatchOps('销毁重建', d);
                 });
               },
             });
@@ -348,27 +365,25 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           disabled={!selectedPods.length || !RBAC.Permissions.deletePods.allowed}
         >
           <Tooltip
-            title={'优雅停机并销毁被选中的Pod，并创建出同等数量的新Pod'}
+            title="优雅停机并销毁被选中的Pod，并创建出同等数量的新Pod"
           >
             {formatMessage('reschedulePod', '销毁重建')}
           </Tooltip>
         </Button>
       </div>
     </div>
-  }
+  );
 
   // 预处理下数据结构
-  const postStartHookError = 'PostStartHookError'
-  const filteredData = data.filter((item: CLUSTER.PodInTable) => {
-    return !filter || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)
-  }).map(item => {
-    const {state} = item
+  const postStartHookError = 'PostStartHookError';
+  const filteredData = data.filter((item: CLUSTER.PodInTable) => !filter || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)).map((item) => {
+    const { state } = item;
     if (!state.reason) {
-      state.reason = state.state
+      state.reason = state.state;
     }
 
     if (item.deletionTimestamp) {
-      state.state = 'terminated'
+      state.state = 'terminated';
     }
 
     if (state.state === 'terminated') {
@@ -380,11 +395,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     }
 
     // change first letter to uppercase
-    state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1)
+    state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1);
 
     for (const k in item.annotations) {
-      if (!k.startsWith("cloudnative.music.netease.com/git")) {
-        delete item.annotations[k]
+      if (!k.startsWith('cloudnative.music.netease.com/git')) {
+        delete item.annotations[k];
       }
     }
     return item;
@@ -397,9 +412,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     }
 
     return 0;
-  })
+  });
 
-  const statusList = Array.from(new Set(filteredData.map(item => item.state.reason))).map(item => ({
+  const statusList = Array.from(new Set(filteredData.map((item) => item.state.reason))).map((item) => ({
     text: item,
     value: item,
   }));
@@ -424,7 +439,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       dataIndex: 'message',
       key: 'message',
     },
-  ]
+  ];
 
   const podLifeCycleTypeMap = {
     PodSchedule: '节点分配',
@@ -433,97 +448,108 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     ContainerOnline: '业务上线',
     HealthCheck: '健康检查',
     PreStop: '应用下线',
-  }
+  };
 
   const podLifeCycleStatusMap = {
     [LifeCycleItemSuccess]: {
       style: styles.lifecycleStatusSuccess,
-      icon: <CheckCircleOutlined/>
+      icon: <CheckCircleOutlined />,
     },
     [LifeCycleItemWaiting]: {
       style: styles.lifecycleStatusWaiting,
-      icon: <PauseCircleOutlined/>,
+      icon: <PauseCircleOutlined />,
     },
     [LifeCycleItemRunning]: {
       style: styles.lifecycleStatusRunning,
-      icon: <LoadingOutlined/>,
+      icon: <LoadingOutlined />,
     },
     [LifeCycleItemAbnormal]: {
       style: styles.lifecycleStatusFailed,
-      icon: <CloseCircleOutlined/>
+      icon: <CloseCircleOutlined />,
     },
-  }
+  };
 
-
-  const [podLifeCycle, setPodLifeCycle] = useState([])
+  const [podLifeCycle, setPodLifeCycle] = useState([]);
   const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
-    const lifeCycle: any = []
+    const lifeCycle: any = [];
     podInfo.lifeCycle.forEach((value) => {
       if (value.message === '') {
         switch (value.status) {
-        case LifeCycleItemSuccess:
-          value.message = '成功';
-          break;
-        case LifeCycleItemAbnormal:
-          switch (value.type) {
-          case 'ContainerStartup':
-            value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。'
+          case LifeCycleItemSuccess:
+            value.message = '成功';
             break;
-          case 'ContainerOnline':
-            value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。'
+          case LifeCycleItemAbnormal:
+            switch (value.type) {
+              case 'ContainerStartup':
+                value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。';
+                break;
+              case 'ContainerOnline':
+                value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。';
+                break;
+              case 'HealthCheck':
+                value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。';
+                break;
+              default:
+                value.message = '执行失败，请联系管理员。';
+            }
             break;
-          case 'HealthCheck':
-            value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。'
+          case LifeCycleItemRunning:
+            switch (value.type) {
+              case 'PreStop':
+                value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
+                break;
+            }
             break;
           default:
-            value.message = '执行失败，请联系管理员。'
-          }
-          break;
-        case LifeCycleItemRunning:
-          switch (value.type) {
-          case 'PreStop':
-            value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。'
             break;
-          }
-          break;
-        default:
-          break;
         }
       }
       lifeCycle.push({
         type: <div
           className={podLifeCycleStatusMap[value.status].style}
-        >{value.type}</div>,
+        >
+          {value.type}
+              </div>,
         task: <div
           className={podLifeCycleStatusMap[value.status].style}
           key={value.type}
         >
-          {podLifeCycleStatusMap[value.status].icon} {podLifeCycleTypeMap[value.type]}
+          {podLifeCycleStatusMap[value.status].icon}
+          {' '}
+          {podLifeCycleTypeMap[value.type]}
         </div>,
-        message: <span className={podLifeCycleStatusMap[value.status].style}> {value.message}</span>
-      }
-      )
-    }
-    )
+        message: <span className={podLifeCycleStatusMap[value.status].style}>
+          {' '}
+          {value.message}
+                 </span>,
+      });
+    });
     setPodLifeCycle(lifeCycle);
     setShowLifeCycle(true);
-  }
+  };
 
-  const otherOperations = (record: CLUSTER.PodInTable) => (<Menu>
-    <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
-      onClick={() => onClickStdout(record)}>
-      <div style={{color: "#1890ff"}}>Stdout</div>
-    </Menu.Item>
-    <Menu.Item disabled={!RBAC.Permissions.getContainerLog.allowed}
-      onClick={() => onClickMlog(record)}>
-      <div style={{color: "#1890ff"}}>Mlog</div>
-    </Menu.Item>
-    <Menu.Item disabled={!RBAC.Permissions.getEvents.allowed}
-      onClick={() => onClickEvents(record)}>
-      <div style={{color: "#1890ff"}}>Events</div>
-    </Menu.Item>
-  </Menu>
-  )
+  const otherOperations = (record: CLUSTER.PodInTable) => (
+    <Menu>
+      <Menu.Item
+        disabled={!RBAC.Permissions.getContainerLog.allowed}
+        onClick={() => onClickStdout(record)}
+      >
+        <div style={{ color: '#1890ff' }}>Stdout</div>
+      </Menu.Item>
+      <Menu.Item
+        disabled={!RBAC.Permissions.getContainerLog.allowed}
+        onClick={() => onClickMlog(record)}
+      >
+        <div style={{ color: '#1890ff' }}>Mlog</div>
+      </Menu.Item>
+      <Menu.Item
+        disabled={!RBAC.Permissions.getEvents.allowed}
+        onClick={() => onClickEvents(record)}
+      >
+        <div style={{ color: '#1890ff' }}>Events</div>
+      </Menu.Item>
+    </Menu>
+  );
 
   // @ts-ignore
   const columns = [
@@ -531,7 +557,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: formatMessage('podName', '副本'),
       dataIndex: 'podName',
       key: 'podName',
-      render: (text: any) => renderPodNameAndIP("podName", text)
+      render: (text: any) => renderPodNameAndIP('podName', text),
     },
     {
       title: formatMessage('status', 'pod 状态'),
@@ -542,64 +568,66 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       onCell: noWrap,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       render: (text: string, record: CLUSTER.PodInTable) => {
-        const {message} = record.state
-        let status: JSX.Element
+        const { message } = record.state;
+        let status: JSX.Element;
         switch (text) {
-        case 'PodInitializing':
-          status = <PodPending text={'PodInitializing'} message={message}/>
-          break;
-        case 'PostStartHookError':
-          status = <PodError text={'PostStartHookError'} message={message}/>
-          break;
-        case 'CrashLoopBackOff':
-          status = <PodError text={'CrashLoopBackOff'} message={message}/>
-          break;
-        case 'Running':
-          status = <PodRunning text={'Running'}/>
-          break;
-        case 'Terminated':
-          status = <PodPending text={'Terminated'} message={message}/>
-          break;
-        default:
-          status = <PodPending text={'Pending'}/>
+          case 'PodInitializing':
+            status = <PodPending text="PodInitializing" message={message} />;
+            break;
+          case 'PostStartHookError':
+            status = <PodError text="PostStartHookError" message={message} />;
+            break;
+          case 'CrashLoopBackOff':
+            status = <PodError text="CrashLoopBackOff" message={message} />;
+            break;
+          case 'Running':
+            status = <PodRunning text="Running" />;
+            break;
+          case 'Terminated':
+            status = <PodPending text="Terminated" message={message} />;
+            break;
+          default:
+            status = <PodPending text="Pending" />;
         }
-        let lifeCycleButtonStyle = styles.lifecycleButtonBlue
+        let lifeCycleButtonStyle = styles.lifecycleButtonBlue;
         for (const lifeCycleItem of record.lifeCycle) {
           if (lifeCycleItem.status === LifeCycleItemAbnormal) {
-            lifeCycleButtonStyle = styles.lifecycleButtonRed
+            lifeCycleButtonStyle = styles.lifecycleButtonRed;
           }
         }
-        return <div>
-          {status}
-          <Button type={"link"} className={lifeCycleButtonStyle}>
-            <Tooltip
-              title={'查看状态详情'}
-            >
-              <EyeOutlined
-                onClick={() => {
-                  onClickLifeCycle(record)
-                }}
-                className={styles.lifecycleButtonIcon}
-              />
-            </Tooltip>
-          </Button>
-        </div>
-      }
+        return (
+          <div>
+            {status}
+            <Button type="link" className={lifeCycleButtonStyle}>
+              <Tooltip
+                title="查看状态详情"
+              >
+                <EyeOutlined
+                  onClick={() => {
+                    onClickLifeCycle(record);
+                  }}
+                  className={styles.lifecycleButtonIcon}
+                />
+              </Tooltip>
+            </Button>
+          </div>
+        );
+      },
     },
     {
       title: 'IP',
       dataIndex: 'ip',
       key: 'ip',
-      render: (text: any) => renderPodNameAndIP("ip", text)
+      render: (text: any) => renderPodNameAndIP('ip', text),
     },
     {
       title: formatMessage('onlineStatus', '上线状态'),
       dataIndex: 'onlineStatus',
       key: 'onlineStatus',
-      render: (text: string) => status2StateNode.get(text)
+      render: (text: string) => status2StateNode.get(text),
     },
     {
-      title: <div style={{whiteSpace: 'nowrap'}}>{formatMessage('restartCount', '重启次数')}</div>,
+      title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount', '重启次数')}</div>,
       dataIndex: 'restartCount',
       key: 'restartCount',
     },
@@ -607,258 +635,270 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '注释',
       dataIndex: 'annotations',
       key: 'annotations',
-      render: (text: any, record: CLUSTER.PodInTable) => {
+      render: (text: any, record: CLUSTER.PodInTable) =>
         // return <collapseList defaultCount={2} data={record.annotations}/>
-        return Object.keys(record.annotations).length > 0 ?
-          <div style={{minWidth: '260px', maxWidth: "390px", wordBreak: 'break-all'}}>
-            <CollapseList defaultCount={2} data={record.annotations}/>
-          </div> : <div/>
-      },
+        (Object.keys(record.annotations).length > 0
+          ? (
+            <div style={{ minWidth: '260px', maxWidth: '390px', wordBreak: 'break-all' }}>
+              <CollapseList defaultCount={2} data={record.annotations} />
+            </div>
+          ) : <div />)
+      ,
     },
     {
       title: '启动时间',
       dataIndex: 'createTime',
       key: 'createTime',
       render: (text: string) => {
-        const times = text.split(" ")
-        return <>
-          <div style={{whiteSpace: 'nowrap'}}>{times[0]}</div>
-          <div style={{whiteSpace: 'nowrap'}}>{times[1]}</div>
-        </>
-      }
+        const times = text.split(' ');
+        return (
+          <>
+            <div style={{ whiteSpace: 'nowrap' }}>{times[0]}</div>
+            <div style={{ whiteSpace: 'nowrap' }}>{times[1]}</div>
+          </>
+        );
+      },
     },
     {
       title: formatMessage('action', '操作'),
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
-        <Space size='small' style={{maxWidth: '200px', whiteSpace: 'nowrap'}}>
-          <Button type={'link'} style={{padding: 0}} disabled={!RBAC.Permissions.createTerminal.allowed}
+        <Space size="small" style={{ maxWidth: '200px', whiteSpace: 'nowrap' }}>
+          <Button
+            type="link"
+            style={{ padding: 0 }}
+            disabled={!RBAC.Permissions.createTerminal.allowed}
             href={formatConsoleURL(record)}
-            target="_blank">Terminal</Button>
-          <a style={{color: '#1890ff'}} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
+            target="_blank"
+          >
+            Terminal
+          </Button>
+          <a style={{ color: '#1890ff' }} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             <a>
-              More <DownOutlined/>
+              More
+              {' '}
+              <DownOutlined />
             </a>
           </Dropdown>
         </Space>
       ),
     },
-  ]
+  ];
 
   const onPodSelected = (selectedRowKeys: React.Key[], selectedRows: CLUSTER.PodInTable[]) => {
-    setSelectedPods(selectedRows)
+    setSelectedPods(selectedRows);
   };
 
   const onRefreshButtonToggle = (checked: boolean) => {
-    setAutoRefreshPodLog(checked)
+    setAutoRefreshPodLog(checked);
     if (checked) {
       refreshPodLog(pod?.podName, pod?.containerName).then();
     } else {
       cancelPodLog();
     }
-  }
+  };
 
   const locale = {
-    emptyText: <NoData title={'Pod'} desc={'你可以对Pod执行一系列操作\n' +
-    '比如查看日志、查看基础资源监控、登陆Pod等'}/>
-  }
+    emptyText: <NoData
+      title="Pod"
+      desc={'你可以对Pod执行一系列操作\n'
+    + '比如查看日志、查看基础资源监控、登陆Pod等'}
+    />,
+  };
 
-  const [containersCache, setContainersCache] = useState<Record<string, any[]>>({})
+  const [containersCache, setContainersCache] = useState<Record<string, any[]>>({});
 
-  return <div>
-    <Table
-      rowSelection={{
-        type: 'checkbox',
-        onChange: onPodSelected
-      }}
+  return (
+    <div>
+      <Table
+        rowSelection={{
+          type: 'checkbox',
+          onChange: onPodSelected,
+        }}
       // @ts-ignore
-      columns={columns}
-      scroll={{x: '0px'}}
-      dataSource={filteredData}
-      locale={locale}
-      pagination={{
-        position: ['bottomCenter'],
-        current: pageNumber,
-        hideOnSinglePage: true,
-        total: data.length,
-        onChange: (page) => setPageNumber(page)
-      }}
-      title={renderTile}
-      expandable={{
-        expandedRowRender: (record) => {
-          if (!containersCache[record.podName]) {
-            return <div/>
-          }
+        columns={columns}
+        scroll={{ x: '0px' }}
+        dataSource={filteredData}
+        locale={locale}
+        pagination={{
+          position: ['bottomCenter'],
+          current: pageNumber,
+          hideOnSinglePage: true,
+          total: data.length,
+          onChange: (page) => setPageNumber(page),
+        }}
+        title={renderTile}
+        expandable={{
+          expandedRowRender: (record) => {
+            if (!containersCache[record.podName]) {
+              return <div />;
+            }
 
-          return <Table
-            columns={
+            return (
+              <Table
+                columns={
               [
                 {
-                  title: "容器名称",
+                  title: '容器名称',
                   dataIndex: 'name',
                   width: '15%',
                   key: 'name',
-                  render: (text: string) => {
-                    return <span>{text}</span>
-                  }
+                  render: (text: string) => <span>{text}</span>,
                 },
                 {
-                  title: "镜像",
+                  title: '镜像',
                   dataIndex: 'image',
                   key: 'image',
-                  width: '50%'
+                  width: '50%',
                 },
                 {
-                  title: "容器状态",
+                  title: '容器状态',
                   dataIndex: 'status',
                   key: 'status',
                   width: '5%',
                   render: (text: string, container: CLUSTER.ContainerDetail) => {
                     if (!container.status) {
-                      return <div/>
+                      return <div />;
                     }
-                    const stateKey = Object.keys(container.status.state)
+                    const stateKey = Object.keys(container.status.state);
                     if (stateKey.length == 0) {
-                      return <div/>
+                      return <div />;
                     }
                     switch (stateKey[0]) {
-                    case 'running':
-                      return <PodRunning text={'Running'}/>
-                    case 'terminated':
-                      return <PodError text={'Terminated'}/>
-                    default:
-                      return <PodPending text={'Waiting'}/>
+                      case 'running':
+                        return <PodRunning text="Running" />;
+                      case 'terminated':
+                        return <PodError text="Terminated" />;
+                      default:
+                        return <PodPending text="Waiting" />;
                     }
-                  }
+                  },
                 },
                 {
                   title: formatMessage('onlineStatus', '上线状态'),
                   dataIndex: 'onlineStatus',
                   key: 'onlineStatus',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => 
-                  {
+                  render: (text: string, container: CLUSTER.ContainerDetail) => {
                     if (container?.status?.ready) {
-                      return status2StateNode.get('online')
+                      return status2StateNode.get('online');
                     }
-                    return status2StateNode.get('offline')
-                  }
+                    return status2StateNode.get('offline');
+                  },
                 },
                 {
-                  title: <div style={{whiteSpace: 'nowrap'}}>重启次数</div>,
+                  title: <div style={{ whiteSpace: 'nowrap' }}>重启次数</div>,
                   dataIndex: 'restartCount',
                   key: 'restartCount',
                   width: '10%',
                   render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    let cnt = 0
+                    let cnt = 0;
                     if (container.status) {
-                      cnt = container.status.restartCount
+                      cnt = container.status.restartCount;
                     }
-                    return <div>{cnt}</div>
-                  }
+                    return <div>{cnt}</div>;
+                  },
                 },
                 {
-                  title: "启动时间",
+                  title: '启动时间',
                   dataIndex: 'startedAt',
                   key: 'startedAt',
                   width: '20%',
                   render: (text: string, container: CLUSTER.ContainerDetail) => {
                     if (!container.status) {
-                      return <div/>
+                      return <div />;
                     }
 
                     if (container.status.state.running) {
-                      return <div>{Utils.timeToLocal(container.status.state.running.startedAt)}</div>
-                    } else if (container.status.state.terminated) {
-                      return <div>{Utils.timeToLocal(container.status.state.terminated.startedAt)}</div>
+                      return <div>{Utils.timeToLocal(container.status.state.running.startedAt)}</div>;
+                    } if (container.status.state.terminated) {
+                      return <div>{Utils.timeToLocal(container.status.state.terminated.startedAt)}</div>;
                     }
-                    return <div/>
-                  }
+                    return <div />;
+                  },
                 },
                 {
                   title: formatMessage('action', '操作'),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
                     <a
-                      style={{color: '#1890ff'}} 
-                      onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}>Monitor</a>
+                      style={{ color: '#1890ff' }}
+                      onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}
+                    >
+                      Monitor
+                    </a>
                   ),
                 },
               ]
             }
-            pagination={{
-              hideOnSinglePage: true
-            }}
-            dataSource={containersCache[record.podName]}
-            rowKey={(container) => {
-              return container.name
-            }}
-          />
-        },
-        onExpand: (expanded, record) => {
-          if (expanded) {
-            queryPodContainers(cluster!.id, {podName: record.podName}).then((result) => {
-              const containersCacheNew = Object.create(containersCache)
-              const containers: any[] = []
-              result.data.forEach((container: CLUSTER.ContainerDetail) => {
-                containers.push(container)
-              })
-              containersCacheNew[record.podName] = containers
-              setContainersCache(containersCacheNew)
-            });
-          }
-        },
-        expandIcon: ({expanded, onExpand, record}) =>
-          expanded ? (
-            <MinusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
+                pagination={{
+                  hideOnSinglePage: true,
+                }}
+                dataSource={containersCache[record.podName]}
+                rowKey={(container) => container.name}
+              />
+            );
+          },
+          onExpand: (expanded, record) => {
+            if (expanded) {
+              queryPodContainers(cluster!.id, { podName: record.podName }).then((result) => {
+                const containersCacheNew = Object.create(containersCache);
+                const containers: any[] = [];
+                result.data.forEach((container: CLUSTER.ContainerDetail) => {
+                  containers.push(container);
+                });
+                containersCacheNew[record.podName] = containers;
+                setContainersCache(containersCacheNew);
+              });
+            }
+          },
+          expandIcon: ({ expanded, onExpand, record }) => (expanded ? (
+            <MinusSquareTwoTone className={styles.expandedIcon} onClick={(e) => onExpand(record, e)} />
           ) : (
-            <PlusSquareTwoTone className={styles.expandedIcon} onClick={e => onExpand(record, e)}/>
-          )
-      }}
-    />
-    <FullscreenModal
-      title={'Stdout信息'}
-      visible={fullscreen}
-      listToSelect={pod?.containers.map((container) => {
-        return container.name
-      })}
-      onSelectChange={(value: string) => {
-        if (pod) {
-          const newPod = Object.create(pod)
-          newPod.containerName = value
-          setPod(newPod)
-          if (autoRefreshPodLog) {
-            cancelPodLog();
-            refreshPodLog(pod.podName, value).then();
-          } else {
-            refreshPodLogOnce(pod.podName, value).then();
+            <PlusSquareTwoTone className={styles.expandedIcon} onClick={(e) => onExpand(record, e)} />
+          )),
+        }}
+      />
+      <FullscreenModal
+        title="Stdout信息"
+        visible={fullscreen}
+        listToSelect={pod?.containers.map((container) => container.name)}
+        onSelectChange={(value: string) => {
+          if (pod) {
+            const newPod = Object.create(pod);
+            newPod.containerName = value;
+            setPod(newPod);
+            if (autoRefreshPodLog) {
+              cancelPodLog();
+              refreshPodLog(pod.podName, value).then();
+            } else {
+              refreshPodLogOnce(pod.podName, value).then();
+            }
           }
-        }
-      }}
+        }}
 
-      onClose={
+        onClose={
         () => {
           setFullscreen(false);
           cancelPodLog();
         }
       }
-      fullscreen={false}
-      supportFullscreenToggle={true}
-      supportRefresh={true}
-      onRefreshButtonToggle={onRefreshButtonToggle}
-    >
-      <CodeEditor
-        content={podLog}
-      />
-    </FullscreenModal>
-    {
+        fullscreen={false}
+        supportFullscreenToggle
+        supportRefresh
+        onRefreshButtonToggle={onRefreshButtonToggle}
+      >
+        <CodeEditor
+          content={podLog}
+        />
+      </FullscreenModal>
       <Modal
-        title={'Events'}
+        title="Events"
         visible={showEvents}
-        closable={true}
+        closable
         footer={[]}
-        width={'1200px'}
-        bodyStyle={{overflow: 'auto'}}
+        width="1200px"
+        bodyStyle={{ overflow: 'auto' }}
         onCancel={() => {
           stopRefreshEvents();
           setShowEvents(false);
@@ -867,31 +907,31 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         <Table
           pagination={
             {
-              pageSize: 8
+              pageSize: 8,
             }
           }
           columns={eventTableColumns}
           dataSource={events}
         />
       </Modal>
-    }
-    <Modal
-      visible={showLifeCycle}
-      title={'Pod状态详情'}
-      footer={[]}
-      onCancel={() => {
-        setShowLifeCycle(false)
-      }}
-      width={'800px'}
-      centered
-    >
-      <div>
-        <Table
+      <Modal
+        visible={showLifeCycle}
+        title="Pod状态详情"
+        footer={[]}
+        onCancel={() => {
+          setShowLifeCycle(false);
+        }}
+        width="800px"
+        centered
+      >
+        <div>
+          <Table
           // @ts-ignore
-          columns={lifeCycleColumns}
-          dataSource={podLifeCycle}
-        />
-      </div>
-    </Modal>
-  </div>
-}
+            columns={lifeCycleColumns}
+            dataSource={podLifeCycle}
+          />
+        </div>
+      </Modal>
+    </div>
+  );
+};

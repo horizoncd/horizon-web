@@ -1,4 +1,4 @@
-import {request} from "@@/plugin-request/request";
+import { request } from '@@/plugin-request/request';
 
 export async function queryEnvironmentRegions(environment: string) {
   return request<{
@@ -9,12 +9,12 @@ export async function queryEnvironmentRegions(environment: string) {
 }
 
 export async function createEnvironmentRegion(environmentRegion: SYSTEM.EnvironmentRegion) {
-  return request(`/apis/core/v1/environmentregions`, {
+  return request('/apis/core/v1/environmentregions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    data: environmentRegion
+    data: environmentRegion,
   });
 }
 

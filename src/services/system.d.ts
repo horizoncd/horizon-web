@@ -11,7 +11,7 @@ declare namespace SYSTEM {
     disabled: boolean
     createdAt: string,
     updatedAt: string,
-  }
+  };
 
   type Environment = {
     id: number,
@@ -19,7 +19,7 @@ declare namespace SYSTEM {
     displayName: stirng,
     createdAt: string,
     updatedAt: string,
-  }
+  };
 
   type EnvironmentRegion = {
     id: number,
@@ -30,7 +30,7 @@ declare namespace SYSTEM {
     isDefault: boolean,
     createdAt: string,
     updatedAt: string,
-  }
+  };
 
   type Harbor = {
     id: number,
@@ -40,5 +40,5 @@ declare namespace SYSTEM {
     preheatPolicyID: number,
     createdAt: string,
     updatedAt: string,
-  }
+  };
 }

@@ -7,13 +7,11 @@ import Detail from '@/components/PageWithBreadcrumb';
 //   width: 100%
 // `;
 
-export default (): React.ReactNode => {
-  return (
-    <Detail>
-      <Card>
-        abccc
-        {/*<Group>group Activity</Group>*/}
-      </Card>
-    </Detail>
-  );
-};
+export default (): React.ReactNode => (
+  <Detail>
+    <Card>
+      abccc
+      {/*<Group>group Activity</Group>*/}
+    </Card>
+  </Detail>
+);

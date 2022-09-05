@@ -8,21 +8,21 @@ export default function useAlertModel() {
   });
 
   const successAlert = useCallback((message) => {
-    setAlert({type: 'success', message, background: 'forestgreen'})
-  }, [])
+    setAlert({ type: 'success', message, background: 'forestgreen' });
+  }, []);
 
   const errorAlert = useCallback((message) => {
-    setAlert({type: 'error', message, background: '#ff4d4f'})
-  }, [])
+    setAlert({ type: 'error', message, background: '#ff4d4f' });
+  }, []);
 
   const clearAlert = useCallback(() => {
-    setAlert({type: '', message: null, background: ''})
-  }, [])
+    setAlert({ type: '', message: null, background: '' });
+  }, []);
 
   return {
     alert,
     successAlert,
     errorAlert,
-    clearAlert
+    clearAlert,
   };
 }

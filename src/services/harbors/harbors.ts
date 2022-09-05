@@ -1,9 +1,9 @@
-import {request} from "@@/plugin-request/request";
+import { request } from '@@/plugin-request/request';
 
 export async function queryHarbors() {
   return request<{
     data: SYSTEM.Harbor[];
-  }>(`/apis/core/v1/harbors`, {
+  }>('/apis/core/v1/harbors', {
     method: 'GET',
   });
 }
@@ -22,7 +22,7 @@ export async function updateHarborByID(id: number, harbor: SYSTEM.Harbor) {
     headers: {
       'Content-Type': 'application/json',
     },
-    data: harbor
+    data: harbor,
   });
 }
 
@@ -31,16 +31,16 @@ export async function deleteHarborByID(id: number) {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 }
 
 export async function createHarbor(harbor: SYSTEM.Harbor) {
-  return request(`/apis/core/v1/harbors`, {
+  return request('/apis/core/v1/harbors', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    data: harbor
+    data: harbor,
   });
 }

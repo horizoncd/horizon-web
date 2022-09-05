@@ -1,18 +1,18 @@
-import {history} from 'umi';
-import {getLocale} from "@@/plugin-locale/localeExports";
-import moment, {isMoment} from 'moment';
-import {routes} from "../config/routes";
+import { history } from 'umi';
+import { getLocale } from '@@/plugin-locale/localeExports';
+import moment, { isMoment } from 'moment';
+import { routes } from '../config/routes';
 
 const getResourcePath = () => {
-  const {pathname} = history.location;
-  if(pathname.startsWith('/templates')){
-    const pathArr = /templates\/(.*?)\/-\/releases\/(.*?)(?:\/edit)?\/?$/ .exec(pathname)
-    if(pathArr != null) {
-      return `/${pathArr[1]}/${pathArr[2]}`
+  const { pathname } = history.location;
+  if (pathname.startsWith('/templates')) {
+    const pathArr = /templates\/(.*?)\/-\/releases\/(.*?)(?:\/edit)?\/?$/.exec(pathname);
+    if (pathArr != null) {
+      return `/${pathArr[1]}/${pathArr[2]}`;
     }
   }
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
-    item !== 'applications' && item !== 'clusters' && item !== 'templates');
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups'
+    && item !== 'applications' && item !== 'clusters' && item !== 'templates');
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -26,9 +26,9 @@ const getResourcePath = () => {
 
 const getBreadcrumbs = (fullName: string) => {
   const result = [];
-  const {pathname} = history.location;
-  if (pathname.startsWith("/admin/")) {
-    const filteredPath = pathname.split('/').filter((item) => item !== '')
+  const { pathname } = history.location;
+  if (pathname.startsWith('/admin/')) {
+    const filteredPath = pathname.split('/').filter((item) => item !== '');
     let currentLink = '';
     for (let i = 0; i < filteredPath.length; i += 1) {
       const item = filteredPath[i];
@@ -38,52 +38,52 @@ const getBreadcrumbs = (fullName: string) => {
         breadcrumbName: item,
       });
     }
-    return result
+    return result;
   }
 
-  if (pathname.startsWith("/templates")) {
-   if(pathname === '/templates/new') {
-     return result
-   }
-   const releasePattern =  /\/templates\/.*\/-\/releases\/(.*?)(\/edit)?\/?$/
-   const isRelease = releasePattern.test(pathname)
-   const path = pathname.replace(/\/-.+$/,"")
-   const filteredPath = path.split('/').filter((item)=>item != '' && item != 'templates')
-   let currentLink = ''
-   for(const x of filteredPath.slice(0,filteredPath.length-1)) {
-     currentLink += `/${x}`
-     result.push({
-       path: currentLink,
-       breadcrumbName: x,
-     })
-   }
-   const item = filteredPath[filteredPath.length-1]
-   currentLink += `/${item}`
-   result.push({
-     path: '/templates' +currentLink + '/-/detail',
-     breadcrumbName: item,
-   })
-   const res =  releasePattern.exec(pathname)
-   if(isRelease) {
-      currentLink += `/-/releases/${res[1]}`
+  if (pathname.startsWith('/templates')) {
+    if (pathname === '/templates/new') {
+      return result;
+    }
+    const releasePattern = /\/templates\/.*\/-\/releases\/(.*?)(\/edit)?\/?$/;
+    const isRelease = releasePattern.test(pathname);
+    const path = pathname.replace(/\/-.+$/, '');
+    const filteredPath = path.split('/').filter((item) => item != '' && item != 'templates');
+    let currentLink = '';
+    for (const x of filteredPath.slice(0, filteredPath.length - 1)) {
+      currentLink += `/${x}`;
       result.push({
-        path: '/templates' +currentLink,
-        breadcrumbName: res[1]
-      })
-      if(pathname.endsWith('/edit')) {
-        currentLink += "/edit"
+        path: currentLink,
+        breadcrumbName: x,
+      });
+    }
+    const item = filteredPath[filteredPath.length - 1];
+    currentLink += `/${item}`;
+    result.push({
+      path: `/templates${currentLink}/-/detail`,
+      breadcrumbName: item,
+    });
+    const res = releasePattern.exec(pathname);
+    if (isRelease) {
+      currentLink += `/-/releases/${res[1]}`;
+      result.push({
+        path: `/templates${currentLink}`,
+        breadcrumbName: res[1],
+      });
+      if (pathname.endsWith('/edit')) {
+        currentLink += '/edit';
         result.push({
-          path: '/templates' +currentLink,
-          breadcrumbName: "edit",
-        })
+          path: `/templates${currentLink}`,
+          breadcrumbName: 'edit',
+        });
       }
     }
-   return result
+    return result;
   }
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups' &&
-    item !== 'applications' && item !== 'clusters');
+  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups'
+    && item !== 'applications' && item !== 'clusters');
   let currentLink = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -98,10 +98,10 @@ const getBreadcrumbs = (fullName: string) => {
   }
 
   const p = pathname.split('/').filter((item) => item !== '');
-  const idx = p.indexOf('-')
-  const funcURL = idx > -1
+  const idx = p.indexOf('-');
+  const funcURL = idx > -1;
   if (funcURL) {
-    currentLink += `/-`;
+    currentLink += '/-';
     for (let i = idx + 1; i < p.length; i += 1) {
       const item = p[i];
       currentLink += `/${item}`;
@@ -129,22 +129,22 @@ const getAvatarColorIndex = (title: string) => {
 
 // 计算出某个时间点是当前多久以前
 function timeFromNow(oldTime: string) {
-  return moment(oldTime).local().locale(getLocale()).fromNow()
+  return moment(oldTime).local().locale(getLocale()).fromNow();
 }
 
 // 计算出某个时间点是当前多久以前 by en-US
 function timeFromNowEnUS(oldTime: string) {
-  return moment(oldTime).local().locale('en-US').fromNow()
+  return moment(oldTime).local().locale('en-US').fromNow();
 }
 
 // 计算出两个时间点之间的间隔
 function timeSecondsDuration(startedAt: string, finishedAt: string) {
-  return moment(finishedAt).diff(moment(startedAt), "seconds")
+  return moment(finishedAt).diff(moment(startedAt), 'seconds');
 }
 
 // 将日期转为浏览器当前时区
 function timeToLocal(time: string) {
-  return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString()
+  return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString();
 }
 
 export const mergeDefaultValue = (value: any, defaultValue: { [x: string]: any; }) => {
@@ -204,7 +204,7 @@ const formatValue = (data, type) => {
     return [data];
   }
   if (data instanceof Array) {
-    return data.map(e => formatValue(e, type));
+    return data.map((e) => formatValue(e, type));
   }
   if (type === 'number') {
     if (typeof data === 'number') {
@@ -252,7 +252,7 @@ const formatValue = (data, type) => {
  */
 // @ts-ignore
 export const formatQueryParam = (data, options) => {
-  const result = {...data};
+  const result = { ...data };
 
   Object.keys(options).forEach((key) => {
     if (data[key] === undefined) {
@@ -275,11 +275,11 @@ export const formatQueryParam = (data, options) => {
 };
 
 export const pathnameInStaticRoutes = (): boolean => {
-  const {pathname} = history.location;
+  const { pathname } = history.location;
   // handle url end with '/'
   let path = pathname;
-  if (pathname.startsWith("/admin/")) {
-    return true
+  if (pathname.startsWith('/admin/')) {
+    return true;
   }
   if (pathname.endsWith('/')) {
     path = pathname.substring(0, pathname.length - 1);
@@ -296,28 +296,26 @@ export const pathnameInStaticRoutes = (): boolean => {
   }
 
   return false;
-}
+};
 
 export const handleHref = (event: any, link: string) => {
-  const {metaKey, ctrlKey} = event
+  const { metaKey, ctrlKey } = event;
 
   // mac 平台 判断 metaKey; 其他平台判断ctrlKey
   // https://developer.mozilla.org/en-US/docs/web/api/navigator/platform#browser_compatibility
   // mozilla 建议换成 navigator.userAgentData.platform 但浏览器兼容性不足 后续看情况再调整
   if (navigator.platform.indexOf('Mac') > -1 && metaKey) {
-    window.open(link)
-    return
-  }
-  if (navigator.platform.indexOf('Mac') === -1 && ctrlKey) {
-    window.open(link)
+    window.open(link);
     return;
   }
-  window.location.href = link
-}
+  if (navigator.platform.indexOf('Mac') === -1 && ctrlKey) {
+    window.open(link);
+    return;
+  }
+  window.location.href = link;
+};
 
-export const tagShouldOmit = (tag: TAG.Tag) => {
-  return (tag.key.length > 16 || tag.value.length > 16)
-}
+export const tagShouldOmit = (tag: TAG.Tag) => (tag.key.length > 16 || tag.value.length > 16);
 
 export default {
   getResourcePath,

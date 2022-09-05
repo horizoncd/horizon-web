@@ -1,4 +1,4 @@
-import {request} from 'umi';
+import { request } from 'umi';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
@@ -43,7 +43,7 @@ export async function searchApplications(params: API.PageParam) {
     data: API.PageResult<API.Application>;
   }>('/apis/front/v1/applications/searchapplications', {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -52,7 +52,7 @@ export async function searchMyApplications(params: API.PageParam) {
     data: API.PageResult<API.Application>;
   }>('/apis/front/v1/applications/searchmyapplications', {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -60,8 +60,8 @@ export async function getApplicationEnvTemplate(applicationID: number, environme
   return request(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'GET',
     params: {
-      environment
-    }
+      environment,
+    },
   });
 }
 
@@ -76,16 +76,14 @@ export async function getApplicationRegions(applicationID: number) {
   });
 }
 
-
 export async function transferApplication(applicationID: number, groupID: number) {
   return request(`/apis/core/v1/applications/${applicationID}/transfer`, {
     method: 'PUT',
-    params:{
-      groupID
-    }
+    params: {
+      groupID,
+    },
   });
 }
-
 
 export async function updateApplicationRegions(applicationID: number, regions: any) {
   return request(`/apis/core/v1/applications/${applicationID}/defaultregions`, {
@@ -100,9 +98,9 @@ export async function updateApplicationEnvTemplate(applicationID: number, enviro
   }>(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'POST',
     params: {
-      environment
+      environment,
     },
-    data
+    data,
   });
 }
 

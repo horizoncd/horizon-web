@@ -1,4 +1,4 @@
-import {GitInfo} from '@/services/code/code'
+import { GitInfo } from '@/services/code/code';
 // @ts-ignore
 /* eslint-disable */
 declare namespace API {

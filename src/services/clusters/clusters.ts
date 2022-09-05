@@ -1,16 +1,16 @@
-import {request} from 'umi';
-import {GitRefType} from '@/services/code/code';
+import { request } from 'umi';
+import { GitRefType } from '@/services/code/code';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
   if (!params.environment) {
-    delete params.environment
+    delete params.environment;
   }
 
   return request<{
     data: API.PageResult<CLUSTER.ClusterBase>;
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'GET',
-    params 
+    params,
   });
 }
 
@@ -20,9 +20,9 @@ export async function createCluster(applicationID: number, scope: string, data: 
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'POST',
     params: {
-      scope
+      scope,
     },
-    data
+    data,
   });
 }
 
@@ -51,7 +51,7 @@ export async function getClusterOutputs(clusterID: number) {
 export async function updateCluster(clusterID: number, data: CLUSTER.UpdateCluster) {
   return request(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'PUT',
-    data
+    data,
   });
 }
 
@@ -62,7 +62,7 @@ export async function buildDeploy(clusterID: number, data: CLUSTER.ClusterBuildD
     };
   }>(`/apis/core/v1/clusters/${clusterID}/builddeploy`, {
     method: 'POST',
-    data
+    data,
   });
 }
 
@@ -73,7 +73,7 @@ export async function deploy(clusterID: number, data: CLUSTER.ClusterDeploy) {
     };
   }>(`/apis/core/v1/clusters/${clusterID}/deploy`, {
     method: 'POST',
-    data
+    data,
   });
 }
 
@@ -84,7 +84,7 @@ export async function rollback(clusterID: number, data: CLUSTER.ClusterRollback)
     };
   }>(`/apis/core/v1/clusters/${clusterID}/rollback`, {
     method: 'POST',
-    data
+    data,
   });
 }
 
@@ -133,19 +133,19 @@ export async function promote(clusterID: number) {
 }
 
 export async function diffsOfCode(clusterID: number, refType: string, targetRef: string) {
-  const params = {}
+  const params = {};
   if (refType == GitRefType.Tag) {
-    params['targetTag'] = targetRef
+    params.targetTag = targetRef;
   } else if (refType == GitRefType.Branch) {
-    params['targetBranch'] = targetRef
+    params.targetBranch = targetRef;
   } else if (refType == GitRefType.Commit) {
-    params['targetCommit'] = targetRef
+    params.targetCommit = targetRef;
   }
   return request<{
     data: CLUSTER.ClusterDiffs
   }>(`/apis/core/v1/clusters/${clusterID}/diffs`, {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -154,7 +154,7 @@ export async function getPipelines(clusterID: number, params: PIPELINES.ListPipe
     data: API.PageResult<PIPELINES.Pipeline>
   }>(`/apis/core/v1/clusters/${clusterID}/pipelineruns`, {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -171,7 +171,7 @@ export async function searchClusters(params: API.PageParam) {
     data: API.PageResult<CLUSTER.Cluster>;
   }>('/apis/front/v1/clusters/searchclusters', {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -180,7 +180,7 @@ export async function searchMyClusters(params: API.PageParam) {
     data: API.PageResult<CLUSTER.Cluster>;
   }>('/apis/front/v1/clusters/searchmyclusters', {
     method: 'GET',
-    params
+    params,
   });
 }
 
@@ -240,8 +240,8 @@ export async function getClusterPods(clusterID: number, start: number, end: numb
     method: 'GET',
     params: {
       start,
-      end
-    }
+      end,
+    },
   });
 }
 
@@ -254,7 +254,7 @@ export async function getClusterPod(clusterID: number, podName: string) {
     method: 'GET',
     params: {
       start,
-      end
-    }
+      end,
+    },
   });
 }

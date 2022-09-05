@@ -1,8 +1,8 @@
-import 'bootstrap/dist/css/bootstrap.css'
-import './index.less'
+import 'bootstrap/dist/css/bootstrap.css';
+import './index.less';
 import Form from '@rjsf/bootstrap-4';
-import {Button} from 'antd';
-import {forwardRef, useImperativeHandle, useRef} from 'react';
+import { Button } from 'antd';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 
 // member组件入参
 interface FormProps {
@@ -26,7 +26,7 @@ interface FormProps {
 }
 
 export default forwardRef((props: FormProps, ref) => {
-  const formRef = useRef()
+  const formRef = useRef();
   // 暴露submit给父级组件
   useImperativeHandle(
     ref,
@@ -36,10 +36,10 @@ export default forwardRef((props: FormProps, ref) => {
           new CustomEvent('submit', {
             cancelable: true,
             bubbles: true, // <-- actual fix
-          })
-        )
-      }
-    })
+          }),
+        );
+      },
+    }),
   );
   return (
     // @ts-ignore
@@ -54,10 +54,10 @@ export default forwardRef((props: FormProps, ref) => {
         onSubmit={props.onSubmit}
         liveValidate={props.liveValidate}
         showErrorList={props.showErrorList}
-        omitExtraData={true}
+        omitExtraData
       >
-        <div/>
+        <div />
       </Form>
     </div>
-  )
+  );
 });
