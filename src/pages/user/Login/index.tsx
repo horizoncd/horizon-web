@@ -4,6 +4,7 @@ import { Button, Space } from 'antd';
 import Footer from '@/components/Footer';
 import { getAuthEndpoints } from '@/services/login/login';
 import styles from './index.less';
+import './index.less';
 
 const redirectURL = `${window.location.protocol}//${window.location.host}/user/login/callback`;
 
