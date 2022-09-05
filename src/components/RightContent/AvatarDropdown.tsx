@@ -1,12 +1,12 @@
-import React, {useCallback} from 'react';
-import {LogoutOutlined, SettingOutlined, UserOutlined} from '@ant-design/icons';
-import {Menu, Spin} from 'antd';
-import {history, useModel} from 'umi';
-import {stringify} from 'querystring';
+import React, { useCallback } from 'react';
+import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { Menu, Spin } from 'antd';
+import { history, useModel } from 'umi';
+import { stringify } from 'querystring';
+import type { MenuInfo } from 'rc-menu/lib/interface';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import {outLogin} from '@/services/login/login';
-import type {MenuInfo} from 'rc-menu/lib/interface';
+import { outLogin } from '@/services/login/login';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -17,28 +17,28 @@ export type GlobalHeaderRightProps = {
  */
 const logout = async () => {
   await outLogin();
-  const {query = {}, pathname} = history.location;
-  const {redirect} = query;
+  const { query = {}, pathname } = history.location;
+  const { redirect } = query;
   // Note: There may be security issues, please note
   if (window.location.pathname !== '/user/login' && !redirect) {
     history.replace({
       pathname: '/user/login',
       search: stringify({
-        redirect: `${window.location.protocol}//${window.location.host}${pathname}`
+        redirect: `${window.location.protocol}//${window.location.host}${pathname}`,
       }),
     });
   }
 };
 
-const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu}) => {
-  const {initialState, setInitialState} = useModel('@@initialState');
+const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
-      const {key} = event;
+      const { key } = event;
       if (key === 'logout') {
         // @ts-ignore
-        setInitialState((s) => ({...s, currentUser: undefined}));
+        setInitialState((s) => ({ ...s, currentUser: undefined }));
         logout();
         return;
       }
@@ -63,7 +63,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu}) => {
     return loading;
   }
 
-  const {currentUser} = initialState;
+  const { currentUser } = initialState;
 
   if (!currentUser || !currentUser.name) {
     return loading;
@@ -73,22 +73,22 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu}) => {
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
       {menu && (
         <Menu.Item key="center">
-          <UserOutlined/>
+          <UserOutlined />
           个人中心
         </Menu.Item>
       )}
       {menu && (
         <Menu.Item key="settings">
-          <SettingOutlined/>
+          <SettingOutlined />
           个人设置
         </Menu.Item>
       )}
-      {menu && <Menu.Divider/>}
+      {menu && <Menu.Divider />}
 
-      {menu && <Menu.Divider/>}
+      {menu && <Menu.Divider />}
 
       <Menu.Item key="logout">
-        <LogoutOutlined/>
+        <LogoutOutlined />
         退出登录
       </Menu.Item>
     </Menu>

@@ -1,24 +1,24 @@
-import GroupDetail from '../groups/Detail'
-import Pods from '../clusters/Pods'
-import Clusters from '../applications/Clusters'
-import NotFount from '@/pages/404'
-import {useModel} from "@@/plugin-model/useModel";
-import {ResourceType} from '@/const'
+import { useModel } from '@@/plugin-model/useModel';
+import GroupDetail from '../groups/Detail';
+import Pods from '../clusters/Pods';
+import Clusters from '../applications/Clusters';
+import NotFount from '@/pages/404';
+import { ResourceType } from '@/const';
 
 export default () => {
-  const {initialState} = useModel('@@initialState');
-  const {id, type} = initialState?.resource || {};
+  const { initialState } = useModel('@@initialState');
+  const { id, type } = initialState?.resource || {};
   if (!id) {
-    return <NotFount/>;
+    return <NotFount />;
   }
   switch (type as ResourceType) {
     case ResourceType.GROUP:
-      return (<GroupDetail/>)
+      return (<GroupDetail />);
     case ResourceType.APPLICATION:
-      return (<Clusters/>);
+      return (<Clusters />);
     case ResourceType.CLUSTER:
-      return (<Pods/>);
+      return (<Pods />);
     default:
-      return <NotFount/>
+      return <NotFount />;
   }
-}
+};

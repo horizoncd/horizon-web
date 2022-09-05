@@ -1,9 +1,8 @@
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel } from '@@/plugin-model/useModel';
 
 const AnonymousRole = 'anonymous';
 const AdminRole = 'administrator';
 const AllowAll = '*';
-
 
 // 资源
 const Resource = {
@@ -38,7 +37,7 @@ const Resource = {
   regionselectors: 'regionselectors',
   template: 'templates',
   templaterelease: 'templatereleases',
-}
+};
 
 // 操作
 const Action = {
@@ -46,7 +45,7 @@ const Action = {
   update: 'update',
   delete: 'delete',
   get: 'get',
-}
+};
 
 // Permissions是当前用户的权限集合，一旦用户在具体资源下的role确认，各项操作是否允许也将被确认
 // 字段说明：
@@ -120,10 +119,8 @@ const Permissions = {
     action: Action.create,
     env: new Array<string>(),
     allowed: false,
-    allowedEnv: (env: string) => {
-      return (env == '' && Permissions.createCluster.env.length > 0) ||
-        Permissions.createCluster.env.includes(AllowAll) || Permissions.createCluster.env.includes(env)
-    },
+    allowedEnv: (env: string) => (env == '' && Permissions.createCluster.env.length > 0)
+        || Permissions.createCluster.env.includes(AllowAll) || Permissions.createCluster.env.includes(env),
   },
   // 删除集群
   deleteCluster: {
@@ -335,9 +332,8 @@ const Permissions = {
     resource: `${Resource.template}/${Resource.member}`,
     action: Action.create,
     allowed: false,
-  } 
-}
-
+  },
+};
 
 // RefreshPermissions用于基于roles接口返回结果和用户自身的role刷新Permissions
 // roles接口返回示例：
@@ -371,7 +367,7 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
     Object.keys(Permissions).forEach((operation) => {
       Permissions[operation].allowed = true;
       Permissions[operation].env = [AllowAll];
-    })
+    });
     return;
   }
   if (currentUser.role === AnonymousRole) {
@@ -402,8 +398,8 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
             if (!rolePolicy[verb][resource]) {
               rolePolicy[verb][resource] = [];
             }
-            const parts = scope.split("/")
-            const env = parts[0]
+            const parts = scope.split('/');
+            const env = parts[0];
             rolePolicy[verb][resource] = rolePolicy[verb][resource].concat(env);
           }
         }
@@ -413,8 +409,8 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
 
   // 遍历Permissions的每个属性，若 action 和 resource 在 rolePolicy 中被记录，则认为对应操作被允许
   Object.keys(Permissions).forEach((operation) => {
-    const action = Permissions[operation].action;
-    const resource = Permissions[operation].resource;
+    const { action } = Permissions[operation];
+    const { resource } = Permissions[operation];
     // 清空原有的权限
     Permissions[operation].allowed = false;
     Permissions[operation].env = [];
@@ -440,25 +436,23 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
         Permissions[operation].env = rolePolicy[AllowAll][AllowAll];
       }
     }
-  })
-  return;
-}
-
+  });
+};
 
 // 返回role列表和排名，用于提供下拉列表以及进行比较
 const GetRoleList = () => {
-  const {initialState} = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const roleRank = new Map();
   let roleList: string[] = [];
 
   roleRank.set(AdminRole, 0);
   for (let i = 0; i < initialState!.roles!.length; i++) {
-    const role = initialState!.roles![i]
-    roleRank.set(role.name, i)
-    roleList = roleList.concat(role.name)
+    const role = initialState!.roles![i];
+    roleRank.set(role.name, i);
+    roleList = roleList.concat(role.name);
   }
-  return {roleRank, roleList}
-}
+  return { roleRank, roleList };
+};
 
 export default {
   AnonymousRole,

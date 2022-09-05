@@ -1,5 +1,5 @@
-import {request} from 'umi';
-import {API} from '../typings';
+import { request } from 'umi';
+import { API } from '../typings';
 
 export async function login(params: { redirectUrl: string, fromHost: string }) {
   return request<{
@@ -13,15 +13,15 @@ export async function login(params: { redirectUrl: string, fromHost: string }) {
 }
 
 export async function loginCallback(code: string, state: string) {
-  return request('/apis/core/v1/login/callback',{
+  return request('/apis/core/v1/login/callback', {
     method: 'GET',
     params: {
-      code,state,
-    }
-  })
+      code, state,
+    },
+  });
 }
 
-export async function getAuthEndpoints(redirectUrl: string = "") {
+export async function getAuthEndpoints(redirectUrl: string = '') {
   return request<{
     data: API.IDP[],
   }>('/apis/core/v1/idps/endpoints', {
