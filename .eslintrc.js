@@ -33,6 +33,7 @@ module.exports = {
     'react/react-in-jsx-scope': 0,
     'max-len': 0,
     'no-console': 2,
+    'import/no-duplicates': 0,
     'jsx-a11y/click-events-have-key-events': 0,
   },
 };

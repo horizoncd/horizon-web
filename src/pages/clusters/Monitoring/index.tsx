@@ -9,18 +9,19 @@ import { formatQueryParam, mergeDefaultValue } from '@/utils';
 import MonitorSearchForm from './MonitorSearchForm';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { getClusterPods, getDashboards } from '@/services/clusters/clusters';
+import { CLUSTER } from '@/services/clusters';
 
 const { TabPane } = Tabs;
 
 export const formatMultiItemQuery = (arr: any[], queryKey: string) => {
-  if (!arr || arr.length == 0) {
+  if (!arr || arr.length === 0) {
     return '';
   }
-  if (arr.length == 1) {
+  if (arr.length === 1) {
     return `&${queryKey}=${arr[0]}`;
   }
   return arr.reduce((pre: string, cur: string, curIdx: number) => {
-    if (curIdx == 1) {
+    if (curIdx === 1) {
       return `&${queryKey}=${pre}&${queryKey}=${cur}`;
     }
     return `${pre}&${queryKey}=${cur}`;

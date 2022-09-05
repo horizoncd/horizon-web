@@ -9,6 +9,7 @@ import copy from 'copy-to-clipboard';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import styles from './index.less';
+import './index.less';
 
 const { Option } = Select;
 

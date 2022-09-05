@@ -20,6 +20,7 @@ import {
 } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
 import styles from './index.less';
+import './index.less';
 import FullscreenModal from '@/components/FullscreenModal';
 import {
   deletePods,

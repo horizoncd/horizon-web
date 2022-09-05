@@ -7,6 +7,7 @@ import 'codemirror/theme/material.css';
 import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/hint/show-hint.css';
 import styles from './index.less';
+import './index.less';
 import 'codemirror/addon/display/fullscreen.css';
 import 'codemirror/addon/display/fullscreen';
 import { Button, Card, Modal } from 'antd';

@@ -10,6 +10,7 @@ import 'codemirror/addon/mode/simple.js';
 import CodeMirror from 'codemirror';
 import React from 'react';
 import styles from './index.less';
+import './index.less';
 
 interface Props {
   content: string
