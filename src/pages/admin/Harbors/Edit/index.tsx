@@ -11,11 +11,11 @@ export default () => {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
   const params = useParams<{ id: string }>();
-  if (!params.id || isNaN(parseInt(params.id))) {
+  if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
     return <NotFount />;
   }
 
-  const harborID = parseInt(params.id);
+  const harborID = parseInt(params.id, 10);
   const { data: harbor } = useRequest(() => getHarborByID(harborID), {
     onSuccess: () => {
       form.setFieldsValue(harbor);
@@ -32,7 +32,7 @@ export default () => {
             onFinish={(v) => {
               const data: SYSTEM.Harbor = {
                 ...v,
-                preheatPolicyID: parseInt(v.preheatPolicyID),
+                preheatPolicyID: parseInt(v.preheatPolicyID, 10),
               };
               updateHarborByID(harborID, data).then(() => {
                 successAlert('Harbor 编辑成功');

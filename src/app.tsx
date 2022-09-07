@@ -5,6 +5,7 @@ import { Menu, notification, Tooltip } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import {
+  ApiOutlined,
   AppstoreOutlined,
   BankOutlined,
   ClusterOutlined,
@@ -50,6 +51,7 @@ const IconMap = {
   database: <DatabaseOutlined />,
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
+  idp: <ApiOutlined />,
   profile: <ProfileOutlined />
 };
 
@@ -239,8 +241,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
             More
-{' '}
-<DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
+            {' '}
+            <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
 )}
       >
@@ -344,6 +346,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          },
+          {
+            path: '/admin/idps',
+            name: 'IDPs',
+            icon: 'idp',
           },
         ]);
       }

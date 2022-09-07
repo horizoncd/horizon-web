@@ -72,6 +72,7 @@
     "omit.js": "^2.0.2",
     "patch-package": "^6.4.7",
     "pikaday": "^1.8.2",
+    "rc-field-form": "^1.27.1",
     "react": "^17.0.0",
     "react-bootstrap": "^2.4.0",
     "react-codemirror2": "^7.2.1",
@@ -135,6 +136,9 @@
     "puppeteer-core": "^8.0.0",
     "stylelint": "^13.0.0",
     "typescript": "^4.2.2"
+  },
+  "resolutions": {
+    "styled-components": "^5"
   },
   "engines": {
     "node": ">=10.0.0"

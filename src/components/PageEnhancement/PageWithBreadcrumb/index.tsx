@@ -3,11 +3,11 @@ import { useModel } from '@@/plugin-model/useModel';
 import { Alert, Divider } from 'antd';
 import { PropsWithChildren, useEffect } from 'react';
 import { history } from 'umi';
+import styles from './index.less';
+import './index.less';
 import utils, { pathnameInStaticRoutes } from '../../utils';
 import NotFount from '@/pages/404';
 import WithTheme from '@/theme';
-import styles from './index.less';
-import './index.less';
 
 export default (props: PropsWithChildren<any>) => {
   const { children } = props;
