@@ -62,7 +62,11 @@ export default () => {
   const queryInput = (
     <Button
       type="primary"
-      style={{ marginBottom: 10, float: 'right', marginRight: 5 }}
+      style={{
+        marginBottom: 10,
+        float: 'right',
+        marginRight: 5,
+      }}
       onClick={() => {
         history.push('/admin/kubernetes/new');
       }}

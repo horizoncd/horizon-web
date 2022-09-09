@@ -20,12 +20,12 @@ import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
 
 export default () => {
   const params = useParams<{ id: string }>();
-  if (!params.id || isNaN(parseInt(params.id))) {
+  if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
     return <NotFount />;
   }
 
   const { successAlert } = useModel('alert');
-  const regionID = parseInt(params.id);
+  const regionID = parseInt(params.id, 10);
   const { data: region } = useRequest(() => getRegionByID(regionID), {});
 
   const data: Param[][] = [
@@ -51,6 +51,10 @@ export default () => {
       {
         key: 'ingress域名',
         value: region?.ingressDomain,
+      },
+      {
+        key: 'prometheus地址',
+        value: region?.prometheusURL,
       },
       {
         key: 'certificate',

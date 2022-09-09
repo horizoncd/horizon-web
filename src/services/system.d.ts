@@ -6,6 +6,7 @@ declare namespace SYSTEM {
     server: string;
     certificate: string;
     ingressDomain: string;
+    prometheusURL: string;
     harborID: number
     harbor: Harbor
     disabled: boolean
