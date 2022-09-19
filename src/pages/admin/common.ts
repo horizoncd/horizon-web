@@ -9,6 +9,14 @@ export default {
         max: 256,
       },
     ],
+    noRequiredURL: [
+      {
+        // https://mathiasbynens.be/demo/url-regex
+        // https://baidu.com
+        pattern: new RegExp('^(https?)://[^\\s/$.?#].[^\\s]*$'),
+        max: 256,
+      },
+    ],
     domain: [
       {
         required: true,
