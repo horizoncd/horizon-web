@@ -1,13 +1,19 @@
 import { Button, Space, Table } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
+import styled from 'styled-components';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NoData from '@/components/NoData';
-import {
-  queryRegions,
-} from '@/services/regions/regions';
+import { queryRegions } from '@/services/regions/regions';
 import CollapseList from '@/components/CollapseList';
 import Utils from '@/utils';
+import { API } from '@/services/typings';
+
+const QueryInput = styled(Button)`
+  float: right;
+  margin-bottom: 10px;
+  margin-right: 5px;
+`;
 
 export default () => {
   const { data: regions } = useRequest(() => queryRegions(), {});
@@ -33,8 +39,8 @@ export default () => {
       render: (tags: [API.Tag]) => {
         if (tags) {
           const data = {};
-          for (const tag of tags) {
-            data[tag.key] = tag.value;
+          for (let i = 0; i < tags.length; i += 1) {
+            data[tags[i].key] = tags[i].value;
           }
           return <CollapseList defaultCount={2} data={data} />;
         }
@@ -58,18 +64,6 @@ export default () => {
       render: (v: string) => Utils.timeToLocal(v),
     },
   ];
-
-  const queryInput = (
-    <Button
-      type="primary"
-      style={{ marginBottom: 10, float: 'right', marginRight: 5 }}
-      onClick={() => {
-        history.push('/admin/kubernetes/new');
-      }}
-    >
-      创建区域
-    </Button>
-  );
 
   const locale = {
     emptyText: <NoData
@@ -95,7 +89,14 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      {queryInput}
+      <QueryInput
+        type="primary"
+        onClick={() => {
+          history.push('/admin/kubernetes/new');
+        }}
+      >
+        创建区域
+      </QueryInput>
       {table}
     </PageWithBreadcrumb>
   );

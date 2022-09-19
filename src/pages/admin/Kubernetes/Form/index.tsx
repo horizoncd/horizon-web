@@ -25,10 +25,13 @@ export default () => {
       <Form.Item label="ingress域名" name="ingressDomain" rules={common.formRules.domain} extra="k8s集群中ingress-nginx组件所绑定的域名">
         <Input />
       </Form.Item>
+      <Form.Item label="prometheus地址" name="prometheusURL" extra="k8s集群中prometheus的访问地址，建议启用此组件，可获得丰富的指标监控能力">
+        <Input />
+      </Form.Item>
       <Form.Item label="Harbor" name="harborID" rules={[{ required: true }]} extra="k8s集群中所关联的harbor服务，业务负载的镜像将推送到此harbor">
         <Select>
           {
-          harbors?.map((item) => <Option key={item.id} value={item.id}>{item.name}</Option>)
+          harbors?.map((item: SYSTEM.Harbor) => <Option key={item.id} value={item.id}>{item.name}</Option>)
         }
         </Select>
       </Form.Item>
