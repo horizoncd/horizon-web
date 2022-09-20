@@ -29,7 +29,7 @@ export default (): React.ReactNode => {
       onInviteMember={(member) => inviteTemplateMember(member)}
       onUpdateMember={(id, member) => updateMember(id, member)}
       onListMembers={(resourceID) => queryTemplateMembers(resourceID)}
-      onRemoveMember={(id) => removeMember(id)}
+      onRemoveMember={(id) => removeMember(id, 'templates')}
       allowInvite={RBAC.Permissions.createTemplateMember.allowed}
     />
   );

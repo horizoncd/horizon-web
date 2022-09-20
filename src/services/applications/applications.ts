@@ -1,4 +1,6 @@
 import { request } from 'umi';
+import type { CLUSTER } from '../clusters';
+import type { API } from '../typings';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
@@ -110,4 +112,19 @@ export async function queryRegions(applicationID: number, env: string) {
   }>(`/apis/core/v1/applications/${applicationID}/selectableregions?env=${env}`, {
     method: 'GET',
   });
+}
+
+export async function getApplicationByRelease(template: string, release: string, page: API.PageParam) {
+  return request<{ data: { total: number, items: API.PageResult<API.Application>[] } }>(
+    '/apis/core/v1/applications',
+    {
+      method: 'GET',
+      params: {
+        template,
+        release,
+        pageSize: page.pageSize,
+        pageNumber: page.pageNumber,
+      },
+    },
+  );
 }

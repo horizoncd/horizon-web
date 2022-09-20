@@ -15,6 +15,7 @@ import styles from './index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
+import type { API } from '@/services/typings';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -26,8 +27,6 @@ export default (props: any) => {
   const branch = 'branch';
   const description = 'description';
   const subfolder = 'subfolder';
-  const refType = 'refType';
-  const ref = 'ref';
   const basicNeedValidFields = [
     name, release, priority, url, branch,
   ];

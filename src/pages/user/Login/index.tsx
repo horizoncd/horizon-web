@@ -14,7 +14,7 @@ const Login = () => {
   const handleURL = (u: string) => {
     const url = new URL(u);
     let state = url.searchParams.get('state');
-    state = window.atob(state);
+    state = window.atob(state!);
 
     const stateParams = new URLSearchParams(state);
     stateParams.set('redirect', history.location.query.redirect ?? `${window.location.protocol}//${window.location.host}`);
@@ -56,6 +56,7 @@ const Login = () => {
             <div>
               <img
                 className={styles.imgBlock}
+                alt=""
                 src="/The_Earth_seen_from_Apollo_17.jpg"
               />
             </div>

@@ -23,13 +23,13 @@ module.exports = {
         'merge', // 代码合并
         'revert', // 版本回滚
         'chore', // 构建过程或辅助工具的变动
-        'test',
-        'perf',
-        'build',
-        'ci',
-        'revert',
-        'wip',
-        'workflow',
+        'test', // 测试变更
+        'perf', // 性能
+        'build', // 构建
+        'ci', // 集成测试
+        'revert', // 重做
+        'wip', // working in progress
+        'workflow', // 工作流
         'types',
         'release',
       ],

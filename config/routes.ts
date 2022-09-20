@@ -247,7 +247,7 @@ const adminRoutes = [
 const templateRoutes = [
   {
     path: '/groups/*/-/templates',
-    component: 'templates'
+    component: 'templates/Group'
   },
   {
     path: '/groups/*/-/newtemplate',

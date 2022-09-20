@@ -4,12 +4,12 @@ import {
 import {
   Button, Modal, Select, Switch,
 } from 'antd';
+import './index.less';
 import React, { useState } from 'react';
 import copy from 'copy-to-clipboard';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import styles from './index.less';
-import './index.less';
 
 const { Option } = Select;
 

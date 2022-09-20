@@ -1,7 +1,15 @@
-import { GitInfo } from '@/services/code/code';
+import type { GitInfo } from '@/services/code/code';
 // @ts-ignore
-/* eslint-disable */
 declare namespace API {
+  interface InitialState {
+    settings?: Partial<LayoutSettings>;
+    currentUser?: API.CurrentUser;
+    roles?: API.Role[];
+    fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+    resource: API.Resource;
+    accordionCollapse: boolean;
+  }
+
   type CurrentUser = {
     name: string;
     id: number;
@@ -31,7 +39,7 @@ declare namespace API {
     desc: string;
     homeURL: string;
     redirectURL: string;
-  }
+  };
 
   type APPBasicInfo = {
     appID: number;
@@ -40,7 +48,7 @@ declare namespace API {
     desc: string;
     homeURL: string;
     redirectURL: string;
-  }
+  };
 
   type OauthClientSecretInfo = {
     id: number
@@ -48,7 +56,7 @@ declare namespace API {
     clientSecret: string
     createdAt: string
     createdBy: string
-  }
+  };
 
   type NewApplication = {
     name: string;
@@ -134,10 +142,11 @@ declare namespace API {
     updatedAt: string;
   };
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   type regionSelectors = [{
     key: string,
     values: string[]
-  }]
+  }];
 
   type Group = {
     id: number;
@@ -203,12 +212,12 @@ declare namespace API {
     resources: string[],
     scopes: string[],
     nonResourceURLs: string[],
-  }
+  };
 
   type Role = {
     name: string,
     rules: RoleRule[]
-  }
+  };
 
   type CodeBranchSearchParam = {
     refType: string,
@@ -216,12 +225,12 @@ declare namespace API {
     pageNumber: number,
     pageSize: number,
     filter?: string,
-  }
+  };
 
   type TemplateSchemaParam = {
     clusterID?: number,
     resourceType?: string,
-  }
+  };
 
   type SLODashboards = {
     overview: string;
@@ -231,14 +240,9 @@ declare namespace API {
   type Tag = {
     key: string,
     value: string,
-  }
+  };
 
   type Tags = {
     tags: Tag[],
-  }
-
-  type IDP = {
-    authURL: string,
-    displayName: string,
-  }
+  };
 }

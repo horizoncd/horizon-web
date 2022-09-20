@@ -4,10 +4,11 @@ import { listGitRef } from '@/services/code/code';
 
 const { Option } = Select;
 
-export const TagSelector = (props: { repository: string, prefix: string[] }) => {
+const TagSelector = (props: { repository: string, prefix: string[] }) => {
+  const { repository, prefix } = props;
   const { data: tags } = useRequest((filter?: string) => listGitRef({
     refType: 'tag',
-    giturl: props.repository,
+    giturl: repository,
     filter,
     pageNumber: 1,
     pageSize: 50,
@@ -18,14 +19,17 @@ export const TagSelector = (props: { repository: string, prefix: string[] }) => 
 
   return (
     <Form.Item
-      label="Name"
-      name={props.prefix.length === 0 ? 'name' : [...props.prefix, 'name']}
+      label="版本"
+      name={prefix.length === 0 ? 'name' : [...prefix, 'name']}
       required
-      extra="指定release的唯一名称"
+      rules={[{ required: true }]}
+      extra="release对应template的版本"
     >
       <Select>
-        {tags === undefined ? <></> : tags.map((s) => <Option key={s} value={s}>{s}</Option>)}
+        {tags && tags.map((s) => <Option key={s} value={s}>{s}</Option>)}
       </Select>
     </Form.Item>
   );
 };
+
+export default TagSelector;

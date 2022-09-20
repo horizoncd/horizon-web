@@ -4,6 +4,7 @@ import {
 import { useIntl } from '@@/plugin-locale/localeExports';
 import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
+import './index.less';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from 'umi';
 import Dropdown from 'antd/es/dropdown';
@@ -19,8 +20,6 @@ import {
   PlusSquareTwoTone,
 } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
-import styles from './index.less';
-import './index.less';
 import FullscreenModal from '@/components/FullscreenModal';
 import {
   deletePods,
@@ -38,6 +37,7 @@ import {
 import RBAC from '@/rbac';
 import withTrim from '@/components/WithTrim';
 import CollapseList from '@/components/CollapseList';
+import styles from './index.less';
 import Utils from '@/utils';
 import { env2MlogEnv } from '@/const';
 import type { CLUSTER } from '@/services/clusters';
@@ -328,6 +328,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const renderTile = () => (
     <div>
+      @ts-ignore
       <Search placeholder="Search" onChange={onChange} style={{ width: '300px' }} value={filter} />
       <div style={{ float: 'right' }}>
         <Button

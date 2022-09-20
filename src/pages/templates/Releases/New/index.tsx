@@ -3,23 +3,20 @@ import {
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { history, useRequest } from 'umi';
+import { PropsWithChildren } from 'react';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import { ReleaseForm } from '../../components/form';
-import { TagSelector } from '../../components/tagSelector';
+import { ReleaseForm } from '../../Components/Form';
+import TagSelector from '../../Components/TagSelector';
 import { createRelease, queryTemplate } from '@/services/templates/templates';
 import { NotFount } from '@/components/State';
 import rbac from '@/rbac';
+import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { API } from '@/services/typings';
 
-export default () => {
+function NewRelease(props: PropsWithChildren<{ initialState: API.InitialState }>) {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
-
-  const { initialState } = useModel('@@initialState');
-
-  if (!initialState?.resource || !initialState.currentUser) {
-    return <NotFount />;
-  }
-  const { id: templateID, fullName } = initialState.resource;
+  const { initialState: { resource: { id: templateID, fullName } } } = props;
   const { data: template } = useRequest(() => queryTemplate(templateID));
   if (!template) {
     return <NotFount />;
@@ -39,8 +36,9 @@ export default () => {
               });
             }}
           >
+            <h1>创建Release</h1>
             <TagSelector prefix={[]} repository={template.repository} />
-            <ReleaseForm prefix={[]} isAdmin={initialState.currentUser.isAdmin} />
+            <ReleaseForm prefix={[]} />
             <Form.Item>
               <Button
                 type="primary"
@@ -55,4 +53,6 @@ export default () => {
       </Row>
     </PageWithBreadcrumb>
   );
-};
+}
+
+export default PageWithInitialState(NewRelease);
