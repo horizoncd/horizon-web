@@ -164,10 +164,6 @@ export async function getInitialState(): Promise<API.InitialState> {
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (history.location.pathname === '/user/login/callback'
-      || history.location.pathname === '/user/login') {
-        return response;
-      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
       if (response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
@@ -203,6 +199,9 @@ export const request: RequestConfig = {
         message: '网络异常',
         description: '您的网络发生异常，无法连接服务器',
       });
+    }
+    if (response.status === 401) {
+      return
     }
     if (data.errorCode || data.errorMessage) {
       notification.error({
