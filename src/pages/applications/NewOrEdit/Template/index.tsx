@@ -1,15 +1,19 @@
 import {
-  Card, Col, Row, Radio,
+  Card, Col, Row, Radio, Tabs,
 } from 'antd';
 import { useRequest } from 'umi';
-import { queryTemplates } from '@/services/templates/templates';
+import { getRootTemplates, getTemplates } from '@/services/templates/templates';
 import './index.less';
 import type { API } from '@/services/typings';
+import NoData from '@/components/NoData';
+import PageWithInitialState, { WithInitialStateProps } from '@/components/PageWithInitialState/PageWithInitialState';
+import { ResourceType } from '@/const';
 
-export default (props: any) => {
-  const { data } = useRequest(() => queryTemplates(false));
+const { TabPane } = Tabs;
 
-  const isClicked = (item: API.Template) => item.name === props.template?.name;
+const Cards = (props: { data: API.Template[], template: API.Template, resetTemplate: (t: API.Template) => void }) => {
+  const { template, data, resetTemplate } = props;
+  const isClicked = (item: API.Template) => item.name === template?.name;
 
   return (
     <Row gutter={[30, 30]}>
@@ -17,7 +21,7 @@ export default (props: any) => {
         <Col key={item.name} span={8}>
           <Card
             hoverable
-            onClick={() => props.resetTemplate(item)}
+            onClick={() => resetTemplate(item)}
             className={`card ${isClicked(item) ? 'card-after-clicked' : 'card-before-clicked'}`}
           >
             <div className="awsui-cards-card-header">
@@ -33,3 +37,80 @@ export default (props: any) => {
     </Row>
   );
 };
+
+interface TemplateProps {
+  template: API.Template,
+  resetTemplate: (o: API.Template) => void
+}
+
+interface GroupTemplateProps extends TemplateProps {
+  groupID: number
+}
+
+const AllTemplateCards = (props: TemplateProps) => {
+  const { template, resetTemplate } = props;
+  const { data } = useRequest(() => getRootTemplates(false));
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <Cards
+      data={data}
+      template={template}
+      resetTemplate={resetTemplate}
+    />
+  );
+};
+
+const GroupCards = (props: GroupTemplateProps) => {
+  const { groupID, template, resetTemplate } = props;
+  const { data } = useRequest(() => getTemplates(groupID, false, true));
+  if (!data) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return <NoData title="Template" desc="在该group中没有找到template" />;
+  }
+
+  return (
+    <Cards
+      data={data}
+      template={template}
+      resetTemplate={resetTemplate}
+    />
+  );
+};
+
+function TemplateCards(props: TemplateProps & WithInitialStateProps) {
+  const { initialState: { resource: { id, type, parentID } } } = props;
+  const { template, resetTemplate } = props;
+
+  const groupID = type === ResourceType.APPLICATION
+    ? parentID
+    : id;
+
+  return (
+    <Tabs>
+      <TabPane tab="Public Templates" key={1}>
+        <AllTemplateCards
+          template={template}
+          resetTemplate={resetTemplate}
+        />
+      </TabPane>
+      <TabPane tab="Group Templates" key={2}>
+        <GroupCards
+          template={template}
+          resetTemplate={resetTemplate}
+          groupID={groupID}
+        />
+      </TabPane>
+    </Tabs>
+  );
+}
+
+const TempalteCardsWithInitialState = PageWithInitialState(TemplateCards);
+
+export default TempalteCardsWithInitialState;

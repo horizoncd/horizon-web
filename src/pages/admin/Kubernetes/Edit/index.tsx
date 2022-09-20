@@ -2,7 +2,8 @@ import {
   Col, Form, Input, Row,
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history, useParams } from 'umi';
+import { history } from 'umi';
+import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NotFount from '@/pages/404';

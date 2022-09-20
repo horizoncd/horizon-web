@@ -2,9 +2,10 @@ import {
   Button, Col, Divider, Form, Input, Row,
 } from 'antd';
 import { history } from 'umi';
-import type { Rule, FieldData } from 'rc-field-form/lib/interface';
+import type { Rule } from 'rc-field-form/lib/interface';
 import './index.less';
 import { useModel } from '@@/plugin-model/useModel';
+import type { FieldData } from 'rc-field-form/lib/interface';
 import { createSubGroup } from '@/services/groups/groups';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import HForm from '@/components/HForm';

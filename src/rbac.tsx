@@ -1,4 +1,5 @@
 import { useModel } from '@@/plugin-model/useModel';
+import type { API } from './services/typings';
 
 const AnonymousRole = 'anonymous';
 const AdminRole = 'administrator';
@@ -324,7 +325,7 @@ const Permissions = {
     allowed: false,
   },
   createRelease: {
-    resource: `${Resource.template}/${Resource.templaterelease}`,
+    resource: `${Resource.template}/releases`,
     action: Action.create,
     allowed: false,
   },

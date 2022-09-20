@@ -9,7 +9,6 @@ import { formatQueryParam, mergeDefaultValue } from '@/utils';
 import MonitorSearchForm from './MonitorSearchForm';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { getClusterPods, getDashboards } from '@/services/clusters/clusters';
-import { CLUSTER } from '@/services/clusters';
 
 const { TabPane } = Tabs;
 

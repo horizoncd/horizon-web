@@ -1,5 +1,7 @@
 import { request } from 'umi';
 import { GitRefType } from '@/services/code/code';
+import type { CLUSTER } from '../clusters';
+import type { API } from '../typings';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
   if (!params.environment) {

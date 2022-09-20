@@ -1,13 +1,20 @@
 import { request } from 'umi';
 import type { API } from '../typings';
 
-export async function queryTemplates(fullpath: boolean) {
+export enum StatusCode {
+  StatusSucceed = 1,
+  StatusUnknown,
+  StatusFailed,
+  StatusOutOfSync,
+}
+
+export async function queryTemplates(fullpath: boolean = false, selfOnly: boolean = false) {
   return request<{
     data: Templates.Template[];
   }>('/apis/core/v1/templates', {
     method: 'GET',
     params: {
-      fullpath,
+      fullpath, selfOnly,
     },
   });
 }
@@ -32,15 +39,22 @@ export async function querySchema(template: string, release: string, params?: AP
   });
 }
 
-export async function queryTemplate(template: string | number) {
+export async function queryTemplate(template: string | number, withReleases: boolean = false) {
   const path = `/apis/core/v1/templates/${template}`;
   const config = {
     method: 'GET',
+    params: {
+      withReleases,
+    },
   };
   type returnType = {
     data: Templates.Template
   };
   return request<returnType>(path, config);
+}
+
+export async function getTemplatesByUser(fullpath: boolean = false) {
+  return queryTemplates(fullpath, true);
 }
 
 export async function updateTemplate(template: string | number, data: Templates.UpdateTemplateRequest) {
@@ -75,17 +89,6 @@ export async function createRelease(template: string | number, data: Templates.C
   return request(path, config);
 }
 
-export async function getReleases(template: string | number) {
-  const path = `/apis/core/v1/templates/${template}/releases`;
-  const config = {
-    method: 'GET',
-  };
-  type returnType = {
-    data: Templates.Release[],
-  };
-  return request<returnType>(path, config);
-}
-
 export async function createTemplate(group: number, data: Templates.CreateTemplateRequest) {
   const path = `/apis/core/v1/groups/${group}/templates`;
   const config = {
@@ -98,12 +101,16 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
   return request(path, config);
 }
 
-export async function getTemplates(group: number, fullpath: boolean = false) {
+export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false) {
+  return getTemplates(0, fullpath, recursive);
+}
+
+export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false) {
   const path = `/apis/core/v1/groups/${group}/templates`;
   const config = {
     method: 'GET',
     params: {
-      fullpath,
+      fullpath, recursive,
     },
   };
   type returnType = {

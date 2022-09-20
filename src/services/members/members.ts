@@ -74,11 +74,11 @@ export async function inviteApplicationClusterMember(body: API.NewMember) {
   });
 }
 
-export async function removeMember(memberID: number) {
+export async function removeMember(memberID: number, resourceType: string = 'group') {
   return request(`/apis/core/v1/members/${memberID}`, {
     method: 'DELETE',
     params: {
-      resourceType: 'group',
+      resourceType,
     },
   });
 }

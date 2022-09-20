@@ -1,11 +1,11 @@
 import { PageContainer } from '@ant-design/pro-layout';
+import utils, { pathnameInStaticRoutes } from '../../utils';
 import { useModel } from '@@/plugin-model/useModel';
 import { Alert, Divider } from 'antd';
-import { useEffect } from 'react';
-import { history } from 'umi';
 import styles from './index.less';
 import './index.less';
-import utils, { pathnameInStaticRoutes } from '../../utils';
+import { useEffect } from 'react';
+import { history } from 'umi';
 import NotFount from '@/pages/404';
 
 export default (props: any) => {

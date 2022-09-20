@@ -11,14 +11,18 @@ import { ReleasesTable } from '../Releases';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RBAC from '@/rbac';
 import { ResourceType } from '@/const';
+import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { API } from '@/services/typings';
 
-export default () => {
-  const { initialState } = useModel('@@initialState');
-
-  const { type, fullName, id: templateID } = initialState?.resource;
+function TemplateDetail(props: { initialState: API.InitialState }) {
+  const { initialState: { resource: { type, fullName, id: templateID } } } = props;
+  const { successAlert } = useModel('alert');
   const { data: template } = useRequest(() => queryTemplate(templateID), {});
-  const { data: releases } = useRequest(() => queryReleases(templateID));
-  const isRootGroup = type === ResourceType.GROUP && template?.group === 0;
+  const { data: releases, refresh } = useRequest(() => queryReleases(templateID));
+  if (!releases) {
+    return null;
+  }
+  const isRootGroup = type === ResourceType.TEMPLATE && template?.group === 0;
 
   const data: Param[][] = [
     [
@@ -27,7 +31,7 @@ export default () => {
         value: template?.name,
       },
       {
-        key: 'Harbor包名',
+        key: 'Chart包名',
         value: template?.chartName,
       },
       {
@@ -38,11 +42,11 @@ export default () => {
     [
       {
         key: '创建日期',
-        value: new Date(template?.createAt || '').toLocaleString(),
+        value: new Date(template?.createdAt || '').toLocaleString(),
       },
       {
         key: '更新日期',
-        value: new Date(template?.updateAt || '').toLocaleString(),
+        value: new Date(template?.updatedAt || '').toLocaleString(),
       },
       {
         key: '仓库',
@@ -50,6 +54,22 @@ export default () => {
       },
     ],
   ];
+
+  let queryInput: React.ReactElement | null = (
+    <Button
+      type="primary"
+      style={{ marginBottom: 10, float: 'right', marginRight: 5 }}
+      onClick={() => {
+        history.push(`/templates/${fullName}/-/newrelease`);
+      }}
+    >
+      创建release
+    </Button>
+  );
+
+  if (!RBAC.Permissions.createRelease.allowed) {
+    queryInput = null;
+  }
 
   return (
     <PageWithBreadcrumb>
@@ -69,6 +89,7 @@ export default () => {
             </Button>
             <Button
               danger
+              type="primary"
               disabled={!RBAC.Permissions.deleteTemplate.allowed}
               onClick={() => {
                 Modal.confirm({
@@ -76,22 +97,17 @@ export default () => {
                   content: '该版本template有可能正在被application或cluster使用，删除前请确认',
                   onOk: () => {
                     deleteTemplate(templateID).then(() => {
-                      Modal.success({
-                        title: 'Template',
-                        content: '删除Template成功！',
-                        afterClose: () => {
-                          if (isRootGroup) {
-                            history.push('/templates');
-                          } else {
-                            const path = fullName.split('/');
-                            let res = '';
-                            for (let i = 0; i < path.length - 1; i++) {
-                              res += `/${path[i]}`;
-                            }
-                            window.location.href = res;
-                          }
-                        },
-                      });
+                      successAlert('删除Template成功');
+                      if (isRootGroup) {
+                        history.push('/templates');
+                      } else {
+                        const path = fullName.split('/');
+                        let res = '';
+                        for (let i = 0; i < path.length - 1; i += 1) {
+                          res += `/${path[i]}`;
+                        }
+                        window.location.href = res;
+                      }
                     });
                   },
                 });
@@ -102,9 +118,12 @@ export default () => {
           </Space>
     )}
       />
-      <Card title="Releases">
-        <ReleasesTable fullName={fullName} releases={releases} currentUser={initialState.currentUser} />
+
+      <Card title="Releases" extra={queryInput}>
+        <ReleasesTable fullName={fullName} releases={releases} refresh={refresh} />
       </Card>
     </PageWithBreadcrumb>
   );
-};
+}
+
+export default PageWithInitialState(TemplateDetail);

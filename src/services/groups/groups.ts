@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import {request} from 'umi';
+import type {API} from '../typings';
 
 export async function queryChildren(groupID: number, pageNumber: number, pageSize: number) {
   return request<{

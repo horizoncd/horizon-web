@@ -5,30 +5,24 @@ import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import NotFount from '@/pages/404';
 import { getRelease, updateRelease } from '@/services/templates/templates';
-import { ReleaseForm } from '../../components/form';
+import { ReleaseForm } from '../../Components/Form';
 import rbac from '@/rbac';
+import { API } from '@/services/typings';
+import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
 
-export default () => {
+function EditRelease(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
 
-  const { initialState } = useModel('@@initialState');
-
-  if (!initialState?.resource.id || !initialState.currentUser) {
-    return <NotFount />;
-  }
-
-  const releaseID = initialState.resource.id;
-  const { fullName } = initialState.resource;
+  const { initialState: { resource: { id: releaseID, fullName } } } = props;
   const { data: release } = useRequest(() => getRelease(releaseID), {
     onSuccess: () => {
       form.setFieldsValue(release);
     },
   });
 
-  const [_, templatePath, releasePath] = /(.*)\/(.*?)$/.exec(fullName)!;
+  const [, templatePath, releasePath] = /(.*)\/(.*?)$/.exec(fullName)!;
 
   return (
     <PageWithBreadcrumb>
@@ -44,10 +38,10 @@ export default () => {
               });
             }}
           >
-            <Form.Item label="名称" name="name" rules={[{ required: true }]} extra="release对应的tag名称">
+            <Form.Item label="版本" name="name" required extra="release对应的tag">
               <Input disabled />
             </Form.Item>
-            <ReleaseForm prefix={[]} isAdmin={initialState.currentUser.isAdmin} />
+            <ReleaseForm prefix={[]} />
             <Form.Item>
               <Button
                 type="primary"
@@ -62,4 +56,6 @@ export default () => {
       </Row>
     </PageWithBreadcrumb>
   );
-};
+}
+
+export default PageWithInitialState(EditRelease);

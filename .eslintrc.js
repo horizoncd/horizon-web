@@ -35,5 +35,7 @@ module.exports = {
     'no-console': 2,
     'import/no-duplicates': 0,
     'jsx-a11y/click-events-have-key-events': 0,
+    // https://eslint.org/docs/latest/rules/no-restricted-globals
+    'no-restricted-globals': ['error', 'event', 'fdescribe'],
   },
 };

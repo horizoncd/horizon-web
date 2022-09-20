@@ -3,21 +3,24 @@ import {
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
-import { FireFilled } from '@ant-design/icons';
+import { FireOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 import NoData from '@/components/NoData';
-import { deleteRelease, queryReleases, syncReleaseToRepo } from '@/services/templates/templates';
+import {
+  deleteRelease, queryReleases, StatusCode, syncReleaseToRepo,
+} from '@/services/templates/templates';
 import { NotFount } from '@/components/State';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import type { API } from '@/services/typings';
 import RBAC from '@/rbac';
+import SyncStatus from './Components/SyncStatus';
 
-export const ReleasesTable = (props: { fullName: string, releases: Templates.Release[], currentUser: API.CurrentUser }) => {
-  const { releases, fullName } = props;
+export const ReleasesTable = (props: { fullName: string, releases: Templates.Release[], refresh: () => void }) => {
+  const { releases, fullName, refresh } = props;
+  const { successAlert } = useModel('alert');
 
   const columns = [
     {
-      title: '名称',
+      title: '版本',
       dataIndex: 'name',
       render: (name: string, t: Templates.Release) => (
         <Space size="middle">
@@ -27,7 +30,7 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
     },
     {
       title: '推荐',
-      render: (recommended: boolean) => (recommended ? <FireFilled style={{ color: '	#FF4500' }} /> : <></>),
+      render: (recommended: boolean) => (recommended && <FireOutlined style={{ color: '#FF4500' }} />),
       dataIndex: 'recommended',
     },
     {
@@ -36,7 +39,8 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
     },
     {
       title: '同步状态',
-      dataIndex: 'syncStatus',
+      dataIndex: 'syncStatusCode',
+      render: (syncStatus: StatusCode) => <SyncStatus statusCode={syncStatus} />,
     },
     {
       title: '最后同步时间',
@@ -54,11 +58,8 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
           || !RBAC.Permissions.syncRelease.allowed}
             onClick={() => {
               syncReleaseToRepo(r.id).then(() => {
-                Modal.success({
-                  title: 'Release',
-                  content: '同步Release成功！',
-                });
-              });
+                successAlert('同步Release成功');
+              }).then(refresh);
             }}
           >
             同步
@@ -67,7 +68,7 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
           <Button
             type="primary"
             disabled={!RBAC.Permissions.updateRelease.allowed}
-            onClick={() => window.location.href = `/templates/${fullName}/-/releases/${r.name}/edit`}
+            onClick={() => { window.location.href = `/templates/${fullName}/-/releases/${r.name}/edit`; }}
           >
             修改
           </Button>
@@ -81,13 +82,8 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
                 content: '该release有可能正在被application或cluster使用，删除前请确认',
                 onOk: () => {
                   deleteRelease(r.id).then(() => {
-                    Modal.success({
-                      title: 'Release',
-                      content: '删除Release成功！',
-                      afterClose: () => {
-                        history.go(0);
-                      },
-                    });
+                    successAlert('删除Release成功');
+                    history.go(0);
                   });
                 },
               });
@@ -99,22 +95,6 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
       ),
     },
   ];
-
-  let queryInput = (
-    <Button
-      type="primary"
-      style={{ marginBottom: 10, float: 'right', marginRight: 5 }}
-      onClick={() => {
-        history.push(`/templates/${fullName}/-/newrelease`);
-      }}
-    >
-      创建release
-    </Button>
-  );
-
-  if (!RBAC.Permissions.createRelease.allowed) {
-    queryInput = <></>;
-  }
 
   const locale = {
     emptyText: <NoData
@@ -138,12 +118,7 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
     />
   );
 
-  return (
-    <>
-      {queryInput}
-      {table}
-    </>
-  );
+  return table;
 };
 
 export default () => {
@@ -154,7 +129,7 @@ export default () => {
   }
 
   const { fullName, id } = initialState.resource;
-  const { data: releases } = useRequest(() => queryReleases(id));
+  const { data: releases, refresh } = useRequest(() => queryReleases(id));
 
   if (!releases || !initialState.currentUser) {
     return <NotFount />;
@@ -162,7 +137,7 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <ReleasesTable fullName={fullName} releases={releases} currentUser={initialState.currentUser} />
+      <ReleasesTable fullName={fullName} releases={releases} refresh={refresh} />
     </PageWithBreadcrumb>
   );
 };
