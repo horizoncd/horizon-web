@@ -46,7 +46,7 @@ export default {
   'pages.applicationDetail.basic.config': 'Application Config',
   'pages.applicationDelete.success': 'Delete application success',
   'pages.applicationDelete.confirm.title': 'Are you sure to delete this application：{application}?',
-  'pages.applicationDelete.confirm.content': `Warning：the application could not be resumed after deleted`,
+  'pages.applicationDelete.confirm.content': 'Warning：the application could not be resumed after deleted',
   'pages.applicationDelete.confirm.ok': 'OK',
   'pages.applicationDelete.confirm.cancel': 'Cancel',
   'pages.confirm.ok': 'OK',
@@ -93,7 +93,7 @@ export default {
   'pages.clusterDetail.basic.updateTime': 'update time',
   'pages.clusterDelete.success': 'delete cluster succeed',
   'pages.clusterDelete.confirm.title': 'Are you sure to delete this cluster：{cluster}?',
-  'pages.clusterDelete.confirm.content': `Warning：the cluster could not be resumed after deleted`,
+  'pages.clusterDelete.confirm.content': 'Warning：the cluster could not be resumed after deleted',
   'pages.clusterDelete.confirm.ok': 'OK',
   'pages.clusterDelete.confirm.cancel': 'Cancel',
   'pages.clusterDetail.basic.edit': 'Edit',
@@ -133,7 +133,7 @@ export default {
     PE, Owner or Maintainer of the destination group.`,
   'pages.group.transfer.desc': `Transfer application to another group, who do this transfer should be the
     PE, Owner or Maintainer of the destination group.`,
-  'pages.group.delete.desc': `Delete the group. there should no  application and cluster under the group`,
+  'pages.group.delete.desc': 'Delete the group. there should no  application and cluster under the group',
   'pages.transfer.message': 'Please select a group',
   'pages.members.list.title': 'Members with access to ',
   'pages.members.list.leave': 'Leave',
@@ -148,5 +148,5 @@ export default {
   'pages.members.list.sourceFrom': 'source from {resourceName}，',
   'pages.members.role.tip': `1.Permission from high to low：Owner、Maintainer、Developer、Reporter、Guest
   2.All members could manage other members whose permission is equal to or lower then self`,
-  'pages.members.user.anonymous.alert': `Please ask for other members to invite you first`,
+  'pages.members.user.anonymous.alert': 'Please ask for other members to invite you first',
 };

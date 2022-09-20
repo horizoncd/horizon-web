@@ -1,10 +1,12 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {DatePicker, Form, Input, Select} from 'antd';
+import {
+  DatePicker, Form, Input, Select,
+} from 'antd';
 import moment from 'moment';
 
 // @ts-ignore
-const MonitorSearchForm = ({onSubmit, formData}) => {
+const MonitorSearchForm = ({ onSubmit, formData }) => {
   const [form] = Form.useForm();
 
   const submitForm = () => {
@@ -21,12 +23,13 @@ const MonitorSearchForm = ({onSubmit, formData}) => {
       layout="inline"
       form={form}
       initialValues={formData}
-      onValuesChange={submitForm}>
+      onValuesChange={submitForm}
+    >
       <Form.Item label="时间" shouldUpdate>
-        {({getFieldValue}) => (
+        {({ getFieldValue }) => (
           <Input.Group compact>
             <Form.Item noStyle name="type" required>
-              <Select style={{width: 130}}>
+              <Select style={{ width: 130 }}>
                 <Select.Option key="4" value="now-1h">最近 1 小时</Select.Option>
                 <Select.Option key="5" value="now-3h">最近 3 小时</Select.Option>
                 <Select.Option key="6" value="now-6h">最近 6 小时</Select.Option>
@@ -44,13 +47,15 @@ const MonitorSearchForm = ({onSubmit, formData}) => {
                 name="timeRange"
                 initialValue={[
                   moment().startOf('day'),
-                  moment().endOf('day')
+                  moment().endOf('day'),
                 ]}
-                required>
+                required
+              >
                 <DatePicker.RangePicker
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  allowClear={false}/>
+                  allowClear={false}
+                />
               </Form.Item>
             )}
           </Input.Group>

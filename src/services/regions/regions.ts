@@ -1,9 +1,9 @@
-import {request} from "@@/plugin-request/request";
+import { request } from '@@/plugin-request/request';
 
 export async function queryRegions() {
   return request<{
     data: SYSTEM.Region[];
-  }>(`/apis/core/v1/regions`, {
+  }>('/apis/core/v1/regions', {
     method: 'GET',
   });
 }
@@ -30,7 +30,7 @@ export async function updateRegionByID(id: number, region: SYSTEM.Region) {
     headers: {
       'Content-Type': 'application/json',
     },
-    data: region
+    data: region,
   });
 }
 
@@ -41,12 +41,12 @@ export async function deleteRegionByID(id: number) {
 }
 
 export async function createRegion(region: SYSTEM.Region) {
-  return request(`/apis/core/v1/regions`, {
+  return request('/apis/core/v1/regions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    data: region
+    data: region,
   });
 }
 

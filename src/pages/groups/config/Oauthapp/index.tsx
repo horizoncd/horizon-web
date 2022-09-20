@@ -1,34 +1,34 @@
-import {Button, Modal, Table} from 'antd'
-import RBAC from "@/rbac";
-import {history} from "@@/core/history";
-import {useModel} from "@@/plugin-model/useModel";
-import {useIntl} from "@@/plugin-locale/localeExports";
+import { Button, Modal, Table } from 'antd';
+import { history } from '@@/core/history';
+import { useModel } from '@@/plugin-model/useModel';
+import { useIntl } from '@@/plugin-locale/localeExports';
+import type { ColumnsType } from 'antd/lib/table';
+import { useRequest } from '@@/plugin-request/request';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import styles from "@/pages/groups/config/Oauthapp/index.less";
-import type {ColumnsType} from 'antd/lib/table';
-import {useRequest} from "@@/plugin-request/request";
-import {deleteOauthApp, list} from "@/services/oauthapp/oauthapp"
-import {ExclamationCircleOutlined} from "@ant-design/icons";
+import styles from '@/pages/groups/config/Oauthapp/index.less';
+import { deleteOauthApp, list } from '@/services/oauthapp/oauthapp';
+import RBAC from '@/rbac';
 
 export default () => {
   const intl = useIntl();
 
-  const {initialState} = useModel('@@initialState');
-  const groupID = initialState!.resource.id
-  const {fullPath: fullPath} = initialState!.resource;
-  const newOauthApp = `/groups${fullPath}/-/newoauthapp`
+  const { initialState } = useModel('@@initialState');
+  const groupID = initialState!.resource.id;
+  const { fullPath } = initialState!.resource;
+  const newOauthApp = `/groups${fullPath}/-/newoauthapp`;
 
-  const {data: cdata, run: runList} = useRequest(() => list(groupID));
+  const { data: cdata, run: runList } = useRequest(() => list(groupID));
   const columns: ColumnsType<API.APPBasicInfo> = [
     {
       title: 'Name',
       dataIndex: 'appName',
       key: 'appName',
-      render: (text, row) => {
-        return <a href={`/groups${fullPath}/-/settings/oauthapps/${row.clientID}`}>
+      render: (text, row) => (
+        <a href={`/groups${fullPath}/-/settings/oauthapps/${row.clientID}`}>
           {text}
         </a>
-      }
+      ),
     },
     {
       title: 'clientID',
@@ -49,30 +49,33 @@ export default () => {
       render: (text, row) => {
         function onDelete() {
           deleteOauthApp(row.clientID).then(() => {
-            runList()
+            runList();
           });
         }
 
-        return <Button
-          className={styles.buttom}
-          danger
-          disabled={!RBAC.Permissions.deleteOauthApplication.allowed}
-          style={RBAC.Permissions.deleteOauthApplication.allowed ? {backgroundColor: '#dd2b0e', color: 'white'} : {}}
-          onClick={() => {
-            Modal.confirm({
-              title: 'Delete',
-              content: "This action cannot be undone. This oauth will stop working immediately. Are you sure you want to delete this oauth app  ?",
-              icon: <ExclamationCircleOutlined/>,
-              okText: <div>OK</div>,
-              cancelText: <div>Cancel</div>,
-              onOk: onDelete,
-            });
-          }}>
-          Delete
-        </Button>
-      }
-    }
-  ]
+        return (
+          <Button
+            className={styles.buttom}
+            danger
+            disabled={!RBAC.Permissions.deleteOauthApplication.allowed}
+            style={RBAC.Permissions.deleteOauthApplication.allowed ? { backgroundColor: '#dd2b0e', color: 'white' } : {}}
+            onClick={() => {
+              Modal.confirm({
+                title: 'Delete',
+                content: 'This action cannot be undone. This oauth will stop working immediately. Are you sure you want to delete this oauth app  ?',
+                icon: <ExclamationCircleOutlined />,
+                okText: <div>OK</div>,
+                cancelText: <div>Cancel</div>,
+                onOk: onDelete,
+              });
+            }}
+          >
+            Delete
+          </Button>
+        );
+      },
+    },
+  ];
 
   return (
     <PageWithBreadcrumb>
@@ -87,11 +90,12 @@ export default () => {
             history.push({
               pathname: newOauthApp,
             });
-          }}>
-          {intl.formatMessage({id: 'pages.groups.New application'})}
+          }}
+        >
+          {intl.formatMessage({ id: 'pages.groups.New application' })}
         </Button>
-        <Table columns={columns} dataSource={cdata}/>
+        <Table columns={columns} dataSource={cdata} />
       </div>
     </PageWithBreadcrumb>
-  )
+  );
 };

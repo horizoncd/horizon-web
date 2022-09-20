@@ -41,7 +41,7 @@ class WebSocket {
       console.log(e, '初始化wb时重连');
       this.reconnect();
     }
-  }
+  };
 
   onopen = () => {
     const { socketOpen } = this.param;
@@ -80,7 +80,7 @@ class WebSocket {
       this.createWebSocket(socketUrl);
       this.lockReconnect = false;
     }, 10000);
-  }
+  };
 
   sendMessage = (value) => {
     if (this.socket) {

@@ -7,11 +7,11 @@ const Forbidden: React.FC = () => (
     status="403"
     title="403"
     subTitle="Sorry, you don't have the permission to visit the page."
-    extra={
+    extra={(
       <Button type="primary" onClick={() => history.push('/')}>
         Back Home
       </Button>
-    }
+    )}
   />
 );
 

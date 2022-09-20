@@ -1,8 +1,8 @@
-import React, {useEffect, useRef} from 'react';
-import {Terminal} from 'xterm';
-import {FitAddon} from 'xterm-addon-fit';
-import WebSocket from '@/websocket';
+import React, { useEffect, useRef } from 'react';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
 import debounce from 'lodash/debounce';
+import WebSocket from '@/websocket';
 import 'xterm/css/xterm.css';
 import './index.module.less';
 
@@ -19,12 +19,12 @@ interface IProps {
 }
 
 const Index: React.FC<IProps> = ({
-                                   url,
-                                   protocol,
-                                   postSocketMessage,
-                                   postSendData,
-                                   onSocketOpen,
-                                 }) => {
+  url,
+  protocol,
+  postSocketMessage,
+  postSendData,
+  onSocketOpen,
+}) => {
   const containerRef = useRef<HTMLDivElement>();
   const terminalRef = useRef<Terminal | undefined>(undefined);
   const socketRef = useRef<WebSocket | undefined>(undefined);
@@ -55,9 +55,8 @@ const Index: React.FC<IProps> = ({
     // 前端terminal适应屏幕尺寸
     fitAddon.fit();
     terminalRef.current.onData(
-      (event) =>
-        socketRef.current &&
-        socketRef.current.sendMessage(
+      (event) => socketRef.current
+        && socketRef.current.sendMessage(
           postSendData ? postSendData(event) : event,
         ),
     );
@@ -78,7 +77,7 @@ const Index: React.FC<IProps> = ({
         ]),
       );
     } catch (error) {
-      console.log("failed to resize: ", error)
+      console.log('failed to resize: ', error);
     }
   }, 100);
 
@@ -87,9 +86,8 @@ const Index: React.FC<IProps> = ({
     socketRef.current = new WebSocket({
       socketUrl: url,
       protocol,
-      loading: () =>
-        terminalRef.current &&
-        terminalRef.current.writeln('connecting to docker...'),
+      loading: () => terminalRef.current
+        && terminalRef.current.writeln('connecting to docker...'),
       socketOpen: () => {
         if (terminalRef.current) {
           terminalRef.current.write('\r\r\r');
@@ -110,16 +108,14 @@ const Index: React.FC<IProps> = ({
           terminalRef.current.scrollToBottom();
         }
       },
-      socketClose: (e: { code: any; reason: any; }) =>
-        terminalRef.current &&
-        terminalRef.current.writeln(
+      socketClose: (e: { code: any; reason: any; }) => terminalRef.current
+        && terminalRef.current.writeln(
           `The connection is being closed，with the error code ${
             e?.code
           }, the reason ${e?.reason || undefined}, reconnecting...`,
         ),
-      socketError: () =>
-        terminalRef.current &&
-        terminalRef.current.writeln(
+      socketError: () => terminalRef.current
+        && terminalRef.current.writeln(
           'error occured during the connection process.',
         ),
     });
@@ -134,8 +130,11 @@ const Index: React.FC<IProps> = ({
     };
   }, []);
 
-  return <div
-    ref={containerRef as React.RefObject<HTMLDivElement>}/>;
+  return (
+    <div
+      ref={containerRef as React.RefObject<HTMLDivElement>}
+    />
+  );
 };
 
-export default Index
+export default Index;

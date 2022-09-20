@@ -1,17 +1,17 @@
-import type {GitInfo} from '@/services/code/code'
+import type { GitInfo } from '@/services/code/code';
 
 declare namespace CLUSTER {
   type PodQuery = {
     // podName=&containerName=(&tailLine=)
     podName: string
     containerName: string
-  }
+  };
 
   type SessionQuery = {
     // podName=&containerName=
     podName: string
     containerName: string
-  }
+  };
 
   type Environment = {
     name: string;
@@ -37,7 +37,7 @@ declare namespace CLUSTER {
     environment: string;
     region: string;
     regionDisplayName: string;
-  }
+  };
 
   type ClusterBase = {
     id: number,
@@ -50,14 +50,14 @@ declare namespace CLUSTER {
     tags: TAG.Tag[];
     updatedAt: string;
     createdAt: string;
-  }
+  };
 
-  type ClusterOutputs = Record<string, ClusterOutput>
+  type ClusterOutputs = Record<string, ClusterOutput>;
 
   type ClusterOutput = {
     description: string,
     value: string,
-  }
+  };
 
   type Cluster = {
     fullPath: string,
@@ -99,7 +99,7 @@ declare namespace CLUSTER {
       release: string,
     },
     templateInput: any
-  }
+  };
 
   type UpdateCluster = {
     description?: string;
@@ -107,7 +107,7 @@ declare namespace CLUSTER {
       branch: string;
     };
     templateInput: any
-  }
+  };
 
   type ClusterBuildDeploy = {
     title: string,
@@ -115,16 +115,16 @@ declare namespace CLUSTER {
     git: {
       branch: string;
     };
-  }
+  };
 
   type ClusterDeploy = {
     title: string,
     description?: string;
-  }
+  };
 
   type ClusterRollback = {
     pipelinerunID: number
-  }
+  };
 
   type ClusterDiffs = {
     codeInfo: {
@@ -133,7 +133,7 @@ declare namespace CLUSTER {
       link: string
     }
     configDiff: string
-  }
+  };
 
   type PodFromBackend = {
     metadata: {
@@ -176,7 +176,7 @@ declare namespace CLUSTER {
       lifeCycle: PodLifeCycle[]
     }
     deletionTimestamp: string
-  }
+  };
 
   type ClusterStatus = {
     runningTask: {
@@ -202,7 +202,7 @@ declare namespace CLUSTER {
         pods: Record<string, PodFromBackend>
       }>
     }
-  }
+  };
 
   type Event = {
     type: string,
@@ -210,7 +210,7 @@ declare namespace CLUSTER {
     message: string,
     count: number,
     eventTimestamp: string,
-  }
+  };
 
   type PodInTable = {
     key: string
@@ -231,7 +231,7 @@ declare namespace CLUSTER {
     deletionTimestamp: string
     annotations: Record<string, string>
     containers: ContainerDetail[]
-  }
+  };
 
   type ContainerDetail = {
     name: string,
@@ -241,12 +241,12 @@ declare namespace CLUSTER {
     args: string[],
     volumeMounts: VolumeMount[],
     status: ContainerStatus
-  }
+  };
 
   type Env = {
     name: string,
     value: string,
-  }
+  };
 
   type VolumeMount = {
     name: string,
@@ -254,7 +254,7 @@ declare namespace CLUSTER {
     mountPath: string,
     subPath: string,
     volume: Record<string, any>
-  }
+  };
 
   type ContainerStatus = {
     ready: boolean,
@@ -278,17 +278,17 @@ declare namespace CLUSTER {
         containerID: string
       }
     }
-  }
+  };
 
   type PodLifeCycle = {
     type: string,
     status: string,
     message: string,
-  }
+  };
 
   type PodContainersQuery = {
     podName: string
-  }
+  };
 
   type PodOnlineOfflineResult = {
     result: boolean,
@@ -300,7 +300,7 @@ declare namespace CLUSTER {
         message: string
       }
     }
-  }
+  };
 
   type TemplateOptions = {
     value: string,
@@ -308,10 +308,10 @@ declare namespace CLUSTER {
     isLeaf?: boolean,
     children?: TemplateOptions[],
     loaded?: boolean,
-  }
+  };
 
   type MonitorContainer = {
     pod: string,
     container: string,
-  }
+  };
 }

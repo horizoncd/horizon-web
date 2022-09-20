@@ -1,4 +1,4 @@
-import {request} from 'umi';
+import { request } from 'umi';
 
 export async function querySubresourceTags(resourceType: string, resourceID: number) {
   return request<{

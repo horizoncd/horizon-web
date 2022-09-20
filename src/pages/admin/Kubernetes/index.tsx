@@ -1,26 +1,32 @@
-import {Button, Space, Table} from "antd";
-import PageWithBreadcrumb from '@/components/PageWithBreadcrumb'
-import {useRequest} from "@@/plugin-request/request";
-import NoData from "@/components/NoData";
-import {
-  queryRegions,
-} from "@/services/regions/regions";
-import CollapseList from "@/components/CollapseList";
-import {history} from "@@/core/history";
-import Utils from "@/utils";
+import { Button, Space, Table } from 'antd';
+import { useRequest } from '@@/plugin-request/request';
+import { history } from '@@/core/history';
+import styled from 'styled-components';
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import NoData from '@/components/NoData';
+import { queryRegions } from '@/services/regions/regions';
+import CollapseList from '@/components/CollapseList';
+import Utils from '@/utils';
+import { API } from '@/services/typings';
+
+const QueryInput = styled(Button)`
+  float: right;
+  margin-bottom: 10px;
+  margin-right: 5px;
+`;
 
 export default () => {
-  const {data: regions} = useRequest(() => queryRegions(), {});
+  const { data: regions } = useRequest(() => queryRegions(), {});
 
   const columns = [
     {
       title: '名称',
       dataIndex: 'displayName',
-      render: (name: string, r: SYSTEM.Region) => {
-        return <Space size="middle">
+      render: (name: string, r: SYSTEM.Region) => (
+        <Space size="middle">
           <a onClick={() => history.push(`/admin/kubernetes/${r.id}`)}>{name}</a>
         </Space>
-      }
+      ),
     },
     {
       title: '域名',
@@ -33,73 +39,65 @@ export default () => {
       render: (tags: [API.Tag]) => {
         if (tags) {
           const data = {};
-          for (const tag of tags) {
-            data[tag.key] = tag.value
+          for (let i = 0; i < tags.length; i += 1) {
+            data[tags[i].key] = tags[i].value;
           }
-          return <CollapseList defaultCount={2} data={data}/>
+          return <CollapseList defaultCount={2} data={data} />;
         }
-        return ""
-      }
+        return '';
+      },
     },
     {
       title: '启用状态',
       width: '100px',
       dataIndex: 'disabled',
-      render: (disabled: boolean) => {
-        return disabled ? <span style={{color: 'red'}}>已禁用</span> : "启用中"
-      }
+      render: (disabled: boolean) => (disabled ? <span style={{ color: 'red' }}>已禁用</span> : '启用中'),
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
-      render: (v: string) => {
-        return Utils.timeToLocal(v)
-      }
+      render: (v: string) => Utils.timeToLocal(v),
     },
     {
       title: '更新时间',
       dataIndex: 'updatedAt',
-      render: (v: string) => {
-        return Utils.timeToLocal(v)
-      }
-    }
-  ]
-
-  const queryInput = (
-    <Button
-      type="primary"
-      style={{marginBottom: 10, float: 'right', marginRight: 5}}
-      onClick={() => {
-        history.push(`/admin/kubernetes/new`)
-      }}
-    >
-      创建区域
-    </Button>
-  )
+      render: (v: string) => Utils.timeToLocal(v),
+    },
+  ];
 
   const locale = {
-    emptyText: <NoData title={'区域'} desc={
-      '区域指应用集群可供选择的部署目的地，需配置该区域对应的计算K8S信息'}
-    />
-  }
+    emptyText: <NoData
+      title="区域"
+      desc="区域指应用集群可供选择的部署目的地，需配置该区域对应的计算K8S信息"
+    />,
+  };
 
-  const table = <Table
-    rowKey={'id'}
-    columns={columns}
-    dataSource={regions}
-    locale={locale}
-    pagination={{
-      position: ['bottomCenter'],
-      hideOnSinglePage: true,
-      total: regions?.length,
-      pageSize: 7
-    }}
-  />
+  const table = (
+    <Table
+      rowKey="id"
+      columns={columns}
+      dataSource={regions}
+      locale={locale}
+      pagination={{
+        position: ['bottomCenter'],
+        hideOnSinglePage: true,
+        total: regions?.length,
+        pageSize: 7,
+      }}
+    />
+  );
 
   return (
     <PageWithBreadcrumb>
-      {queryInput}
+      <QueryInput
+        type="primary"
+        onClick={() => {
+          history.push('/admin/kubernetes/new');
+        }}
+      >
+        创建区域
+      </QueryInput>
       {table}
     </PageWithBreadcrumb>
-  )
-}
+  );
+};

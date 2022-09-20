@@ -3,7 +3,7 @@ export enum ResourceType {
   APPLICATION = 'application',
   CLUSTER = 'cluster',
   TEMPLATE = 'template',
-  RELEASE = 'release'
+  RELEASE = 'release',
 }
 
 export enum PublishType {
@@ -51,11 +51,11 @@ const DeployTypeMap = new Map([
   ['restart', '重新启动'],
   ['freeCluster', '释放集群'],
   ['deleteCluster', '删除集群'],
-])
+]);
 
-const pro = 'pro'
-const pre = 'pre'
-const testDev = 'test_dev'
+const pro = 'pro';
+const pre = 'pre';
+const testDev = 'test_dev';
 const env2MlogEnv = new Map<string, string>([
   ['online', pro],
   ['pre', pre],
@@ -64,9 +64,9 @@ const env2MlogEnv = new Map<string, string>([
   ['perf', testDev],
   ['beta', testDev],
   ['dev', testDev],
-])
+]);
 
 export {
   DeployTypeMap,
-  env2MlogEnv
-}
+  env2MlogEnv,
+};

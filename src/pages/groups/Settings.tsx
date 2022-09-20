@@ -1,13 +1,11 @@
 import React from 'react';
 import { Card } from 'antd';
-import Detail from '@/components/PageWithBreadcrumb'
+import Detail from '@/components/PageWithBreadcrumb';
 
-export default (): React.ReactNode => {
-  return (
-    <Detail>
-      <Card>
-        <div>group Settings</div>
-      </Card>
-    </Detail>
-  );
-};
+export default (): React.ReactNode => (
+  <Detail>
+    <Card>
+      <div>group Settings</div>
+    </Card>
+  </Detail>
+);

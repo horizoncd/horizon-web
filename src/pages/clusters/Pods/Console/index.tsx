@@ -1,54 +1,59 @@
+import { useModel } from '@@/plugin-model/useModel';
+import { Affix, Card, Select } from 'antd';
+import { useState } from 'react';
+import { useRequest } from '@@/plugin-request/request';
+import { queryPodContainers } from '@/services/clusters/pods';
 import Terminal from '@/components/Terminal';
-import {useModel} from "@@/plugin-model/useModel";
-import {Affix, Card, Select} from "antd";
-import {useState} from "react";
-import {queryPodContainers} from "@/services/clusters/pods";
-import {useRequest} from "@@/plugin-request/request";
 
-const {Option} = Select
+const { Option } = Select;
 
 export default (props: any) => {
-  const {initialState} = useModel('@@initialState');
-  const {id} = initialState!.resource;
+  const { initialState } = useModel('@@initialState');
+  const { id } = initialState!.resource;
 
-  const {location} = props;
-  const {query} = location;
-  const {podName, containerName} = query;
+  const { location } = props;
+  const { query } = location;
+  const { podName, containerName } = query;
 
-  const backend = window.location.host
+  const backend = window.location.host;
   const protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
-  const [currentContainer, setCurrentContainer] = useState(containerName)
-  const [containers, setContainers] = useState<CLUSTER.ContainerDetail[]>()
-  const {data} = useRequest(() => queryPodContainers(id, {podName: podName}), {
+  const [currentContainer, setCurrentContainer] = useState(containerName);
+  const [containers, setContainers] = useState<CLUSTER.ContainerDetail[]>();
+  const { data } = useRequest(() => queryPodContainers(id, { podName }), {
     onSuccess: () => {
-      setContainers(data)
-    }
-  })
+      setContainers(data);
+    },
+  });
 
   return (
     <div>
       <Card
-        bodyStyle={{alignItems: "center", display: "flex", height: '50px', padding: '0px'}}
+        bodyStyle={{
+          alignItems: 'center', display: 'flex', height: '50px', padding: '0px',
+        }}
       >
-        <span style={{marginInline: '5px', fontWeight: 'bold'}}>Shell in</span>
+        <span style={{ marginInline: '5px', fontWeight: 'bold' }}>Shell in</span>
         {
-          (containers) && <div>
+          (containers) && (
+          <div>
             <Select
               defaultValue={currentContainer}
               onChange={(value) => {
-                setCurrentContainer(value)
-              }
-              }
+                setCurrentContainer(value);
+              }}
             >
               {
-                containers?.map((container: CLUSTER.ContainerDetail) => {
-                  return <Option value={container.name}>{container.name}</Option>
-                })
+                containers?.map((container: CLUSTER.ContainerDetail) => <Option value={container.name}>{container.name}</Option>)
               }
             </Select>
           </div>
+          )
         }
-        <span style={{marginInline: '5px', fontWeight: 'bold'}}> in {podName}</span>
+        <span style={{ marginInline: '5px', fontWeight: 'bold' }}>
+          {' '}
+          in
+          {podName}
+        </span>
       </Card>
       <Terminal
         url={`${protocol}//${backend}/apis/core/v1/clusters/${id}/shell?podName=${podName}&containerName=${currentContainer}`}
@@ -63,7 +68,7 @@ export default (props: any) => {
                 ]),
               );
             } catch (error) {
-              console.log(error)
+              console.log(error);
             }
           }
         }}
@@ -101,8 +106,7 @@ export default (props: any) => {
             right: '50px',
           }
         }
-      >
-      </Affix>
+      />
     </div>
   );
-}
+};
