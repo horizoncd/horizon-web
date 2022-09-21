@@ -142,6 +142,47 @@ declare namespace API {
     updatedAt: string;
   };
 
+  type TemplateInfoV2  = {
+    name: string;
+    release: string;
+  }
+  type GetApplicationResponse2 = {
+    id: number;
+    name: string;
+    description: string;
+    priority: string;
+    git: GitInfo;
+
+    buildConfig: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+    manifest?: any;
+
+    fullPath: string;
+    groupID: number;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  type CreateOrUpdateRequestV2 = {
+    name: string
+    description: string
+    priority: string;
+    git?: GitInfo;
+    buildConfig?: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+  }
+
+  type CreateApplicationResponseV2 = {
+    id: string
+    fullPath: string;
+    groupID: number;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+
   // eslint-disable-next-line @typescript-eslint/naming-convention
   type regionSelectors = [{
     key: string,
@@ -246,3 +287,4 @@ declare namespace API {
     tags: Tag[],
   };
 }
+

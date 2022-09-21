@@ -12,14 +12,18 @@ import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
 import styles from './index.less';
-import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
+import {
+  applicationVersion1,
+  createApplication,
+  getApplication,
+  updateApplication
+} from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
 import type { API } from '@/services/typings';
 
 export default (props: any) => {
   const intl = useIntl();
-
   const name = 'name';
   const release = 'release';
   const priority = 'priority';
@@ -244,6 +248,7 @@ export default (props: any) => {
                 formData={basic}
                 setFormData={setBasicFormData}
                 editing={editing}
+                version={applicationVersion1}
               />
               )
             }

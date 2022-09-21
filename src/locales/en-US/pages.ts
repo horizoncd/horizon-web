@@ -18,6 +18,12 @@ export default {
   'pages.applicationNew.step.two': 'Basic',
   'pages.applicationNew.step.three': 'Config',
   'pages.applicationNew.step.four': 'Audit',
+
+  'pages.applicationNewV2.step.one': 'Basic',
+  'pages.applicationNewV2.step.two': 'BuildConfig',
+  'pages.applicationNewV2.step.three': 'DeployConfig',
+  'pages.applicationNewV2.step.four': 'Audit',
+
   'pages.applicationNew.step.message': 'Step {index}',
   'pages.applicationNew.basic.title': 'Service Basic',
   'pages.applicationNew.basic.name.ruleMessage': '应用名是必填项，支持字母、数字和中划线的组合，且必须以字母开头',

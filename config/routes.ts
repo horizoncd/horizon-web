@@ -1,6 +1,4 @@
-﻿import component from "@/locales/en-US/component";
-
-export const routes = [
+﻿export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -124,6 +122,10 @@ const groupRoutes = [
     path: '/groups/*/-/newapplication',
     menuRender: false,
     component: 'applications/NewOrEdit',
+  },{
+    path: '/groups/*/-/newapplicationv2',
+    menuRender: false,
+    component: 'applications/NewV2',
   },
   {
     path: `/groups/*/-/newoauthapp`,

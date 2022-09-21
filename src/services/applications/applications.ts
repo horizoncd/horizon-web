@@ -2,6 +2,9 @@ import { request } from 'umi';
 import type { CLUSTER } from '../clusters';
 import type { API } from '../typings';
 
+export const applicationVersion1 = "0.0.1"
+export const applicationVersion2 = "0.0.2"
+
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
     data: API.Application
@@ -13,6 +16,31 @@ export async function createApplication(groupID: number, body: API.NewApplicatio
     data: body,
   });
 }
+
+export async function createApplicationV2(groupID: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/groups/${groupID}/applications`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function updateApplicationV2(groupID: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/groups/${groupID}/applications`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
 
 export async function updateApplication(id: number, body: API.NewApplication) {
   return request(`/apis/core/v1/applications/${id}`, {
@@ -31,6 +59,11 @@ export async function getApplication(id: number) {
     method: 'GET',
   });
 }
+
+export async function getApplicationV2(id: number) {
+  return request<{}>()
+}
+
 
 export async function deleteApplication(id: number) {
   return request<{

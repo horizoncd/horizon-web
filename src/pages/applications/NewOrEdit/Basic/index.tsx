@@ -9,13 +9,13 @@ import { queryReleases } from '@/services/templates/templates';
 import styles from '../index.less';
 import { listGitRef, GitRefType } from '@/services/code/code';
 import HForm from '@/components/HForm';
+import {applicationVersion2} from "@/services/applications/applications";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export default (props: any) => {
   const intl = useIntl();
-
   // query release version
   const { data: releases } = useRequest(() => queryReleases(props.template?.name));
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
@@ -127,6 +127,7 @@ export default (props: any) => {
               autoSize={{ minRows: 3 }}
             />
           </Form.Item>
+          <div hidden={props.version === applicationVersion2}>
           <Form.Item label={formatMessage('template', 'template')}>
             <Input disabled value={props.template?.name} />
           </Form.Item>
@@ -139,6 +140,7 @@ export default (props: any) => {
               ))}
             </Select>
           </Form.Item>
+          </div>
           <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
             <Select disabled={readonly}>
               {priorities.map((item) => (

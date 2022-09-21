@@ -19,6 +19,12 @@ export default {
   'pages.applicationNew.step.two': '配置服务',
   'pages.applicationNew.step.three': '自定义配置',
   'pages.applicationNew.step.four': '审计',
+
+  'pages.applicationNewV2.step.one': '基础信息',
+  'pages.applicationNewV2.step.two': '构建配置',
+  'pages.applicationNewV2.step.three': '部署配置',
+  'pages.applicationNewV2.step.four': '审计',
+
   'pages.applicationNew.step.message': '第 {index} 步',
   'pages.applicationNew.basic.title': '应用基础信息',
   'pages.applicationNew.basic.name.ruleMessage': '应用名是必填项，支持字母、数字和中划线的组合，且必须以字母开头',
