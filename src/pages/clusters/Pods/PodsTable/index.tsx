@@ -328,7 +328,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const renderTile = () => (
     <div>
-      @ts-ignore
+      {/* @ts-ignore */}
       <Search placeholder="Search" onChange={onChange} style={{ width: '300px' }} value={filter} />
       <div style={{ float: 'right' }}>
         <Button
