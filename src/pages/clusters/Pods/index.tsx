@@ -1,6 +1,7 @@
 import {
   Button, Col, Dropdown, Menu, Modal, Row, Steps, Tabs, Tooltip,
 } from 'antd';
+import styled from 'styled-components';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
@@ -79,6 +80,49 @@ const taskStatus2Entity = new Map<TaskStatus, {
   }],
 ]);
 
+function DeployStep({
+  index, total, replicas, statusData,
+}: { index: number, total: number, replicas: string[], statusData: CLUSTER.ClusterStatus }) {
+  const s = [];
+  for (let i = 0; i < total; i += 1) {
+    s.push({
+      title: `批次${i + 1}`,
+    });
+  }
+  return (
+    <Steps current={index}>
+      {s.map((item, idx) => {
+        let icon;
+        if (idx < index) {
+          icon = smile;
+        } else if (idx === index) {
+          if (statusData?.clusterStatus.status === ClusterStatus.SUSPENDED) {
+            icon = waiting;
+          } else {
+            icon = loading;
+          }
+        } else {
+          icon = waiting;
+        }
+        return (
+          <Step
+            key={item.title}
+            title={(
+              <span>
+                {item.title}
+                <br />
+                {replicas[idx]}
+                副本
+              </span>
+              )}
+            icon={icon}
+          />
+        );
+      })}
+    </Steps>
+  );
+}
+
 interface DeployPageProps {
   step: {
     index: number,
@@ -90,7 +134,81 @@ interface DeployPageProps {
   onPause: () => void,
   onResume: () => void,
   onCancelDeploy: () => void,
-  status: CLUSTER.ClusterStatus
+  status: CLUSTER.ClusterStatus,
+  nextStepString: string
+}
+
+function DeployPage({
+  step, onNext, onPause, onResume, onPromote, onCancelDeploy, status, nextStepString,
+}: DeployPageProps) {
+  const { index, total, replicas } = step;
+  return (
+    <div title="发布阶段">
+      <DeployStep index={index} total={total} replicas={replicas} statusData={status} />
+      <div style={{ textAlign: 'center' }}>
+        {
+        status.clusterStatus.manualPaused ? (
+          <Button
+            type="primary"
+            disabled={!status.clusterStatus.manualPaused
+                                                    || !RBAC.Permissions.resumeCluster.allowed}
+            style={{ margin: '0 8px' }}
+            onClick={onResume}
+          >
+            取消暂停
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            disabled={status.clusterStatus.manualPaused
+                            || status.clusterStatus.status === ClusterStatus.SUSPENDED
+                            || !RBAC.Permissions.pauseCluster.allowed}
+            style={{ margin: '0 8px' }}
+            onClick={onPause}
+          >
+            人工暂停
+          </Button>
+        )
+      }
+
+        <Button
+          type="primary"
+          disabled={
+          !RBAC.Permissions.deployClusterNext.allowed
+                || status.clusterStatus.status !== ClusterStatus.SUSPENDED
+                || status.clusterStatus.manualPaused
+        }
+          style={{ margin: '0 8px' }}
+          onClick={onNext}
+        >
+          {nextStepString}
+        </Button>
+        <Button
+          type="primary"
+          disabled={
+          !RBAC.Permissions.promoteCluster.allowed
+                || status.clusterStatus.status !== ClusterStatus.SUSPENDED
+                || status.clusterStatus.manualPaused
+        }
+          style={{ margin: '0 8px' }}
+          onClick={onPromote}
+        >
+          全部发布
+        </Button>
+        <Button
+          danger
+          disabled={
+          !RBAC.Permissions.rollbackCluster.allowed
+                || !RBAC.Permissions.freeCluster.allowed
+        }
+          style={{ margin: '0 8px' }}
+          onClick={onCancelDeploy}
+        >
+          取消发布
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 const pollingInterval = 6000;
@@ -105,6 +223,7 @@ export default () => {
   const { successAlert, errorAlert } = useModel('alert');
   const { id, fullPath, parentID } = initialState!.resource;
   const [current, setCurrent] = useState(0);
+  const [freeAlerted, setFreeAlerted] = useState(true);
   const [userClickedCurrent, setUserClickedCurrent] = useState(-1);
   const [stepStatus, setStepStatus] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
@@ -200,7 +319,7 @@ export default () => {
               Object.assign(state, containerStatuses[0].state);
 
               restartCount = containerStatuses[0].restartCount;
-              if (containerStatuses.length == containers.length) {
+              if (containerStatuses.length === containers.length) {
                 onlineStatus = onlineState;
                 containerStatuses.forEach(
                   (containerStatus: any) => {
@@ -260,6 +379,12 @@ export default () => {
   const { data: statusData, run: refreshStatus } = useRequest(() => getClusterStatus(id), {
     pollingInterval,
     onSuccess: () => {
+      if (statusData?.clusterStatus.status === ClusterStatus.FREED) {
+        if (freeAlerted) {
+          successAlert('集群已释放，配置保留，点击构建发布或直接发布可一键快速拉起');
+          setFreeAlerted(false);
+        }
+      }
       if (inPublishing(statusData)) {
         const { latestPipelinerun, clusterStatus } = statusData!;
         const { task, taskStatus } = statusData!.runningTask;
@@ -314,119 +439,6 @@ export default () => {
 
   const podsInfo = refreshPodsInfo(statusData);
 
-  function DeployStep({ index, total, replicas }: { index: number, total: number, replicas: string[] }) {
-    const s = [];
-    for (let i = 0; i < total; i += 1) {
-      s.push({
-        title: `批次${i + 1}`,
-      });
-    }
-    return (
-      <Steps current={index}>
-        {s.map((item, idx) => {
-          let icon;
-          if (idx < index) {
-            icon = smile;
-          } else if (idx === index) {
-            if (statusData?.clusterStatus.status === ClusterStatus.SUSPENDED) {
-              icon = waiting;
-            } else {
-              icon = loading;
-            }
-          } else {
-            icon = waiting;
-          }
-          return (
-            <Step
-              key={item.title}
-              title={(
-                <span>
-                  {item.title}
-                  <br />
-                  {replicas[idx]}
-                  副本
-</span>
-)}
-              icon={icon}
-            />
-          );
-        })}
-      </Steps>
-    );
-  }
-
-  function DeployPage({
-    step, onNext, onPause, onResume, onPromote, onCancelDeploy, status,
-  }: DeployPageProps) {
-    return (
-      <div title="发布阶段">
-        <DeployStep {...step} />
-        <div style={{ textAlign: 'center' }}>
-          {
-          status.clusterStatus.manualPaused ? (
-            <Button
-              type="primary"
-              disabled={!status.clusterStatus.manualPaused
-                                                      || !RBAC.Permissions.resumeCluster.allowed}
-              style={{ margin: '0 8px' }}
-              onClick={onResume}
-            >
-              取消暂停
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              disabled={status.clusterStatus.manualPaused
-                              || status.clusterStatus.status === ClusterStatus.SUSPENDED
-                              || !RBAC.Permissions.pauseCluster.allowed}
-              style={{ margin: '0 8px' }}
-              onClick={onPause}
-            >
-              人工暂停
-            </Button>
-          )
-        }
-
-          <Button
-            type="primary"
-            disabled={
-            !RBAC.Permissions.deployClusterNext.allowed
-                  || status.clusterStatus.status !== ClusterStatus.SUSPENDED
-                  || status.clusterStatus.manualPaused
-          }
-            style={{ margin: '0 8px' }}
-            onClick={onNext}
-          >
-            {intl.formatMessage({ id: 'pages.pods.nextStep' })}
-          </Button>
-          <Button
-            type="primary"
-            disabled={
-            !RBAC.Permissions.promoteCluster.allowed
-                  || status.clusterStatus.status !== ClusterStatus.SUSPENDED
-                  || status.clusterStatus.manualPaused
-          }
-            style={{ margin: '0 8px' }}
-            onClick={onPromote}
-          >
-            全部发布
-          </Button>
-          <Button
-            danger
-            disabled={
-            !RBAC.Permissions.rollbackCluster.allowed
-                  || !RBAC.Permissions.freeCluster.allowed
-          }
-            style={{ margin: '0 8px' }}
-            onClick={onCancelDeploy}
-          >
-            取消发布
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const currentPodsTabTitle = podsInfo.oldPods.length > 0 ? '新Pods' : 'Pods';
   const oldPodsTitle = '旧Pods';
   const formatTabTitle = (title: string, length: number) => (
@@ -440,6 +452,30 @@ export default () => {
   if (statusData?.clusterStatus.manualPaused) {
     clusterStatus = ClusterStatus.MANUALPAUSED;
   }
+
+  // todo 封装样式
+  const DefaultText = styled.span`
+  margin: 0 0 6px 5px;
+  word-break: break-all;
+  `;
+  const AlertText = styled.div`
+  color: var(--red-500, #dd2b0e);
+  margin: 0 0 6px 5px;
+  word-break: break-all;
+  `;
+
+  const ttlDisplay = (ttlSeconds: number) => {
+    const day = Math.floor(ttlSeconds / 3600 / 24);
+    const hour = Math.round((ttlSeconds / 3600) % 24);
+    if (day >= 1) {
+      return (
+        <DefaultText>{`${day}天${hour}小时`}</DefaultText>
+      );
+    }
+    return (
+      <AlertText>{`${hour}小时`}</AlertText>
+    );
+  };
 
   const baseInfo: Param[][] = [
     [
@@ -464,6 +500,11 @@ export default () => {
           正常: podsInfo.healthyPods.length,
           异常: podsInfo.notHealthyPods.length,
         },
+      },
+      {
+        key: '剩余时长',
+        value: (clusterStatus === ClusterStatus.HEALTHY && statusData?.ttlSeconds) ? ttlDisplay(statusData?.ttlSeconds as number) : '',
+        description: '根据最近操作时间实时计算，到期后会自动释放集群',
       },
     ],
     [
@@ -818,28 +859,28 @@ export default () => {
                             Modal.confirm(
                               {
                                 title: <div className={styles.boldText}>确定要全部发布？</div>,
-                                content: <div
-                                  className={styles.promotePrompt}
-                                >
-                                  将按照如下策略进行自动分批发布：
-                                  <br />
-                                  1.
-                                  {' '}
-                                  <span className={styles.textGreen}>安全</span>
-                                  ：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数
-                                  {' '}
-                                  <br />
-                                  2.
-                                  {' '}
-                                  <span className={styles.textGreen}>滚动</span>
-                                  ：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）
-                                  <br />
-                                  注：
-                                  <br />
-                                  1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注
-                                  <br />
-                                  2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%
-                                </div>,
+                                content: (
+                                  <div className={styles.promotePrompt}>
+                                    将按照如下策略进行自动分批发布：
+                                    <br />
+                                    1.
+                                    {' '}
+                                    <span className={styles.textGreen}>安全</span>
+                                    ：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数
+                                    {' '}
+                                    <br />
+                                    2.
+                                    {' '}
+                                    <span className={styles.textGreen}>滚动</span>
+                                    ：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）
+                                    <br />
+                                    注：
+                                    <br />
+                                    1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注
+                                    <br />
+                                    2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%
+                                  </div>
+                                ),
                                 onOk: () => {
                                   promote(id).then(() => {
                                     successAlert('开始发布剩余批次');
@@ -863,10 +904,12 @@ export default () => {
                                 Modal.confirm(
                                   {
                                     title: <div className={styles.boldText}>确定要取消发布？</div>,
-                                    content: <div>
-                                      当前集群是第一次发布，
-                                      <strong style={{ color: 'red' }}>取消发布将直接释放集群</strong>
-                                    </div>,
+                                    content: (
+                                      <div>
+                                        当前集群是第一次发布，
+                                        <strong style={{ color: 'red' }}>取消发布将直接释放集群</strong>
+                                      </div>
+                                    ),
                                     onOk: () => {
                                       freeCluster(id).then(() => {
                                         successAlert('取消发布成功，开始释放集群');
@@ -879,10 +922,12 @@ export default () => {
                                 Modal.confirm(
                                   {
                                     title: <div className={styles.boldText}>确定要取消发布？</div>,
-                                    content: <div>
-                                      <strong style={{ color: 'red' }}>将跳转到流水线页面，选择目标流水线回滚以取消当前发布</strong>
-                                      <br />
-                                    </div>,
+                                    content: (
+                                      <div>
+                                        <strong style={{ color: 'red' }}>将跳转到流水线页面，选择目标流水线回滚以取消当前发布</strong>
+                                        <br />
+                                      </div>
+                                    ),
                                     onOk: () => {
                                       history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
                                     },
@@ -894,6 +939,7 @@ export default () => {
                             });
                           }
                         }
+                        nextStepString={intl.formatMessage({ id: 'pages.pods.nextStep' })}
                       />
                       {getTips()}
                     </div>

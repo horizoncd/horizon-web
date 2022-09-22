@@ -19,7 +19,7 @@ import { PublishType } from '@/const';
 
 function difference(object: any, other: any) {
   const diff = {};
-  for (const key in object) {
+  Object.keys(object).forEach((key) => {
     if (typeof object[key] === 'object' && typeof other[key] === 'object' && object[key] && other[key]) {
       const subDiff = difference(object[key], other[key]);
       if (Object.keys(subDiff).length !== 0) {
@@ -28,7 +28,7 @@ function difference(object: any, other: any) {
     } else if (object[key] !== other[key]) {
       diff[key] = object[key];
     }
-  }
+  });
   return diff;
 }
 
@@ -42,6 +42,7 @@ export default (props: any) => {
   const subfolder = 'subfolder';
   const environment = 'environment';
   const region = 'region';
+  const expireTimeStr = 'expireTime';
   const release = 'release';
   const basicNeedValidFields = [
     name, branch, environment, region,
@@ -109,6 +110,7 @@ export default (props: any) => {
                 template: tpl,
                 templateInput,
                 scope,
+                expireTime,
               } = clusterData!;
               const { url: u, branch: b, subfolder: s } = gitInfo;
               const { environment: e, region: r } = scope;
@@ -120,6 +122,7 @@ export default (props: any) => {
                 { name: 'refValue', value: gitRef },
                 { name: environment, value: e },
                 { name: region, value: r },
+                { name: expireTimeStr, value: expireTime },
                 { name: url, value: u },
                 { name: branch, value: b },
                 { name: subfolder, value: s },
@@ -147,6 +150,7 @@ export default (props: any) => {
           template: t,
           templateInput,
           scope,
+          expireTime,
         } = clusterData!;
         const { url: u, branch: b, subfolder: s } = git;
         const { environment: e, region: r } = scope;
@@ -159,6 +163,7 @@ export default (props: any) => {
           { name: 'refValue', value: gitRef },
           { name: environment, value: e },
           { name: region, value: r },
+          { name: expireTimeStr, value: expireTime },
           { name: url, value: u },
           { name: branch, value: b },
           { name: subfolder, value: s },
@@ -299,6 +304,7 @@ export default (props: any) => {
       },
       environment: form.getFieldValue(environment),
       region: form.getFieldValue(region),
+      expireTime: form.getFieldValue(expireTimeStr),
       templateInput: cfg || config,
     };
     if (creating) {

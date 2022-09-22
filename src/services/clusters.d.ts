@@ -75,7 +75,8 @@ declare namespace CLUSTER {
       release: string;
     };
     git: GitInfo;
-    scope: Scope
+    scope: Scope;
+    expireTime: string;
     templateInput: any;
     latestDeployedCommit: string;
     status?: string;
@@ -202,6 +203,7 @@ declare namespace CLUSTER {
         pods: Record<string, PodFromBackend>
       }>
     }
+    ttlSeconds: number
   };
 
   type Event = {
