@@ -10,7 +10,7 @@ export default () => (
       <Input />
     </Form.Item>
     <Form.Item label="自动释放" name="autoFree" rules={[{ required: true }]} extra="开启后，系统会在指定过期时间后自动释放该环境下的集群">
-      <Select>
+      <Select defaultValue={false}>
         <Option key="true" value>开启</Option>
         <Option key="false" value={false}>关闭</Option>
       </Select>

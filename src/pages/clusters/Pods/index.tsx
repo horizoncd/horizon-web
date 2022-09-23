@@ -464,12 +464,17 @@ export default () => {
   word-break: break-all;
   `;
 
-  const ttlDisplay = (ttlSeconds: number) => {
-    const day = Math.floor(ttlSeconds / 3600 / 24);
-    const hour = Math.round((ttlSeconds / 3600) % 24);
+  const durationDisplay = (seconds: number) => {
+    let day = Math.floor(seconds / 3600 / 24);
+    let hour = Math.round((seconds / 3600) % 24);
+    if (hour === 24) {
+      day += 1;
+      hour = 0;
+    }
     if (day >= 1) {
+      const ttlText = hour === 0 ? `${day}天` : `${day}天${hour}小时`;
       return (
-        <DefaultText>{`${day}天${hour}小时`}</DefaultText>
+        <DefaultText>{ttlText}</DefaultText>
       );
     }
     return (
@@ -503,7 +508,8 @@ export default () => {
       },
       {
         key: '剩余时长',
-        value: (clusterStatus === ClusterStatus.HEALTHY && statusData?.ttlSeconds) ? ttlDisplay(statusData?.ttlSeconds as number) : '',
+        value: (statusData?.latestPipelinerun && statusData?.clusterStatus.status !== ClusterStatus.FREED
+          && statusData?.ttlSeconds) ? durationDisplay(statusData?.ttlSeconds as number) : '',
         description: '根据最近操作时间实时计算，到期后会自动释放集群',
       },
     ],

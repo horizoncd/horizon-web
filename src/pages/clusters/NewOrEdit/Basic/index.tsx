@@ -204,6 +204,7 @@ export default (props: any) => {
           >
             <Select
               placeholder="配置集群的使用时长，到期后集群会自动释放，配置保留，可一键快速拉起"
+              defaultValue={`${expireTimeOptions[2] * 24}h0m0s`}
               disabled={readonly}
             >
               {expireTimeOptions?.map((item) => (
