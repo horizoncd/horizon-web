@@ -211,6 +211,37 @@ function DeployPage({
   );
 }
 
+// todo 封装样式
+const DefaultText = styled.span`
+margin: 0 0 6px 5px;
+word-break: break-all;
+`;
+const AlertText = styled.div`
+color: var(--red-500, #dd2b0e);
+margin: 0 0 6px 5px;
+word-break: break-all;
+`;
+
+const DurationDisplay = (props: { seconds: number }) => {
+  const { seconds } = props;
+
+  let day = Math.floor(seconds / 3600 / 24);
+  let hour = Math.round((seconds / 3600) % 24);
+  if (hour === 24) {
+    day += 1;
+    hour = 0;
+  }
+  if (day >= 1) {
+    const ttlText = hour === 0 ? `${day}天` : `${day}天${hour}小时`;
+    return (
+      <DefaultText>{ttlText}</DefaultText>
+    );
+  }
+  return (
+    <AlertText>{`${hour}小时`}</AlertText>
+  );
+};
+
 const pollingInterval = 6000;
 const pendingState = 'pending';
 const runningState = 'running';
@@ -453,35 +484,6 @@ export default () => {
     clusterStatus = ClusterStatus.MANUALPAUSED;
   }
 
-  // todo 封装样式
-  const DefaultText = styled.span`
-  margin: 0 0 6px 5px;
-  word-break: break-all;
-  `;
-  const AlertText = styled.div`
-  color: var(--red-500, #dd2b0e);
-  margin: 0 0 6px 5px;
-  word-break: break-all;
-  `;
-
-  const durationDisplay = (seconds: number) => {
-    let day = Math.floor(seconds / 3600 / 24);
-    let hour = Math.round((seconds / 3600) % 24);
-    if (hour === 24) {
-      day += 1;
-      hour = 0;
-    }
-    if (day >= 1) {
-      const ttlText = hour === 0 ? `${day}天` : `${day}天${hour}小时`;
-      return (
-        <DefaultText>{ttlText}</DefaultText>
-      );
-    }
-    return (
-      <AlertText>{`${hour}小时`}</AlertText>
-    );
-  };
-
   const baseInfo: Param[][] = [
     [
       {
@@ -509,7 +511,7 @@ export default () => {
       {
         key: '剩余时长',
         value: (statusData?.latestPipelinerun && statusData?.clusterStatus.status !== ClusterStatus.FREED
-          && statusData?.ttlSeconds) ? durationDisplay(statusData?.ttlSeconds as number) : '',
+          && statusData?.ttlSeconds) ? <DurationDisplay seconds={statusData?.ttlSeconds as number} /> : '',
         description: '根据最近操作时间实时计算，到期后会自动释放集群',
       },
     ],

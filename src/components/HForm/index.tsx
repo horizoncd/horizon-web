@@ -9,11 +9,7 @@ export default (props: HFromProps) => {
 
   const onBlur = () => {
     const b = form.getFieldsValue();
-    // filter out numbers, since there is no trim() method for number.
-    Object.keys(b).filter((key) => {
-      const t = typeof b[key];
-      return t !== 'number';
-    }).forEach((item) => {
+    Object.keys(b).forEach((item) => {
       b[item] = b[item] ? b[item].trim() : undefined;
     });
     form.setFieldsValue(b);
