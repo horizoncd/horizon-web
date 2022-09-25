@@ -1,6 +1,6 @@
-import { request } from 'umi';
-import type { CLUSTER } from '../clusters';
-import type { API } from '../typings';
+import {request} from 'umi';
+import type {CLUSTER} from '../clusters';
+import type {API} from '../typings';
 
 export const applicationVersion1 = "0.0.1"
 export const applicationVersion2 = "0.0.2"
@@ -61,7 +61,11 @@ export async function getApplication(id: number) {
 }
 
 export async function getApplicationV2(id: number) {
-  return request<{}>()
+  return request<{
+    data: API.GetApplicationResponse2
+  }>(
+    `/apis/core/v2/applications/${id}`, {method: 'GET'}
+  );
 }
 
 
