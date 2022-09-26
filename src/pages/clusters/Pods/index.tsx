@@ -211,7 +211,6 @@ function DeployPage({
   );
 }
 
-// todo 封装样式
 const DefaultText = styled.span`
 margin: 0 0 6px 5px;
 word-break: break-all;

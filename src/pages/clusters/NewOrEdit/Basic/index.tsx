@@ -61,7 +61,7 @@ export default (props: any) => {
 
   const { data: environments } = useRequest(() => queryEnvironments());
   const envAutoFreeFlags = new Map<string, boolean>();
-  environments?.map((item) => envAutoFreeFlags.set(item.name, item.autoFree));
+  environments?.forEach((item) => envAutoFreeFlags.set(item.name, item.autoFree));
 
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
     const giturl = form.getFieldValue('url');
@@ -201,10 +201,10 @@ export default (props: any) => {
             label={formatMessage('expireTime')}
             name="expireTime"
             rules={requiredRule}
+            initialValue={`${expireTimeOptions[2] * 24}h0m0s`}
           >
             <Select
               placeholder="配置集群的使用时长，到期后集群会自动释放，配置保留，可一键快速拉起"
-              defaultValue={`${expireTimeOptions[2] * 24}h0m0s`}
               disabled={readonly}
             >
               {expireTimeOptions?.map((item) => (

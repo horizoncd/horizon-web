@@ -2,6 +2,7 @@ import { Button, Space, Table } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useState } from 'react';
 import { history } from '@@/core/history';
+import { Link } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NoData from '@/components/NoData';
 import { queryEnvironments } from '@/services/environments/environments';
@@ -20,10 +21,7 @@ export default () => {
       dataIndex: 'name',
       render: (name: number, r: SYSTEM.Environment) => (
         <Space size="middle">
-          {
-            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
-            <a onClick={() => history.push(`/admin/environments/${r.id}`)}>{name}</a>
-          }
+          <Link to={`/admin/environments/${r.id}`}>{name}</Link>
         </Space>
       ),
     },
