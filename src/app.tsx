@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { Menu, notification, Tooltip } from 'antd';
@@ -64,14 +65,7 @@ export const initialStateConfig = {
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
-export async function getInitialState(): Promise<{
-  settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
-  roles?: API.Role[];
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  resource: API.Resource;
-  accordionCollapse: boolean;
-}> {
+export async function getInitialState(): Promise<API.InitialState> {
   const settings: Partial<LayoutSettings> = {};
   const resource: API.Resource = {
     fullName: '',
@@ -81,10 +75,12 @@ export async function getInitialState(): Promise<{
     type: 'group',
     parentID: 0,
   };
+
   if (history.location.pathname === loginPath
     || history.location.pathname === callbackPath) {
     return { resource, accordionCollapse: false };
   }
+
   let currentUser: API.CurrentUser | undefined = {
     id: 0,
     name: '',
@@ -240,7 +236,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         key="4"
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
+            More 
+{' '}
+<DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
 )}
       >
@@ -266,12 +264,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     }
   },
   menuHeaderRender: () => {
-    const { name: t, fullPath: f } = initialState?.resource || {};
+    const { name: t, fullPath: f, type } = initialState?.resource || {};
     const title = t || 'admin';
     const fullPath = f || '/admin';
 
     const { accordionCollapse = false } = initialState || {};
-    const firstLetter = title.substring(0, 1).toUpperCase();
+    const firstLetter = title.charAt(0).toUpperCase();
     if (!accordionCollapse) {
       const titleContent = title.length <= 15 ? title : `${title.substr(0, 12)}...`;
       return (
@@ -279,7 +277,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           <span
             style={{ alignItems: 'center', lineHeight: '40px' }}
             onClick={() => {
-              window.location.href = fullPath;
+              if (type === ResourceType.TEMPLATE) {
+                window.location.href = `/templates${fullPath}/-/detail`;
+              } else {
+                window.location.href = fullPath;
+              }
             }}
           >
             <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
@@ -301,7 +303,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         <span
           style={{ alignItems: 'center', lineHeight: '40px' }}
           onClick={() => {
-            window.location.href = fullPath;
+            if (type === ResourceType.TEMPLATE) {
+              window.location.href = `/templates${fullPath}/-/detail`;
+            } else {
+              window.location.href = fullPath;
+            }
           }}
         >
           <span className={`avatar-40 identicon bg${Utils.getAvatarColorIndex(title)}`}>
@@ -355,8 +361,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           return loopMenuItem(formatClusterMenu(fullPath));
         case ResourceType.TEMPLATE:
           return loopMenuItem(formatTemplateMenu(fullPath));
-        case ResourceType.RELEASE:
-          return loopMenuItem(formatReleaseMenu(fullPath));
         default:
           return defaultMenuData;
       }
@@ -374,30 +378,23 @@ function formatTemplateMenu(fullPath: string): MenuDataItem[] {
   return [
     ...routes,
     {
-      name: 'Template detail',
+      name: '模板详细信息',
       icon: 'templates',
       path: `/templates${fullPath}/-/detail`,
+    },
+    {
+      path: `/templates${fullPath}/-/detail`,
+    },
+    {
+      path: `/templates${fullPath}/-/newrelease`,
+    },
+    {
+      path: `/templates${fullPath}/-/edit`,
     },
     {
       name: 'Members',
       icon: 'contacts',
       path: `/templates${fullPath}/-/members`,
-    },
-  ];
-}
-
-function formatReleaseMenu(fullPath: string): MenuDataItem[] {
-  return [
-    ...routes,
-    {
-      name: 'Release detail',
-      icon: 'templates',
-      path: `/releases${fullPath}/-/detail`,
-    },
-    {
-      name: 'Release edit',
-      path: `/releases${fullPath}/-/edit`,
-      icon: 'edit',
     },
   ];
 }

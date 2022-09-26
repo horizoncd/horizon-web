@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import {
   Button, Cascader, Col, Divider, Input, Pagination, Row, Select, Tabs, Tooltip, Tree,
 } from 'antd';
@@ -22,6 +24,7 @@ import { queryReleases, queryTemplates } from '@/services/templates/templates';
 import styles from '@/pages/clusters/Pods/index.less';
 import type { CLUSTER } from '@/services/clusters';
 import type { API } from '@/services/typings';
+import { DTree } from '@/components/DirectoryTree';
 
 const { Option } = Select;
 
@@ -234,10 +237,10 @@ export default (props: any) => {
         >
           <div style={{ display: 'flex', alignItems: 'center', fontSize: 'larger' }}>
             <Tooltip title="构建发布">
-              <a href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone /></a>
+              <a aria-label="构建发布" href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone /></a>
             </Tooltip>
             <Tooltip title="集群监控">
-              <a href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{ marginLeft: '1rem' }} /></a>
+              <a aria-label="集群监控" href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{ marginLeft: '1rem' }} /></a>
             </Tooltip>
             <Tooltip title="代码仓库">
               <a
@@ -393,22 +396,7 @@ export default (props: any) => {
     }
   };
 
-  // select application
-  const onSelectApplication = (
-    selectedKeys: Key[],
-    info: {
-      node: any;
-      nativeEvent: any
-    },
-  ) => {
-    const { node, nativeEvent } = info;
-    const { fullPath } = node;
-
-    handleHref(nativeEvent, `${fullPath}`);
-  };
-
   const queryInput = (groupsDashboard && isAdmin)
-    // @ts-ignore
     ? (
       <div>
         <Search
@@ -582,25 +570,14 @@ export default (props: any) => {
             pathname.indexOf('applications') > -1
             && (
             <TabPane tab={formatTabTitle('Your applications', totalApplications)} key="/dashboard/applications">
-              {applications.map((item: API.Application) => {
-                const treeData: DataNode[] = [{
-                  key: item.id,
-                  title: item.fullName?.split('/').join('  /  '),
-                  isLeaf: true,
-                  icon: <BookOutlined />,
-                  ...item,
-                }];
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectApplication}
-                    />
-                    <Divider style={{ margin: '5px 0 5px 0' }} />
-                  </div>
-                );
-              })}
+              <DTree
+                items={
+                  applications.map((item) => ({
+                    icon: <BookOutlined />,
+                    ...item,
+                  }))
+                }
+              />
             </TabPane>
             )
           }
@@ -608,25 +585,14 @@ export default (props: any) => {
             pathname.indexOf('applications') > -1
             && (
             <TabPane tab="All applications" key="/explore/applications">
-              {applications.map((item: API.Application) => {
-                const treeData: DataNode[] = [{
-                  key: item.id,
-                  title: item.fullName?.split('/').join('  /  '),
-                  isLeaf: true,
-                  icon: <BookOutlined />,
-                  ...item,
-                }];
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectApplication}
-                    />
-                    <Divider style={{ margin: '5px 0 5px 0' }} />
-                  </div>
-                );
-              })}
+              <DTree
+                items={
+                  applications.map((item) => ({
+                    icon: <BookOutlined />,
+                    ...item,
+                  }))
+                }
+              />
             </TabPane>
             )
           }

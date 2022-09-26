@@ -5,24 +5,19 @@ import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import NotFount from '@/pages/404';
 import { queryTemplate, updateTemplate } from '@/services/templates/templates';
-import { TemplateForm } from '../components/form';
+import { TemplateForm } from '../Components/Form';
 import rbac from '@/rbac';
+import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { API } from '@/services/typings';
 
-export default () => {
+function TemplateEdit(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
 
-  const { initialState } = useModel('@@initialState');
+  const { initialState: { resource: { id: templateID, fullName } } } = props;
 
-  if (!initialState?.resource.id || !initialState.currentUser) {
-    return <NotFount />;
-  }
-
-  const templateID = initialState.resource.id;
-  const { fullName } = initialState.resource;
-  const { data: template } = useRequest(() => queryTemplate(templateID), {
+  const { data: template } = useRequest(() => queryTemplate(templateID, true), {
     onSuccess: () => {
       form.setFieldsValue(template);
     },
@@ -42,10 +37,19 @@ export default () => {
               });
             }}
           >
-            <Form.Item label="名称" name="name" rules={[{ required: true }]} extra="Templates唯一名称标识">
+            <Form.Item
+              label="名称"
+              name="name"
+              required
+              rules={[{ required: true }]}
+              extra="Templates唯一名称标识"
+            >
               <Input disabled />
             </Form.Item>
-            <TemplateForm onRepositoryBlur={() => {}} isAdmin={initialState.currentUser.isAdmin} />
+            <TemplateForm
+              editRepository={template !== undefined && (template.releases === undefined || template.releases.length === 0)}
+              onRepositoryBlur={() => {}}
+            />
             <Form.Item>
               <Button
                 type="primary"
@@ -60,4 +64,6 @@ export default () => {
       </Row>
     </PageWithBreadcrumb>
   );
-};
+}
+
+export default PageWithInitialState(TemplateEdit);

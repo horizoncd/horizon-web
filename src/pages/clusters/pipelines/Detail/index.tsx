@@ -1,3 +1,13 @@
+import moment from 'moment';
+import { history } from '@@/core/history';
+import { useIntl } from '@@/plugin-locale/localeExports';
+import { useModel } from '@@/plugin-model/useModel';
+import { useParams } from 'umi';
+import { useRequest } from '@@/plugin-request/request';
+import copy from 'copy-to-clipboard';
+import { useState } from 'react';
+import { Button, Card, Modal } from 'antd';
+import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import type { Param } from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard';
@@ -6,26 +16,16 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/hint/show-hint.css';
-import styles from './index.less';
 import './index.less';
 import 'codemirror/addon/display/fullscreen.css';
 import 'codemirror/addon/display/fullscreen';
-import { Button, Card, Modal } from 'antd';
-import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import copy from 'copy-to-clipboard';
-import { useState } from 'react';
+import styles from './index.less';
 import CodeDiff from '@/components/CodeDiff';
-import { useParams } from 'umi';
-import { useRequest } from '@@/plugin-request/request';
 import { getPipeline, getPipelineDiffs, queryPipelineLog } from '@/services/pipelineruns/pipelineruns';
 import Utils from '@/utils';
 import { PublishType } from '@/const';
-import { useIntl } from '@@/plugin-locale/localeExports';
-import { useModel } from '@@/plugin-model/useModel';
 import { rollback } from '@/services/clusters/clusters';
-import { history } from '@@/core/history';
 import FullscreenModal from '@/components/FullscreenModal';
-import moment from 'moment';
 import { GitRefType } from '@/services/code/code';
 
 export default (props: any) => {
@@ -131,14 +131,16 @@ export default (props: any) => {
   };
 
   const extraContent = {
-    BuildLog: <div>
-      <Button className={styles.buttonClass}>
-        <CopyOutlined className={styles.iconCommonModal} onClick={onCopyButtonClick} />
-      </Button>
-      <Button className={styles.buttonClass}>
-        <FullscreenOutlined className={styles.iconCommonModal} onClick={onFullscreenClick} />
-      </Button>
-              </div>,
+    BuildLog: (
+      <div>
+        <Button className={styles.buttonClass}>
+          <CopyOutlined className={styles.iconCommonModal} onClick={onCopyButtonClick} />
+        </Button>
+        <Button className={styles.buttonClass}>
+          <FullscreenOutlined className={styles.iconCommonModal} onClick={onFullscreenClick} />
+        </Button>
+      </div>
+    ),
     Changes: <div />,
   };
 
@@ -147,8 +149,9 @@ export default (props: any) => {
   <CodeEditor
     content={buildLog}
   />,
-    Changes: <div>
-      {
+    Changes: (
+      <div>
+        {
         pipeline?.action === PublishType.BUILD_DEPLOY
         && (
         <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
@@ -164,14 +167,16 @@ export default (props: any) => {
           <br />
           <b>Commit History</b>
           <br />
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions */}
           <a onClick={() => window.open(diff?.codeInfo.link)}>Link</a>
         </Card>
         )
       }
-      <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
-        <CodeDiff diff={diff?.configDiff.diff || ''} />
-      </Card>
-             </div>,
+        <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
+          <CodeDiff diff={diff?.configDiff.diff || ''} />
+        </Card>
+      </div>
+    ),
   };
 
   const cardContentHeight = {

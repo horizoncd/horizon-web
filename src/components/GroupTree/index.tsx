@@ -11,7 +11,7 @@ import {
 } from '@/services/groups/groups';
 import NoData from '@/components/NoData';
 import withTrim from '@/components/WithTrim';
-import { API } from '@/services/typings';
+import type { API } from '@/services/typings';
 
 const { DirectoryTree } = Tree;
 const Search = withTrim(Input.Search);

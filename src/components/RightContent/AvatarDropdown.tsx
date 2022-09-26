@@ -102,4 +102,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   );
 };
 
+AvatarDropdown.defaultProps = {
+  menu: false,
+};
+
 export default AvatarDropdown;

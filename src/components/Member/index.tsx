@@ -6,12 +6,14 @@ import { useModel } from '@@/plugin-model/useModel';
 import { DeleteOutlined, ExclamationCircleOutlined, ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useRequest } from '@@/plugin-request/request';
+import { history } from 'umi';
 import Detail from '@/components/PageWithBreadcrumb';
 import { queryUsers } from '@/services/members/members';
 import Utils from '@/utils';
 import RBAC from '@/rbac';
 import styles from './index.less';
 import { MemberType } from '@/const';
+import { API } from '@/services/typings';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -260,7 +262,11 @@ export default (props: MemberProps) => {
       {intl.formatMessage({ id: 'pages.members.user.role.label' })}
     </span>
   );
-  const roleOptions = roleList.slice(roleRank.get(currentUser.role)).map((role) => <Option key={role} value={role}>{role}</Option>);
+  // FIXME: remove this
+  const roleOptions = (history.location.pathname.startsWith('/templates')
+    ? roleList.slice(1, 2)
+    : roleList.slice(roleRank.get(currentUser.role)))
+    .map((role) => <Option key={role} value={role}>{role}</Option>);
   const userOptions = users.items.map((user) => (
     <Option
       key={user.id}

@@ -8,7 +8,6 @@ import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
 import queryString from 'query-string';
 import { formatMultiItemQuery } from '../index';
-import { CLUSTER } from '@/services/clusters';
 
 // @ts-ignore
 const MonitorSearchForm = ({
@@ -222,7 +221,7 @@ const MonitorSearchForm = ({
           && (
           <Button
             type="primary"
-            disabled={pods.length === 0}
+            disabled={pods.length == 0}
             onClick={() => {
               window.open(`https://nss.netease.com/sentry/appMonitor/view?clusterName=${name}&podName=${form.getFieldValue('podName')[0]}&sign=0`);
             }}
