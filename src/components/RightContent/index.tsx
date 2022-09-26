@@ -1,8 +1,10 @@
 import { Space } from 'antd';
 import React from 'react';
-import { SelectLang, useModel } from 'umi';
+import { useModel } from 'umi';
+import ApiLink from './ApiLink';
 import Avatar from './AvatarDropdown';
 import ContactUs from './ContactUs';
+import DocsLink from './DocsLink';
 import styles from './index.less';
 
 export type SiderTheme = 'light' | 'dark';
@@ -23,6 +25,8 @@ const GlobalHeaderRight: React.FC = () => {
 
   return (
     <Space className={className}>
+      <ApiLink />
+      <DocsLink />
       <ContactUs />
       <Avatar />
       {/*<SelectLang className={styles.action}/>*/}

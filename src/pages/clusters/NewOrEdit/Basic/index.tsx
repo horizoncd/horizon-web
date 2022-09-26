@@ -89,7 +89,7 @@ export default (props: any) => {
 
   const urlRules: Rule[] = [
     {
-      pattern: /'^ssh:\/\/.+[.]git$/,
+      pattern: /^ssh:\/\/.+[.]git$/,
       required: true,
       message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
       max: 128,
