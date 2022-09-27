@@ -186,19 +186,6 @@ export async function searchMyClusters(params: API.PageParam) {
   });
 }
 
-export async function getDashboards(clusterID: number) {
-  return request<{
-    data: {
-      basic: string,
-      container: string,
-      serverless?: string,
-      memcached?: string,
-    }
-  }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
-    method: 'GET',
-  });
-}
-
 export async function getGrafanaDashboards(clusterID: number) {
   return request<{
     data: CLUSTER.GetGrafanaDashboards
