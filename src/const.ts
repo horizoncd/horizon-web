@@ -70,3 +70,6 @@ export {
   DeployTypeMap,
   env2MlogEnv,
 };
+
+export const RedirectURL = `${window.location.protocol}//${window.location.host}/user/login/callback`;
+export const IndexURL = `${window.location.protocol}//${window.location.host}`;

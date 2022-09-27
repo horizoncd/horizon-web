@@ -5,7 +5,7 @@ import RBAC from '@/rbac';
 import { getTemplates } from '@/services/templates/templates';
 import { TemplateTab, TemplateTableColumns, TemplateTableLocale } from '..';
 import { API } from '@/services/typings';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 
 const { TabPane } = Tabs;
 

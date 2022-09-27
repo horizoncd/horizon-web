@@ -3,12 +3,12 @@ import { Tabs } from 'antd';
 import React, { useState } from 'react';
 import { useRequest } from 'umi';
 import type { API } from '@/services/typings';
-import { searchClusters } from '@/services/clusters/clusters';
-import { searchApplications } from '@/services/applications/applications';
+import { listClusters } from '@/services/clusters/clusters';
+import { listApplications } from '@/services/applications/applications';
 import type { CLUSTER } from '@/services/clusters';
 import NoData from '@/components/NoData';
 import { DTree, DTreeItemProp } from '@/components/DirectoryTree';
-import WithPagination from '../../Components/WithPagination';
+import { ComponentWithPagination } from '../../../../components/Enhancement';
 
 const { TabPane } = Tabs;
 
@@ -20,7 +20,7 @@ interface AppItem extends API.Application {
 
 const ClusterNoData = <NoData title="Clusters" desc="展示所有使用该release的集群" />;
 
-const DTreeWithPagination = WithPagination(DTree);
+const DTreeWithPagination = ComponentWithPagination(DTree);
 
 const treeWithPagination = <Props extends DTreeItemProp>(
   handleItem: (items: Props) => DTreeItemProp,
@@ -81,13 +81,13 @@ const AppTree = treeWithPagination(
     t.icon = <BookOutlined />;
     return t;
   },
-  searchApplications,
+  listApplications,
   ApplicationNoData,
 );
 
 const ClusterTree = treeWithPagination(
   (item: CLUSTER.Cluster) => item,
-  searchClusters,
+  listClusters,
   ClusterNoData,
 );
 

@@ -14,7 +14,7 @@ import DetailCard from '@/components/DetailCard';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import rbac from '@/rbac';
 import ReleaseTab from './Tree';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 
 function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactElement {
   const { initialState } = props;

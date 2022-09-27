@@ -3,11 +3,11 @@ import React from 'react';
 import { NotFount } from '../State';
 import { API } from '@/services/typings';
 
-export interface WithInitialStateProps {
+export interface PageWithInitialStateProps {
   initialState: API.InitialState,
 }
 
-export default function PageWithInitialState<Props extends WithInitialStateProps>(
+export function PageWithInitialState<Props extends PageWithInitialStateProps>(
   WrappedComponent: React.ComponentType<Props>,
 ): React.FC<Omit<Props, 'initialState'>> {
   type InnerProps = Omit<Props, 'initialState'>;

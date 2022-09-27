@@ -1,11 +1,11 @@
 import { request } from 'umi';
 
-export async function queryUsers(pageNumber: number, pageSize: number, filter?: string) {
+export async function queryUsers(pageNumber: number, pageSize: number, namelike?: string) {
   const params: any = { pageNumber, pageSize };
-  if (filter) {
-    params.filter = filter;
+  if (namelike) {
+    params.namelike = namelike;
   }
-  return request('/apis/front/v1/users/search', {
+  return request('/apis/core/v1/users', {
     method: 'GET',
     params,
   });

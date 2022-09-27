@@ -196,19 +196,10 @@ export async function getClusterStatus(clusterID: number) {
   });
 }
 
-export async function searchClusters(params: API.PageParam) {
+export async function listClusters(params: API.PageParam & { userID?: number }) {
   return request<{
     data: API.PageResult<CLUSTER.Cluster>;
-  }>('/apis/front/v1/clusters/searchclusters', {
-    method: 'GET',
-    params,
-  });
-}
-
-export async function searchMyClusters(params: API.PageParam) {
-  return request<{
-    data: API.PageResult<CLUSTER.Cluster>;
-  }>('/apis/front/v1/clusters/searchmyclusters', {
+  }>('/apis/core/v1/clusters', {
     method: 'GET',
     params,
   });

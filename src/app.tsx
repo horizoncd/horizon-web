@@ -19,6 +19,7 @@ import {
   SmileOutlined,
   SnippetsOutlined,
   TagsOutlined,
+  UserOutlined,
   ProfileOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
@@ -52,6 +53,7 @@ const IconMap = {
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
   idp: <ApiOutlined />,
+  user: <UserOutlined />,
   profile: <ProfileOutlined />
 };
 
@@ -268,8 +270,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   },
   menuHeaderRender: () => {
     const { name: t, fullPath: f, type } = initialState?.resource || {};
-    const title = t || 'admin';
-    const fullPath = f || '/admin';
+    
+    const title = t || history.location.pathname.startsWith('/admin')? 'admin' : 'profile';
+    const fullPath = f || history.location.pathname.startsWith('/admin') ? '/admin' : 'profile';
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
@@ -345,6 +348,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          }, {
+            path: '/admin/users',
+            name: 'Users',
+            icon: 'user',
           },
           {
             path: '/admin/idps',
@@ -352,6 +359,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             icon: 'idp',
           },
         ]);
+      }
+
+      if (history.location.pathname.startsWith('/profile')) {
+        return loopMenuItem([
+          ...routes,
+          {
+            path: '/profile',
+            name: 'Profile',
+            icon: 'user',
+          }
+        ])
       }
 
       if (pathnameInStaticRoutes() || !initialState) {

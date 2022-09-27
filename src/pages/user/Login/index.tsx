@@ -1,28 +1,13 @@
 import { useRequest } from 'umi';
-import { history } from '@@/core/history';
 import { Button, Space } from 'antd';
 import Footer from '@/components/Footer';
-import { getAuthEndpoints } from '@/services/login/login';
+import { getAuthEndpoints } from '@/services/idp/idp';
 import styles from './index.less';
 import './index.less';
-
-const redirectURL = `${window.location.protocol}//${window.location.host}/user/login/callback`;
+import { IdpSetState } from '@/utils';
 
 const Login = () => {
   const { data: endpoints } = useRequest(() => getAuthEndpoints());
-
-  const handleURL = (u: string) => {
-    const url = new URL(u);
-    let state = url.searchParams.get('state');
-    state = window.atob(state!);
-
-    const stateParams = new URLSearchParams(state);
-    stateParams.set('redirect', history.location.query.redirect ?? `${window.location.protocol}//${window.location.host}`);
-
-    url.searchParams.set('state', window.btoa(stateParams.toString()));
-    url.searchParams.set('redirect_uri', redirectURL);
-    return url.toString();
-  };
 
   return (
     <div className={styles.container} style={{ backgroundColor: 'black' }}>
@@ -36,20 +21,20 @@ const Login = () => {
             <div className={styles.description}>for any kind of workload, webserver serverless middleware...</div>
             <Space>
               {
-              endpoints?.map((endpoint) => (
-                <Button
-                  key={endpoint.displayName}
-                  className={styles.signInButton}
-                  onClick={async () => {
-                    window.location.href = handleURL(endpoint.authURL);
-                  }}
-                >
-                  Sign in with
-                  {' '}
-                  {endpoint.displayName}
-                </Button>
-              ))
-            }
+                endpoints?.map((endpoint) => (
+                  <Button
+                    key={endpoint.displayName}
+                    className={styles.signInButton}
+                    onClick={async () => {
+                      window.location.href = IdpSetState(endpoint.authURL);
+                    }}
+                  >
+                    Sign in with
+                    {' '}
+                    {endpoint.displayName}
+                  </Button>
+                ))
+              }
             </Space>
           </div>
           <div style={{ textAlign: 'center', alignSelf: 'center' }}>

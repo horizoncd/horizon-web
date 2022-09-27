@@ -1,4 +1,5 @@
 import MaxSpace from './MaxSpace';
+import ExactTime from './ExactTime';
+import { MainText } from './Text';
 
-// eslint-disable-next-line import/prefer-default-export
-export { MaxSpace };
+export { MaxSpace, MainText, ExactTime };

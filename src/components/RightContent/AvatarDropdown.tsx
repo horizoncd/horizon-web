@@ -40,9 +40,10 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         // @ts-ignore
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         logout();
-        return;
       }
-      history.push(`/account/${key}`);
+      if (key === 'profile') {
+        history.push('/profile');
+      }
     },
     [setInitialState],
   );
@@ -71,19 +72,17 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
+      <Menu.Item key="profile">
+        <UserOutlined />
+        个人中心
+      </Menu.Item>
+      <Menu.Divider />
       {menu && (
         <Menu.Item key="settings">
           <SettingOutlined />
           个人设置
         </Menu.Item>
       )}
-      {menu && <Menu.Divider />}
 
       {menu && <Menu.Divider />}
 

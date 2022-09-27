@@ -13,14 +13,14 @@ import {
   DTree, DTreeItem, DTreeItemProp, TreeDataNode,
 } from '@/components/DirectoryTree';
 import { API } from '@/services/typings';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
-import WithPagination from './Components/WithPagination';
+import { PageWithInitialState } from '@/components/Enhancement';
+import { ComponentWithPagination } from '../../components/Enhancement';
 
 const { TabPane } = Tabs;
 
 const NameWidth = '25%';
 
-const DTreeWithPagination = WithPagination(DTree);
+const DTreeWithPagination = ComponentWithPagination(DTree);
 
 const NameLink: React.FC<{ fullpath: string }> = (props) => {
   const { fullpath, children } = props;

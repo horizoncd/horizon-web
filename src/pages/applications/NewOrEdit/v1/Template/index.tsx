@@ -6,7 +6,7 @@ import { getRootTemplates, getTemplates } from '@/services/templates/templates';
 import './index.less';
 import type { API } from '@/services/typings';
 import NoData from '@/components/NoData';
-import PageWithInitialState, { WithInitialStateProps } from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { ResourceType } from '@/const';
 
 const { TabPane } = Tabs;
@@ -87,7 +87,7 @@ const GroupCards = (props: GroupTemplateProps) => {
   );
 };
 
-function TemplateCards(props: TemplateProps & WithInitialStateProps) {
+function TemplateCards(props: TemplateProps & PageWithInitialStateProps) {
   const { initialState: { resource: { id, type, parentID } } } = props;
   const { template, resetTemplate, apiVersion } = props;
 

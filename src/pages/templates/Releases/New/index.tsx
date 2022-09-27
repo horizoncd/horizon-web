@@ -10,7 +10,7 @@ import TagSelector from '../../Components/TagSelector';
 import { createRelease, queryTemplate } from '@/services/templates/templates';
 import { NotFount } from '@/components/State';
 import rbac from '@/rbac';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { API } from '@/services/typings';
 
 function NewRelease(props: PropsWithChildren<{ initialState: API.InitialState }>) {
