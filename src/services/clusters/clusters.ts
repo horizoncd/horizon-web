@@ -186,15 +186,10 @@ export async function searchMyClusters(params: API.PageParam) {
   });
 }
 
-export async function getDashboards(clusterID: number) {
+export async function getGrafanaDashboards(clusterID: number) {
   return request<{
-    data: {
-      basic: string,
-      container: string,
-      serverless?: string,
-      memcached?: string,
-    }
-  }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
+    data: CLUSTER.GetGrafanaDashboards
+  }>(`/apis/core/v1/clusters/${clusterID}/grafanadashboards`, {
     method: 'GET',
   });
 }
@@ -230,33 +225,5 @@ export async function updateClusterTemplateSchemaTags(clusterID: number, data: A
   }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
     method: 'POST',
     data,
-  });
-}
-
-export async function getClusterPods(clusterID: number, start: number, end: number) {
-  return request<{
-    data: {
-      pods: CLUSTER.MonitorContainer[]
-    }
-  }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
-    method: 'GET',
-    params: {
-      start,
-      end,
-    },
-  });
-}
-
-export async function getClusterPod(clusterID: number, podName: string) {
-  return request<{
-    data: {
-      pods: CLUSTER.MonitorContainer[]
-    }
-  }>(`/apis/core/v1/clusters/${clusterID}/pods`, {
-    method: 'GET',
-    params: {
-      start,
-      end,
-    },
   });
 }

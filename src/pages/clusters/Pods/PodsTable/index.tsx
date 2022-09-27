@@ -186,9 +186,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     setShowEvents(true);
   };
 
-  const formatPodMonitorURL = (p: CLUSTER.PodInTable) => `/clusters${fullPath}/-/monitoring?podName=${p.podName}`;
+  const formatPodMonitorURL = (p: CLUSTER.PodInTable) => `/clusters${fullPath}/-/monitoring?monitor=horizon-pod&var-pod=${p.podName}`;
 
-  const formatContainerMonitorURL = (podName: string, container: string) => `/clusters${fullPath}/-/monitoring?monitor=container&container=${podName}%2f${container}`;
+  const formatContainerMonitorURL = (podName: string, container: string) => `/clusters${fullPath}/-/monitoring?monitor=horizon-container&var-pod=${podName}&var-container=${container}`;
 
   const onCopyClick = (text: string) => {
     if (copy(text)) {
