@@ -199,7 +199,7 @@ const clusterRoutes = [
   },
   {
     path: '/clusters/*/-/monitoring',
-    component: 'clusters/Monitoring',
+    component: 'clusters/Monitor',
   },
   {
     path: '/clusters/*/-/tags',
