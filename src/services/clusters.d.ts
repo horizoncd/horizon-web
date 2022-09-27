@@ -312,8 +312,15 @@ declare namespace CLUSTER {
     loaded?: boolean,
   };
 
-  type MonitorContainer = {
-    pod: string,
-    container: string,
+  type GetGrafanaDashboards = {
+    host: string,
+    params: Record<string, string>,
+    dashboards: [GrafanaDashboard]
+  };
+
+  type GrafanaDashboard = {
+    uid: string,
+    title: string,
+    tags: [string],
   };
 }
