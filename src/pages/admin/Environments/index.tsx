@@ -2,6 +2,7 @@ import { Button, Space, Table } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useState } from 'react';
 import { history } from '@@/core/history';
+import { Link } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NoData from '@/components/NoData';
 import { queryEnvironments } from '@/services/environments/environments';
@@ -20,7 +21,7 @@ export default () => {
       dataIndex: 'name',
       render: (name: number, r: SYSTEM.Environment) => (
         <Space size="middle">
-          <a onClick={() => history.push(`/admin/environments/${r.id}`)}>{name}</a>
+          <Link to={`/admin/environments/${r.id}`}>{name}</Link>
         </Space>
       ),
     },
@@ -32,6 +33,11 @@ export default () => {
       title: 'Kubernetes',
       dataIndex: 'regionTexts',
       render: (text: any) => text,
+    },
+    {
+      title: '自动释放',
+      dataIndex: 'autoFree',
+      render: (text: boolean) => (text ? '已开启' : '已关闭'),
     },
     {
       title: '创建时间',
@@ -49,7 +55,7 @@ export default () => {
   const { data: environmentRegions = [] } = useRequest(() => queryEnvironmentRegions(''), {
     onSuccess: () => {
       const m = new Map<string, SYSTEM.EnvironmentRegion[]>();
-      for (let i = 0; i < environmentRegions.length; i++) {
+      for (let i = 0; i < environmentRegions.length; i += 1) {
         const env = environmentRegions[i].environmentName;
         const v = m.get(env);
         if (!v) {

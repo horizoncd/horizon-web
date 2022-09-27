@@ -72,6 +72,7 @@ export default {
   'pages.clusterNew.basic.branch': '分支',
   'pages.clusterNew.basic.environment': '环境',
   'pages.clusterNew.basic.region': '区域',
+  'pages.clusterNew.basic.expireTime': '时长（天）',
   'pages.clusterEdit.header': '正在编辑【 {cluster} 】，请按步骤填写信息',
   'pages.clusterEdit.success': '集群更新成功',
   'pages.clusterEdit.prompt.buildDeploy.title': '是否进行构建发布？',

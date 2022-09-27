@@ -24,14 +24,14 @@ const { Option } = Select;
 
 export default () => {
   const params = useParams<{ id: string }>();
-  if (!params.id || isNaN(parseInt(params.id))) {
+  if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
     return <NotFount />;
   }
 
   const { successAlert } = useModel('alert');
   const [regionForm] = Form.useForm();
   const [regionModalVisible, setRegionModalVisible] = useState(false);
-  const environmentID = parseInt(params.id);
+  const environmentID = parseInt(params.id, 10);
   const { data: environment } = useRequest(() => getEnvironmentByID(environmentID), {});
   const { data: environmentRegions, run: runEnvRegions } = useRequest(() => queryEnvironmentRegions(environment!.name), {
     ready: !!environment,
@@ -47,6 +47,12 @@ export default () => {
       {
         key: '环境名',
         value: environment?.displayName,
+      },
+    ],
+    [
+      {
+        key: '自动释放',
+        value: environment?.autoFree ? '已开启' : '已关闭',
       },
     ],
     [
@@ -101,8 +107,8 @@ export default () => {
           <Button
             type="primary"
             onClick={() => {
-  setRegionModalVisible(true);
-}}
+              setRegionModalVisible(true);
+            }}
           >
             添加Kubernetes
           </Button>
@@ -132,6 +138,7 @@ export default () => {
                 <div>
                   {
                     (!record.isDefault && !record.disabled) ? (
+                      // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
                       <a
                         type="primary"
                         onClick={() => {
@@ -155,20 +162,23 @@ export default () => {
                     )
                   }
                   <Divider type="vertical" />
-                  <a onClick={() => {
-                    Modal.confirm({
-                      title: '确认删除此关联Kubernetes？',
-                      onOk: () => {
-                        deleteEnvironmentRegionByID(id).then(() => {
-                          successAlert('删除成功');
-                          runEnvRegions();
-                        });
-                      },
-                    });
-                  }}
-                  >
-                    删除
-                  </a>
+                  {
+                    // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
+                    <a onClick={() => {
+                      Modal.confirm({
+                        title: '确认删除此关联Kubernetes？',
+                        onOk: () => {
+                          deleteEnvironmentRegionByID(id).then(() => {
+                            successAlert('删除成功');
+                            runEnvRegions();
+                          });
+                        },
+                      });
+                    }}
+                    >
+                      删除
+                    </a>
+                  }
                 </div>
               ),
             },

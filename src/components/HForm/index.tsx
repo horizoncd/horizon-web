@@ -1,6 +1,10 @@
-import { Form } from 'antd';
+import { Form, FormInstance, FormProps } from 'antd';
 
-export default (props: any) => {
+interface HFromProps extends Omit<FormProps, 'onBlur'> {
+  form: FormInstance,
+}
+
+export default (props: HFromProps) => {
   const { children, form } = props;
 
   const onBlur = () => {
@@ -12,6 +16,7 @@ export default (props: any) => {
   };
 
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <Form {...props} onBlur={onBlur}>
       {children}
     </Form>
