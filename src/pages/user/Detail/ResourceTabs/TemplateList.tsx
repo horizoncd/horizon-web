@@ -20,7 +20,15 @@ function TemplateList(props: { userID: number }) {
     {
       onSuccess: (data) => {
         const { items: templateItems, total: appTotal } = data;
-        setItems(templateItems);
+        const tpls = templateItems.map((item) => {
+          const t = item;
+          if (t.fullPath) {
+            t.fullName = t.fullPath.substring(1);
+            t.fullPath = `/templates${t.fullPath}/-/detail`;
+          }
+          return t;
+        });
+        setItems(tpls);
         setTotal(appTotal);
       },
       refreshDeps: [pageNumber, pageSize, userID],

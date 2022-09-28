@@ -5,7 +5,7 @@ import {
   ComponentWithParamIDProps, PageWithBreadcrumb, PageWithInitialState, PageWithInitialStateProps,
 } from '@/components/Enhancement';
 import { ExactTime } from '@/components/Widget';
-import { AdminSwitch, BanSwitch } from '@/pages/admin/Users/components';
+import { AdminSwitch, BanSwitch } from '@/pages/user/components';
 import { API } from '@/services/typings';
 import { getUserByID } from '@/services/users/users';
 import ResourceTabs from './ResourceTabs';

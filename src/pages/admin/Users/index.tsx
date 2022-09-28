@@ -5,7 +5,7 @@ import { listUsers } from '@/services/users/users';
 import { API } from '@/services/typings';
 import ComponentWithPagination from '@/components/Enhancement/ComponentWithPagination';
 import { PageWithBreadcrumb } from '@/components/Enhancement';
-import { AdminSwitch, BanHint } from './components';
+import { AdminSwitch, BanHint } from '../../user/components';
 
 const TableWithPagination = ComponentWithPagination(Table);
 
