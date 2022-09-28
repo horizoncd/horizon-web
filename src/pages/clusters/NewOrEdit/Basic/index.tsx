@@ -202,9 +202,9 @@ export default (props: any) => {
             name="expireTime"
             rules={requiredRule}
             initialValue={`${expireTimeOptions[2] * 24}h0m0s`}
+            extra="配置集群的使用时长，到期后集群会自动释放，配置保留，可一键快速拉起"
           >
             <Select
-              placeholder="配置集群的使用时长，到期后集群会自动释放，配置保留，可一键快速拉起"
               disabled={readonly}
             >
               {expireTimeOptions?.map((item) => (

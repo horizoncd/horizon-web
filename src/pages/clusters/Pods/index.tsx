@@ -507,12 +507,6 @@ export default () => {
           异常: podsInfo.notHealthyPods.length,
         },
       },
-      {
-        key: '剩余时长',
-        value: (statusData?.latestPipelinerun && statusData?.clusterStatus.status !== ClusterStatus.FREED
-          && statusData?.ttlSeconds) ? <DurationDisplay seconds={statusData?.ttlSeconds as number} /> : '',
-        description: '根据最近操作时间实时计算，到期后会自动释放集群',
-      },
     ],
     [
       {
@@ -531,6 +525,14 @@ export default () => {
       },
     ],
   ];
+
+  if (typeof statusData?.ttlSeconds === 'number') {
+    baseInfo[0].push({
+      key: '剩余时长',
+      value: <DurationDisplay seconds={statusData?.ttlSeconds as number} />,
+      description: '根据最近操作时间实时计算，到期后会自动释放集群',
+    });
+  }
 
   const onClickOperation = ({ key }: { key: string }) => {
     switch (key) {
