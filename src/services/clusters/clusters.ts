@@ -189,7 +189,7 @@ export async function searchMyClusters(params: API.PageParam) {
 export async function getGrafanaDashboards(clusterID: number) {
   return request<{
     data: CLUSTER.GetGrafanaDashboards
-  }>(`/apis/core/v1/clusters/${clusterID}/grafanadashboards`, {
+  }>(`/apis/core/v1/clusters/${clusterID}/dashboards`, {
     method: 'GET',
   });
 }
