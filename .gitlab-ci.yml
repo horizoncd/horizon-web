@@ -12,12 +12,10 @@ imagebuild:
     - |
       # build
       set -x
-      npm config set user 0
-      npm config set unsafe-perm true
-      npm config set registry=https://registry.npm.taobao.org
-      npm install npx
-      npm install
-      TERM=xterm npm run build
+      yarn config set registry https://registry.npm.taobao.org --global
+      yarn add npx
+      yarn install
+      TERM=xterm yarn run build
 
       # docker build
       IMAGES="$(jq -r '. | map(.server + "/" + .pathPrefix + "/" + env.CI_PROJECT_NAME + ":" + env.APP_REVISION) | join(" ")'<<<"$REGISTRIES")"
