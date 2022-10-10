@@ -5,7 +5,6 @@ import styles from '../NewOrEdit/index.less';
 import HSteps from "@/components/HSteps";
 import {useRef, useState} from "react";
 import Basic from "@/pages/applications/NewOrEdit/Basic";
-import BasicConfig from "@/pages/applications/NewOrEdit/BuildConfig"
 import BuildConfig from "@/pages/applications/NewOrEdit/BuildConfig"
 import {
   applicationVersion2,
@@ -39,7 +38,7 @@ export default (props: any) => {
   const [templateBasic, setTemplateBasic] = useState<API.Template>({description: '', name: ''});
   const [releaseName, setReleaseName] = useState<string>();
   const [templateConfig, setTemplateConfig] = useState({});
-  const [templateconfigErrors, setTemplateConfigErrors] = useState({});
+  const [templateConfigErrors, setTemplateConfigErrors] = useState({});
 
   // query application if editing
   const nameKey = 'name';
@@ -85,7 +84,7 @@ export default (props: any) => {
     const createReq: API.CreateOrUpdateRequestV2 = {
       name: form.getFieldValue(nameKey),
       description: form.getFieldValue(descriptionKey),
-      buildConfig: buildConfig["pipeline"], //TODO
+      buildConfig: buildConfig, //TODO
       priority: form.getFieldValue(priorityKey),
       templateConfig: templateConfig["application"],  //TODO
       templateInfo: {name: templateBasic.name, release: releaseName!},
@@ -124,6 +123,17 @@ export default (props: any) => {
     return hasError;
   };
 
+
+  const buildConfigHasErr = ( config :any) => {
+    if ( config && config.length > 0) {
+      console.log("here is buildConfigHasErr")
+      console.log(config)
+      return true
+    } else {
+      return false
+    }
+  }
+
   const configHasError = (config: {}) => {
     let hasError = false;
     Object.keys(config).forEach((item) => {
@@ -141,7 +151,7 @@ export default (props: any) => {
       disabled: basicHasError(),
     }, {
       title: intl.formatMessage({id: 'pages.applicationNewV2.step.two'}),
-      disabled: configHasError(buildConfigErrors),
+      disabled: buildConfigHasErr(buildConfigErrors),
     }, {
       title: intl.formatMessage({id: 'pages.applicationNewV2.step.three'}),
       disabled: !templateBasic.name,
@@ -150,7 +160,7 @@ export default (props: any) => {
       disabled: !templateBasic.name || basicHasError(),
     }, {
       title: intl.formatMessage({id: 'pages.applicationNewV2.step.four'}),
-      disabled: !templateBasic.name || basicHasError() || configHasError(templateconfigErrors),
+      disabled: !templateBasic.name || basicHasError() || configHasError(templateConfigErrors),
     }
   ];
 
@@ -208,13 +218,13 @@ export default (props: any) => {
         }
         break;
       case 1:
-        valid = !configHasError(buildConfigErrors);
+        valid = !buildConfigHasErr(buildConfigErrors);
         break
       case 2:
-        valid = !!templateBasic.name && !configHasError(buildConfigErrors);
+        valid = !!templateBasic.name && !buildConfigHasErr(buildConfigErrors);
         break;
       case 3:
-        valid = !!releaseName && !configHasError(buildConfigErrors) && !configHasError(templateconfigErrors);
+        valid = !!releaseName && !buildConfigHasErr(buildConfigErrors) && !configHasError(templateConfigErrors);
         break;
       default:
         valid = true;
@@ -236,11 +246,11 @@ export default (props: any) => {
       case 0:
         return basicHasError();
       case 1:
-        return configHasError(buildConfigErrors);
+        return buildConfigHasErr(buildConfigErrors);
       case 2:
         return !templateBasic.name && basicHasError();
       case 3:
-        return !templateBasic.name && basicHasError() && configHasError(templateconfigErrors);
+        return !templateBasic.name && basicHasError() && configHasError(templateConfigErrors);
       default:
         return false;
     }
@@ -270,11 +280,11 @@ export default (props: any) => {
             }{
             // build config
             current === 1 && (
-              <BasicConfig
+              <BuildConfig
                 config={buildConfig}
                 setConfig={setBuildConfig}
                 setConfigErrors={setBuildConfigErrors}
-              ></BasicConfig>
+              ></BuildConfig>
             )
           }{
             // deploy template

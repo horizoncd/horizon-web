@@ -142,6 +142,11 @@ declare namespace API {
     updatedAt: string;
   };
 
+  type BuildSchema = {
+    jsonSchema?: any;
+    uiSchema?:any;
+  }
+
   type TemplateInfoV2  = {
     name: string;
     release: string;
