@@ -121,6 +121,10 @@ const groupRoutes = [
   {
     path: '/groups/*/-/newapplication',
     menuRender: false,
+    component: 'applications/New',
+  },{
+    path: '/groups/*/-/newapplicationv1',
+    menuRender: false,
     component: 'applications/NewOrEdit',
   },{
     path: '/groups/*/-/newapplicationv2',
@@ -151,6 +155,11 @@ const applicationRoutes = [
     path: '/applications/*/-/edit',
     menuRender: false,
     component: 'applications/NewOrEdit',
+  },
+  {
+    path: '/applications/*/-/editv2',
+    menuRender: false,
+    component: 'applications/NewV2',
   },
   {
     path: '/applications/*/-/newcluster',

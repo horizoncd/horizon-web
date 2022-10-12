@@ -10,9 +10,10 @@ import copy from 'copy-to-clipboard';
 import type { Param } from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard';
 import {
+  applicationVersion1,
   deleteApplication,
   getApplication,
-  getApplicationEnvTemplate,
+  getApplicationEnvTemplate, getApplicationV2,
   updateApplicationEnvTemplate,
 } from '@/services/applications/applications';
 import { querySchema } from '@/services/templates/templates';
@@ -24,6 +25,7 @@ import JsonSchemaForm from '@/components/JsonSchemaForm';
 import RBAC from '@/rbac';
 import { queryEnvironments } from '@/services/environments/environments';
 import { parseGitRef } from '@/services/code/code';
+import {API} from "@/services/typings";
 
 const { Option } = Select;
 
@@ -156,7 +158,8 @@ export default () => {
     </Menu>
   );
 
-  const editApplicationRoute = `/applications${applicationFullPath}/-/edit`;
+  const editApplicationRouteV1 = `/applications${applicationFullPath}/-/edit`;
+  const editApplicationRouteV2 = `/applications${applicationFullPath}/-/editv2`
   const templateInputHasError = () => {
     let hasError = false;
     Object.keys(templateInputError).forEach((item) => {
@@ -178,6 +181,20 @@ export default () => {
       });
     }
   }, [totalFormData]);
+
+  const onEditClick = () => {
+    getApplicationV2(id).then( ({ data: result }) => {
+      if (result.manifest && result.manifest["manifestVersion"] !== applicationVersion1) {
+        history.push({
+          pathname: editApplicationRouteV2
+        })
+      }else {
+        history.push({
+          pathname: editApplicationRouteV1
+        })
+      }
+    })
+  }
 
   return (
     <Detail>
@@ -212,9 +229,7 @@ export default () => {
             type="primary"
             className={styles.button}
             disabled={!RBAC.Permissions.updateApplication.allowed}
-            onClick={() => history.push({
-              pathname: editApplicationRoute,
-            })}
+            onClick= {onEditClick}
           >
             {intl.formatMessage({ id: 'pages.applicationDetail.basic.edit' })}
           </Button>

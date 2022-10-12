@@ -5,22 +5,24 @@ import styles from '../NewOrEdit/index.less';
 import HSteps from "@/components/HSteps";
 import {useRef, useState} from "react";
 import Basic from "@/pages/applications/NewOrEdit/Basic";
-import BuildConfig from "@/pages/applications/NewOrEdit/BuildConfig"
+import BuildConfig from "@/pages/applications/NewV2/BuildConfig"
 import {
   applicationVersion2,
   createApplicationV2,
   getApplicationV2,
   updateApplicationV2
 } from "@/services/applications/applications";
-import Config from "@/pages/applications/NewOrEdit/Config";
 import {useRequest} from "@@/plugin-request/request";
+import Config from './Config';
 import {API} from "@/services/typings";
 import {useModel} from "@@/plugin-model/useModel";
 import {parseGitRef} from "@/services/code/code";
 import {FieldData} from "rc-field-form/lib/interface";
 import Template from "@/pages/applications/NewOrEdit/Template";
+import {useHistory} from "umi";
 
 export default (props: any) => {
+  const history = useHistory();
   const intl = useIntl();
   const [current, setCurrent] = useState(0);
   const {location} = props;
@@ -28,7 +30,7 @@ export default (props: any) => {
   const {initialState} = useModel('@@initialState');
   const {id} = initialState!.resource; // groupid
   const creating = pathname.endsWith('newapplicationv2');
-  const editing = pathname.endsWith('edit');
+  const editing = pathname.endsWith('editv2');
   const {successAlert} = useModel('alert');
 
   const [form] = Form.useForm();
@@ -84,9 +86,9 @@ export default (props: any) => {
     const createReq: API.CreateOrUpdateRequestV2 = {
       name: form.getFieldValue(nameKey),
       description: form.getFieldValue(descriptionKey),
-      buildConfig: buildConfig, //TODO
+      buildConfig: buildConfig,
       priority: form.getFieldValue(priorityKey),
-      templateConfig: templateConfig["application"],  //TODO
+      templateConfig: templateConfig,
       templateInfo: {name: templateBasic.name, release: releaseName!},
       git: {
         url: form.getFieldValue(gitURLKey),
@@ -103,7 +105,9 @@ export default (props: any) => {
     onSuccess: (res: API.CreateApplicationResponseV2) => {
       successAlert(creating ? intl.formatMessage({id: 'pages.applicationNew.success'}) : intl.formatMessage({id: 'pages.applicationEdit.success'}));
       // jump to application's home page
-      window.location.href = res.fullPath;
+      history.push({
+        pathname: res.fullPath
+      })
     },
   });
 
@@ -135,6 +139,7 @@ export default (props: any) => {
   }
 
   const configHasError = (config: {}) => {
+    /*
     let hasError = false;
     Object.keys(config).forEach((item) => {
       if (config[item].length > 0) {
@@ -143,6 +148,8 @@ export default (props: any) => {
     });
 
     return hasError;
+     */
+    return false
   };
 
   const steps = [

@@ -175,10 +175,11 @@ export default (props: any) => {
           <Form.Item
             name="refType"
             style={{display: 'inline-block', width: '100px'}}
+            initialValue={gitRefTypeList[0].key}
           >
             <Select
               disabled={readonly}
-              defaultValue={gitRefTypeList[0]}
+              // defaultValue={gitRefTypeList[0]}
               onSelect={(key: any) => {
                 if (key != GitRefType.Commit) {
                   refreshGitRefList();

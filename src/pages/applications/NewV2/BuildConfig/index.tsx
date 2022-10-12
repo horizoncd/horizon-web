@@ -1,7 +1,7 @@
 import {useIntl, useRequest} from 'umi';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import {Card} from 'antd';
-import styles from '../index.less';
+import styles from '../../NewOrEdit/index.less';
 import {getBuildSchema} from "@/services/buildschema/buildschema";
 
 export default (props: any) => {

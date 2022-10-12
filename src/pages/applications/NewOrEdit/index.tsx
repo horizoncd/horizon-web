@@ -259,6 +259,7 @@ export default (props: any) => {
                 config={config}
                 setConfig={setConfig}
                 setConfigErrors={setConfigErrors}
+                version={applicationVersion1}
               />
               )
             }

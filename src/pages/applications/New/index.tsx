@@ -7,7 +7,7 @@ import {useModel} from "@@/plugin-model/useModel";
 export default (props: any) => {
   const { initialState } = useModel('@@initialState');
   const { fullPath: fullPath } = initialState!.resource;
-  const newApplicationV1 = `/groups${fullPath}/-/newapplication`;
+  const newApplicationV1 = `/groups${fullPath}/-/newapplicationv1`;
   const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
   return (
     <div>

@@ -112,6 +112,10 @@ export default forwardRef((props: any, ref) => {
           && Object.keys(data).map((item, i) => {
             const currentFormData = props.config[item] || {};
 
+            console.log("config props config below----")
+            console.log(props.config[item])
+            console.log(props.config)
+
             const onChange = ({formData, errors}: any) => {
               if (readonly) {
                 return;
