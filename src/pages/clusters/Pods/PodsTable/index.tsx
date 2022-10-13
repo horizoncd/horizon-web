@@ -1,3 +1,8 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-param-reassign */
 import {
   Button, Input, Menu, Modal, Space, Table, Tooltip,
 } from 'antd';
@@ -41,6 +46,7 @@ import styles from './index.less';
 import Utils, { handleHref } from '@/utils';
 import { env2MlogEnv } from '@/const';
 import type { CLUSTER } from '@/services/clusters';
+import { MicroApp } from '@/components/Widget';
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -138,11 +144,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     setFullscreen(true);
     setPod(p);
     refreshPodLog(p.podName, p.containerName).then();
-  };
-
-  const onClickMlog = (p: CLUSTER.PodInTable) => {
-    const link = `http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&hostname=${p.podName}`;
-    window.open(link);
   };
 
   const eventTableColumns = [
@@ -505,7 +506,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                 lifeCycle.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
                 break;
               default:
-                break;
+                value.message = '获取应用状态失败';
             }
             break;
           default:
@@ -547,12 +548,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         onClick={() => onClickStdout(record)}
       >
         <div style={{ color: '#1890ff' }}>Stdout</div>
-      </Menu.Item>
-      <Menu.Item
-        disabled={!RBAC.Permissions.getContainerLog.allowed}
-        onClick={() => onClickMlog(record)}
-      >
-        <div style={{ color: '#1890ff' }}>Mlog</div>
       </Menu.Item>
       <Menu.Item
         disabled={!RBAC.Permissions.getEvents.allowed}
@@ -685,7 +680,14 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           >
             Terminal
           </Button>
-          <Link to={formatPodMonitorURL(record)}>Monitor</Link>
+          <MicroApp
+            name="log"
+            disabled={!RBAC.Permissions.getContainerLog.allowed}
+            clusterName={cluster?.name}
+            env={env2MlogEnv.get(cluster?.scope.environment || 'dev')}
+            podName={record.podName}
+          />
+          <a style={{ color: '#1890ff' }} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
@@ -886,12 +888,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             }
           }
         }}
-        onClose={
-        () => {
-          setFullscreen(false);
-          cancelPodLog();
-        }
-      }
+        onClose={() => { setFullscreen(false); cancelPodLog(); }}
         fullscreen={false}
         supportFullscreenToggle
         supportRefresh

@@ -59,4 +59,9 @@ export default defineConfig({
   cssLoader: {
     localsConvention: 'camelCase',
   },
+  qiankun: {
+    master:{
+      sandbox: false,
+    }
+  },
 });
