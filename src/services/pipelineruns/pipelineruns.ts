@@ -7,10 +7,8 @@ export async function cancelPipeline(pipelinerunID: number) {
 }
 
 export async function queryPipelineLog(pipelinerunID: number) {
-  return request(`/apis/core/v1/pipelineruns/${pipelinerunID}/log`, {
-    method: 'GET',
-    responseType: 'text',
-  });
+  return fetch(`/apis/core/v1/pipelineruns/${pipelinerunID}/log`)
+    .then((resp) => resp.text());
 }
 
 export async function getPipeline(pipelinerunID: number) {
