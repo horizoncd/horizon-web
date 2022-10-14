@@ -22,8 +22,9 @@ export default {
 
   'pages.applicationNewV2.step.one': '基础信息',
   'pages.applicationNewV2.step.two': '构建配置',
-  'pages.applicationNewV2.step.three': '部署配置',
-  'pages.applicationNewV2.step.four': '审计',
+  'pages.applicationNewV2.step.three': '部署模板',
+  'pages.applicationNewV2.step.four': '模板配置',
+  'pages.applicationNewV2.step.five': '审计',
 
   'pages.applicationNew.step.message': '第 {index} 步',
   'pages.applicationNew.basic.title': '应用基础信息',

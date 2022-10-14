@@ -21,8 +21,9 @@ export default {
 
   'pages.applicationNewV2.step.one': 'Basic',
   'pages.applicationNewV2.step.two': 'BuildConfig',
-  'pages.applicationNewV2.step.three': 'DeployConfig',
-  'pages.applicationNewV2.step.four': 'Audit',
+  'pages.applicationNewV2.step.three': 'Template',
+  'pages.applicationNewV2.step.four': 'TemplateConfig',
+  'pages.applicationNewV2.step.five': 'Audit',
 
   'pages.applicationNew.step.message': 'Step {index}',
   'pages.applicationNew.basic.title': 'Service Basic',

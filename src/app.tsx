@@ -236,7 +236,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         key="4"
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More 
+            More
 {' '}
 <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
@@ -440,11 +440,19 @@ function formatGroupMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/groups${fullPath}/-/newapplication`,
+      path: `/groups${fullPath}/-/newapplication:q:`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv1`,
       menuRender: false,
     },
     {
       path: `/groups${fullPath}/-/newoauthapp`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv2`,
       menuRender: false,
     },
     {
