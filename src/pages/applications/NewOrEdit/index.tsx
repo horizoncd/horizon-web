@@ -12,18 +12,14 @@ import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
 import styles from './index.less';
-import {
-  applicationVersion1,
-  createApplication,
-  getApplication,
-  updateApplication
-} from '@/services/applications/applications';
+import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
 import type { API } from '@/services/typings';
 
 export default (props: any) => {
   const intl = useIntl();
+
   const name = 'name';
   const release = 'release';
   const priority = 'priority';
@@ -41,7 +37,7 @@ export default (props: any) => {
 
   const { location } = props;
   const { pathname } = location;
-  const creating = pathname.endsWith('newapplication');
+  const creating = pathname.endsWith('newapplicationv1');
   const editing = pathname.endsWith('edit');
 
   const [form] = Form.useForm();
@@ -93,13 +89,14 @@ export default (props: any) => {
 
   const basicHasError = () => {
     let hasError = false;
-    console.log(basic)
+
     for (let i = 0; i < basic!.length; i += 1) {
       const val = basic![i];
       if (val.errors && val.errors.length > 0) {
         hasError = true;
       }
     }
+
     return hasError;
   };
 
@@ -241,39 +238,37 @@ export default (props: any) => {
             }
             {
               current === 1 && (
-              <Basic
-                form={form}
-                template={template}
-                formData={basic}
-                setFormData={setBasicFormData}
-                editing={editing}
-                version={applicationVersion1}
-              />
+                <Basic
+                  form={form}
+                  template={template}
+                  formData={basic}
+                  setFormData={setBasicFormData}
+                  editing={editing}
+                />
               )
             }
             {
               current === 2 && (
-              <Config
-                template={template}
-                release={form.getFieldValue(release)}
-                config={config}
-                setConfig={setConfig}
-                setConfigErrors={setConfigErrors}
-                version={applicationVersion1}
-              />
+                <Config
+                  template={template}
+                  release={form.getFieldValue(release)}
+                  config={config}
+                  setConfig={setConfig}
+                  setConfigErrors={setConfigErrors}
+                />
               )
             }
             {
               current === 3
               && (
-              <Audit
-                form={form}
-                template={template}
-                release={form.getFieldValue(release)}
-                formRef={configRef}
-                config={config}
-                onSubmit={onSubmit}
-              />
+                <Audit
+                  form={form}
+                  template={template}
+                  release={form.getFieldValue(release)}
+                  formRef={configRef}
+                  config={config}
+                  onSubmit={onSubmit}
+                />
               )
             }
           </div>

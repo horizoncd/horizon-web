@@ -1,31 +1,37 @@
-import {Card, Form, Input, Select,} from 'antd';
-import type {FieldData, Rule} from 'rc-field-form/lib/interface';
-import {useRequest} from 'umi';
-import {useIntl} from '@@/plugin-locale/localeExports';
-import {useEffect} from 'react';
-import {queryReleases} from '@/services/templates/templates';
+import {
+  Card, Form, Input, Select,
+} from 'antd';
+import type { FieldData, Rule } from 'rc-field-form/lib/interface';
+import { useRequest } from 'umi';
+import { useIntl } from '@@/plugin-locale/localeExports';
+import { useEffect } from 'react';
+import { queryReleases } from '@/services/templates/templates';
 import styles from '../index.less';
-import {GitRefType, listGitRef} from '@/services/code/code';
+import { GitRefType, listGitRef } from '@/services/code/code';
+import { applicationVersion2 } from '@/services/applications/applications';
+import { API } from '@/services/typings';
+
 import HForm from '@/components/HForm';
-import {applicationVersion2} from "@/services/applications/applications";
 
-
-const {TextArea} = Input;
-const {Option} = Select;
+const { TextArea } = Input;
+const { Option } = Select;
 
 export default (props: any) => {
   const intl = useIntl();
-  // query release version
-  const {data: releases} = useRequest(() => {
-    if (props.template != undefined) {
-      return queryReleases(props.template?.name);
-    }
-    return undefined
-  });
+  const {
+    form, template, readonly = false, editing = false, formData, setFormData, version,
+  } = props;
 
-  const {data: gitRefList = [], run: refreshGitRefList} = useRequest((filter?: string) => {
-    const giturl = props.form.getFieldValue('url');
-    const refType = props.form.getFieldValue('refType');
+  // query release version
+  const { data: releases } = useRequest(() => {
+    if (template !== undefined) {
+      return queryReleases(template?.name);
+    }
+    return undefined;
+  });
+  const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
+    const giturl = form.getFieldValue('url');
+    const refType = form.getFieldValue('refType');
     return listGitRef({
       refType,
       giturl,
@@ -35,29 +41,31 @@ export default (props: any) => {
     });
   }, {
     debounceInterval: 100,
-    ready: !!props.form.getFieldValue('url') && !readonly,
+    ready: !!form.getFieldValue('url') && !readonly,
   });
 
   useEffect(() => {
-    if (props.editing) {
-      refreshGitRefList(props.form.getFieldValue('url'), '');
+    if (editing) {
+      refreshGitRefList(form.getFieldValue('url'));
     }
-  }, [props.editing, props.form, refreshGitRefList]);
+  }, [form, editing, refreshGitRefList]);
 
   const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
     id: `pages.applicationNew.basic.${suffix}`,
-    defaultMessage: defaultMsg
+    defaultMessage: defaultMsg,
   });
 
   const nameRules: Rule[] = [
     {
       required: true,
+      // eslint-disable-next-line prefer-regex-literals
       pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
       message: formatMessage('name.ruleMessage'),
       max: 64,
     },
   ];
 
+  // eslint-disable-next-line prefer-regex-literals
   const gitURLRegExp = new RegExp('^ssh://.+[.]git$');
   const gitURLRules: Rule[] = [
     {
@@ -88,15 +96,13 @@ export default (props: any) => {
         <div>
           {item.name}
           {' '}
-          <span style={{color: 'red'}}>(推荐)</span>
+          <span style={{ color: 'red' }}>(推荐)</span>
         </div>
       );
     }
 
     return item.name;
   };
-
-  const {readonly = false, editing = false} = props;
 
   const gitRefTypeList = [
     {
@@ -113,34 +119,33 @@ export default (props: any) => {
     },
   ];
 
-
   return (
     <div>
       <HForm
         layout="vertical"
-        form={props.form}
+        form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          props.setFormData(a, b);
+          setFormData(a, b);
         }}
-        fields={props.formData}
+        fields={formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name="name" rules={nameRules}>
-            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing}/>
+            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing} />
           </Form.Item>
           <Form.Item label={formatMessage('description')} name="description">
             <TextArea
               placeholder={readonly ? '' : formatMessage('description.ruleMessage')}
               maxLength={255}
               disabled={readonly}
-              autoSize={{minRows: 3}}
+              autoSize={{ minRows: 3 }}
             />
           </Form.Item>
           {
-            props.version !== applicationVersion2 && (
+            version !== applicationVersion2 && (
               <div>
                 <Form.Item label={formatMessage('template', 'template')}>
-                  <Input disabled value={props.template?.name}/>
+                  <Input disabled value={template?.name} />
                 </Form.Item>
                 <Form.Item label={formatMessage('release')} name="release" rules={requiredRule}>
                   <Select disabled={readonly}>
@@ -154,6 +159,7 @@ export default (props: any) => {
               </div>
             )
           }
+
           <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
             <Select disabled={readonly}>
               {priorities.map((item) => (
@@ -173,47 +179,52 @@ export default (props: any) => {
             />
           </Form.Item>
           <Form.Item
+            label="版本"
             name="refType"
-            style={{display: 'inline-block', width: '100px'}}
-            initialValue={gitRefTypeList[0].key}
+            rules={gitRevisionRules}
           >
-            <Select
-              disabled={readonly}
-              // defaultValue={gitRefTypeList[0]}
-              onSelect={(key: any) => {
-                if (key != GitRefType.Commit) {
-                  refreshGitRefList();
+            <Form.Item
+              name="refType"
+              style={{ display: 'inline-block', width: '100px' }}
+              initialValue={gitRefTypeList[0].key}
+            >
+              <Select
+                disabled={readonly}
+                onSelect={(key: any) => {
+                  if (key !== GitRefType.Commit) {
+                    refreshGitRefList();
+                  }
+                }}
+              >
+                {
+                  gitRefTypeList.map((item) => <Option key={item.key} value={item.key}>{item.displayName}</Option>)
                 }
-              }}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="refValue"
+              style={{ display: 'inline-block', width: 'calc(100% - 100px)' }}
             >
               {
-                gitRefTypeList.map((item) => <Option key={item.key} value={item.key}>{item.displayName}</Option>)
+                form.getFieldValue('refType') === GitRefType.Commit
+                  ? <Input /> : (
+                    <Select
+                      disabled={readonly}
+                      showSearch
+                      onSearch={(item) => {
+                        refreshGitRefList(item);
+                      }}
+                    >
+                      {
+                        gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
+                      }
+                    </Select>
+                  )
               }
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="refValue"
-            style={{display: 'inline-block', width: 'calc(100% - 100px)'}}
-          >
-            {
-              props.form.getFieldValue('refType') == GitRefType.Commit
-                ? <Input/> : (
-                  <Select
-                    disabled={readonly}
-                    showSearch
-                    onSearch={(item) => {
-                      refreshGitRefList(item);
-                    }}
-                  >
-                    {
-                      gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
-                    }
-                  </Select>
-                )
-            }
+            </Form.Item>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name="subfolder">
-            <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'}/>
+            <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'} />
           </Form.Item>
         </Card>
       </HForm>
