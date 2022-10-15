@@ -2,7 +2,7 @@ import { useIntl } from '@@/plugin-locale/localeExports';
 import {
   Button, Card, Col, Form, Input, Row,
 } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRequest } from '@@/plugin-request/request';
 import { useModel } from '@@/plugin-model/useModel';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -108,23 +108,6 @@ export default (props: any) => {
     manual: true,
   });
 
-  const onSubmit = (formData: any) => {
-    submitApp(formData).then((result) => {
-      successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
-        : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
-      let destPath;
-      if (result) {
-        destPath = result.fullPath;
-      } else {
-        destPath = fullPath;
-      }
-      history.push({
-        pathname: destPath,
-      });
-      refresh().then();
-    });
-  };
-
   const basicHasError = () => {
     let hasError = false;
     for (let i = 0; i < basic!.length; i += 1) {
@@ -150,7 +133,7 @@ export default (props: any) => {
     return false;
   };
 
-  const currentStepIsValid = (currentValue :number) => {
+  const currentStepIsValid = (currentValue: number) => {
     let valid: boolean;
     switch (currentValue) {
       case 0:
@@ -193,7 +176,10 @@ export default (props: any) => {
 
   const selectedTemplateInfo = () => {
     const templateTitle = intl.formatMessage({ id: 'pages.applicationNewV2.step.three' });
-    const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg });
+    const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
+      id: `pages.applicationNew.basic.${suffix}`,
+      defaultMessage: defaultMsg,
+    });
     return (
       <Card title={templateTitle} className={styles.gapBetweenCards}>
         <Form.Item label={formatMessage('template', 'template')}>
@@ -218,7 +204,8 @@ export default (props: any) => {
     }
   };
 
-  const configRef = useRef();
+  const buildConfigRef = useRef();
+  const templateConfigRef = useRef();
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     setBasic(allFields);
   };
@@ -228,6 +215,30 @@ export default (props: any) => {
       setReleaseName('');
     }
   };
+
+  const [buildSubmitted, setBuildSubmitted] = useState(false);
+  const [templateConfigSubmitted, setTemplateConfigSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (templateConfigSubmitted && buildSubmitted) {
+      submitApp().then((result) => {
+        successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
+          : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
+        let destPath;
+        if (result) {
+          destPath = result.fullPath;
+        } else {
+          destPath = fullPath;
+        }
+        history.push({
+          pathname: destPath,
+        });
+        refresh().then();
+      });
+    }
+  }, [templateConfigSubmitted, buildConfigErrors, submitApp, successAlert, creating,
+    intl, history, refresh, fullPath, buildSubmitted]);
+
   return (
     <PageWithBreadcrumb>
       <Row>
@@ -250,62 +261,70 @@ export default (props: any) => {
               )
             }
             {
-            // build config
-            current === 1 && (
-              <BuildConfig
-                config={buildConfig}
-                setConfig={setBuildConfig}
-                setConfigErrors={setBuildConfigErrors}
-              />
-            )
-          }
-            {
-            // deploy template
-            current === 2 && (
-              <Template
-                template={templateBasic}
-                resetTemplate={resetTemplate}
-              />
-            )
-          }
-            {
-            // deploy config
-            current === 3 && (
-              <Config
-                template={templateBasic}
-                release={releaseName}
-                config={templateConfig}
-                setConfig={setTemplateConfig}
-                setReleaseName={setReleaseName}
-                setConfigErrors={setTemplateConfigErrors}
-              />
-            )
-          }
-            {
-            // audit, list all the content
-            current === 4 && (
-              <div>
-                <Basic
-                  form={form}
-                  version={applicationVersion2}
-                  readonly
-                />
+              // build config
+              current === 1 && (
                 <BuildConfig
                   config={buildConfig}
-                  readonly
+                  setConfig={setBuildConfig}
+                  setConfigErrors={setBuildConfigErrors}
                 />
-                <div>{selectedTemplateInfo()}</div>
+              )
+            }
+            {
+              // deploy template
+              current === 2 && (
+                <Template
+                  template={templateBasic}
+                  resetTemplate={resetTemplate}
+                />
+              )
+            }
+            {
+              // deploy config
+              current === 3 && (
                 <Config
                   template={templateBasic}
                   release={releaseName}
                   config={templateConfig}
-                  ref={configRef}
-                  onSubmit={onSubmit}
-                  readonly
+                  setConfig={setTemplateConfig}
+                  setReleaseName={setReleaseName}
+                  setConfigErrors={setTemplateConfigErrors}
                 />
-              </div>
-            )
-          }
+              )
+            }
+            {
+              // audit, list all the content
+              current === 4 && (
+                <div>
+                  <Basic
+                    form={form}
+                    version={applicationVersion2}
+                    readonly
+                  />
+                  <BuildConfig
+                    readonly
+                    config={buildConfig}
+                    ref={buildConfigRef}
+                    onSubmit={(schema: any) => {
+                      setBuildSubmitted(true);
+                      setBuildConfig(schema.formData);
+                    }}
+                  />
+                  <div>{selectedTemplateInfo()}</div>
+                  <Config
+                    template={templateBasic}
+                    release={releaseName}
+                    config={templateConfig}
+                    ref={templateConfigRef}
+                    onSubmit={(schema: any) => {
+                      setTemplateConfigSubmitted(true);
+                      setTemplateConfig(schema.formData);
+                    }}
+                    readonly
+                  />
+                </div>
+              )
+            }
           </div>
           <div className={styles.stepsAction}>
             {current > 0 && (
@@ -322,7 +341,8 @@ export default (props: any) => {
               <Button
                 type="primary"
                 onClick={() => {
-                  configRef.current.submit();
+                  templateConfigRef.current.submit();
+                  buildConfigRef.current.submit();
                 }}
                 loading={loading}
               >

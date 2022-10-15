@@ -12,6 +12,10 @@ export default forwardRef((props: any, ref) => {
   const { readonly = false } = props;
   const formRef = useRef();
 
+  const {
+    setConfig, setConfigErrors,
+  } = props;
+
   useImperativeHandle(ref, () => ({
     submit: () => {
       formRef.current!.submit();
@@ -83,8 +87,12 @@ export default forwardRef((props: any, ref) => {
   };
 
   const onChange = ({ formData, errors }: any) => {
-    props.setConfig(formData);
-    props.setConfigErrors(errors);
+    if (setConfig) {
+      setConfig(formData);
+    }
+    if (setConfigErrors) {
+      setConfigErrors(errors);
+    }
   };
 
   const onSubmit = (schema: any) => {
@@ -102,7 +110,9 @@ export default forwardRef((props: any, ref) => {
             title={intl.formatMessage({ id: 'pages.applicationNewV2.step.four' })}
           >
             <JsonSchemaForm
-              ref={formRef}
+              ref={(dom) => {
+                formRef.current = dom;
+              }}
               disabled={readonly}
               jsonSchema={jsonSchema}
               uiSchema={uiSchema}
