@@ -486,6 +486,10 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
+      path: `/applications${fullPath}/-/editv2`,
+      menuRender: false,
+    },
+    {
       path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
     },

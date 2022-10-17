@@ -15,6 +15,10 @@ declare namespace Templates {
     releases?: Release[]
   };
 
+  type TemplateSchema = {
+    application: any
+    pipeline: any
+  };
   type Release = {
     id: number
     name: string

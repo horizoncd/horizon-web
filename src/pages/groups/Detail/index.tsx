@@ -3,14 +3,14 @@ import {
 } from 'antd';
 import { history } from 'umi';
 import copy from 'copy-to-clipboard';
-import utils from '../../../utils';
-import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import './index.less';
-import GroupTree from '@/components/GroupTree';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import RBAC from '@/rbac';
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
+import GroupTree from '@/components/GroupTree';
 import styles from '@/pages/applications/Detail/index.less';
+import utils from '../../../utils';
+import './index.less';
 
 export default () => {
   const intl = useIntl();
@@ -18,7 +18,9 @@ export default () => {
   const { initialState } = useModel('@@initialState');
   const { id: groupID, name: groupName, fullPath } = initialState!.resource;
   const newGroup = `/groups${fullPath}/-/newsubgroup`;
-  const newApplication = `/groups${fullPath}/-/newapplication`;
+  const newApplication = `/groups${fullPath}/-/newapplicationv1`;
+  const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
+
   const { successAlert } = useModel('alert');
 
   const header = () => (
@@ -33,6 +35,7 @@ export default () => {
         {intl.formatMessage({ id: 'pages.groups.New subgroup' })}
       </Button>
       <Button
+        style={{ marginRight: 15 }}
         type="primary"
         disabled={!RBAC.Permissions.createApplication.allowed}
         onClick={() => {
@@ -42,6 +45,16 @@ export default () => {
         }}
       >
         {intl.formatMessage({ id: 'pages.groups.New application' })}
+      </Button>
+      <Button
+        disabled={!RBAC.Permissions.createApplication.allowed}
+        onClick={() => {
+          history.push({
+            pathname: newApplicationV2,
+          });
+        }}
+      >
+        {intl.formatMessage({ id: 'pages.groups.New applicationV2' })}
       </Button>
     </div>
   );
@@ -62,6 +75,7 @@ export default () => {
           <div className={styles.titleFont}>{groupName}</div>
           <div className={styles.idFont}>
             <Tooltip title="单击可复制ID">
+              {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
               <span onClick={() => {
                 copy(String(groupID));
                 successAlert('ID复制成功');

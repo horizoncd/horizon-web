@@ -5,7 +5,7 @@ import {
 } from 'react';
 import { querySchema } from '@/services/templates/templates';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../index.less';
+import styles from '../../index.less';
 
 export default forwardRef((props: any, ref) => {
   const intl = useIntl();

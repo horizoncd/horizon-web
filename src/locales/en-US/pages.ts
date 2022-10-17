@@ -7,6 +7,7 @@ export default {
 
   'pages.groups.New subgroup': 'New subgroup',
   'pages.groups.New application': 'New application',
+  'pages.groups.New applicationV2': 'NewApplicationV2',
   'pages.groups.New group': 'New group',
   'pages.groups.New cluster': 'New cluster',
 

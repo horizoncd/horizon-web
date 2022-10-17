@@ -123,6 +123,11 @@ declare namespace API {
     email: string,
   };
 
+  type AppSchemeConfigs = {
+    application: any
+    pipeline: any
+  };
+
   type Application = {
     id: number;
     groupID: number;
@@ -145,12 +150,12 @@ declare namespace API {
   type BuildSchema = {
     jsonSchema?: any;
     uiSchema?:any;
-  }
+  };
 
-  type TemplateInfoV2  = {
+  type TemplateInfoV2 = {
     name: string;
     release: string;
-  }
+  };
   type GetApplicationResponse2 = {
     id: number;
     name: string;
@@ -167,7 +172,7 @@ declare namespace API {
     groupID: number;
     createdAt: string;
     updatedAt: string;
-  }
+  };
 
   type CreateOrUpdateRequestV2 = {
     name: string
@@ -177,7 +182,7 @@ declare namespace API {
     buildConfig?: any;
     templateInfo?: TemplateInfoV2;
     templateConfig?: any;
-  }
+  };
 
   type CreateApplicationResponseV2 = {
     id: string
@@ -185,8 +190,7 @@ declare namespace API {
     groupID: number;
     createdAt: string;
     updatedAt: string;
-  }
-
+  };
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   type regionSelectors = [{
@@ -292,4 +296,3 @@ declare namespace API {
     tags: Tag[],
   };
 }
-

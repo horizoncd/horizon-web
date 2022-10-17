@@ -2,7 +2,7 @@ import { useIntl, useRequest } from 'umi';
 import { Card } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../../NewOrEdit/index.less';
+import styles from '../../index.less';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
 
 export default forwardRef((props: any, ref) => {

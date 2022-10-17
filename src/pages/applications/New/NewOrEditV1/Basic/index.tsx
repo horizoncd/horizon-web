@@ -6,7 +6,7 @@ import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useEffect } from 'react';
 import { queryReleases } from '@/services/templates/templates';
-import styles from '../index.less';
+import styles from '../../index.less';
 import { GitRefType, listGitRef } from '@/services/code/code';
 import { applicationVersion2 } from '@/services/applications/applications';
 import { API } from '@/services/typings';

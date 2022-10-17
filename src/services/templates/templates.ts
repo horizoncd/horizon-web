@@ -24,15 +24,13 @@ export async function queryReleases(template: string | number) {
   const config = {
     method: 'GET',
   };
-  type returnType = {
-    data: Templates.Release[];
-  };
-  return request<returnType>(path, config);
+
+  return request<{ data: Templates.Release[] }>(path, config);
 }
 
 export async function querySchema(template: string, release: string, params?: API.TemplateSchemaParam) {
   return request<{
-    data: any;
+    data: Templates.TemplateSchema;
   }>(`/apis/core/v1/templates/${template}/releases/${release}/schema`, {
     method: 'GET',
     params,
@@ -47,10 +45,7 @@ export async function queryTemplate(template: string | number, withReleases: boo
       withReleases,
     },
   };
-  type returnType = {
-    data: Templates.Template
-  };
-  return request<returnType>(path, config);
+  return request<{ data: Templates.Template }>(path, config);
 }
 
 export async function getTemplatesByUser(fullpath: boolean = false) {
@@ -101,10 +96,6 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
   return request(path, config);
 }
 
-export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false) {
-  return getTemplates(0, fullpath, recursive);
-}
-
 export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false) {
   const path = `/apis/core/v1/groups/${group}/templates`;
   const config = {
@@ -113,10 +104,11 @@ export async function getTemplates(group: number, fullpath: boolean = false, rec
       fullpath, recursive,
     },
   };
-  type returnType = {
-    data: Templates.Template[]
-  };
-  return request<returnType>(path, config);
+  return request<{ data: Templates.Template[] }>(path, config);
+}
+
+export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false) {
+  return getTemplates(0, fullpath, recursive);
 }
 
 export async function getSchema(release: number) {
@@ -132,10 +124,7 @@ export async function getRelease(release: number) {
   const config = {
     method: 'GET',
   };
-  type returnType = {
-    data: Templates.Release
-  };
-  return request<returnType>(path, config);
+  return request<{ data: Templates.Release }>(path, config);
 }
 
 export async function updateRelease(release: number, data: Templates.UpdateReleaseRequest) {

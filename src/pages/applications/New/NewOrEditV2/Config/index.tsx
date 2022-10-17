@@ -1,21 +1,20 @@
 import { useIntl, useRequest } from 'umi';
 import { Card, Form, Select } from 'antd';
+import type { Rule } from 'rc-field-form/lib/interface';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Rule } from '@rc-field-form/lib/interface';
 import { Option } from 'antd/es/mentions';
 import { queryReleases, querySchema } from '@/services/templates/templates';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../index.less';
+import styles from '../../index.less';
 
 export default forwardRef((props: any, ref) => {
   const intl = useIntl();
-  const { readonly = false } = props;
+  const { readonly = false, envTemplate } = props;
   const formRef = useRef();
 
   const {
-    setConfig, setConfigErrors,
+    setConfig, setConfigErrors, template,
   } = props;
-
   useImperativeHandle(ref, () => ({
     submit: () => {
       formRef.current!.submit();
@@ -33,7 +32,12 @@ export default forwardRef((props: any, ref) => {
     },
   );
 
-  const { data: releases } = useRequest<{ data: Templates.Release[] }>(() => queryReleases(props.template?.name));
+  const { data: releases } = useRequest<{ data: Templates.Release[] }>(
+    () => queryReleases(template.name),
+    {
+      ready: !!props.template.name,
+    },
+  );
 
   const templateVersionSelect = () => {
     const requiredRule: Rule[] = [
@@ -100,9 +104,8 @@ export default forwardRef((props: any, ref) => {
   };
 
   const getJsonSchema = () => {
-    const appKey = 'application'; //TODO
-    if (data && data[appKey]) {
-      const { jsonSchema, uiSchema } = data[appKey];
+    if (data && data.application) {
+      const { jsonSchema, uiSchema } = data.application;
       return (
         <div>
           <Card
@@ -130,7 +133,7 @@ export default forwardRef((props: any, ref) => {
   };
   return (
     <div>
-      {!readonly && (<div>{templateVersionSelect()}</div>)}
+      {!readonly && !envTemplate && (<div>{templateVersionSelect()}</div>)}
       <div>{getJsonSchema()}</div>
     </div>
   );

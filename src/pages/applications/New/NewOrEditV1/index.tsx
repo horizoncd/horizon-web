@@ -11,7 +11,7 @@ import Template from './Template';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import styles from './index.less';
+import styles from '../index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';

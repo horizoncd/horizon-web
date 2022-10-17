@@ -1,10 +1,10 @@
-import {request} from 'umi';
-import type {CLUSTER} from '../clusters';
-import type {API} from '../typings';
+import { request } from 'umi';
+import type { CLUSTER } from '../clusters';
+import type { API } from '../typings';
 
-export const applicationVersion1 = "0.0.1"
-export const applicationVersion2 = "0.0.2"
-export const manifestVersion = "Version"
+export const applicationVersion1 = '0.0.1';
+export const applicationVersion2 = '0.0.2';
+export const manifestVersion = 'Version';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
@@ -42,7 +42,6 @@ export async function updateApplicationV2(id: number, body: API.CreateOrUpdateRe
   });
 }
 
-
 export async function updateApplication(id: number, body: API.NewApplication) {
   return request(`/apis/core/v1/applications/${id}`, {
     method: 'PUT',
@@ -64,11 +63,8 @@ export async function getApplication(id: number) {
 export async function getApplicationV2(id: number) {
   return request<{
     data: API.GetApplicationResponse2
-  }>(
-    `/apis/core/v2/applications/${id}`, {method: 'GET'}
-  );
+  }>(`/apis/core/v2/applications/${id}`, { method: 'GET' });
 }
-
 
 export async function deleteApplication(id: number) {
   return request<{
@@ -132,10 +128,18 @@ export async function updateApplicationRegions(applicationID: number, regions: a
   });
 }
 
-export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: any) {
-  return request<{
-    data: API.PageResult<API.Application>;
-  }>(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
+export async function updateApplicationEnvTemplateV2(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v2/applications/${applicationID}/envtemplates`, {
+    method: 'POST',
+    params: {
+      environment,
+    },
+    data,
+  });
+}
+
+export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'POST',
     params: {
       environment,

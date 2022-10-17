@@ -9,10 +9,10 @@ import { useModel } from '@@/plugin-model/useModel';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import styles from '../NewOrEdit/index.less';
+import styles from '@//pages/applications/New/index.less';
 import HSteps from '@/components/HSteps';
-import Basic from '@/pages/applications/NewOrEdit/Basic';
-import BuildConfig from '@/pages/applications/NewV2/BuildConfig';
+import Basic from '@/pages/applications/New/NewOrEditV1/Basic';
+import BuildConfig from '@/pages/applications/New/NewOrEditV2/BuildConfig';
 import {
   applicationVersion2,
   createApplicationV2,
@@ -22,7 +22,7 @@ import {
 import Config from './Config';
 import { API } from '@/services/typings';
 import { parseGitRef } from '@/services/code/code';
-import Template from '@/pages/applications/NewOrEdit/Template';
+import Template from '@/pages/applications/New/NewOrEditV1/Template';
 
 export default (props: any) => {
   const history = useHistory();
@@ -306,8 +306,8 @@ export default (props: any) => {
                     config={buildConfig}
                     ref={buildConfigRef}
                     onSubmit={(schema: any) => {
-                      setBuildSubmitted(true);
                       setBuildConfig(schema.formData);
+                      setBuildSubmitted(true);
                     }}
                   />
                   <div>{selectedTemplateInfo()}</div>
