@@ -60,7 +60,7 @@ export default function PipelineStats() {
     },
     {
       title: '各阶段耗时（s）',
-      Key: 'duration',
+      Key: 'durations',
       render: (pipelineStats: API.PipelineStats) => {
         const { tasks } = pipelineStats;
         const durations = [];
