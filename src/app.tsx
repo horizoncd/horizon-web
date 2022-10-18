@@ -442,11 +442,19 @@ function formatGroupMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/groups${fullPath}/-/newapplication`,
+      path: `/groups${fullPath}/-/newapplication:q:`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv1`,
       menuRender: false,
     },
     {
       path: `/groups${fullPath}/-/newoauthapp`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv2`,
       menuRender: false,
     },
     {
@@ -477,6 +485,10 @@ function formatApplicationMenu(fullPath: string) {
     },
     {
       path: `/applications${fullPath}/-/edit`,
+      menuRender: false,
+    },
+    {
+      path: `/applications${fullPath}/-/editv2`,
       menuRender: false,
     },
     {

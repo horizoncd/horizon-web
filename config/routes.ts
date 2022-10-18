@@ -117,11 +117,14 @@ const groupRoutes = [
     path: '/groups/*/-/newsubgroup',
     menuRender: false,
     component: 'groups/NewSubGroup',
-  },
-  {
-    path: '/groups/*/-/newapplication',
+  }, {
+    path: '/groups/*/-/newapplicationv1',
     menuRender: false,
-    component: 'applications/NewOrEdit',
+    component: 'applications/NewOrEdit/V1',
+  },{
+    path: '/groups/*/-/newapplicationv2',
+    menuRender: false,
+    component: 'applications/NewOrEdit/V2',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -146,7 +149,12 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/edit',
     menuRender: false,
-    component: 'applications/NewOrEdit',
+    component: 'applications/NewOrEdit/V1',
+  },
+  {
+    path: '/applications/*/-/editv2',
+    menuRender: false,
+    component: 'applications/NewOrEdit/V2',
   },
   {
     path: '/applications/*/-/newcluster',

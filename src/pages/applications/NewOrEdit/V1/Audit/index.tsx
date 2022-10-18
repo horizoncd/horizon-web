@@ -2,11 +2,11 @@ import { Card, Radio } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import Basic from '../Basic';
 import Config from '../Config';
-import styles from '../index.less';
+import styles from '../../index.less';
 
 export default (props: any) => {
   const {
-    template, form, release, config,
+    template, form, release, config, formRef, onSubmit,
   } = props;
   const intl = useIntl();
 
@@ -30,8 +30,8 @@ export default (props: any) => {
         template={template}
         release={release}
         config={config}
-        ref={props.formRef}
-        onSubmit={props.onSubmit}
+        ref={formRef}
+        onSubmit={onSubmit}
         readonly
       />
     </div>

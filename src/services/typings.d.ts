@@ -123,6 +123,11 @@ declare namespace API {
     email: string,
   };
 
+  type AppSchemeConfigs = {
+    application: any
+    pipeline: any
+  };
+
   type Application = {
     id: number;
     groupID: number;
@@ -138,6 +143,51 @@ declare namespace API {
     };
     git: GitInfo;
     templateInput: any;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type BuildSchema = {
+    jsonSchema?: any;
+    uiSchema?:any;
+  };
+
+  type TemplateInfoV2 = {
+    name: string;
+    release: string;
+  };
+  type GetApplicationResponseV2 = {
+    id: number;
+    name: string;
+    description: string;
+    priority: string;
+    git: GitInfo;
+
+    buildConfig: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+    manifest?: any;
+
+    fullPath: string;
+    groupID: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type CreateOrUpdateRequestV2 = {
+    name: string
+    description: string
+    priority: string;
+    git?: GitInfo;
+    buildConfig?: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+  };
+
+  type CreateApplicationResponseV2 = {
+    id: string
+    fullPath: string;
+    groupID: number;
     createdAt: string;
     updatedAt: string;
   };

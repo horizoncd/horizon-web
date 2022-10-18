@@ -7,6 +7,7 @@ export default {
 
   'pages.groups.New subgroup': 'New subgroup',
   'pages.groups.New application': 'New application',
+  'pages.groups.New applicationV2': 'NewApplicationV2',
   'pages.groups.New group': 'New group',
   'pages.groups.New cluster': 'New cluster',
 
@@ -18,6 +19,13 @@ export default {
   'pages.applicationNew.step.two': 'Basic',
   'pages.applicationNew.step.three': 'Config',
   'pages.applicationNew.step.four': 'Audit',
+
+  'pages.applicationNewV2.step.one': 'Basic',
+  'pages.applicationNewV2.step.two': 'BuildConfig',
+  'pages.applicationNewV2.step.three': 'Template',
+  'pages.applicationNewV2.step.four': 'TemplateConfig',
+  'pages.applicationNewV2.step.five': 'Audit',
+
   'pages.applicationNew.step.message': 'Step {index}',
   'pages.applicationNew.basic.title': 'Service Basic',
   'pages.applicationNew.basic.name.ruleMessage': '应用名是必填项，支持字母、数字和中划线的组合，且必须以字母开头',

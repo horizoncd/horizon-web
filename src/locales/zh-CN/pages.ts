@@ -7,6 +7,7 @@ export default {
 
   'pages.groups.New subgroup': '创建子分组',
   'pages.groups.New application': '创建应用',
+  'pages.groups.New applicationV2': '创建应用(version2)',
   'pages.groups.New group': '创建分组',
   'pages.groups.New cluster': '创建集群',
   'pages.groups.edit': '编辑',
@@ -19,6 +20,13 @@ export default {
   'pages.applicationNew.step.two': '配置服务',
   'pages.applicationNew.step.three': '自定义配置',
   'pages.applicationNew.step.four': '审计',
+
+  'pages.applicationNewV2.step.one': '基础信息',
+  'pages.applicationNewV2.step.two': '构建配置',
+  'pages.applicationNewV2.step.three': '部署模板',
+  'pages.applicationNewV2.step.four': '模板配置',
+  'pages.applicationNewV2.step.five': '审计',
+
   'pages.applicationNew.step.message': '第 {index} 步',
   'pages.applicationNew.basic.title': '应用基础信息',
   'pages.applicationNew.basic.name.ruleMessage': '应用名是必填项，支持字母、数字和中划线的组合，且必须以字母开头',

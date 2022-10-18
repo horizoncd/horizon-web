@@ -4,23 +4,31 @@ import {
 import type { FieldData, Rule } from 'rc-field-form/lib/interface';
 import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { queryReleases } from '@/services/templates/templates';
-import styles from '../index.less';
-import { listGitRef, GitRefType } from '@/services/code/code';
+import styles from '@/pages/applications/NewOrEdit/index.less';
+import { GitRefType, listGitRef } from '@/services/code/code';
+import { applicationVersion2 } from '@/services/applications/applications';
+import { API } from '@/services/typings';
+
 import HForm from '@/components/HForm';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export default (props: any) => {
+  const {
+    form, template, readOnly = false, editing = false, formData, setFormData, version,
+  } = props;
   const intl = useIntl();
 
-  // query release version
-  const { data: releases } = useRequest(() => queryReleases(props.template?.name));
+  const { data: releases } = useRequest(
+    () => queryReleases(template?.name),
+    { ready: template !== undefined },
+  );
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
-    const giturl = props.form.getFieldValue('url');
-    const refType = props.form.getFieldValue('refType');
+    const giturl = form.getFieldValue('url');
+    const refType = form.getFieldValue('refType');
     return listGitRef({
       refType,
       giturl,
@@ -30,27 +38,30 @@ export default (props: any) => {
     });
   }, {
     debounceInterval: 100,
-    ready: !!props.form.getFieldValue('url') && !readonly,
+    ready: !!form.getFieldValue('url') && !readOnly,
   });
 
   useEffect(() => {
-    if (props.editing) {
-      refreshGitRefList(props.form.getFieldValue('url'), '');
+    if (editing) {
+      refreshGitRefList(form.getFieldValue('url'));
     }
-  }, [props.editing, props.form, refreshGitRefList]);
+  }, [form, editing, refreshGitRefList]);
 
-  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.applicationNew.basic.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
+    id: `pages.applicationNew.basic.${suffix}`,
+    defaultMessage: defaultMsg,
+  });
 
   const nameRules: Rule[] = [
     {
       required: true,
-      pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
+      pattern: /^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$/,
       message: formatMessage('name.ruleMessage'),
       max: 64,
     },
   ];
 
-  const gitURLRegExp = new RegExp('^ssh://.+[.]git$');
+  const gitURLRegExp = /^ssh:\/\/.+[.]git$/;
   const gitURLRules: Rule[] = [
     {
       pattern: gitURLRegExp,
@@ -88,8 +99,6 @@ export default (props: any) => {
     return item.name;
   };
 
-  const { readonly = false, editing = false } = props;
-
   const gitRefTypeList = [
     {
       displayName: '分支',
@@ -109,38 +118,45 @@ export default (props: any) => {
     <div>
       <HForm
         layout="vertical"
-        form={props.form}
+        form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          props.setFormData(a, b);
+          setFormData(a, b);
         }}
-        fields={props.formData}
+        fields={formData}
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name="name" rules={nameRules}>
-            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing} />
+            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readOnly || editing} />
           </Form.Item>
           <Form.Item label={formatMessage('description')} name="description">
             <TextArea
-              placeholder={readonly ? '' : formatMessage('description.ruleMessage')}
+              placeholder={readOnly ? '' : formatMessage('description.ruleMessage')}
               maxLength={255}
-              disabled={readonly}
+              disabled={readOnly}
               autoSize={{ minRows: 3 }}
             />
           </Form.Item>
-          <Form.Item label={formatMessage('template', 'template')}>
-            <Input disabled value={props.template?.name} />
-          </Form.Item>
-          <Form.Item label={formatMessage('release')} name="release" rules={requiredRule}>
-            <Select disabled={readonly}>
-              {releases?.map((item: { name: any; description?: string; recommended?: boolean; }) => (
-                <Option key={item.name} value={item.name}>
-                  {formatReleaseOption(item)}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+          {
+            version !== applicationVersion2 && (
+              <div>
+                <Form.Item label={formatMessage('template', 'template')}>
+                  <Input disabled value={template?.name} />
+                </Form.Item>
+                <Form.Item label={formatMessage('release')} name="release" rules={requiredRule}>
+                  <Select disabled={readOnly}>
+                    {releases?.map((item: { name: any; description?: string; recommended?: boolean; }) => (
+                      <Option key={item.name} value={item.name}>
+                        {formatReleaseOption(item)}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            )
+          }
+
           <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
-            <Select disabled={readonly}>
+            <Select disabled={readOnly}>
               {priorities.map((item) => (
                 <Option key={item} value={item}>
                   {item}
@@ -154,7 +170,7 @@ export default (props: any) => {
           <Form.Item label={formatMessage('url')} name="url" rules={gitURLRules}>
             <Input
               placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
-              disabled={readonly}
+              disabled={readOnly}
             />
           </Form.Item>
           <Form.Item
@@ -165,12 +181,12 @@ export default (props: any) => {
             <Form.Item
               name="refType"
               style={{ display: 'inline-block', width: '100px' }}
+              initialValue={gitRefTypeList[0].key}
             >
               <Select
-                disabled={readonly}
-                defaultValue={gitRefTypeList[0]}
+                disabled={readOnly}
                 onSelect={(key: any) => {
-                  if (key != GitRefType.Commit) {
+                  if (key !== GitRefType.Commit) {
                     refreshGitRefList();
                   }
                 }}
@@ -185,25 +201,25 @@ export default (props: any) => {
               style={{ display: 'inline-block', width: 'calc(100% - 100px)' }}
             >
               {
-                props.form.getFieldValue('refType') == GitRefType.Commit
+                form.getFieldValue('refType') === GitRefType.Commit
                   ? <Input /> : (
                     <Select
-                      disabled={readonly}
+                      disabled={readOnly}
                       showSearch
                       onSearch={(item) => {
                         refreshGitRefList(item);
                       }}
                     >
                       {
-                    gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
-                  }
+                        gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
+                      }
                     </Select>
                   )
               }
             </Form.Item>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name="subfolder">
-            <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'} />
+            <Input disabled={readOnly} placeholder={readOnly ? '' : '非必填，默认为项目根目录'} />
           </Form.Item>
         </Card>
       </HForm>

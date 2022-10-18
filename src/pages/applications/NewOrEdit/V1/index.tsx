@@ -11,7 +11,7 @@ import Template from './Template';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import styles from './index.less';
+import styles from '../index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
@@ -37,7 +37,7 @@ export default (props: any) => {
 
   const { location } = props;
   const { pathname } = location;
-  const creating = pathname.endsWith('newapplication');
+  const creating = pathname.endsWith('newapplicationv1');
   const editing = pathname.endsWith('edit');
 
   const [form] = Form.useForm();
@@ -238,37 +238,37 @@ export default (props: any) => {
             }
             {
               current === 1 && (
-              <Basic
-                form={form}
-                template={template}
-                formData={basic}
-                setFormData={setBasicFormData}
-                editing={editing}
-              />
+                <Basic
+                  form={form}
+                  template={template}
+                  formData={basic}
+                  setFormData={setBasicFormData}
+                  editing={editing}
+                />
               )
             }
             {
               current === 2 && (
-              <Config
-                template={template}
-                release={form.getFieldValue(release)}
-                config={config}
-                setConfig={setConfig}
-                setConfigErrors={setConfigErrors}
-              />
+                <Config
+                  template={template}
+                  release={form.getFieldValue(release)}
+                  config={config}
+                  setConfig={setConfig}
+                  setConfigErrors={setConfigErrors}
+                />
               )
             }
             {
               current === 3
               && (
-              <Audit
-                form={form}
-                template={template}
-                release={form.getFieldValue(release)}
-                formRef={configRef}
-                config={config}
-                onSubmit={onSubmit}
-              />
+                <Audit
+                  form={form}
+                  template={template}
+                  release={form.getFieldValue(release)}
+                  formRef={configRef}
+                  config={config}
+                  onSubmit={onSubmit}
+                />
               )
             }
           </div>

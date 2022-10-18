@@ -2,11 +2,39 @@ import { request } from 'umi';
 import type { CLUSTER } from '../clusters';
 import type { API } from '../typings';
 
+export const applicationVersion1 = '0.0.1';
+export const applicationVersion2 = '0.0.2';
+export const manifestVersion = 'Version';
+
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
     data: API.Application
   }>(`/apis/core/v1/groups/${groupID}/applications`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function createApplicationV2(groupID: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/groups/${groupID}/applications`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function updateApplicationV2(id: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/applications/${id}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -30,6 +58,12 @@ export async function getApplication(id: number) {
   }>(`/apis/core/v1/applications/${id}`, {
     method: 'GET',
   });
+}
+
+export async function getApplicationV2(id: number) {
+  return request<{
+    data: API.GetApplicationResponseV2
+  }>(`/apis/core/v2/applications/${id}`, { method: 'GET' });
 }
 
 export async function deleteApplication(id: number) {
@@ -94,10 +128,18 @@ export async function updateApplicationRegions(applicationID: number, regions: a
   });
 }
 
-export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: any) {
-  return request<{
-    data: API.PageResult<API.Application>;
-  }>(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
+export async function updateApplicationEnvTemplateV2(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v2/applications/${applicationID}/envtemplates`, {
+    method: 'POST',
+    params: {
+      environment,
+    },
+    data,
+  });
+}
+
+export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'POST',
     params: {
       environment,
