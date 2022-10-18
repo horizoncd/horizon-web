@@ -10,7 +10,7 @@ import { queryClusters } from '@/services/clusters/clusters';
 
 const { Option } = Select;
 
-export default () => {
+export default function PipelineStats() {
   const [pageNumber, setPageNumber] = useState(1);
   const [cluster, setCluster] = useState<string>('');
   const { initialState } = useModel('@@initialState');
@@ -124,6 +124,8 @@ export default () => {
         集群：
         <Select
           showSearch
+          allowClear
+          onClear={() => setCluster('')}
           style={{ width: '20%' }}
           onSelect={(item: string) => setCluster(item)}
         >
