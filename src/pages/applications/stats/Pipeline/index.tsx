@@ -59,7 +59,7 @@ export default function PipelineStats() {
       key: 'cluster',
     },
     {
-      title: '各阶段耗时（s）',
+      title: '各阶段耗时（单位：秒）',
       Key: 'durations',
       render: (pipelineStats: API.PipelineStats) => {
         const { tasks } = pipelineStats;
@@ -79,7 +79,7 @@ export default function PipelineStats() {
       },
     },
     {
-      title: '总耗时（s）',
+      title: '总耗时（单位：秒）',
       Key: 'duration',
       dataIndex: 'duration',
     },
