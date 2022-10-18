@@ -1,6 +1,4 @@
-﻿import component from "@/locales/en-US/component";
-
-export const routes = [
+﻿export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -158,6 +156,10 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/settings/advance',
     component: 'applications/config/Advance',
+  },
+  {
+    path: '/applications/*/-/stats/pipeline',
+    component: 'applications/stats/Pipeline',
   }
 ];
 

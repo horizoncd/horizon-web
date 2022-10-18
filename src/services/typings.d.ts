@@ -245,4 +245,28 @@ declare namespace API {
   type Tags = {
     tags: Tag[],
   };
+
+  type PipelineStats = {
+    pipelinerunID: number,
+    application: string,
+    cluster: string,
+    pipeline: string,
+    result: string,
+    duration: number,
+    tasks?: [TaskStats],
+    startedAt: string,
+  };
+
+  type TaskStats = {
+    task: string,
+    result: string,
+    duration: number,
+    steps?: [StepStats]
+  };
+
+  type StepStats = {
+    step: string,
+    result: string,
+    duration: number,
+  };
 }

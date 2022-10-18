@@ -18,6 +18,7 @@ import {
   SmileOutlined,
   SnippetsOutlined,
   TagsOutlined,
+  ProfileOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
@@ -49,6 +50,7 @@ const IconMap = {
   database: <DatabaseOutlined />,
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
+  profile: <ProfileOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, children, ...item }) => ({
@@ -236,7 +238,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         key="4"
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More 
+            More
 {' '}
 <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
@@ -480,6 +482,17 @@ function formatApplicationMenu(fullPath: string) {
     {
       path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
+    },
+    {
+      path: `/applications${fullPath}/-/stats`,
+      name: 'Stats',
+      icon: 'profile',
+      children: [
+        {
+          path: `/applications${fullPath}/-/stats/pipeline`,
+          name: 'Pipeline',
+        },
+      ],
     },
     {
       path: `/applications${fullPath}/-/settings`,
