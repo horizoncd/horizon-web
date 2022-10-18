@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Select, Table } from 'antd';
+import {
+  Col, Row, Select, Table,
+} from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useModel } from '@@/plugin-model/useModel';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -34,12 +36,16 @@ export default function PipelineStats() {
       return '';
     }
     return (
-      <span key={step.step}>
-        {step.step}
+      <Row key={step.step}>
+        <Col span={6} style={{ textAlign: 'right' }}>
+          {step.step}
+        </Col>
         ：
-        {step.duration}
+        <Col>
+          {step.duration}
+        </Col>
         <br />
-      </span>
+      </Row>
     );
   };
 
@@ -135,4 +141,4 @@ export default function PipelineStats() {
       {table}
     </PageWithBreadcrumb>
   );
-};
+}
