@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useHistory } from 'umi';
-import { Button, Card, Select } from 'antd';
+import {
+  Button, Card, Select, Space,
+} from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import Basic from '../Basic';
 import {
@@ -18,8 +20,8 @@ import utils from '@/utils';
 import { parseGitRef } from '@/services/code/code';
 import styles from '@/pages/applications/Detail/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
-import BuildConfig from '@/pages/applications/New/NewOrEditV2/BuildConfig';
-import TemplateConfig from '@/pages/applications/New/NewOrEditV2/Config';
+import BuildConfig from '@/pages/applications/NewOrEdit/V2/BuildConfig';
+import TemplateConfig from '@/pages/applications/NewOrEdit/V2/Config';
 
 const { Option } = Select;
 
@@ -28,9 +30,8 @@ export default () => {
   const { initialState } = useModel('@@initialState');
   const { id, name: applicationName, fullPath: applicationFullPath } = initialState!.resource;
   const { successAlert } = useModel('alert');
-
   const history = useHistory();
-  const defaultApplication: API.GetApplicationResponse2 = {
+  const defaultApplication: API.GetApplicationResponseV2 = {
     id: 0,
     name: '',
     description: '',
@@ -56,13 +57,42 @@ export default () => {
     updatedAt: '',
   };
   const [templateBasic, setTemplateBasic] = useState<API.Template>({ description: '', name: '' });
-  const [application, setApplication] = useState<API.GetApplicationResponse2>(defaultApplication);
+  const [application, setApplication] = useState<API.GetApplicationResponseV2>(defaultApplication);
   const [buildConfig, setBuildConfig] = useState({});
   const [buildConfigErrors, setBuildConfigErrors] = useState<[]>([]);
   const [templateConfig, setTemplateConfig] = useState({});
   const [templateConfigErrors, setTemplateConfigErrors] = useState<[]>([]);
   const [releaseName, setReleaseName] = useState<string>();
-
+  const { gitRefType, gitRef } = parseGitRef(application!.git);
+  const serviceDetail: Param[][] = [
+    [
+      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.name' }), value: application.name },
+      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.description' }), value: application.description || '' },
+      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.priority' }), value: application.priority },
+    ],
+    [
+      {
+        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
+        value: `${application.templateInfo!.name}-${application.templateInfo!.release}`,
+      },
+      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.url' }), value: application.git.url },
+      {
+        key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
+        value: gitRef,
+      },
+      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.subfolder' }), value: application.git.subfolder },
+    ],
+    [
+      {
+        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.createTime' }),
+        value: utils.timeToLocal(application.createdAt),
+      },
+      {
+        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.updateTime' }),
+        value: utils.timeToLocal(application.updatedAt),
+      },
+    ],
+  ];
   const { run: refreshApplication } = useRequest(
     () => getApplicationV2(id).then(({ data: result }) => {
       const basic: API.Template = {
@@ -94,37 +124,6 @@ export default () => {
       pathname: `/applications${applicationFullPath}/-/editv2`,
     });
   };
-
-  const { gitRefType, gitRef } = parseGitRef(application!.git);
-  const serviceDetail: Param[][] = [
-    [
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.name' }), value: application.name },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.description' }), value: application.description || '' },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.priority' }), value: application.priority },
-    ],
-    [
-      {
-        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
-        value: `${application.templateInfo!.name}-${application.templateInfo!.release}`,
-      },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.url' }), value: application.git.url },
-      {
-        key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
-        value: gitRef,
-      },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.subfolder' }), value: application.git.subfolder },
-    ],
-    [
-      {
-        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.createTime' }),
-        value: utils.timeToLocal(application.createdAt),
-      },
-      {
-        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.updateTime' }),
-        value: utils.timeToLocal(application.updatedAt),
-      },
-    ],
-  ];
 
   const { data: environments } = useRequest(() => queryEnvironments());
 
@@ -173,23 +172,23 @@ export default () => {
         type="inner"
         extra={(
           <div>
-            <Button
-              type={editing ? 'primary' : 'default'}
-              disabled={editing && templateInputHasError()}
-              onClick={() => {
-                if (editing) {
-                  templateConfigRef.current.submit();
-                  buildConfigRef.current.submit();
-                }
-                setEditing((prev) => !prev);
-              }}
-            >
-              {editing ? '提交' : '编辑'}
-            </Button>
-            {
+            <Space>
+              <Button
+                type={editing ? 'primary' : 'default'}
+                disabled={editing && templateInputHasError()}
+                onClick={() => {
+                  if (editing) {
+                    templateConfigRef.current.submit();
+                    buildConfigRef.current.submit();
+                  }
+                  setEditing((prev) => !prev);
+                }}
+              >
+                {editing ? '提交' : '编辑'}
+              </Button>
+              {
               editing && (
                 <Button
-                  style={{ marginLeft: '10px' }}
                   onClick={() => {
                     setEditing(false);
                     getApplicationEnvTemplate(id, currentEnv).then(({ data }) => {
@@ -202,26 +201,26 @@ export default () => {
                 </Button>
               )
             }
-            <Select
-              style={{ minWidth: '100px', marginLeft: '10px' }}
-              value={currentEnv}
-              onSelect={(val: string) => {
-                getApplicationEnvTemplate(id, val).then(({ data }) => {
-                  setBuildConfig(data.pipeline);
-                  setTemplateConfig(data.application);
-                });
-                setCurrentEnv(val);
-              }}
-            >
-              <Option key="default" value="">
-                默认
-              </Option>
-              {environments?.map((item) => (
-                <Option key={item.name} value={item.name}>
-                  {item.displayName}
+              <Select
+                value={currentEnv}
+                onSelect={(val: string) => {
+                  getApplicationEnvTemplate(id, val).then(({ data }) => {
+                    setBuildConfig(data.pipeline);
+                    setTemplateConfig(data.application);
+                  });
+                  setCurrentEnv(val);
+                }}
+              >
+                <Option key="default" value="">
+                  默认
                 </Option>
-              ))}
-            </Select>
+                {environments?.map((item) => (
+                  <Option key={item.name} value={item.name}>
+                    {item.displayName}
+                  </Option>
+                ))}
+              </Select>
+            </Space>
           </div>
         )}
       >

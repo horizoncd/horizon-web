@@ -62,7 +62,7 @@ export async function getApplication(id: number) {
 
 export async function getApplicationV2(id: number) {
   return request<{
-    data: API.GetApplicationResponse2
+    data: API.GetApplicationResponseV2
   }>(`/apis/core/v2/applications/${id}`, { method: 'GET' });
 }
 

@@ -10,7 +10,7 @@ import { API } from '@/services/typings';
 export default () => {
   const { initialState } = useModel('@@initialState');
   const { id: applicationID } = initialState!.resource;
-  const [called, setCalled] = useState<API.GetApplicationResponse2 | undefined>(undefined);
+  const [called, setCalled] = useState<API.GetApplicationResponseV2 | undefined>(undefined);
   const [ifVersion1, setIfVersion1] = useState<boolean>(false);
   useRequest(() => getApplicationV2(applicationID).then(
     ({ data: result }) => {

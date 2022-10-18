@@ -11,13 +11,27 @@ import RBAC from '@/rbac';
 import DetailCard from '@/components/DetailCard';
 
 export default (props: any) => {
-  const intl = useIntl();
   const {
     id, name: applicationName, refreshApplication,
     delApplication, onEditClick, serviceDetail,
   } = props;
+  const intl = useIntl();
   const { successAlert } = useModel('alert');
   const firstLetter = applicationName.substring(0, 1).toUpperCase();
+
+  const refreshButton = (
+    <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined /></Button>);
+
+  const editButton = (
+    <Button
+      type="primary"
+      className={styles.button}
+      disabled={!RBAC.Permissions.updateApplication.allowed}
+      onClick={onEditClick}
+    >
+      {intl.formatMessage({ id: 'pages.applicationDetail.basic.edit' })}
+    </Button>
+  );
 
   const operateDropdown = (
     <Menu>
@@ -44,7 +58,7 @@ export default (props: any) => {
             okText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.ok' }),
             cancelText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.cancel' }),
             onOk: () => {
-              delApplication().then();
+              delApplication();
             },
           });
         }}
@@ -53,6 +67,20 @@ export default (props: any) => {
       </Menu.Item>
     </Menu>
   );
+
+  const dropDownButton = (
+    <Dropdown
+      className={styles.button}
+      overlay={operateDropdown}
+      trigger={['click']}
+    >
+      <Button>
+        {intl.formatMessage({ id: 'pages.applicationDetail.basic.operate' })}
+        <DownOutlined />
+      </Button>
+    </Dropdown>
+  );
+
   return (
     <div>
       <div>
@@ -83,25 +111,9 @@ export default (props: any) => {
             </div>
           </div>
           <div className={styles.flex} />
-          <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined /></Button>
-          <Button
-            type="primary"
-            className={styles.button}
-            disabled={!RBAC.Permissions.updateApplication.allowed}
-            onClick={onEditClick}
-          >
-            {intl.formatMessage({ id: 'pages.applicationDetail.basic.edit' })}
-          </Button>
-          <Dropdown
-            className={styles.button}
-            overlay={operateDropdown}
-            trigger={['click']}
-          >
-            <Button>
-              {intl.formatMessage({ id: 'pages.applicationDetail.basic.operate' })}
-              <DownOutlined />
-            </Button>
-          </Dropdown>
+          {refreshButton}
+          {editButton}
+          {dropDownButton}
         </div>
       </div>
       <Divider className={styles.groupDivider} />

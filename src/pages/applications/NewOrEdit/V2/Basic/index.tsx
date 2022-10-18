@@ -6,7 +6,7 @@ import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useEffect } from 'react';
 import { queryReleases } from '@/services/templates/templates';
-import styles from '../../index.less';
+import styles from '@/pages/applications/NewOrEdit/index.less';
 import { GitRefType, listGitRef } from '@/services/code/code';
 import { applicationVersion2 } from '@/services/applications/applications';
 import { API } from '@/services/typings';
@@ -17,18 +17,15 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 export default (props: any) => {
-  const intl = useIntl();
   const {
-    form, template, readonly = false, editing = false, formData, setFormData, version,
+    form, template, readOnly = false, editing = false, formData, setFormData, version,
   } = props;
+  const intl = useIntl();
 
-  // query release version
-  const { data: releases } = useRequest(() => {
-    if (template !== undefined) {
-      return queryReleases(template?.name);
-    }
-    return undefined;
-  });
+  const { data: releases } = useRequest(
+    () => queryReleases(template?.name),
+    { ready: template !== undefined },
+  );
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
     const giturl = form.getFieldValue('url');
     const refType = form.getFieldValue('refType');
@@ -41,7 +38,7 @@ export default (props: any) => {
     });
   }, {
     debounceInterval: 100,
-    ready: !!form.getFieldValue('url') && !readonly,
+    ready: !!form.getFieldValue('url') && !readOnly,
   });
 
   useEffect(() => {
@@ -58,15 +55,13 @@ export default (props: any) => {
   const nameRules: Rule[] = [
     {
       required: true,
-      // eslint-disable-next-line prefer-regex-literals
-      pattern: new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$'),
+      pattern: /^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$/,
       message: formatMessage('name.ruleMessage'),
       max: 64,
     },
   ];
 
-  // eslint-disable-next-line prefer-regex-literals
-  const gitURLRegExp = new RegExp('^ssh://.+[.]git$');
+  const gitURLRegExp = /^ssh:\/\/.+[.]git$/;
   const gitURLRules: Rule[] = [
     {
       pattern: gitURLRegExp,
@@ -131,13 +126,13 @@ export default (props: any) => {
       >
         <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
           <Form.Item label={formatMessage('name')} name="name" rules={nameRules}>
-            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readonly || editing} />
+            <Input placeholder={formatMessage('name.ruleMessage')} disabled={readOnly || editing} />
           </Form.Item>
           <Form.Item label={formatMessage('description')} name="description">
             <TextArea
-              placeholder={readonly ? '' : formatMessage('description.ruleMessage')}
+              placeholder={readOnly ? '' : formatMessage('description.ruleMessage')}
               maxLength={255}
-              disabled={readonly}
+              disabled={readOnly}
               autoSize={{ minRows: 3 }}
             />
           </Form.Item>
@@ -148,7 +143,7 @@ export default (props: any) => {
                   <Input disabled value={template?.name} />
                 </Form.Item>
                 <Form.Item label={formatMessage('release')} name="release" rules={requiredRule}>
-                  <Select disabled={readonly}>
+                  <Select disabled={readOnly}>
                     {releases?.map((item: { name: any; description?: string; recommended?: boolean; }) => (
                       <Option key={item.name} value={item.name}>
                         {formatReleaseOption(item)}
@@ -161,7 +156,7 @@ export default (props: any) => {
           }
 
           <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
-            <Select disabled={readonly}>
+            <Select disabled={readOnly}>
               {priorities.map((item) => (
                 <Option key={item} value={item}>
                   {item}
@@ -175,7 +170,7 @@ export default (props: any) => {
           <Form.Item label={formatMessage('url')} name="url" rules={gitURLRules}>
             <Input
               placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"
-              disabled={readonly}
+              disabled={readOnly}
             />
           </Form.Item>
           <Form.Item
@@ -189,7 +184,7 @@ export default (props: any) => {
               initialValue={gitRefTypeList[0].key}
             >
               <Select
-                disabled={readonly}
+                disabled={readOnly}
                 onSelect={(key: any) => {
                   if (key !== GitRefType.Commit) {
                     refreshGitRefList();
@@ -209,7 +204,7 @@ export default (props: any) => {
                 form.getFieldValue('refType') === GitRefType.Commit
                   ? <Input /> : (
                     <Select
-                      disabled={readonly}
+                      disabled={readOnly}
                       showSearch
                       onSearch={(item) => {
                         refreshGitRefList(item);
@@ -224,7 +219,7 @@ export default (props: any) => {
             </Form.Item>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name="subfolder">
-            <Input disabled={readonly} placeholder={readonly ? '' : '非必填，默认为项目根目录'} />
+            <Input disabled={readOnly} placeholder={readOnly ? '' : '非必填，默认为项目根目录'} />
           </Form.Item>
         </Card>
       </HForm>

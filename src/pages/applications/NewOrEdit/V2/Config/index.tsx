@@ -8,13 +8,14 @@ import JsonSchemaForm from '@/components/JsonSchemaForm';
 import styles from '../../index.less';
 
 export default forwardRef((props: any, ref) => {
+  const {
+    setConfig, setConfigErrors, template,
+  } = props;
+
   const intl = useIntl();
   const { readonly = false, envTemplate } = props;
   const formRef = useRef();
 
-  const {
-    setConfig, setConfigErrors, template,
-  } = props;
   useImperativeHandle(ref, () => ({
     submit: () => {
       formRef.current!.submit();

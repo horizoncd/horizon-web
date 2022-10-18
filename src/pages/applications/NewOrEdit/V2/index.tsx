@@ -9,10 +9,10 @@ import { useModel } from '@@/plugin-model/useModel';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import styles from '@//pages/applications/New/index.less';
+import styles from '@//pages/applications/NewOrEdit/index.less';
 import HSteps from '@/components/HSteps';
-import Basic from '@/pages/applications/New/NewOrEditV1/Basic';
-import BuildConfig from '@/pages/applications/New/NewOrEditV2/BuildConfig';
+import Basic from '@/pages/applications/NewOrEdit/V1/Basic';
+import BuildConfig from '@/pages/applications/NewOrEdit/NewOrEditV2/BuildConfig';
 import {
   applicationVersion2,
   createApplicationV2,
@@ -22,7 +22,27 @@ import {
 import Config from './Config';
 import { API } from '@/services/typings';
 import { parseGitRef } from '@/services/code/code';
-import Template from '@/pages/applications/New/NewOrEditV1/Template';
+import Template from '@/pages/applications/NewOrEdit/V1/Template';
+
+const SelectedTemplateInfo = (props: { name: string, releaseName:string }) => {
+  const intl = useIntl();
+  const { name, releaseName } = props;
+  const templateTitle = intl.formatMessage({ id: 'pages.applicationNewV2.step.three' });
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
+    id: `pages.applicationNew.basic.${suffix}`,
+    defaultMessage: defaultMsg,
+  });
+  return (
+    <Card title={templateTitle} className={styles.gapBetweenCards}>
+      <Form.Item label={formatMessage('template', 'template')}>
+        <Input disabled value={name} />
+      </Form.Item>
+      <Form.Item label={formatMessage('release')}>
+        <Input disabled value={releaseName} />
+      </Form.Item>
+    </Card>
+  );
+};
 
 export default (props: any) => {
   const history = useHistory();
@@ -42,7 +62,7 @@ export default (props: any) => {
   const [buildConfig, setBuildConfig] = useState({});
   const [buildConfigErrors, setBuildConfigErrors] = useState<[]>([]);
   const [templateBasic, setTemplateBasic] = useState<API.Template>({ description: '', name: '' });
-  const [releaseName, setReleaseName] = useState<string>();
+  const [releaseName, setReleaseName] = useState<string>('');
   const [templateConfig, setTemplateConfig] = useState({});
   const [templateConfigErrors, setTemplateConfigErrors] = useState({});
 
@@ -174,24 +194,6 @@ export default (props: any) => {
     },
   ];
 
-  const selectedTemplateInfo = () => {
-    const templateTitle = intl.formatMessage({ id: 'pages.applicationNewV2.step.three' });
-    const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
-      id: `pages.applicationNew.basic.${suffix}`,
-      defaultMessage: defaultMsg,
-    });
-    return (
-      <Card title={templateTitle} className={styles.gapBetweenCards}>
-        <Form.Item label={formatMessage('template', 'template')}>
-          <Input disabled value={templateBasic.name} />
-        </Form.Item>
-        <Form.Item label={formatMessage('release')}>
-          <Input disabled value={releaseName} />
-        </Form.Item>
-      </Card>
-    );
-  };
-
   const onCurrentChange = (cur: number) => {
     setCurrent(cur);
   };
@@ -310,7 +312,10 @@ export default (props: any) => {
                       setBuildSubmitted(true);
                     }}
                   />
-                  <div>{selectedTemplateInfo()}</div>
+                  <SelectedTemplateInfo
+                    name={templateBasic.name}
+                    releaseName={releaseName}
+                  />
                   <Config
                     template={templateBasic}
                     release={releaseName}

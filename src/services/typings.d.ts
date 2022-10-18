@@ -156,7 +156,7 @@ declare namespace API {
     name: string;
     release: string;
   };
-  type GetApplicationResponse2 = {
+  type GetApplicationResponseV2 = {
     id: number;
     name: string;
     description: string;
