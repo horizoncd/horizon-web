@@ -64,18 +64,22 @@ export default forwardRef((props: any, ref) => {
       props.setReleaseName(releaseName);
     };
     return (
-      <div>
-        <Form.Item
-          label={labelName}
-          name="release"
-          rules={requiredRule}
-        >
-          <Select
-            defaultValue={props.release}
-            onChange={onReleaseChange}
-            disabled={readonly}
+      <Card
+        className={styles.gapBetweenCards}
+        title={intl.formatMessage({ id: 'pages.applicationNewV2.step.four' })}
+      >
+        <Form layout="vertical">
+          <Form.Item
+            label={labelName}
+            name="release"
+            rules={requiredRule}
           >
-            {
+            <Select
+              defaultValue={props.release}
+              onChange={onReleaseChange}
+              disabled={readonly}
+            >
+              {
               releases?.map((release) => (
                 <Option
                   key={release.name}
@@ -85,9 +89,10 @@ export default forwardRef((props: any, ref) => {
                 </Option>
               ))
             }
-          </Select>
-        </Form.Item>
-      </div>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Card>
     );
   };
 

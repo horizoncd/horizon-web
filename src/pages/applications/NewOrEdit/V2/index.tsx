@@ -11,8 +11,8 @@ import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import styles from '@//pages/applications/NewOrEdit/index.less';
 import HSteps from '@/components/HSteps';
-import Basic from '@/pages/applications/NewOrEdit/V1/Basic';
-import BuildConfig from '@/pages/applications/NewOrEdit/NewOrEditV2/BuildConfig';
+import Basic from '@/pages/applications/NewOrEdit/V2/Basic';
+import BuildConfig from '@/pages/applications/NewOrEdit/V2/BuildConfig';
 import {
   applicationVersion2,
   createApplicationV2,
@@ -20,9 +20,9 @@ import {
   updateApplicationV2,
 } from '@/services/applications/applications';
 import Config from './Config';
+import Template from '@/pages/applications/NewOrEdit/V1/Template';
 import { API } from '@/services/typings';
 import { parseGitRef } from '@/services/code/code';
-import Template from '@/pages/applications/NewOrEdit/V1/Template';
 
 const SelectedTemplateInfo = (props: { name: string, releaseName:string }) => {
   const intl = useIntl();
@@ -33,14 +33,16 @@ const SelectedTemplateInfo = (props: { name: string, releaseName:string }) => {
     defaultMessage: defaultMsg,
   });
   return (
-    <Card title={templateTitle} className={styles.gapBetweenCards}>
-      <Form.Item label={formatMessage('template', 'template')}>
-        <Input disabled value={name} />
-      </Form.Item>
-      <Form.Item label={formatMessage('release')}>
-        <Input disabled value={releaseName} />
-      </Form.Item>
-    </Card>
+    <Form layout="vertical">
+      <Card title={templateTitle} className={styles.gapBetweenCards}>
+        <Form.Item label={formatMessage('template', 'template')}>
+          <Input disabled value={name} />
+        </Form.Item>
+        <Form.Item label={formatMessage('release')}>
+          <Input disabled value={releaseName} />
+        </Form.Item>
+      </Card>
+    </Form>
   );
 };
 
