@@ -128,3 +128,19 @@ export async function getApplicationByRelease(template: string, release: string,
     },
   );
 }
+
+export async function queryPipelineStats(application: number, cluster: string, pageNumber: number, pageSize: number) {
+  return request<{
+    data: {
+      total: number,
+      items: [API.PipelineStats],
+    };
+  }>(`/apis/core/v1/applications/${application}/pipelinestats`, {
+    method: 'GET',
+    params: {
+      cluster,
+      pageNumber,
+      pageSize,
+    },
+  });
+}

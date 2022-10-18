@@ -13,4 +13,6 @@ export default {
   'menu.Monitoring': '监控',
   'menu.Template overview': '模板主页',
   'menu.Templates': '模板',
+  'menu.Stats': '统计',
+  'menu.Stats.Pipeline': '流水线',
 };
