@@ -223,25 +223,28 @@ export default (props: any) => {
   const [buildSubmitted, setBuildSubmitted] = useState(false);
   const [templateConfigSubmitted, setTemplateConfigSubmitted] = useState(false);
 
-  useEffect(() => {
-    if (templateConfigSubmitted && buildSubmitted) {
-      submitApp().then((result) => {
-        successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
-          : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
-        let destPath;
-        if (result) {
-          destPath = result.fullPath;
-        } else {
-          destPath = fullPath;
-        }
-        history.push({
-          pathname: destPath,
+  useEffect(
+    () => {
+      if (templateConfigSubmitted && buildSubmitted) {
+        submitApp().then((result) => {
+          successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
+            : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
+          let destPath;
+          if (result) {
+            destPath = result.fullPath;
+          } else {
+            destPath = fullPath;
+          }
+          history.push({
+            pathname: destPath,
+          });
+          refresh().then();
         });
-        refresh().then();
-      });
-    }
-  }, [templateConfigSubmitted, buildConfigErrors, submitApp, successAlert, creating,
-    intl, history, refresh, fullPath, buildSubmitted]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [templateConfigSubmitted, buildSubmitted],
+  );
 
   return (
     <PageWithBreadcrumb>

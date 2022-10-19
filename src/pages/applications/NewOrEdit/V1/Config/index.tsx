@@ -10,7 +10,7 @@ import styles from '../../index.less';
 export default forwardRef((props: any, ref) => {
   const intl = useIntl();
 
-  const { readonly = false } = props;
+  const { readonly = false, onSubmit } = props;
   const formRefs = useRef([]);
 
   // query schema by template and release
@@ -39,12 +39,16 @@ export default forwardRef((props: any, ref) => {
 
   const [totalFormData, setTotalFormData] = useState({});
   // 所有表单提交完成后，才会调用最终的onSubmit
-  useEffect(() => {
-    if (!loading && (Object.keys(totalFormData).length
-      >= Object.keys(data).length)) {
-      props.onSubmit(totalFormData);
-    }
-  }, [data, loading, props, totalFormData]);
+  useEffect(
+    () => {
+      if (!loading && (Object.keys(totalFormData).length
+        >= Object.keys(data).length)) {
+        onSubmit(totalFormData);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [totalFormData],
+  );
 
   return (
     <div>
