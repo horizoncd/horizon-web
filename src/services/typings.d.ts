@@ -12,6 +12,7 @@ declare namespace API {
 
   type CurrentUser = {
     name: string;
+    fullName: string;
     id: number;
     isAdmin: boolean;
     role: string;

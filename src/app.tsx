@@ -90,6 +90,7 @@ export async function getInitialState(): Promise<API.InitialState> {
   let currentUser: API.CurrentUser | undefined = {
     id: 0,
     name: '',
+    fullName: '',
     isAdmin: false,
     role: RBAC.AnonymousRole,
   };
@@ -104,6 +105,7 @@ export async function getInitialState(): Promise<API.InitialState> {
 
     currentUser.id = userData.id;
     currentUser.name = userData.name;
+    currentUser.fullName = userData.fullName
     currentUser.isAdmin = userData.isAdmin;
 
     const { data: rolesData } = await queryRoles();
