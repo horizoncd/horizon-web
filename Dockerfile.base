@@ -1,0 +1,8 @@
+FROM photon:2.0
+
+RUN tdnf install -y nginx shadow >> /dev/null \
+    && tdnf clean all \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+    && groupadd -r -g 10001 horizon && useradd --no-log-init -r -g 10001 -u 10001 horizon \
+    && chown -R horizon:horizon /etc/nginx
