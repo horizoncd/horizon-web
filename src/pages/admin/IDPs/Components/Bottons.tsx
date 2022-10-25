@@ -1,8 +1,9 @@
 import { Button, Modal } from 'antd';
-import { history, useModel } from 'umi';
+import { history, useIntl, useModel } from 'umi';
 import { deleteIDP } from '@/services/idps';
 
 export function IDPEditButton(props: { id: number }) {
+  const intl = useIntl();
   const { id } = props;
   return (
     <Button
@@ -13,22 +14,23 @@ export function IDPEditButton(props: { id: number }) {
         }
     }
     >
-      编辑
+      {intl.formatMessage({ id: 'pages.common.edit' })}
     </Button>
   );
 }
 
 export function IDPDeleteButton(props: { id: number, onSuccess?: () => void }) {
+  const intl = useIntl();
   const { id, onSuccess } = props;
   const { successAlert } = useModel('alert');
   const onDelete = () => {
     Modal.confirm({
-      title: '确认删除',
-      content: '该操作无法恢复请谨慎操作',
+      title: intl.formatMessage({ id: 'pages.common.delete' }),
+      content: intl.formatMessage({ id: 'pages.idps.delete.warning' }),
       onOk: () => {
         deleteIDP(id)
           .then(() => {
-            successAlert('删除成功');
+            successAlert(intl.formatMessage({ id: 'pages.common.delete.success' }));
           })
           .then(onSuccess)
           .then(() => {
@@ -44,7 +46,7 @@ export function IDPDeleteButton(props: { id: number, onSuccess?: () => void }) {
       danger
       onClick={onDelete}
     >
-      删除
+      {intl.formatMessage({ id: 'pages.common.delete' })}
     </Button>
   );
 }
@@ -54,6 +56,7 @@ IDPDeleteButton.defaultProps = {
 };
 
 export function IDPNewButton() {
+  const intl = useIntl();
   return (
     <Button
       type="primary"
@@ -63,7 +66,7 @@ export function IDPNewButton() {
                 }
               }
     >
-      新建OIDC登录方式
+      {intl.formatMessage({ id: 'pages.idps.new' })}
     </Button>
   );
 }

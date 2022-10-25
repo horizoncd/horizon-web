@@ -1,4 +1,4 @@
-import { useModel, useRequest } from 'umi';
+import { useIntl, useModel, useRequest } from 'umi';
 import { Space } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import CenterSpin from '@/components/Widget/CenterSpin';
@@ -14,6 +14,7 @@ function IDPDetail(props: { id: number }) {
   const { id } = props;
   const { data: idp, loading } = useRequest(() => getIDPByID(id));
   const { successAlert } = useModel('alert');
+  const intl = useIntl();
 
   if (loading || !idp) {
     return <CenterSpin />;
@@ -22,7 +23,7 @@ function IDPDetail(props: { id: number }) {
   const data: Param[][] = [
     [
       {
-        key: '名称',
+        key: intl.formatMessage({ id: 'pages.idps.entity.displayName' }),
         value: idp.displayName,
       },
       {
@@ -46,11 +47,11 @@ function IDPDetail(props: { id: number }) {
     ],
     [
       {
-        key: '创建日期',
+        key: intl.formatMessage({ id: 'pages.common.createdAt' }),
         value: <PopupTime time={idp?.createdAt ?? defaultTime} />,
       },
       {
-        key: '更新日期',
+        key: intl.formatMessage({ id: 'pages.common.updatedAt' }),
         value: <PopupTime time={idp?.updatedAt ?? defaultTime} />,
       },
     ],
@@ -59,12 +60,12 @@ function IDPDetail(props: { id: number }) {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={<span>{intl.formatMessage({ id: 'pages.common.basicInfo' })}</span>}
         data={data}
         extra={(
           <Space>
             <IDPEditButton id={id} />
-            <IDPDeleteButton id={id} onSuccess={() => { successAlert('删除成功'); }} />
+            <IDPDeleteButton id={id} onSuccess={() => { successAlert(intl.formatMessage({ id: 'pages.common.delete.success' })); }} />
           </Space>
         )}
       />

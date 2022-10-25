@@ -1,7 +1,7 @@
 import { Button, Col, Row } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import {
-  history, useModel, useRequest,
+  history, useIntl, useModel, useRequest,
 } from 'umi';
 import { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -13,11 +13,19 @@ import CenterSpin from '@/components/Widget/CenterSpin';
 
 function EditIDP(props: { id: number }) {
   const { id } = props;
+  const intl = useIntl();
   const [form] = useForm();
   const { successAlert, errorAlert } = useModel('alert');
   const { loading } = useRequest(() => getIDPByID(id), {
     onSuccess: (item) => {
-      form.setFieldsValue(item);
+      const newItem = {
+        discovery: `${
+          item.issuer.endsWith('/')
+            ? item.issuer.substring(0, item.issuer.length - 1)
+            : item.issuer}/.well-known/openid-configuration`,
+        ...item,
+      };
+      form.setFieldsValue(newItem);
     },
   });
 
@@ -28,7 +36,7 @@ function EditIDP(props: { id: number }) {
   const submit = (values: any) => {
     updateIDP(id, values as API.CreateIDPParam)
       .then(() => {
-        successAlert('IDP 创建成功');
+        successAlert(intl.formatMessage({ id: 'pages.common.update.success' }));
         history.push('/admin/idps');
       });
   };
@@ -45,7 +53,7 @@ function EditIDP(props: { id: number }) {
       <Row>
         <Col span={12} offset={6}>
           <IDPForm form={form} onFinish={submit} onFinishFailed={onFinishFailed} />
-          <Button type="primary" onClick={form.submit}>Submit</Button>
+          <Button type="primary" onClick={form.submit}>{intl.formatMessage({ id: 'pages.common.submit' })}</Button>
         </Col>
       </Row>
     </PageWithBreadcrumb>

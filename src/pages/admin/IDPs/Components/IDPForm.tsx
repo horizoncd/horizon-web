@@ -5,7 +5,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { useState } from 'react';
 import { Rule } from 'antd/lib/form';
 import { ValidateErrorEntity } from 'rc-field-form/lib/interface';
-import { useRequest } from 'umi';
+import { useIntl, useRequest } from 'umi';
 import DropdownSwitch from '@/components/Widget/DropdownSwitch';
 import { HttpLink } from '@/validation';
 import { fetchDiscovery } from '@/services/idps';
@@ -29,6 +29,7 @@ const requiredHttp: Rule[] = [
 
 const DiscoveryForm = (props: { form: FormInstance }) => {
   const { form } = props;
+  const intl = useIntl();
   const [withDiscovery, setWithDiscovery] = useState(true);
   const [showMeta, setShowMeta] = useState(false);
   const { run } = useRequest(
@@ -44,34 +45,34 @@ const DiscoveryForm = (props: { form: FormInstance }) => {
   return (
     <>
       <Item
-        label="使用discovery"
+        label={intl.formatMessage({ id: 'pages.idps.entity.useDiscovery' })}
         required
       >
         <Switch defaultChecked onChange={(checked) => { setWithDiscovery(checked); }} />
       </Item>
       {withDiscovery && (
-      <Item
-        hidden={!withDiscovery}
-        label="discovery"
-        name="discovery"
-        required
-        rules={requiredHttp}
-      >
-        <Input onBlur={() => { const discoveryEndpoint = form.getFieldValue('discovery'); if (HttpLink.test(discoveryEndpoint))run(discoveryEndpoint); }} />
-      </Item>
+        <Item
+          hidden={!withDiscovery}
+          label="discovery"
+          name="discovery"
+          required
+          rules={requiredHttp}
+        >
+          <Input onBlur={() => { const discoveryEndpoint = form.getFieldValue('discovery'); if (HttpLink.test(discoveryEndpoint)) run(discoveryEndpoint); }} />
+        </Item>
       )}
       {
-    withDiscovery && (
-    <Item>
-      <DropdownSwitch
-        defaultOpened={showMeta}
-        onChange={(show) => { setShowMeta(show); }}
-      >
-        Show Metadata
-      </DropdownSwitch>
-    </Item>
-    )
-  }
+        withDiscovery && (
+          <Item>
+            <DropdownSwitch
+              defaultOpened={showMeta}
+              onChange={(show) => { setShowMeta(show); }}
+            >
+              {intl.formatMessage({ id: 'pages.idps.entity.showMeta' })}
+            </DropdownSwitch>
+          </Item>
+        )
+      }
       <Item
         hidden={withDiscovery && !showMeta}
         label="Authorization URL"
@@ -127,6 +128,8 @@ const IDPForm = (props: {
 }) => {
   const { form, onFinish, onFinishFailed } = props;
 
+  const intl = useIntl();
+
   return (
     <Form
       form={form}
@@ -135,8 +138,8 @@ const IDPForm = (props: {
       layout="vertical"
     >
       <Item
-        label="名称"
-        extra="idp的唯一标识"
+        label={intl.formatMessage({ id: 'pages.idps.entity.name' })}
+        extra={intl.formatMessage({ id: 'pages.idps.entity.name.extra' })}
         name="name"
         required
         rules={required}
@@ -144,9 +147,9 @@ const IDPForm = (props: {
         <Input />
       </Item>
       <Item
-        label="展示名"
+        label={intl.formatMessage({ id: 'pages.idps.entity.displayName' })}
         name="displayName"
-        extra="Horizon向用户展示的名称，一般可填中文名"
+        extra={intl.formatMessage({ id: 'pages.idps.entity.displayName.extra' })}
         required
         rules={required}
       >
@@ -194,7 +197,7 @@ const IDPForm = (props: {
       <Item
         label="Scopes"
         name="scopes"
-        extra="由空格分割的oidc scopes"
+        extra={intl.formatMessage({ id: 'pages.idps.entity.scopes.extra' })}
         required
         rules={required}
       >
