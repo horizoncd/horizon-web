@@ -35,6 +35,13 @@
     ],
   },
   {
+    path: '/admin/idps',
+    component: 'admin/IDPs/Main',
+    wrappers: [
+      '@/wrappers/auth',
+    ]
+  },
+  {
     path: '/templates',
     menuRender: false,
     component: "templates",
@@ -251,7 +258,17 @@ const adminRoutes = [
   }, {
     path: '/admin/environments/:id/edit',
     component: 'admin/Environments/Edit'
+  }, {
+    path: '/admin/idps/:id/edit',
+    component: 'admin/IDPs/Edit',
+  }, {
+    path: '/admin/idps/new',
+    component: 'admin/IDPs/New',
   },
+  {
+    path: '/admin/idps/:id',
+    component: 'admin/IDPs/Detail',
+  }
 ]
 
 const templateRoutes = [

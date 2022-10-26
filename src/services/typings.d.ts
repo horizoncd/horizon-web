@@ -314,9 +314,41 @@ declare namespace API {
     steps?: [StepStats]
   };
 
+  type AuthEndpoint = {
+    authURL: string,
+    displayName: string,
+  };
+
   type StepStats = {
     step: string,
     result: string,
     duration: number,
   };
+
+  interface IDP {
+    id: number,
+    displayName: string,
+    name: string,
+    avatar: string,
+    authorizationEndpoint: string,
+    tokenEndpoint: string,
+    userinfoEndpoint: string,
+    revocationEndpoint: string,
+    issuer: string,
+    scopes: string,
+    tokenEndpointAuthMethod: string,
+    jwks: string,
+    clientID: string,
+    clientSecret: string,
+    createdAt: string,
+    updatedAt: string,
+  }
+
+  interface CreateIDPParam extends IDP {
+    id?: number,
+  }
+
+  interface UpdateIDPParam extends IDP {
+    id?: number,
+  }
 }

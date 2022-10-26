@@ -2,6 +2,17 @@ export default {
   'pages.common.next': 'Next',
   'pages.common.back': 'Back',
   'pages.common.submit': 'Submit',
+  'pages.common.comfirm': 'Comfirm',
+  'pages.common.cancel': 'Cancel',
+  'pages.common.edit': 'Edit',
+  'pages.common.create': 'Create',
+  'pages.common.delete': 'Delete',
+  'pages.common.update': 'Update',
+  'pages.common.delete.success': 'Delete Successfully',
+  'pages.common.createdAt': 'CreateTime',
+  'pages.common.updatedAt': 'UpdateTime',
+  'pages.common.basicInfo': 'Basic Info',
+  'pages.common.actions': 'Actions',
 
   'pages.pods.nextStep': 'Next batch',
 
@@ -158,4 +169,14 @@ export default {
   'pages.members.role.tip': `1.Permission from high to low：Owner、Maintainer、Developer、Reporter、Guest
   2.All members could manage other members whose permission is equal to or lower then self`,
   'pages.members.user.anonymous.alert': 'Please ask for other members to invite you first',
+
+  'pages.idps.delete.warning': 'This operation cannot be recovered please proceed with caution',
+  'pages.idps.new': 'New login method with OIDC',
+  'pages.idps.entity.useDiscovery': 'By discovery',
+  'pages.idps.entity.showMeta': 'Show metadata',
+  'pages.idps.entity.name': 'Name',
+  'pages.idps.entity.name.extra': 'Unique identification of IDP',
+  'pages.idps.entity.displayName': 'Display name',
+  'pages.idps.entity.displayName.extra': 'The name displayed to the user can be filled in as many times as you like',
+  'pages.idps.entity.scopes.extra': 'OIDC scopes seperated by blank space',
 };

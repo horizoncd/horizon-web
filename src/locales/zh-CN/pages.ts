@@ -2,6 +2,19 @@ export default {
   'pages.common.next': '下一步',
   'pages.common.back': '上一步',
   'pages.common.submit': '提交',
+  'pages.common.comfirm': '确认',
+  'pages.common.cancel': '取消',
+  'pages.common.edit': '编辑',
+  'pages.common.create': '创建',
+  'pages.common.create.success': '创建成功',
+  'pages.common.delete': '删除',
+  'pages.common.delete.success': '删除成功',
+  'pages.common.update': '更新',
+  'pages.common.update.success': '更新成功',
+  'pages.common.createdAt': '创建时间',
+  'pages.common.updatedAt': '更新时间',
+  'pages.common.basicInfo': '基础信息',
+  'pages.common.actions': '操作',
 
   'pages.pods.nextStep': '下一批次',
 
@@ -161,4 +174,14 @@ export default {
   'pages.members.role.tip': `1.按照权限由高到低为：pe、owner、maintainer、guest
   2.所有成员可管理权限低于或等于自己的其他成员`,
   'pages.members.user.anonymous.alert': '你需要先请其中一位成员邀请你加入',
+
+  'pages.idps.delete.warning': '该操作无法恢复请谨慎操作',
+  'pages.idps.new': '新建OIDC登录方式',
+  'pages.idps.entity.useDiscovery': '使用discovery',
+  'pages.idps.entity.showMeta': '展示Metadata',
+  'pages.idps.entity.name': '名称',
+  'pages.idps.entity.name.extra': 'idp的唯一标识',
+  'pages.idps.entity.displayName': '展示名',
+  'pages.idps.entity.displayName.extra': 'Horizon向用户展示的名称，可以随意填写',
+  'pages.idps.entity.scopes.extra': '由空格分割的oidc scopes',
 };

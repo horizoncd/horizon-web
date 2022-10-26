@@ -5,6 +5,7 @@ import { Menu, notification, Tooltip } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import {
+  ApiOutlined,
   AppstoreOutlined,
   BankOutlined,
   ClusterOutlined,
@@ -50,6 +51,7 @@ const IconMap = {
   database: <DatabaseOutlined />,
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
+  idp: <ApiOutlined />,
   profile: <ProfileOutlined />
 };
 
@@ -162,10 +164,6 @@ export async function getInitialState(): Promise<API.InitialState> {
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (history.location.pathname === '/user/login/callback'
-      || history.location.pathname === '/user/login') {
-        return response;
-      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
       if (response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
@@ -201,6 +199,9 @@ export const request: RequestConfig = {
         message: '网络异常',
         description: '您的网络发生异常，无法连接服务器',
       });
+    }
+    if (response.headers.get(sessionExpireHeaderKey)) {
+      return
     }
     if (data.errorCode || data.errorMessage) {
       notification.error({
@@ -239,8 +240,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
             More
-{' '}
-<DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
+            {' '}
+            <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
 )}
       >
@@ -344,6 +345,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          },
+          {
+            path: '/admin/idps',
+            name: 'IDPs',
+            icon: 'idp',
           },
         ]);
       }
