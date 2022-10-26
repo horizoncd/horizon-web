@@ -1,6 +1,6 @@
 import { Button, Col, Row } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { history, useModel } from 'umi';
+import { history, useIntl, useModel } from 'umi';
 import { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import IDPForm from '../Components/IDPForm';
@@ -9,12 +9,13 @@ import { API } from '@/services/typings';
 
 function NewIDP() {
   const [form] = useForm();
+  const intl = useIntl();
   const { successAlert, errorAlert } = useModel('alert');
 
   const submit = (values: any) => {
     createIDP(values as API.CreateIDPParam)
       .then(() => {
-        successAlert('IDP 创建成功');
+        successAlert(intl.formatMessage({ id: 'pages.common.update.success' }));
         history.push('/admin/idps');
       });
   };

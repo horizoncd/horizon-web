@@ -200,7 +200,7 @@ export const request: RequestConfig = {
         description: '您的网络发生异常，无法连接服务器',
       });
     }
-    if (response.status === 401) {
+    if (response.headers.get(sessionExpireHeaderKey)) {
       return
     }
     if (data.errorCode || data.errorMessage) {

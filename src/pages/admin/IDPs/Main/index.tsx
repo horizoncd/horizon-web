@@ -11,7 +11,7 @@ import MaxSpace from '@/components/Widget/MaxSpace';
 
 function IDPList() {
   const intl = useIntl();
-  const [idps, setIdps] = useState([] as API.IDP[]);
+  const [idps, setIdps] = useState<API.IDP[]>([]);
   const { initialState } = useModel('@@initialState');
   useRequest(() => listIDPs(), {
     onSuccess: (items) => {
@@ -57,12 +57,9 @@ function IDPList() {
   return (
     <PageWithBreadcrumb>
       <MaxSpace direction="vertical">
-        {initialState.currentUser && initialState.currentUser.isAdmin
-          && (
-            <LocationBox horizontal="right">
-              <IDPNewButton />
-            </LocationBox>
-          )}
+        <LocationBox horizontal="right">
+          <IDPNewButton />
+        </LocationBox>
         <Table columns={columns} dataSource={idps} />
       </MaxSpace>
     </PageWithBreadcrumb>
