@@ -23,6 +23,7 @@ import { PublishType } from '@/const';
 import {
   Step, StepContent, StepAction, ModalTitle, ModalContent,
 } from '../Widget';
+import { ResourceType } from '@/const';
 
 function difference(object: any, other: any) {
   const diff = {};
@@ -478,6 +479,7 @@ export default (props: any) => {
                 setTemplateConfig={setTemplateConfig}
                 setTemplateConfigErrors={setTemplateConfigErrors}
                 clusterID={cluster?.id}
+                resourceType={ResourceType.CLUSTER}
               />
               )
             }

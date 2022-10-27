@@ -2,6 +2,7 @@ import Basic from '../Basic';
 import Build from '@/pages/applications/NewOrEdit/v2/BuildConfig';
 import Deploy from '@/pages/applications/NewOrEdit/v2/Config';
 import { MaxSpace } from '@/components/Widget';
+import { ResourceType } from '@/const';
 
 export default (props: any) => {
   const {
@@ -30,6 +31,7 @@ export default (props: any) => {
       <Deploy
         ref={templateFormRef}
         clusterID={clusterID}
+        resourceType={ResourceType.CLUSTER}
         template={templateBasic}
         release={release}
         templateConfig={templateConfig}

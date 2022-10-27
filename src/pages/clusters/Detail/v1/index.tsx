@@ -24,9 +24,8 @@ export default () => {
   const [template, setTemplate] = useState([]);
 
   const {
-    id: clusterID, fullPath: clusterFullPath, type, parentID,
+    id: clusterID, fullPath: clusterFullPath, type, parentID: applicationID,
   } = initialState!.resource;
-  const applicationID = parentID;
 
   const defaultCluster: CLUSTER.Cluster = {
     createdBy: { name: '' },
@@ -62,12 +61,18 @@ export default () => {
   };
   const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster);
 
-  const { data: templateData, run: runQuerySchema } = useRequest(() => querySchema(cluster!.template.name, cluster!.template.release), {
-    onSuccess: () => {
-      setTemplate(templateData);
+  const { data: templateData, run: runQuerySchema } = useRequest(
+    () => querySchema(cluster!.template.name, cluster!.template.release, {
+      clusterID,
+      resourceType: ResourceType.CLUSTER,
+    }),
+    {
+      onSuccess: () => {
+        setTemplate(templateData);
+      },
+      ready: !!cluster && !!cluster.template.name && !!cluster.template.release,
     },
-    ready: !!cluster && !!cluster.template.name && !!cluster.template.release,
-  });
+  );
 
   const { data: clusterData, run: refreshCluster } = useRequest(() => getCluster(clusterID), {
     onSuccess: () => {

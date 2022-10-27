@@ -20,6 +20,7 @@ export default forwardRef((props: any, ref) => {
     readOnly = false,
     envTemplate,
     clusterID,
+    resourceType,
     template,
     release, setReleaseName,
     templateConfig, setTemplateConfig,
@@ -38,7 +39,7 @@ export default forwardRef((props: any, ref) => {
 
   const { data } = useRequest(
     () => {
-      if (clusterID) {
+      if (resourceType === ResourceType.CLUSTER) {
         return querySchema(templateName, release, {
           clusterID,
           resourceType: ResourceType.CLUSTER,
