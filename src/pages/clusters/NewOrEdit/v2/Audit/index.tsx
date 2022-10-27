@@ -1,6 +1,6 @@
 import Basic from '../Basic';
-import Build from '@/pages/applications/NewOrEdit/V2/BuildConfig';
-import Deploy from '@/pages/applications/NewOrEdit/V2/Config';
+import Build from '@/pages/applications/NewOrEdit/v2/BuildConfig';
+import Deploy from '@/pages/applications/NewOrEdit/v2/Config';
 import { MaxSpace } from '@/components/Widget';
 
 export default (props: any) => {

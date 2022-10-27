@@ -11,16 +11,16 @@ import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import styles from '@//pages/applications/NewOrEdit/index.less';
 import HSteps from '@/components/HSteps';
-import Basic from '@/pages/applications/NewOrEdit/V2/Basic';
-import BuildConfig from '@/pages/applications/NewOrEdit/V2/BuildConfig';
+import Basic from '@/pages/applications/NewOrEdit/v2/Basic';
+import BuildConfig from '@/pages/applications/NewOrEdit/v2/BuildConfig';
 import {
   createApplicationV2,
   getApplicationV2,
   updateApplicationV2,
 } from '@/services/applications/applications';
 import { pipelineV2 } from '@/services/version/version';
-import Config from '@/pages/applications/NewOrEdit/V2/Config';
-import Template from '@/pages/applications/NewOrEdit/V1/Template';
+import Config from '@/pages/applications/NewOrEdit/v2/Config';
+import Template from '@/pages/applications/NewOrEdit/v1/Template';
 import { API } from '@/services/typings';
 import { parseGitRef } from '@/services/code/code';
 import { MaxSpace } from '@/components/Widget';
