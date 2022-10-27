@@ -20,6 +20,7 @@ import {
   TagsOutlined,
   UserOutlined,
   ProfileOutlined,
+  NotificationOutlined,
   KeyOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
@@ -55,6 +56,7 @@ const IconMap = {
   idp: <ApiOutlined />,
   user: <UserOutlined />,
   profile: <ProfileOutlined />,
+  webhook: <NotificationOutlined />,
   accessToken: <KeyOutlined />
 };
 
@@ -83,7 +85,7 @@ export async function getInitialState(): Promise<API.InitialState> {
     parentID: 0,
   };
 
-  if (history.location.pathname === loginPath
+  if(history.location.pathname === loginPath
     || history.location.pathname === callbackPath) {
     return { resource, accordionCollapse: false };
   }
@@ -100,7 +102,7 @@ export async function getInitialState(): Promise<API.InitialState> {
   try {
     const { data: userData } = await queryCurrentUser();
 
-    if (userData?.id && history.location.pathname.startsWith(loginPath)) {
+    if(userData?.id && history.location.pathname.startsWith(loginPath)) {
       history.replace('/');
     }
 
@@ -111,12 +113,12 @@ export async function getInitialState(): Promise<API.InitialState> {
 
     const { data: rolesData } = await queryRoles();
     roles = rolesData;
-  } catch (e) {
+  } catch(e) {
     currentUser = undefined;
   }
 
   // 资源类型的URL
-  if (!pathnameInStaticRoutes()) {
+  if(!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
       const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/;
@@ -136,23 +138,23 @@ export async function getInitialState(): Promise<API.InitialState> {
 
       let memberData = null;
 
-      if (isRelease) {
+      if(isRelease) {
         const { data: template } = await queryResource(pathArr[1], 'templates');
         ({ data: memberData } = await querySelfMember('template', template.id));
       } else {
         ({ data: memberData } = await querySelfMember(resource.type, resource.id));
       }
-      if (memberData.total > 0) {
+      if(memberData.total > 0) {
         currentUser!.role = memberData.items[0].role;
       } else {
         currentUser!.role = RBAC.AnonymousRole;
       }
-      if (currentUser!.isAdmin) {
+      if(currentUser!.isAdmin) {
         currentUser!.role = RBAC.AdminRole;
       }
 
       RBAC.RefreshPermissions(roles, currentUser!);
-    } catch (e) {
+    } catch(e) {
       settings.menuRender = false;
     }
   }
@@ -169,12 +171,16 @@ export async function getInitialState(): Promise<API.InitialState> {
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
+      if (history.location.pathname === '/user/login/callback'
+      || history.location.pathname === '/user/login') {
+        return response;
+      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
-      if (response.headers.get(sessionExpireHeaderKey)) {
+      if(response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
 
         const redirect = u.searchParams.get('redirect') ?? '';
-        if (redirect === '') {
+        if(redirect === '') {
           u.searchParams.delete('redirect');
         } else {
           u = new URL(redirect);
@@ -199,7 +205,7 @@ export const request: RequestConfig = {
   },
   errorHandler: (error: any) => {
     const { response, data } = error;
-    if (!response) {
+    if(!response) {
       notification.error({
         message: 'Network anomaly',
         description: 'Your network is abnormal and cannot connect to the server',
@@ -208,7 +214,7 @@ export const request: RequestConfig = {
     if (response.headers.get(sessionExpireHeaderKey)) {
       return
     }
-    if (data.errorCode || data.errorMessage) {
+    if(data.errorCode || data.errorMessage) {
       notification.error({
         message: data.errorCode,
         description: data.errorMessage,
@@ -230,7 +236,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   rightContentRender: () => <RightContent />,
   footerRender: () => <Footer />,
   onPageChange: () => {
-    if (!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
+    if(!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
       // @ts-ignore
       setInitialState((s) => ({ ...s, settings: { ...s.settings, menuRender: false } }));
     }
@@ -243,7 +249,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
-    if (!accordionCollapse) {
+    if(!accordionCollapse) {
       const titleContent = title.length <= 15 ? title : `${title.substr(0, 12)}...`;
       return (
         <Tooltip title={title}>
@@ -300,7 +306,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       resource: initialState?.resource,
     },
     request: async (params, defaultMenuData) => {
-      if (history.location.pathname.startsWith('/admin/')) {
+      if(history.location.pathname.startsWith('/admin/')) {
         return loopMenuItem([
           ...routes,
           {
@@ -315,6 +321,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          }, {
+            path: '/admin/webhooks',
+            name: 'Webhooks',
+            icon: 'webhook',
           }, {
             path: '/admin/users',
             name: 'Users',
@@ -344,13 +354,13 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ])
       }
 
-      if (pathnameInStaticRoutes() || !initialState) {
+      if(pathnameInStaticRoutes() || !initialState) {
         return defaultMenuData;
       }
 
       // 根据ResourceType决定菜单
       const { type, fullPath } = initialState.resource;
-      switch (type) {
+      switch(type) {
         case ResourceType.GROUP:
           return loopMenuItem(formatGroupMenu(fullPath));
         case ResourceType.APPLICATION:
@@ -587,6 +597,11 @@ function formatClusterMenu(fullPath: string) {
         {
           path: `/clusters${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
+        },
+        {
+          path: `/clusters${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
         },
       ],
     },

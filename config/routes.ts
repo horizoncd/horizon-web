@@ -338,6 +338,36 @@ const templateRoutes = [
   },
 ]
 
+const webhookRoutes = [
+  {
+    path: '/admin/webhooks',
+    component: 'webhooks',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
+  },
+  // {
+  //   path: '/admin/webhooks/*/-/detail',
+  //   component: 'webhooks/Detail'
+  // },
+  {
+    path: '/admin/webhooks/new',
+    component: 'webhooks/New'
+  },
+  {
+    path: '/admin/webhooks/:id',
+    component: 'webhooks/Detail'
+  },
+  {
+    path: '/admin/webhooks/:id/edit',
+    component: 'webhooks/Edit'
+  },
+  {
+    path: '/clusters/*/-/settings/webhooks',
+    component: 'webhooks'
+  },
+]
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
@@ -346,6 +376,7 @@ allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
 allRoute.push(...userRoutes);
+allRoute.push(...webhookRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

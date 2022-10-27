@@ -1,7 +1,5 @@
 import { request } from 'umi';
 import { GitRefType } from '@/services/code/code';
-import type { CLUSTER } from '../clusters';
-import type { API } from '../typings';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
   const filter = params;
@@ -163,7 +161,7 @@ export async function promote(clusterID: number) {
 }
 
 export async function diffsOfCode(clusterID: number, refType: string, targetRef: string) {
-  const params = {};
+  const params : Record<string, string> = {};
   if (refType === GitRefType.Tag) {
     params.targetTag = targetRef;
   } else if (refType === GitRefType.Branch) {

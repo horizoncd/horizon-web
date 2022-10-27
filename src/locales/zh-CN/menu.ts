@@ -21,4 +21,5 @@ export default {
   'menu.Registries': '镜像仓库',
   'menu.Environments': '环境',
   'menu.Users': '用户',
+  'menu.Webhooks': 'Webhooks',
 };
