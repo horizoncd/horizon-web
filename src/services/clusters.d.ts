@@ -90,6 +90,41 @@ declare namespace CLUSTER {
     }
   };
 
+  type ClusterV2 = {
+    // basic info
+    id: number;
+    name: string;
+    priority: string;
+    description?: string;
+    scope: Scope;
+    expireTime: string;
+    fullPath: string;
+    fullName?: string,
+    applicationName: string;
+    applicationID: string;
+    tags: TAG.Tag[];
+
+    // source info
+    git: GitInfo;
+
+    // git config info
+    buildConfig: any;
+    templateInfo: any;
+    templateConfig: any;
+    manifest: any;
+
+    // status and update info
+    status?: string;
+    createdAt: string;
+    updatedAt: string;
+    createdBy: {
+      name: string,
+    }
+    updatedBy: {
+      name: string,
+    }
+  };
+
   type NewCluster = {
     name: string;
     description?: string;
@@ -102,12 +137,31 @@ declare namespace CLUSTER {
     templateInput: any
   };
 
+  type NewClusterV2 = {
+    name: string;
+    description?: string;
+    expireTime?: string;
+    git: any;
+    buildConfig: any;
+    templateInfo: any;
+    templateConfig: any;
+  };
+
   type UpdateCluster = {
     description?: string;
     git: {
       branch: string;
     };
     templateInput: any
+  };
+
+  type UpdateClusterV2 = {
+    description?: string;
+    expireTime?: string;
+    git: any;
+    buildConfig: any;
+    templateInfo: any;
+    templateConfig: any;
   };
 
   type ClusterBuildDeploy = {

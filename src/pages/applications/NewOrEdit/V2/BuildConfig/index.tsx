@@ -1,15 +1,16 @@
-import { useIntl, useRequest } from 'umi';
+import { useRequest, useIntl } from 'umi';
 import { Card } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../../index.less';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
 
 export default forwardRef((props: any, ref) => {
   const {
-    readonly = false, setConfig, setConfigErrors, config, onSubmit,
+    readOnly = false, buildConfig, setBuildConfig, setBuildConfigErrors, onSubmit,
   } = props;
+
   const intl = useIntl();
+  const { data } = useRequest(() => getBuildSchema());
 
   const formRef = useRef();
   useImperativeHandle(ref, () => ({
@@ -18,32 +19,27 @@ export default forwardRef((props: any, ref) => {
     },
   }));
 
-  const { data } = useRequest(() => getBuildSchema());
   const onChange = ({ formData, errors }: any) => {
-    if (readonly) {
+    if (readOnly) {
       return;
     }
-    setConfig(formData);
-    setConfigErrors(errors);
+    setBuildConfig(formData);
+    setBuildConfigErrors(errors);
   };
+
   return (
     <div>
       { data && (
-        <Card
-          className={styles.gapBetweenCards}
-          title={intl.formatMessage({ id: 'pages.applicationNewV2.step.two' })}
-        >
+        <Card title={intl.formatMessage({ id: 'pages.newV2.step.build' })}>
           <JsonSchemaForm
-            ref={(dom) => {
-              formRef.current = dom;
-            }}
-            disabled={readonly}
+            ref={formRef}
+            disabled={readOnly}
             jsonSchema={data.jsonSchema}
             uiSchema={data.uiSchema}
-            formData={config}
+            formData={buildConfig}
             onChange={onChange}
             onSubmit={(schema: any) => {
-              onSubmit(schema);
+              onSubmit(schema.formData);
             }}
             liveValidate
             showErrorList={false}

@@ -2,10 +2,6 @@ import { request } from 'umi';
 import type { CLUSTER } from '../clusters';
 import type { API } from '../typings';
 
-export const applicationVersion1 = '0.0.1';
-export const applicationVersion2 = '0.0.2';
-export const manifestVersion = 'Version';
-
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
     data: API.Application

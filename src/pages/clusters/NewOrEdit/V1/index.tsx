@@ -9,13 +9,16 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
-import styles from './index.less';
 import { parseGitRef } from '@/services/code/code';
 import { createCluster, getCluster, updateCluster } from '@/services/clusters/clusters';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { getApplication, getApplicationEnvTemplate } from '@/services/applications/applications';
 import HSteps from '@/components/HSteps';
 import { PublishType } from '@/const';
+import {
+  Step, StepContent, StepAction, ModalTitle, ModalContent,
+} from '../Widget';
+import { CLUSTER } from '@/services/clusters';
 
 function difference(object: any, other: any) {
   const diff = {};
@@ -353,12 +356,12 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Row>
         <Col span={4}>
-          <div className={styles.step}>
+          <Step>
             <HSteps current={current} onChange={onCurrentChange} steps={steps} />
-          </div>
+          </Step>
         </Col>
         <Col span={20}>
-          <div className={styles.stepsContent}>
+          <StepContent>
             {
               current === 0
               && (
@@ -401,8 +404,8 @@ export default (props: any) => {
               />
               )
             }
-          </div>
-          <div className={styles.stepsAction}>
+          </StepContent>
+          <StepAction>
             {current > 0 && (
               <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
                 {intl.formatMessage({ id: 'pages.common.back' })}
@@ -420,11 +423,9 @@ export default (props: any) => {
             )}
             <Modal
               title={(
-                <span
-                  className={styles.modalTitle}
-                >
+                <ModalTitle>
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.title' })}
-                </span>
+                </ModalTitle>
 )}
               visible={showBuildDeployModal}
               footer={[
@@ -437,21 +438,17 @@ export default (props: any) => {
               ]}
               onCancel={onDeployButtonCancel}
             >
-              <div
-                className={styles.modalContent}
-              >
+              <ModalContent>
                 {creating
                   ? intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.create.content' })
                   : intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.edit.content' })}
-              </div>
+              </ModalContent>
             </Modal>
             <Modal
               title={(
-                <span
-                  className={styles.modalTitle}
-                >
+                <ModalTitle>
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.title' })}
-                </span>
+                </ModalTitle>
 )}
               visible={showDeployModal}
               footer={[
@@ -464,15 +461,13 @@ export default (props: any) => {
               ]}
               onCancel={onDeployButtonCancel}
             >
-              <div
-                className={styles.modalContent}
-              >
+              <ModalContent>
                 {creating
                   ? intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.create.content' })
                   : intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.edit.content' })}
-              </div>
+              </ModalContent>
             </Modal>
-          </div>
+          </StepAction>
         </Col>
       </Row>
     </PageWithBreadcrumb>

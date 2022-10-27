@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { queryReleases } from '@/services/templates/templates';
 import styles from '@/pages/applications/NewOrEdit/index.less';
 import { GitRefType, listGitRef } from '@/services/code/code';
-import { applicationVersion2 } from '@/services/applications/applications';
+import { pipelineV2 } from '@/services/version/version';
 import { API } from '@/services/typings';
 
 import HForm from '@/components/HForm';
@@ -137,7 +137,7 @@ export default (props: any) => {
             />
           </Form.Item>
           {
-            version !== applicationVersion2 && (
+            version !== pipelineV2 && (
               <div>
                 <Form.Item label={formatMessage('template', 'template')}>
                   <Input disabled value={template?.name} />
@@ -166,7 +166,7 @@ export default (props: any) => {
           </Form.Item>
         </Card>
 
-        <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('repo')}>
           <Form.Item label={formatMessage('url')} name="url" rules={gitURLRules}>
             <Input
               placeholder="ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git"

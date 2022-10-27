@@ -19,7 +19,7 @@ export default () => {
   const { id: groupID, name: groupName, fullPath } = initialState!.resource;
   const newGroup = `/groups${fullPath}/-/newsubgroup`;
   const newApplication = `/groups${fullPath}/-/newapplicationv1`;
-  const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
+  // const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
 
   const { successAlert } = useModel('alert');
 
@@ -46,7 +46,7 @@ export default () => {
       >
         {intl.formatMessage({ id: 'pages.groups.New application' })}
       </Button>
-      <Button
+      {/* <Button
         disabled={!RBAC.Permissions.createApplication.allowed}
         onClick={() => {
           history.push({
@@ -55,7 +55,7 @@ export default () => {
         }}
       >
         {intl.formatMessage({ id: 'pages.groups.New applicationV2' })}
-      </Button>
+      </Button> */}
     </div>
   );
 

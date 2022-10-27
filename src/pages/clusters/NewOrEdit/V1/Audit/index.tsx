@@ -3,21 +3,21 @@ import Config from '../Config';
 
 export default (props: any) => {
   const {
-    template, form, release, config, applicationName, editing, clusterID,
+    template, form, release, config, applicationName, editing, clusterID, formRef, onSubmit,
   } = props;
 
   return (
     <div>
-      <Basic editing={editing} applicationName={applicationName} form={form} template={template} readonly />
+      <Basic editing={editing} applicationName={applicationName} form={form} template={template} readOnly />
 
       <Config
         template={template}
         release={release}
         config={config}
         clusterID={clusterID}
-        ref={props.formRef}
-        onSubmit={props.onSubmit}
-        readonly
+        ref={formRef}
+        onSubmit={onSubmit}
+        readOnly
       />
     </div>
   );

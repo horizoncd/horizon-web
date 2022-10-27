@@ -10,7 +10,7 @@ import styles from '../../index.less';
 export default forwardRef((props: any, ref) => {
   const intl = useIntl();
 
-  const { readonly = false, onSubmit } = props;
+  const { readOnly = false, onSubmit } = props;
   const formRefs = useRef([]);
 
   // query schema by template and release
@@ -57,7 +57,7 @@ export default forwardRef((props: any, ref) => {
           const currentFormData = props.config[item] || {};
 
           const onChange = ({ formData, errors }: any) => {
-            if (readonly) {
+            if (readOnly) {
               return;
             }
 
@@ -77,7 +77,7 @@ export default forwardRef((props: any, ref) => {
                 ref={(dom) => {
                   formRefs.current[i] = dom;
                 }}
-                disabled={readonly}
+                disabled={readOnly}
                 formData={currentFormData}
                 jsonSchema={jsonSchema}
                 onChange={onChange}

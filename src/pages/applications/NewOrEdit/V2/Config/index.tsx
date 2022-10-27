@@ -1,146 +1,152 @@
 import { useIntl, useRequest } from 'umi';
-import { Card, Form, Select } from 'antd';
-import type { Rule } from 'rc-field-form/lib/interface';
+import {
+  Card, Form, Input, Select,
+} from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Option } from 'antd/es/mentions';
-import { queryReleases, querySchema } from '@/services/templates/templates';
+import { Rule } from 'antd/lib/form';
+import { querySchema } from '@/services/templates/templates';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../../index.less';
+import { queryReleases } from '@/services/templates/templates';
+import { ResourceType } from '@/const';
+import { API } from '@/services/typings';
+import { MaxSpace } from '@/components/Widget';
+
+const { Option } = Select;
 
 export default forwardRef((props: any, ref) => {
+  const appKey = 'application';
+  const intl = useIntl();
   const {
-    setConfig, setConfigErrors, template,
+    readOnly = false,
+    envTemplate,
+    clusterID,
+    template,
+    release, setReleaseName,
+    templateConfig, setTemplateConfig,
+    setTemplateConfigErrors,
+    onSubmit,
   } = props;
 
-  const intl = useIntl();
-  const { readonly = false, envTemplate } = props;
-  const formRef = useRef();
+  const { name: templateName } = template;
 
+  const formRef = useRef();
   useImperativeHandle(ref, () => ({
     submit: () => {
       formRef.current!.submit();
     },
   }));
 
-  // query schema by template and release
   const { data } = useRequest(
-    () => querySchema(props.template.name, props.release),
-    {
-      onSuccess: () => {
-      },
-      refreshDeps: [props.release],
-      ready: !!props.release,
-    },
-  );
-
-  const { data: releases } = useRequest<{ data: Templates.Release[] }>(
-    () => queryReleases(template.name),
-    {
-      ready: !!props.template.name,
-    },
-  );
-
-  const templateVersionSelect = () => {
-    const requiredRule: Rule[] = [
-      {
-        required: true,
-      },
-    ];
-    const formatReleaseOption = (item: Templates.Release) => {
-      if (item.recommended) {
-        return (
-          <div>
-            {item.name}
-            {' '}
-            <span style={{ color: 'red' }}>(推荐)</span>
-          </div>
-        );
+    () => {
+      if (clusterID) {
+        return querySchema(templateName, release, {
+          clusterID,
+          resourceType: ResourceType.CLUSTER,
+        });
       }
-      return item.name;
-    };
-    const labelName = intl.formatMessage({ id: 'pages.applicationNew.basic.release' });
+      return querySchema(templateName, release);
+    },
+    {
+      refreshDeps: [release],
+      ready: !!release,
+    },
+  );
 
-    const onReleaseChange = (releaseName: string) => {
-      props.setReleaseName(releaseName);
-    };
-    return (
-      <Card
-        className={styles.gapBetweenCards}
-        title={intl.formatMessage({ id: 'pages.applicationNewV2.step.four' })}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            label={labelName}
-            name="release"
-            rules={requiredRule}
-          >
-            <Select
-              defaultValue={props.release}
-              onChange={onReleaseChange}
-              disabled={readonly}
-            >
-              {
-              releases?.map((release) => (
-                <Option
-                  key={release.name}
-                  value={release.name}
-                >
-                  {formatReleaseOption(release)}
-                </Option>
-              ))
-            }
-            </Select>
-          </Form.Item>
-        </Form>
-      </Card>
-    );
-  };
+  const { data: releases } = useRequest(() => queryReleases(templateName), {
+    ready: !!templateName && !readOnly,
+  });
 
-  const onChange = ({ formData, errors }: any) => {
-    if (setConfig) {
-      setConfig(formData);
-    }
-    if (setConfigErrors) {
-      setConfigErrors(errors);
-    }
-  };
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.newV2.deploy.${suffix}`, defaultMessage: defaultMsg });
 
-  const onSubmit = (schema: any) => {
-    props.onSubmit(schema);
-  };
-
-  const getJsonSchema = () => {
-    if (data && data.application) {
-      const { jsonSchema, uiSchema } = data.application;
+  const formatReleaseOption = (item: API.Release) => {
+    if (item.recommended) {
       return (
         <div>
-          <Card
-            className={styles.gapBetweenCards}
-            title={intl.formatMessage({ id: 'pages.applicationNewV2.step.four' })}
-          >
-            <JsonSchemaForm
-              ref={(dom) => {
-                formRef.current = dom;
-              }}
-              disabled={readonly}
-              jsonSchema={jsonSchema}
-              uiSchema={uiSchema}
-              formData={props.config}
-              liveValidate
-              showErrorList={false}
-              onChange={onChange}
-              onSubmit={onSubmit}
-            />
-          </Card>
+          {item.name}
+          {' '}
+          <span style={{ color: 'red' }}>(推荐)</span>
         </div>
       );
     }
-    return <div />;
+    return item.name;
   };
+
+  const requiredRule: Rule[] = [
+    {
+      required: true,
+    },
+  ];
+
+  const onReleaseChange = (releaseName: string) => {
+    setReleaseName(releaseName);
+  };
+
+  const onRJSFChange = ({ formData, errors }: any) => {
+    if (readOnly) {
+      return;
+    }
+    if (setTemplateConfig) {
+      setTemplateConfig(formData);
+    }
+    if (setTemplateConfigErrors) {
+      setTemplateConfigErrors(errors);
+    }
+  };
+
   return (
-    <div>
-      {!readonly && !envTemplate && (<div>{templateVersionSelect()}</div>)}
-      <div>{getJsonSchema()}</div>
-    </div>
+    <MaxSpace
+      direction="vertical"
+      size="middle"
+    >
+      {
+        !envTemplate && (
+          <Form layout="vertical">
+            <Card title={formatMessage('template', '部署模板')}>
+              <Form.Item label={formatMessage('template.name', '模版')}>
+                <Input disabled value={templateName} />
+              </Form.Item>
+              <Form.Item
+                label={formatMessage('template.release', '模版版本')}
+                name="release"
+                rules={requiredRule}
+                initialValue={release}
+              >
+                <Select
+                  disabled={readOnly}
+                  onChange={onReleaseChange}
+                >
+                  {releases?.map((item: any) => (
+                    <Option key={item.name} value={item.name}>
+                      {formatReleaseOption(item)}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Card>
+          </Form>
+        )
+      }
+      {
+        data && data[appKey] && (
+          <Card
+            title={formatMessage('config', '模板配置')}
+          >
+            <JsonSchemaForm
+              ref={formRef}
+              disabled={readOnly}
+              formData={templateConfig}
+              jsonSchema={data[appKey].jsonSchema}
+              uiSchema={data[appKey].uiSchema}
+              onChange={onRJSFChange}
+              onSubmit={(schema: any) => {
+                onSubmit(schema.formData);
+              }}
+              liveValidate
+              showErrorList={false}
+            />
+          </Card>
+        )
+      }
+    </MaxSpace>
   );
 });

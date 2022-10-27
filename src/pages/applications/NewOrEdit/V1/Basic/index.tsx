@@ -167,7 +167,7 @@ export default (props: any) => {
             <Form.Item
               name="refType"
               style={{ display: 'inline-block', width: '100px' }}
-              initialValue={gitRefTypeList[0]}
+              initialValue={gitRefTypeList[0].key}
             >
               <Select
                 disabled={readOnly}

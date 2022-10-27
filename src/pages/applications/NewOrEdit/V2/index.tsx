@@ -1,6 +1,6 @@
 import { useIntl } from '@@/plugin-locale/localeExports';
 import {
-  Button, Card, Col, Form, Input, Row,
+  Button, Col, Form, Row,
 } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useRequest } from '@@/plugin-request/request';
@@ -14,37 +14,16 @@ import HSteps from '@/components/HSteps';
 import Basic from '@/pages/applications/NewOrEdit/V2/Basic';
 import BuildConfig from '@/pages/applications/NewOrEdit/V2/BuildConfig';
 import {
-  applicationVersion2,
   createApplicationV2,
   getApplicationV2,
   updateApplicationV2,
 } from '@/services/applications/applications';
-import Config from './Config';
+import { pipelineV2 } from '@/services/version/version';
+import Config from '@/pages/applications/NewOrEdit/V2/Config';
 import Template from '@/pages/applications/NewOrEdit/V1/Template';
 import { API } from '@/services/typings';
 import { parseGitRef } from '@/services/code/code';
-
-const SelectedTemplateInfo = (props: { name: string, releaseName:string }) => {
-  const intl = useIntl();
-  const { name, releaseName } = props;
-  const templateTitle = intl.formatMessage({ id: 'pages.applicationNewV2.step.three' });
-  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
-    id: `pages.applicationNew.basic.${suffix}`,
-    defaultMessage: defaultMsg,
-  });
-  return (
-    <Form layout="vertical">
-      <Card title={templateTitle} className={styles.gapBetweenCards}>
-        <Form.Item label={formatMessage('template', 'template')}>
-          <Input disabled value={name} />
-        </Form.Item>
-        <Form.Item label={formatMessage('release')}>
-          <Input disabled value={releaseName} />
-        </Form.Item>
-      </Card>
-    </Form>
-  );
-};
+import { MaxSpace } from '@/components/Widget';
 
 export default (props: any) => {
   const history = useHistory();
@@ -76,6 +55,10 @@ export default (props: any) => {
   const subFolderKey = 'subfolder';
   const refTypeKey = 'refType';
   const refValueKey = 'refValue';
+  const basicFieldsToValidate = [
+    nameKey, priorityKey, gitURLKey,
+  ];
+
   if (editing) {
     const { data: getAppResp } = useRequest(() => getApplicationV2(id), {
       onSuccess: () => {
@@ -91,7 +74,6 @@ export default (props: any) => {
           { name: subFolderKey, value: getAppResp!.git.subfolder },
         ];
         // used for basic
-        setBasic(basicInfo);
         form.setFields(basicInfo);
         // used for build
         setBuildConfig(getAppResp!.buildConfig);
@@ -131,45 +113,49 @@ export default (props: any) => {
   });
 
   const basicHasError = () => {
-    let hasError = false;
+    if (editing && basic.length === 0) {
+      return false;
+    }
+    let hasError = true;
+    let validatedNum = 0;
     for (let i = 0; i < basic!.length; i += 1) {
       const val = basic![i];
       if (val.errors && val.errors.length > 0) {
-        hasError = true;
+        break;
       }
+      if (val.name.length > 0 && basicFieldsToValidate.includes(val.name[0]) && val.value) {
+        validatedNum += 1;
+      }
+    }
+    if (validatedNum === basicFieldsToValidate.length) {
+      hasError = false;
     }
     return hasError;
   };
 
-  const buildConfigHasErr = (config: any) => {
+  const configHasError = (config: any) => {
     if (config && config.length > 0) {
       return true;
     }
     return false;
   };
 
-  const templateConfigHasError = (config: any) => {
-    if (config && config.length > 0) {
-      return true;
-    }
-    return false;
-  };
-
-  const currentStepIsValid = (currentValue: number) => {
+  const currentStepIsValid = (cur: number) => {
     let valid: boolean;
-    switch (currentValue) {
+    switch (cur) {
       case 0:
         valid = !basicHasError();
         break;
       case 1:
-        valid = !buildConfigHasErr(buildConfigErrors);
+        valid = !basicHasError() && !configHasError(buildConfigErrors);
         break;
       case 2:
-        valid = !!templateBasic.name && !buildConfigHasErr(buildConfigErrors);
+        valid = !basicHasError() && !configHasError(buildConfigErrors) && !!templateBasic.name;
         break;
       case 3:
       case 4:
-        valid = !!releaseName && !buildConfigHasErr(buildConfigErrors) && !templateConfigHasError(templateConfigErrors);
+        valid = !basicHasError() && !configHasError(buildConfigErrors) && !!templateBasic.name
+          && !!releaseName && !configHasError(templateConfigErrors);
         break;
       default:
         valid = true;
@@ -179,20 +165,20 @@ export default (props: any) => {
 
   const steps = [
     {
-      title: intl.formatMessage({ id: 'pages.applicationNewV2.step.one' }),
+      title: intl.formatMessage({ id: 'pages.newV2.step.basic' }),
+      disabled: false,
+    }, {
+      title: intl.formatMessage({ id: 'pages.newV2.step.build' }),
       disabled: !currentStepIsValid(0),
     }, {
-      title: intl.formatMessage({ id: 'pages.applicationNewV2.step.two' }),
+      title: intl.formatMessage({ id: 'pages.newV2.deploy.template' }),
       disabled: !currentStepIsValid(1),
     }, {
-      title: intl.formatMessage({ id: 'pages.applicationNewV2.step.three' }),
+      title: intl.formatMessage({ id: 'pages.newV2.deploy.config' }),
       disabled: !currentStepIsValid(2),
     }, {
-      title: intl.formatMessage({ id: 'pages.applicationNewV2.step.four' }),
+      title: intl.formatMessage({ id: 'pages.newV2.step.audit' }),
       disabled: !currentStepIsValid(3),
-    }, {
-      title: intl.formatMessage({ id: 'pages.applicationNewV2.step.five' }),
-      disabled: !currentStepIsValid(4),
     },
   ];
 
@@ -203,9 +189,7 @@ export default (props: any) => {
     setCurrent(current - 1);
   };
   const next = () => {
-    if (currentStepIsValid(current)) {
-      setCurrent(current + 1);
-    }
+    setCurrent(current + 1);
   };
 
   const buildConfigRef = useRef();
@@ -240,6 +224,8 @@ export default (props: any) => {
           });
           refresh().then();
         });
+        setBuildSubmitted(false);
+        setTemplateConfigSubmitted(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -263,7 +249,7 @@ export default (props: any) => {
                   formData={basic}
                   setFormData={setBasicFormData}
                   editing={editing}
-                  version={applicationVersion2}
+                  version={pipelineV2}
                 />
               )
             }
@@ -271,9 +257,9 @@ export default (props: any) => {
               // build config
               current === 1 && (
                 <BuildConfig
-                  config={buildConfig}
-                  setConfig={setBuildConfig}
-                  setConfigErrors={setBuildConfigErrors}
+                  buildConfig={buildConfig}
+                  setBuildConfig={setBuildConfig}
+                  setBuildConfigErrors={setBuildConfigErrors}
                 />
               )
             }
@@ -292,47 +278,46 @@ export default (props: any) => {
                 <Config
                   template={templateBasic}
                   release={releaseName}
-                  config={templateConfig}
-                  setConfig={setTemplateConfig}
                   setReleaseName={setReleaseName}
-                  setConfigErrors={setTemplateConfigErrors}
+                  templateConfig={templateConfig}
+                  setTemplateConfig={setTemplateConfig}
+                  setTemplateConfigErrors={setTemplateConfigErrors}
                 />
               )
             }
             {
               // audit, list all the content
               current === 4 && (
-                <div>
+                <MaxSpace
+                  direction="vertical"
+                  size="middle"
+                >
                   <Basic
                     form={form}
-                    version={applicationVersion2}
-                    readonly
+                    version={pipelineV2}
+                    readOnly
                   />
                   <BuildConfig
-                    readonly
-                    config={buildConfig}
+                    readOnly
+                    buildConfig={buildConfig}
                     ref={buildConfigRef}
-                    onSubmit={(schema: any) => {
-                      setBuildConfig(schema.formData);
+                    onSubmit={(formData: any) => {
+                      setBuildConfig(formData);
                       setBuildSubmitted(true);
                     }}
                   />
-                  <SelectedTemplateInfo
-                    name={templateBasic.name}
-                    releaseName={releaseName}
-                  />
                   <Config
+                    ref={templateConfigRef}
+                    readOnly
                     template={templateBasic}
                     release={releaseName}
-                    config={templateConfig}
-                    ref={templateConfigRef}
-                    onSubmit={(schema: any) => {
+                    templateConfig={templateConfig}
+                    onSubmit={(formData: any) => {
+                      setTemplateConfig(formData);
                       setTemplateConfigSubmitted(true);
-                      setTemplateConfig(schema.formData);
                     }}
-                    readonly
                   />
-                </div>
+                </MaxSpace>
               )
             }
           </div>

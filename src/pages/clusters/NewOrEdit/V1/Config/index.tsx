@@ -5,13 +5,13 @@ import {
 } from 'react';
 import { querySchema } from '@/services/templates/templates';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
-import styles from '../index.less';
+import styles from '@/pages/clusters/NewOrEdit/index.less';
 import { ResourceType } from '@/const';
 
 export default forwardRef((props: any, ref) => {
   const intl = useIntl();
 
-  const { readonly = false } = props;
+  const { readOnly = false } = props;
   const formRefs = useRef([]);
 
   useImperativeHandle(
@@ -47,6 +47,7 @@ export default forwardRef((props: any, ref) => {
     >= Object.keys(data).length)) {
       props.onSubmit(totalFormData);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalFormData]);
 
   return (
@@ -56,7 +57,7 @@ export default forwardRef((props: any, ref) => {
         const currentFormData = props.config[item] || {};
 
         const onChange = ({ formData, errors }: any) => {
-          if (readonly) {
+          if (readOnly) {
             return;
           }
           props.setConfig((config: any) => ({ ...config, [item]: formData }));
@@ -75,7 +76,7 @@ export default forwardRef((props: any, ref) => {
               ref={(dom) => {
                 formRefs.current[i] = dom;
               }}
-              disabled={readonly}
+              disabled={readOnly}
               formData={currentFormData}
               jsonSchema={jsonSchema}
               onChange={onChange}

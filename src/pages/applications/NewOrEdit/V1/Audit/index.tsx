@@ -24,7 +24,7 @@ export default (props: any) => {
         <h4>{template.description}</h4>
       </Card>
 
-      <Basic form={form} template={template} readonly />
+      <Basic form={form} template={template} readOnly />
 
       <Config
         template={template}
@@ -32,7 +32,7 @@ export default (props: any) => {
         config={config}
         ref={formRef}
         onSubmit={onSubmit}
-        readonly
+        readOnly
       />
     </div>
   );

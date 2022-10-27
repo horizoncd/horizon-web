@@ -4,8 +4,9 @@ import { useState } from 'react';
 import Basic1 from './v1';
 import Basic2 from './v2';
 
-import { applicationVersion1, getApplicationV2 } from '@/services/applications/applications';
+import { getApplicationV2 } from '@/services/applications/applications';
 import { API } from '@/services/typings';
+import { isVersion2 } from '@/services/version/version';
 
 export default () => {
   const { initialState } = useModel('@@initialState');
@@ -14,7 +15,7 @@ export default () => {
   const [ifVersion1, setIfVersion1] = useState<boolean>(false);
   useRequest(() => getApplicationV2(applicationID).then(
     ({ data: result }) => {
-      if (result.manifest && result.manifest.manifestVersion !== applicationVersion1) {
+      if (isVersion2(result)) {
         setCalled(result);
         setIfVersion1(false);
       } else {
