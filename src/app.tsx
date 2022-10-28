@@ -502,6 +502,10 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
+      path: `/applications${fullPath}/-/newclusterv2`,
+      menuRender: false,
+    },
+    {
       path: `/applications${fullPath}/-/stats`,
       name: 'Stats',
       icon: 'profile',
@@ -541,6 +545,10 @@ function formatClusterMenu(fullPath: string) {
     },
     {
       path: `/clusters${fullPath}/-/edit`,
+      menuRender: false,
+    },
+    {
+      path: `/clusters${fullPath}/-/editv2`,
       menuRender: false,
     },
     {

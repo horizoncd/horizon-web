@@ -23,6 +23,7 @@ export default {
   'pages.groups.New applicationV2': '创建应用(version2)',
   'pages.groups.New group': '创建分组',
   'pages.groups.New cluster': '创建集群',
+  'pages.groups.copy cluster': '复制集群',
   'pages.groups.edit': '编辑',
 
   'pages.applicationNew.config.application': '部署配置',
@@ -33,12 +34,6 @@ export default {
   'pages.applicationNew.step.two': '配置服务',
   'pages.applicationNew.step.three': '自定义配置',
   'pages.applicationNew.step.four': '审计',
-
-  'pages.applicationNewV2.step.one': '基础信息',
-  'pages.applicationNewV2.step.two': '构建配置',
-  'pages.applicationNewV2.step.three': '部署模板',
-  'pages.applicationNewV2.step.four': '模板配置',
-  'pages.applicationNewV2.step.five': '审计',
 
   'pages.applicationNew.step.message': '第 {index} 步',
   'pages.applicationNew.basic.title': '应用基础信息',
@@ -116,7 +111,9 @@ export default {
   'pages.clusterDetail.basic.tag': 'Tag',
   'pages.clusterDetail.basic.commit': 'Commit',
   'pages.clusterDetail.basic.createTime': '创建时间',
+  'pages.clusterDetail.basic.creator': '创建人',
   'pages.clusterDetail.basic.updateTime': '修改时间',
+  'pages.clusterDetail.basic.updater': '修改人',
   'pages.clusterDelete.success': '集群删除成功',
   'pages.clusterDelete.confirm.title': '是否确定要删除该集群:{cluster}?',
   'pages.clusterDelete.confirm.content': '注意：删除后集群将无法恢复',
@@ -136,6 +133,14 @@ export default {
   'pages.cluster.podsTable.offline': '下线',
   'pages.cluster.podsTable.restartPod': '重启Pod',
   'pages.cluster.podsTable.reschedulePod': '销毁重建',
+
+  'pages.cluster.action.buildDeploy': '构建发布',
+  'pages.cluster.action.deploy': '直接发布',
+  'pages.cluster.action.restart': '重新启动',
+  'pages.cluster.action.rollback': '回滚',
+  'pages.cluster.action.edit': '修改集群',
+  'pages.cluster.action.free': '释放集群',
+  'pages.cluster.action.delete': '删除集群',
 
   'pages.pipelineNew.submit': '流水线创建成功，开始发布',
   'pages.pipelineNew.title': '标题',
@@ -174,6 +179,16 @@ export default {
   'pages.members.role.tip': `1.按照权限由高到低为：pe、owner、maintainer、guest
   2.所有成员可管理权限低于或等于自己的其他成员`,
   'pages.members.user.anonymous.alert': '你需要先请其中一位成员邀请你加入',
+
+  // v2
+  'pages.newV2.step.basic': '基础信息',
+  'pages.newV2.step.build': '构建配置',
+  'pages.newV2.step.deploy': '部署配置',
+  'pages.newV2.step.audit': '审计',
+  'pages.newV2.deploy.template': '部署模板',
+  'pages.newV2.deploy.template.name': '模板',
+  'pages.newV2.deploy.template.release': '模板版本',
+  'pages.newV2.deploy.config': '模板配置',
 
   'pages.idps.delete.warning': '该操作无法恢复请谨慎操作',
   'pages.idps.new': '新建OIDC登录方式',

@@ -147,7 +147,8 @@ export default () => {
         successAlert('模版更新成功');
       });
     }
-  }, [currentEnv, id, successAlert, templateInput, totalFormData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalFormData]);
 
   const onEditClick = () => {
     history.push({

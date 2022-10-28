@@ -2,7 +2,7 @@ import { Space } from 'antd';
 import styled from 'styled-components';
 
 const MaxSpace = styled(Space)`
-        height: ${(props) => {
+  height: ${(props) => {
     switch (props.direction) {
       case 'horizontal':
         return '100%';
@@ -10,7 +10,7 @@ const MaxSpace = styled(Space)`
         return 'auto';
     }
   }};
-        width: ${(props) => {
+  width: ${(props) => {
     switch (props.direction) {
       case 'vertical':
         return '100%';

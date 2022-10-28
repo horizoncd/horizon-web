@@ -20,8 +20,9 @@ import utils from '@/utils';
 import { parseGitRef } from '@/services/code/code';
 import styles from '@/pages/applications/Detail/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
-import BuildConfig from '@/pages/applications/NewOrEdit/V2/BuildConfig';
-import TemplateConfig from '@/pages/applications/NewOrEdit/V2/Config';
+import BuildConfig from '@/pages/applications/NewOrEdit/v2/BuildConfig';
+import TemplateConfig from '@/pages/applications/NewOrEdit/v2/Config';
+import { MaxSpace } from '@/components/Widget';
 
 const { Option } = Select;
 
@@ -224,31 +225,36 @@ export default () => {
           </div>
         )}
       >
-        <BuildConfig
-          readonly={!editing}
-          ref={buildConfigRef}
-          config={buildConfig}
-          setConfig={setBuildConfig}
-          setConfigErrors={setBuildConfigErrors}
-          onSubmit={(schema: any) => {
-            setBuildConfig(schema.formData);
-            setBuildSubmitted(true);
-          }}
-        />
-        <TemplateConfig
-          ref={templateConfigRef}
-          template={templateBasic}
-          release={releaseName}
-          config={templateConfig}
-          readonly={!editing}
-          setConfig={setTemplateConfig}
-          setConfigErrors={setTemplateConfigErrors}
-          envTemplate
-          onSubmit={(schema: any) => {
-            setTemplateConfig(schema.formData);
-            setTemplateConfigSubmitted(true);
-          }}
-        />
+        <MaxSpace
+          direction="vertical"
+          size="middle"
+        >
+          <BuildConfig
+            readOnly={!editing}
+            ref={buildConfigRef}
+            buildConfig={buildConfig}
+            setBuildConfig={setBuildConfig}
+            setBuildConfigErrors={setBuildConfigErrors}
+            onSubmit={(formData: any) => {
+              setBuildConfig(formData);
+              setBuildSubmitted(true);
+            }}
+          />
+          <TemplateConfig
+            ref={templateConfigRef}
+            envTemplate
+            readOnly={!editing}
+            template={templateBasic}
+            release={releaseName}
+            templateConfig={templateConfig}
+            setTemplateConfig={setTemplateConfig}
+            setTemplateConfigErrors={setTemplateConfigErrors}
+            onSubmit={(formData: any) => {
+              setTemplateConfig(formData);
+              setTemplateConfigSubmitted(true);
+            }}
+          />
+        </MaxSpace>
       </Card>
     </PageWithBreadcrumb>
   );

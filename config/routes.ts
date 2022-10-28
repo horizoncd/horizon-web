@@ -127,11 +127,11 @@ const groupRoutes = [
   }, {
     path: '/groups/*/-/newapplicationv1',
     menuRender: false,
-    component: 'applications/NewOrEdit/V1',
+    component: 'applications/NewOrEdit/v1',
   },{
     path: '/groups/*/-/newapplicationv2',
     menuRender: false,
-    component: 'applications/NewOrEdit/V2',
+    component: 'applications/NewOrEdit/v2',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -156,17 +156,22 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/edit',
     menuRender: false,
-    component: 'applications/NewOrEdit/V1',
+    component: 'applications/NewOrEdit/v1',
   },
   {
     path: '/applications/*/-/editv2',
     menuRender: false,
-    component: 'applications/NewOrEdit/V2',
+    component: 'applications/NewOrEdit/v2',
   },
   {
     path: '/applications/*/-/newcluster',
     menuRender: false,
-    component: 'clusters/NewOrEdit',
+    component: 'clusters/NewOrEdit/v1',
+  },
+  {
+    path: '/applications/*/-/newclusterv2',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2',
   },
   {
     path: '/applications/*/-/settings/advance',
@@ -182,7 +187,12 @@ const clusterRoutes = [
   {
     path: '/clusters/*/-/edit',
     menuRender: false,
-    component: 'clusters/NewOrEdit',
+    component: 'clusters/NewOrEdit/v1',
+  },
+  {
+    path: '/clusters/*/-/editv2',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2',
   },
   {
     path: '/clusters/*/-/configs',

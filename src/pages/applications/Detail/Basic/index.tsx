@@ -1,14 +1,14 @@
 import {
-  Avatar, Button, Divider, Dropdown, Menu, Modal, Tooltip,
+  Button, Divider, Dropdown, Menu, Modal, Tooltip,
 } from 'antd';
 import copy from 'copy-to-clipboard';
 import { DownOutlined, ExclamationCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import styles from '@/pages/applications/Detail/index.less';
-import utils from '@/utils';
 import RBAC from '@/rbac';
 import DetailCard from '@/components/DetailCard';
+import ResourceAvatar from '@/components/Widget/ResourceAvatar';
 
 export default (props: any) => {
   const {
@@ -17,7 +17,6 @@ export default (props: any) => {
   } = props;
   const intl = useIntl();
   const { successAlert } = useModel('alert');
-  const firstLetter = applicationName.substring(0, 1).toUpperCase();
 
   const refreshButton = (
     <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined /></Button>);
@@ -85,13 +84,7 @@ export default (props: any) => {
     <div>
       <div>
         <div className={styles.avatarBlock}>
-          <Avatar
-            className={`${styles.avatar} identicon bg${utils.getAvatarColorIndex(applicationName)}`}
-            size={64}
-            shape="square"
-          >
-            <span className={styles.avatarFont}>{firstLetter}</span>
-          </Avatar>
+          <ResourceAvatar name={applicationName} size={64} />
           <div className={styles.flexColumn}>
             <div className={styles.titleFont}>{applicationName}</div>
             <div className={styles.idFont}>

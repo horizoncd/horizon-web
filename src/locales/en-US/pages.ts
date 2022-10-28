@@ -21,6 +21,8 @@ export default {
   'pages.groups.New applicationV2': 'NewApplicationV2',
   'pages.groups.New group': 'New group',
   'pages.groups.New cluster': 'New cluster',
+  'pages.groups.copy cluster': 'Copy cluster',
+  'pages.groups.edit': 'Edit',
 
   'pages.applicationNew.config.application': 'deploy config',
   'pages.applicationNew.config.pipeline': 'build config',
@@ -30,12 +32,6 @@ export default {
   'pages.applicationNew.step.two': 'Basic',
   'pages.applicationNew.step.three': 'Config',
   'pages.applicationNew.step.four': 'Audit',
-
-  'pages.applicationNewV2.step.one': 'Basic',
-  'pages.applicationNewV2.step.two': 'BuildConfig',
-  'pages.applicationNewV2.step.three': 'Template',
-  'pages.applicationNewV2.step.four': 'TemplateConfig',
-  'pages.applicationNewV2.step.five': 'Audit',
 
   'pages.applicationNew.step.message': 'Step {index}',
   'pages.applicationNew.basic.title': 'Service Basic',
@@ -110,7 +106,9 @@ export default {
   'pages.clusterDetail.basic.tag': 'tag',
   'pages.clusterDetail.basic.commit': 'commit',
   'pages.clusterDetail.basic.createTime': 'create time',
+  'pages.clusterDetail.basic.creator': 'creator',
   'pages.clusterDetail.basic.updateTime': 'update time',
+  'pages.clusterDetail.basic.updater': 'updater',
   'pages.clusterDelete.success': 'delete cluster succeed',
   'pages.clusterDelete.confirm.title': 'Are you sure to delete this cluster：{cluster}?',
   'pages.clusterDelete.confirm.content': 'Warning：the cluster could not be resumed after deleted',
@@ -129,6 +127,14 @@ export default {
   'pages.cluster.podsTable.online': 'Online',
   'pages.cluster.podsTable.offline': 'Offline',
   'pages.cluster.podsTable.restartPod': 'Restart',
+
+  'pages.cluster.action.buildDeploy': 'BuildDeploy',
+  'pages.cluster.action.deploy': 'Deploy',
+  'pages.cluster.action.restart': 'Restart',
+  'pages.cluster.action.rollback': 'Rollback',
+  'pages.cluster.action.edit': 'Edit cluster',
+  'pages.cluster.action.free': 'Release cluster',
+  'pages.cluster.action.delete': 'Delete cluster',
 
   'pages.pipelineNew.submit': 'Pipeline Started',
   'pages.pipelineNew.title': 'Title',
@@ -169,6 +175,16 @@ export default {
   'pages.members.role.tip': `1.Permission from high to low：Owner、Maintainer、Developer、Reporter、Guest
   2.All members could manage other members whose permission is equal to or lower then self`,
   'pages.members.user.anonymous.alert': 'Please ask for other members to invite you first',
+
+  // v2
+  'pages.newV2.step.basic': 'Basic',
+  'pages.newV2.step.build': 'BuildConfig',
+  'pages.newV2.step.deploy': 'DeployConfig',
+  'pages.newV2.step.audit': 'Audit',
+  'pages.newV2.deploy.template': 'DeployTemplate',
+  'pages.newV2.deploy.template.name': 'template',
+  'pages.newV2.deploy.template.release': 'release',
+  'pages.newV2.deploy.config': 'TemplateConfig',
 
   'pages.idps.delete.warning': 'This operation cannot be recovered please proceed with caution',
   'pages.idps.new': 'New login method with OIDC',
