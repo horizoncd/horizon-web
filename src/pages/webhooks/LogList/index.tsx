@@ -3,14 +3,24 @@ import { useParams, useRequest } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
 import { getWebhook } from '@/services/webhooks/webhooks';
-import { WebhookConfig } from '../components/WebhookConfig';
+import { WebhookLogs } from '../components/WebhookComponents';
 
-function WebhookDetail() {
-  const [form] = Form.useForm();
+function LogList(props: { initialState: API.InitialState }) {
+  const { initialState } = props;
+  const {
+    id: resourceID = 0,
+    fullPath: resourceFullPath,
+    type: resourceType,
+  } = initialState.resource;
   const { id: idStr } = useParams<{ id: string }>();
+  const id = parseInt(idStr, 10);
+  const [form] = Form.useForm();
+  const isAdminPage = resourceType === 'group' && resourceID === 0;
+  const webhookLogDetailURL = isAdminPage ? `/admin/webhooks/${id}/` : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/`;
+
   const { data: webhook } = useRequest(
     () => getWebhook(
-      parseInt(idStr, 10),
+      id,
     ),
     {
       onSuccess: () => {
@@ -42,22 +52,34 @@ function WebhookDetail() {
           fontSize: 'larger',
         }}
       >
-        Webhook详情
+        Webhook触发记录
       </div>
       <div
         style={{ padding: '20px' }}
       >
-        <Form
+        {/* <Form
           disabled
           form={form}
           layout="vertical"
         >
           <WebhookConfig />
-          {}
-        </Form>
+        </Form> */}
+        {/* <div
+          style={{
+            fontWeight: 'bold',
+            marginBottom: '20px',
+            fontSize: 'larger',
+          }}
+        >
+          触发记录
+        </div> */}
+        <WebhookLogs
+          detailURL={webhookLogDetailURL}
+          webhookID={id}
+        />
       </div>
     </PageWithBreadcrumb>
   );
 }
 
-export default PageWithInitialState(WebhookDetail);
+export default PageWithInitialState(LogList);

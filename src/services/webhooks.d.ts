@@ -28,6 +28,7 @@ declare namespace Webhooks {
     webhookID: number
     eventID: number
     url: string
+    trigger: string
     status: string
     errorMessage: string
     createdAt: string

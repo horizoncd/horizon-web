@@ -50,7 +50,7 @@ export async function listWebhookLogs(webhookID: number, params: API.PageParam) 
   });
 }
 
-export async function getWebhookLogs(id: number) {
+export async function getWebhookLog(id: number) {
   return request<{
     data: Webhooks.Log;
   }>(`/apis/core/v1/webhooklogs/${id}`, {

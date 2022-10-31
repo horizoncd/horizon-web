@@ -442,6 +442,11 @@ function formatGroupMenu(fullPath: string) {
           parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
         },
         {
+          path: `/groups${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
+        },
+        {
           path: `/groups${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
@@ -528,6 +533,11 @@ function formatApplicationMenu(fullPath: string) {
         {
           path: `/applications${fullPath}/-/settings/advance`,
           name: 'Advance',
+        },
+        {
+          path: `/applications${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
         },
         {
           path: `/applications${fullPath}/-/settings/accesstokens`,

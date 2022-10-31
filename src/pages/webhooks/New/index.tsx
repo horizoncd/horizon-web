@@ -1,19 +1,21 @@
-import { useModel } from 'umi';
+import { useModel, history } from 'umi';
 import { Form } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
-import { ResourceTriggers, WebhookConfig, WebhookButtons } from '../components/WebhookConfig';
+import { ResourceTriggers, WebhookConfig, WebhookButtons } from '../components/WebhookComponents';
 import { createWebhook } from '@/services/webhooks/webhooks';
 
-function NewWebhook(props: { initialState: API.InitialState }) {
+function New(props: { initialState: API.InitialState }) {
   const { initialState } = props;
   const {
     id: resourceID = 0,
-    // fullPath: resourceFullPath,
+    fullPath: resourceFullPath,
     type: originResourceType = 'group',
   } = initialState.resource;
   const { successAlert } = useModel('alert');
   const resourceType = originResourceType!.concat('s');
+  const isAdminPage = originResourceType === 'group' && resourceID === 0;
+  const listWebhooksURL = isAdminPage ? '/admin/webhooks' : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
 
   const onFinish = (formData: Webhooks.CreateWebhookReq) => {
     const data: Webhooks.CreateWebhookReq = {
@@ -28,7 +30,10 @@ function NewWebhook(props: { initialState: API.InitialState }) {
       data.triggers = data.triggers.concat(formData[k]);
     });
     createWebhook(resourceType!, resourceID!, data).then(
-      () => successAlert('webhook创建成功'),
+      () => {
+        successAlert('webhook创建成功');
+        history.push(listWebhooksURL);
+      },
     );
   };
 
@@ -55,11 +60,11 @@ function NewWebhook(props: { initialState: API.InitialState }) {
           }}
         >
           <WebhookConfig />
-          <WebhookButtons />
+          <WebhookButtons onCancel={() => history.push(listWebhooksURL)} />
         </Form>
       </div>
     </PageWithBreadcrumb>
   );
 }
 
-export default PageWithInitialState(NewWebhook);
+export default PageWithInitialState(New);

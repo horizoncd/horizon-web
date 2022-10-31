@@ -1,16 +1,26 @@
 import { Form } from 'antd';
-import { useModel, useParams, useRequest } from 'umi';
+import {
+  useModel, useParams, useRequest, history,
+} from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
 import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
-import { ResourceTriggers, WebhookButtons, WebhookConfig } from '../components/WebhookConfig';
+import { ResourceTriggers, WebhookButtons, WebhookConfig } from '../components/WebhookComponents';
 
-// function EditWebhook(props: { initialState: API.InitialState }) {
-function EditWebhook() {
+function EditWebhook(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
+  const { initialState } = props;
+  const {
+    fullPath: resourceFullPath,
+    type: originResourceType = 'group',
+    id: resourceID,
+  } = initialState.resource;
+  const resourceType = originResourceType!.concat('s');
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr, 10);
+  const isAdminPage = originResourceType === 'group' && resourceID === 0;
+  const listWebhooksURL = isAdminPage ? '/admin/webhooks' : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
   const { data: webhook } = useRequest(
     () => getWebhook(
       id,
@@ -52,7 +62,10 @@ function EditWebhook() {
       data.triggers = data.triggers!.concat(formData[k]);
     });
     updateWebhook(id, data).then(
-      () => successAlert('webhook更新成功'),
+      () => {
+        successAlert('webhook更新成功');
+        history.push(listWebhooksURL);
+      },
     );
   };
 
@@ -76,7 +89,7 @@ function EditWebhook() {
           layout="vertical"
         >
           <WebhookConfig />
-          <WebhookButtons />
+          <WebhookButtons onCancel={() => history.push(listWebhooksURL)} />
           {}
         </Form>
       </div>

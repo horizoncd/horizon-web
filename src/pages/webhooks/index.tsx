@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import { history } from 'umi';
 import {
-  Button, Modal, Space, Table, Tag,
+  Button, Modal, Space, Table,
 } from 'antd';
-import styled from 'styled-components';
 import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
 import { deleteWebhook, listWebhooks, updateWebhook } from '@/services/webhooks/webhooks';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import utils from '@/utils';
+import Label from '@/components/Label';
 
 type WebhookData = {
   key: number,
@@ -20,24 +20,14 @@ type WebhookData = {
   createdAt: string,
 };
 
-const StyledTag = styled(Tag)`
-  background-color: #f2f2f2;
-  border-radius: 1rem;
-  display: inline-block;
-  white-space: pre-line;
-  word-break: break-all;
-  border-width: 0;
-  font-size: 14px;
-  margin-bottom: 5px;
-`;
-
 function WebhookList(props: { initialState: API.InitialState }) {
   const { initialState } = props;
   const {
     id: resourceID = 0,
     fullPath: resourceFullPath,
-    type: resourceType = 'group',
+    type: resourceType,
   } = initialState.resource;
+
   const [pageNumber, setPageNumber] = useState(1);
   const [total, setTotal] = useState(0);
   const [webhookTableData, setWebhookTableData] = useState<WebhookData[]>();
@@ -45,18 +35,18 @@ function WebhookList(props: { initialState: API.InitialState }) {
   const { successAlert } = useModel('alert');
   const isAdminPage = resourceType === 'group' && resourceID === 0;
 
-  const createWebhookURL = isAdminPage ? '/admin/webhooks/new' : `/${resourceType}/${resourceFullPath}/-/newwebhook`;
+  const createWebhookURL = isAdminPage ? '/admin/webhooks/new' : `/${resourceType}s${resourceFullPath}/-/settings/newwebhook`;
   const getEditWebhookURL = (id: number) => {
-    const editWebhookURL = isAdminPage ? `/admin/webhooks/${id}/edit` : `/webhooks/${resourceFullPath}/${id}/-/edit`;
+    const editWebhookURL = isAdminPage ? `/admin/webhooks/${id}/edit` : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/edit`;
     return editWebhookURL;
   };
-  const getViewWebhookURL = (id: number) => {
-    const viewWebhookURL = isAdminPage ? `/admin/webhooks/${id}` : `/webhooks/${resourceFullPath}/${id}/-/detail`;
-    return viewWebhookURL;
+  const getWebhookLogsURL = (id: number) => {
+    const webhookLogsURL = isAdminPage ? `/admin/webhooks/${id}` : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}`;
+    return webhookLogsURL;
   };
 
   const { data: webhooks, run: refreshWebhookList } = useRequest(() => listWebhooks(
-    resourceType,
+    resourceType.concat('s'),
     resourceID,
     { pageNumber, pageSize },
   ), {
@@ -97,7 +87,7 @@ function WebhookList(props: { initialState: API.InitialState }) {
       render: (id: number) => (
         <Button
           type="link"
-          onClick={() => history.push(getViewWebhookURL(id))}
+          onClick={() => { window.location.href = getWebhookLogsURL(id); }}
         >
           #
           {id}
@@ -108,16 +98,18 @@ function WebhookList(props: { initialState: API.InitialState }) {
       title: 'URL',
       dataIndex: 'url',
       key: 'url',
+      width: '20%',
     },
     {
       title: '触发事件',
       dataIndex: 'triggers',
       key: 'triggers',
+      width: '25%',
       render: (triggers: string[]) => (
         triggers.map((trigger) => (
-          <StyledTag>
+          <Label>
             {trigger}
-          </StyledTag>
+          </Label>
         ))
       ),
     },
@@ -147,20 +139,21 @@ function WebhookList(props: { initialState: API.InitialState }) {
           </Button>
           <Button
             type="link"
-            onClick={() => history.push(getEditWebhookURL(record.id))}
+            onClick={() => { window.location.href = getEditWebhookURL(record.id); }}
           >
             编辑
           </Button>
           <Button
             type="link"
-            onClick={() => deleteWebhook(record.id).then(() => {
-              Modal.confirm({
-                title: `确认删除Webhook: ${record.url}`,
-                content: '请确认该webhook已经没有使用',
-                onOk: () => {
-                  deleteWebhook(record.id).then(() => successAlert('删除webhook成功'));
-                },
-              });
+            onClick={() => Modal.confirm({
+              title: '是否确认要删除下列webhook：',
+              content: `${record.url}`,
+              onOk: () => {
+                deleteWebhook(record.id).then(() => {
+                  successAlert('删除webhook成功');
+                  refreshWebhookList();
+                });
+              },
             })}
           >
             删除
