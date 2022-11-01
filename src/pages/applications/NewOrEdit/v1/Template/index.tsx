@@ -42,7 +42,6 @@ interface TemplateProps {
   template: API.Template,
   apiVersion: string,
   resetTemplate: (o: API.Template) => void
-
 }
 
 interface GroupTemplateProps extends TemplateProps {
