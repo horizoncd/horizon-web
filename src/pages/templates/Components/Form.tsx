@@ -51,6 +51,19 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
           onBlur={(i) => onRepositoryBlur(i.target.value)}
         />
       </Form.Item>
+      <Form.Item
+        label="CI情况"
+        name="withoutCI"
+        required
+        rules={[{ required: true }]}
+        extra="模板包含的CI情况"
+        initialValue
+      >
+        <Select>
+          <Option key="true" value>不包含CI</Option>
+          <Option key="false" value={false}>包含CI</Option>
+        </Select>
+      </Form.Item>
     </div>
   );
 };
