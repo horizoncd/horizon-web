@@ -123,6 +123,11 @@ declare namespace API {
     email: string,
   };
 
+  type AppSchemeConfigs = {
+    application: any
+    pipeline: any
+  };
+
   type Application = {
     id: number;
     groupID: number;
@@ -138,6 +143,51 @@ declare namespace API {
     };
     git: GitInfo;
     templateInput: any;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type BuildSchema = {
+    jsonSchema?: any;
+    uiSchema?:any;
+  };
+
+  type TemplateInfoV2 = {
+    name: string;
+    release: string;
+  };
+  type GetApplicationResponseV2 = {
+    id: number;
+    name: string;
+    description: string;
+    priority: string;
+    git: GitInfo;
+
+    buildConfig: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+    manifest?: any;
+
+    fullPath: string;
+    groupID: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type CreateOrUpdateRequestV2 = {
+    name: string
+    description: string
+    priority: string;
+    git?: GitInfo;
+    buildConfig?: any;
+    templateInfo?: TemplateInfoV2;
+    templateConfig?: any;
+  };
+
+  type CreateApplicationResponseV2 = {
+    id: string
+    fullPath: string;
+    groupID: number;
     createdAt: string;
     updatedAt: string;
   };
@@ -245,4 +295,60 @@ declare namespace API {
   type Tags = {
     tags: Tag[],
   };
+
+  type PipelineStats = {
+    pipelinerunID: number,
+    application: string,
+    cluster: string,
+    pipeline: string,
+    result: string,
+    duration: number,
+    tasks?: [TaskStats],
+    startedAt: string,
+  };
+
+  type TaskStats = {
+    task: string,
+    result: string,
+    duration: number,
+    steps?: [StepStats]
+  };
+
+  type AuthEndpoint = {
+    authURL: string,
+    displayName: string,
+  };
+
+  type StepStats = {
+    step: string,
+    result: string,
+    duration: number,
+  };
+
+  interface IDP {
+    id: number,
+    displayName: string,
+    name: string,
+    avatar: string,
+    authorizationEndpoint: string,
+    tokenEndpoint: string,
+    userinfoEndpoint: string,
+    revocationEndpoint: string,
+    issuer: string,
+    scopes: string,
+    tokenEndpointAuthMethod: string,
+    jwks: string,
+    clientID: string,
+    clientSecret: string,
+    createdAt: string,
+    updatedAt: string,
+  }
+
+  interface CreateIDPParam extends IDP {
+    id?: number,
+  }
+
+  interface UpdateIDPParam extends IDP {
+    id?: number,
+  }
 }

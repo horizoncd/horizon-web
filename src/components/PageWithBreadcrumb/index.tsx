@@ -1,14 +1,16 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import utils, { pathnameInStaticRoutes } from '../../utils';
 import { useModel } from '@@/plugin-model/useModel';
 import { Alert, Divider } from 'antd';
+import { PropsWithChildren, useEffect } from 'react';
+import { history } from 'umi';
+import utils, { pathnameInStaticRoutes } from '../../utils';
+import NotFount from '@/pages/404';
+import WithTheme from '@/theme';
 import styles from './index.less';
 import './index.less';
-import { useEffect } from 'react';
-import { history } from 'umi';
-import NotFount from '@/pages/404';
 
-export default (props: any) => {
+export default (props: PropsWithChildren<any>) => {
+  const { children } = props;
   const { initialState } = useModel('@@initialState');
   const { fullName } = initialState!.resource;
   const isStaticRoute = pathnameInStaticRoutes();
@@ -21,6 +23,7 @@ export default (props: any) => {
   const itemRender = (route: any) => {
     const { path, breadcrumbName, subResource } = route;
     if (subResource) {
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
       return <a onClick={() => history.push(path)}>{breadcrumbName}</a>;
     }
     return <a href={path}>{breadcrumbName}</a>;
@@ -37,8 +40,9 @@ export default (props: any) => {
   }, [alert, clearAlert]);
 
   return (
-    <div>
-      {
+    <WithTheme>
+      <div>
+        {
         alert.message
         && (
         <Alert
@@ -54,20 +58,21 @@ export default (props: any) => {
         />
         )
       }
-      <div className={styles.pageContainer}>
-        <PageContainer
-          header={{
-            breadcrumb: {
-              routes: utils.getBreadcrumbs(fullName),
-              itemRender,
-            },
-          }}
-          title={false}
-        >
-          <Divider className={styles.divider} />
-          {props.children}
-        </PageContainer>
+        <div className={styles.pageContainer}>
+          <PageContainer
+            header={{
+              breadcrumb: {
+                routes: utils.getBreadcrumbs(fullName),
+                itemRender,
+              },
+            }}
+            title={false}
+          >
+            <Divider className={styles.divider} />
+            {children}
+          </PageContainer>
+        </div>
       </div>
-    </div>
+    </WithTheme>
   );
 };

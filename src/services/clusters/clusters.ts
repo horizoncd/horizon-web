@@ -4,15 +4,16 @@ import type { CLUSTER } from '../clusters';
 import type { API } from '../typings';
 
 export async function queryClusters(applicationID: number, params: CLUSTER.ClusterFilter) {
-  if (!params.environment) {
-    delete params.environment;
+  const filter = params;
+  if (!filter.environment) {
+    delete filter.environment;
   }
 
   return request<{
     data: API.PageResult<CLUSTER.ClusterBase>;
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
     method: 'GET',
-    params,
+    params: filter,
   });
 }
 
@@ -20,6 +21,18 @@ export async function createCluster(applicationID: number, scope: string, data: 
   return request<{
     data: CLUSTER.Cluster
   }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
+    method: 'POST',
+    params: {
+      scope,
+    },
+    data,
+  });
+}
+
+export async function createClusterV2(applicationID: number, scope: string, data: CLUSTER.NewClusterV2) {
+  return request<{
+    data: CLUSTER.Cluster
+  }>(`/apis/core/v2/applications/${applicationID}/clusters`, {
     method: 'POST',
     params: {
       scope,
@@ -42,6 +55,14 @@ export async function getCluster(clusterID: number) {
   });
 }
 
+export async function getClusterV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterV2
+  }>(`/apis/core/v2/clusters/${clusterID}`, {
+    method: 'GET',
+  });
+}
+
 export async function getClusterOutputs(clusterID: number) {
   return request<{
     data: CLUSTER.ClusterOutputs
@@ -52,6 +73,13 @@ export async function getClusterOutputs(clusterID: number) {
 
 export async function updateCluster(clusterID: number, data: CLUSTER.UpdateCluster) {
   return request(`/apis/core/v1/clusters/${clusterID}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export async function updateClusterV2(clusterID: number, data: CLUSTER.UpdateClusterV2) {
+  return request(`/apis/core/v2/clusters/${clusterID}`, {
     method: 'PUT',
     data,
   });
@@ -136,11 +164,11 @@ export async function promote(clusterID: number) {
 
 export async function diffsOfCode(clusterID: number, refType: string, targetRef: string) {
   const params = {};
-  if (refType == GitRefType.Tag) {
+  if (refType === GitRefType.Tag) {
     params.targetTag = targetRef;
-  } else if (refType == GitRefType.Branch) {
+  } else if (refType === GitRefType.Branch) {
     params.targetBranch = targetRef;
-  } else if (refType == GitRefType.Commit) {
+  } else if (refType === GitRefType.Commit) {
     params.targetCommit = targetRef;
   }
   return request<{

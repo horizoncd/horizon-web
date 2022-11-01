@@ -14,6 +14,30 @@ export async function createApplication(groupID: number, body: API.NewApplicatio
   });
 }
 
+export async function createApplicationV2(groupID: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/groups/${groupID}/applications`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function updateApplicationV2(id: number, body: API.CreateOrUpdateRequestV2) {
+  return request<{
+    data: API.CreateApplicationResponseV2
+  }>(`/apis/core/v2/applications/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
 export async function updateApplication(id: number, body: API.NewApplication) {
   return request(`/apis/core/v1/applications/${id}`, {
     method: 'PUT',
@@ -30,6 +54,12 @@ export async function getApplication(id: number) {
   }>(`/apis/core/v1/applications/${id}`, {
     method: 'GET',
   });
+}
+
+export async function getApplicationV2(id: number) {
+  return request<{
+    data: API.GetApplicationResponseV2
+  }>(`/apis/core/v2/applications/${id}`, { method: 'GET' });
 }
 
 export async function deleteApplication(id: number) {
@@ -94,10 +124,18 @@ export async function updateApplicationRegions(applicationID: number, regions: a
   });
 }
 
-export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: any) {
-  return request<{
-    data: API.PageResult<API.Application>;
-  }>(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
+export async function updateApplicationEnvTemplateV2(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v2/applications/${applicationID}/envtemplates`, {
+    method: 'POST',
+    params: {
+      environment,
+    },
+    data,
+  });
+}
+
+export async function updateApplicationEnvTemplate(applicationID: number, environment: string, data: API.AppSchemeConfigs) {
+  return request(`/apis/core/v1/applications/${applicationID}/envtemplates`, {
     method: 'POST',
     params: {
       environment,
@@ -127,4 +165,20 @@ export async function getApplicationByRelease(template: string, release: string,
       },
     },
   );
+}
+
+export async function queryPipelineStats(application: number, cluster: string, pageNumber: number, pageSize: number) {
+  return request<{
+    data: {
+      total: number,
+      items: [API.PipelineStats],
+    };
+  }>(`/apis/core/v1/applications/${application}/pipelinestats`, {
+    method: 'GET',
+    params: {
+      cluster,
+      pageNumber,
+      pageSize,
+    },
+  });
 }

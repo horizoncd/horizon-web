@@ -19,9 +19,6 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
   const { successAlert } = useModel('alert');
   const { data: template } = useRequest(() => queryTemplate(templateID), {});
   const { data: releases, refresh } = useRequest(() => queryReleases(templateID));
-  if (!releases) {
-    return null;
-  }
   const isRootGroup = type === ResourceType.TEMPLATE && template?.group === 0;
 
   const data: Param[][] = [
@@ -119,9 +116,13 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
     )}
       />
 
-      <Card title="Releases" extra={queryInput}>
-        <ReleasesTable fullName={fullName} releases={releases} refresh={refresh} />
-      </Card>
+      {
+        releases && (
+          <Card title="Releases" extra={queryInput}>
+            <ReleasesTable fullName={fullName} releases={releases} refresh={refresh} />
+          </Card>
+        )
+      }
     </PageWithBreadcrumb>
   );
 }

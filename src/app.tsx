@@ -5,6 +5,7 @@ import { Menu, notification, Tooltip } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import {
+  ApiOutlined,
   AppstoreOutlined,
   BankOutlined,
   ClusterOutlined,
@@ -18,6 +19,7 @@ import {
   SmileOutlined,
   SnippetsOutlined,
   TagsOutlined,
+  ProfileOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
@@ -49,6 +51,8 @@ const IconMap = {
   database: <DatabaseOutlined />,
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
+  idp: <ApiOutlined />,
+  profile: <ProfileOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, children, ...item }) => ({
@@ -160,10 +164,6 @@ export async function getInitialState(): Promise<API.InitialState> {
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
-      if (history.location.pathname === '/user/login/callback'
-      || history.location.pathname === '/user/login') {
-        return response;
-      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
       if (response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
@@ -199,6 +199,9 @@ export const request: RequestConfig = {
         message: '网络异常',
         description: '您的网络发生异常，无法连接服务器',
       });
+    }
+    if (response.headers.get(sessionExpireHeaderKey)) {
+      return
     }
     if (data.errorCode || data.errorMessage) {
       notification.error({
@@ -236,9 +239,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         key="4"
         title={(
           <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More 
-{' '}
-<DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
+            More
+            {' '}
+            <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
 )}
       >
@@ -343,6 +346,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             name: 'Environments',
             icon: 'environment',
           },
+          {
+            path: '/admin/idps',
+            name: 'IDPs',
+            icon: 'idp',
+          },
         ]);
       }
 
@@ -440,11 +448,19 @@ function formatGroupMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/groups${fullPath}/-/newapplication`,
+      path: `/groups${fullPath}/-/newapplication:q:`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv1`,
       menuRender: false,
     },
     {
       path: `/groups${fullPath}/-/newoauthapp`,
+      menuRender: false,
+    },
+    {
+      path: `/groups${fullPath}/-/newapplicationv2`,
       menuRender: false,
     },
     {
@@ -478,8 +494,27 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
+      path: `/applications${fullPath}/-/editv2`,
+      menuRender: false,
+    },
+    {
       path: `/applications${fullPath}/-/newcluster`,
       menuRender: false,
+    },
+    {
+      path: `/applications${fullPath}/-/newclusterv2`,
+      menuRender: false,
+    },
+    {
+      path: `/applications${fullPath}/-/stats`,
+      name: 'Stats',
+      icon: 'profile',
+      children: [
+        {
+          path: `/applications${fullPath}/-/stats/pipeline`,
+          name: 'Pipeline',
+        },
+      ],
     },
     {
       path: `/applications${fullPath}/-/settings`,
@@ -510,6 +545,10 @@ function formatClusterMenu(fullPath: string) {
     },
     {
       path: `/clusters${fullPath}/-/edit`,
+      menuRender: false,
+    },
+    {
+      path: `/clusters${fullPath}/-/editv2`,
       menuRender: false,
     },
     {

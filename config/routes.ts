@@ -1,6 +1,4 @@
-﻿import component from "@/locales/en-US/component";
-
-export const routes = [
+﻿export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -35,6 +33,13 @@ export const routes = [
     wrappers: [
       '@/wrappers/auth',
     ],
+  },
+  {
+    path: '/admin/idps',
+    component: 'admin/IDPs/Main',
+    wrappers: [
+      '@/wrappers/auth',
+    ]
   },
   {
     path: '/templates',
@@ -119,11 +124,14 @@ const groupRoutes = [
     path: '/groups/*/-/newsubgroup',
     menuRender: false,
     component: 'groups/NewSubGroup',
-  },
-  {
-    path: '/groups/*/-/newapplication',
+  }, {
+    path: '/groups/*/-/newapplicationv1',
     menuRender: false,
-    component: 'applications/NewOrEdit',
+    component: 'applications/NewOrEdit/v1',
+  },{
+    path: '/groups/*/-/newapplicationv2',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -148,16 +156,30 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/edit',
     menuRender: false,
-    component: 'applications/NewOrEdit',
+    component: 'applications/NewOrEdit/v1',
+  },
+  {
+    path: '/applications/*/-/editv2',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2',
   },
   {
     path: '/applications/*/-/newcluster',
     menuRender: false,
-    component: 'clusters/NewOrEdit',
+    component: 'clusters/NewOrEdit/v1',
+  },
+  {
+    path: '/applications/*/-/newclusterv2',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2',
   },
   {
     path: '/applications/*/-/settings/advance',
     component: 'applications/config/Advance',
+  },
+  {
+    path: '/applications/*/-/stats/pipeline',
+    component: 'applications/stats/Pipeline',
   }
 ];
 
@@ -165,7 +187,12 @@ const clusterRoutes = [
   {
     path: '/clusters/*/-/edit',
     menuRender: false,
-    component: 'clusters/NewOrEdit',
+    component: 'clusters/NewOrEdit/v1',
+  },
+  {
+    path: '/clusters/*/-/editv2',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2',
   },
   {
     path: '/clusters/*/-/configs',
@@ -241,7 +268,17 @@ const adminRoutes = [
   }, {
     path: '/admin/environments/:id/edit',
     component: 'admin/Environments/Edit'
+  }, {
+    path: '/admin/idps/:id/edit',
+    component: 'admin/IDPs/Edit',
+  }, {
+    path: '/admin/idps/new',
+    component: 'admin/IDPs/New',
   },
+  {
+    path: '/admin/idps/:id',
+    component: 'admin/IDPs/Detail',
+  }
 ]
 
 const templateRoutes = [
