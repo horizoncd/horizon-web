@@ -57,10 +57,12 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
         required
         rules={[{ required: true }]}
         extra="模板包含的CI情况"
-        initialValue
+        // eslint-disable-next-line react/jsx-boolean-value
+        initialValue={true}
       >
         <Select>
-          <Option key="true" value>不包含CI</Option>
+          {/*eslint-disable-next-line react/jsx-boolean-value*/}
+          <Option key="true" value={true}>不包含CI</Option>
           <Option key="false" value={false}>包含CI</Option>
         </Select>
       </Form.Item>
