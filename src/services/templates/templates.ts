@@ -96,8 +96,8 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
   return request(path, config);
 }
 
-export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false) {
-  const path = `/apis/core/v1/groups/${group}/templates`;
+export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false, apiVersion: string = 'v1') {
+  const path = `/apis/core/${apiVersion}/groups/${group}/templates`;
   const config = {
     method: 'GET',
     params: {
@@ -107,8 +107,8 @@ export async function getTemplates(group: number, fullpath: boolean = false, rec
   return request<{ data: Templates.Template[] }>(path, config);
 }
 
-export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false) {
-  return getTemplates(0, fullpath, recursive);
+export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false, apiVersion: string = 'v1') {
+  return getTemplates(0, fullpath, recursive, apiVersion);
 }
 
 export async function getSchema(release: number) {

@@ -40,6 +40,7 @@ const Cards = (props: { data: API.Template[], template: API.Template, resetTempl
 
 interface TemplateProps {
   template: API.Template,
+  apiVersion: string,
   resetTemplate: (o: API.Template) => void
 }
 
@@ -48,8 +49,8 @@ interface GroupTemplateProps extends TemplateProps {
 }
 
 const AllTemplateCards = (props: TemplateProps) => {
-  const { template, resetTemplate } = props;
-  const { data } = useRequest(() => getRootTemplates(false));
+  const { template, resetTemplate, apiVersion } = props;
+  const { data } = useRequest(() => getRootTemplates(false, false, apiVersion));
 
   if (!data) {
     return null;
@@ -65,8 +66,10 @@ const AllTemplateCards = (props: TemplateProps) => {
 };
 
 const GroupCards = (props: GroupTemplateProps) => {
-  const { groupID, template, resetTemplate } = props;
-  const { data } = useRequest(() => getTemplates(groupID, false, true));
+  const {
+    groupID, template, resetTemplate, apiVersion,
+  } = props;
+  const { data } = useRequest(() => getTemplates(groupID, false, true, apiVersion));
   if (!data) {
     return null;
   }
@@ -86,7 +89,7 @@ const GroupCards = (props: GroupTemplateProps) => {
 
 function TemplateCards(props: TemplateProps & WithInitialStateProps) {
   const { initialState: { resource: { id, type, parentID } } } = props;
-  const { template, resetTemplate } = props;
+  const { template, resetTemplate, apiVersion } = props;
 
   const groupID = type === ResourceType.APPLICATION
     ? parentID
@@ -98,6 +101,7 @@ function TemplateCards(props: TemplateProps & WithInitialStateProps) {
         <AllTemplateCards
           template={template}
           resetTemplate={resetTemplate}
+          apiVersion={apiVersion}
         />
       </TabPane>
       <TabPane tab="Group Templates" key={2}>
@@ -105,6 +109,7 @@ function TemplateCards(props: TemplateProps & WithInitialStateProps) {
           template={template}
           resetTemplate={resetTemplate}
           groupID={groupID}
+          apiVersion={apiVersion}
         />
       </TabPane>
     </Tabs>
