@@ -281,6 +281,12 @@ const adminRoutes = [
   }
 ]
 
+adminRoutes.forEach((route) => {
+  route['wrappers'] =     [
+      '@/wrappers/auth',
+    ]
+})
+
 const templateRoutes = [
   {
     path: '/groups/*/-/templates',
