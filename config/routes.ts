@@ -1,4 +1,4 @@
-﻿export const routes = [
+export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -8,38 +8,6 @@
     path: '/user/login/callback',
     layout: false,
     component: 'user/Callback',
-  },
-  {
-    path: '/admin',
-    redirect: '/admin/kubernetes',
-  },
-  {
-    path: '/admin/kubernetes',
-    component: 'admin/Kubernetes',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/environments',
-    component: 'admin/Environments',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/harbors',
-    component: 'admin/Harbors',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/idps',
-    component: 'admin/IDPs/Main',
-    wrappers: [
-      '@/wrappers/auth',
-    ]
   },
   {
     path: '/templates',
@@ -241,6 +209,26 @@ const clusterRoutes = [
 ];
 
 const adminRoutes = [
+  {
+    path: '/admin',
+    redirect: '/admin/kubernetes',
+  },
+  {
+    path: '/admin/kubernetes',
+    component: 'admin/Kubernetes'
+  },
+  {
+    path: '/admin/environments',
+    component: 'admin/Environments'
+  },
+  {
+    path: '/admin/harbors',
+    component: 'admin/Harbors'
+  },
+  {
+    path: '/admin/idps',
+    component: 'admin/IDPs/Main'
+  },
   {
     path: '/admin/kubernetes/new',
     component: 'admin/Kubernetes/New'
