@@ -28,12 +28,12 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
         value: template?.name,
       },
       {
-        key: 'Chart包名',
-        value: template?.chartName,
-      },
-      {
         key: '描述',
         value: template?.description,
+      },
+      {
+        key: '仓库',
+        value: template?.repository,
       },
     ],
     [
@@ -44,10 +44,6 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
       {
         key: '更新日期',
         value: new Date(template?.updatedAt || '').toLocaleString(),
-      },
-      {
-        key: '仓库',
-        value: template?.repository,
       },
     ],
   ];
