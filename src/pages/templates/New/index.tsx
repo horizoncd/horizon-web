@@ -49,10 +49,11 @@ export const TemplateCreatePage = () => {
 
   const { isAdmin } = initialState.currentUser;
   let groupID = 0;
+  let fullName = '';
   if (history.location.pathname !== '/templates/new') {
     groupID = initialState?.resource.id;
+    fullName = initialState?.resource.fullName;
   }
-  const fullName = initialState?.resource.fullName;
 
   const pattern = /^(?:http(?:s?)|ssh):\/\/.+?\/(.+?)(?:.git)?$/;
 
