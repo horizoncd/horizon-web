@@ -1,9 +1,9 @@
 import { Col, Form, Row } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
-import { createHarbor } from '@/services/harbors/harbors';
+import { createRegistry } from '@/services/registries/registries';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import HarborForm from '../Form';
+import RegistryForm from '../Form';
 
 export default () => {
   const [form] = Form.useForm();
@@ -17,17 +17,17 @@ export default () => {
             form={form}
             layout="vertical"
             onFinish={(v) => {
-              const data: SYSTEM.Harbor = {
+              const data: SYSTEM.Registry = {
                 ...v,
-                preheatPolicyID: parseInt(v.preheatPolicyID),
+                preheatPolicyID: parseInt(v.preheatPolicyID, 10),
               };
-              createHarbor(data).then(({ data: id }) => {
-                successAlert('Harbor 创建成功');
-                history.push(`/admin/harbors/${id}`);
+              createRegistry(data).then(({ data: id }) => {
+                successAlert('Registry 创建成功');
+                history.push(`/admin/registries/${id}`);
               });
             }}
           >
-            <HarborForm />
+            <RegistryForm />
           </Form>
         </Col>
       </Row>

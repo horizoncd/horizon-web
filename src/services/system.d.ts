@@ -7,8 +7,8 @@ declare namespace SYSTEM {
     certificate: string;
     ingressDomain: string;
     prometheusURL: string;
-    harborID: number
-    harbor: Harbor
+    registryID: number
+    registry: Registry
     disabled: boolean
     createdAt: string,
     updatedAt: string,
@@ -34,12 +34,14 @@ declare namespace SYSTEM {
     updatedAt: string,
   };
 
-  type Harbor = {
+  type Registry = {
     id: number,
     name: string,
     server: string,
+    path: string,
     token: string,
-    preheatPolicyID: number,
+    insecureSkipTLSVerify: boolean,
+    kind: string,
     createdAt: string,
     updatedAt: string,
   };

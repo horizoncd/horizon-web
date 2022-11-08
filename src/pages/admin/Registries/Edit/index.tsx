@@ -2,10 +2,10 @@ import { Col, Form, Row } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { history, useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
-import { getHarborByID, updateHarborByID } from '@/services/harbors/harbors';
+import { getRegistryByID, updateRegistryByID } from '@/services/registries/registries';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NotFount from '@/pages/404';
-import HarborForm from '@/pages/admin/Harbors/Form';
+import RegistryForm from '@/pages/admin/Registries/Form';
 
 export default () => {
   const [form] = Form.useForm();
@@ -15,10 +15,10 @@ export default () => {
     return <NotFount />;
   }
 
-  const harborID = parseInt(params.id, 10);
-  const { data: harbor } = useRequest(() => getHarborByID(harborID), {
+  const registryID = parseInt(params.id, 10);
+  const { data: registry } = useRequest(() => getRegistryByID(registryID), {
     onSuccess: () => {
-      form.setFieldsValue(harbor);
+      form.setFieldsValue(registry);
     },
   });
 
@@ -30,17 +30,17 @@ export default () => {
             form={form}
             layout="vertical"
             onFinish={(v) => {
-              const data: SYSTEM.Harbor = {
+              const data: SYSTEM.Registry = {
                 ...v,
                 preheatPolicyID: parseInt(v.preheatPolicyID, 10),
               };
-              updateHarborByID(harborID, data).then(() => {
-                successAlert('Harbor 编辑成功');
-                history.push(`/admin/harbors/${harborID}`);
+              updateRegistryByID(registryID, data).then(() => {
+                successAlert('Registry 编辑成功');
+                history.push(`/admin/registries/${registryID}`);
               });
             }}
           >
-            <HarborForm />
+            <RegistryForm />
           </Form>
         </Col>
       </Row>

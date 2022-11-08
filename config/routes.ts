@@ -239,14 +239,14 @@ const adminRoutes = [
     path: '/admin/kubernetes/:id/edit',
     component: 'admin/Kubernetes/Edit'
   }, {
-    path: '/admin/harbors/new',
-    component: 'admin/Harbors/New'
+    path: '/admin/registries/new',
+    component: 'admin/Registries/New'
   }, {
-    path: '/admin/harbors/:id',
-    component: 'admin/Harbors/Detail'
+    path: '/admin/registries/:id',
+    component: 'admin/Registries/Detail'
   }, {
-    path: '/admin/harbors/:id/edit',
-    component: 'admin/Harbors/Edit'
+    path: '/admin/registries/:id/edit',
+    component: 'admin/Registries/Edit'
   }, {
     path: '/admin/environments/new',
     component: 'admin/Environments/New'
