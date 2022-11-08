@@ -58,7 +58,8 @@ const LifeCycleItemWaiting = 'Waiting';
 const LifeCycleItemRunning = 'Running';
 const noWrap = () => ({ style: { whiteSpace: 'nowrap' } });
 
-export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }) => {
+// eslint-disable-next-line react/require-default-props
+export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster | CLUSTER.ClusterV2 }) => {
   const { data, cluster } = props;
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
@@ -289,40 +290,44 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       }
     });
     if (failedList.length > 0) {
-      errorAlert(<span>
-        {ops}
-        操作执行结果
-        <br />
-        成功列表:  [
-        {' '}
-        {succeedList.join(',')}
-        {' '}
-        ]
-        <br />
-        失败列表:
-        <br />
-        {failedList.map((item) => (
-          <div>
-            Pod:
-            {item.name}
-            {' '}
-            Error:
-            {item.err}
-            <br />
-          </div>
-        ))}
-      </span>);
+      errorAlert(
+        <span>
+          {ops}
+          操作执行结果
+          <br />
+          成功列表:  [
+          {' '}
+          {succeedList.join(',')}
+          {' '}
+          ]
+          <br />
+          失败列表:
+          <br />
+          {failedList.map((item) => (
+            <div>
+              Pod:
+              {item.name}
+              {' '}
+              Error:
+              {item.err}
+              <br />
+            </div>
+          ))}
+        </span>,
+      );
     } else {
-      successAlert(<span>
-        {ops}
-        操作执行结果
-        <br />
-        成功列表: [
-        {' '}
-        {succeedList.join(',')}
-        {' '}
-        ]
-      </span>);
+      successAlert(
+        <span>
+          {ops}
+          操作执行结果
+          <br />
+          成功列表: [
+          {' '}
+          {succeedList.join(',')}
+          {' '}
+          ]
+        </span>,
+      );
     }
   };
 
@@ -378,7 +383,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   // 预处理下数据结构
   const postStartHookError = 'PostStartHookError';
-  const filteredData = data.filter((item: CLUSTER.PodInTable) => !filter || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)).map((item) => {
+  const filteredData = data.filter((item: CLUSTER.PodInTable) => !filter
+    || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)).map((item) => {
     const { state } = item;
     if (!state.reason) {
       state.reason = state.state;
@@ -399,12 +405,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
     // change first letter to uppercase
     state.reason = state.reason.slice(0, 1).toUpperCase() + state.reason.slice(1);
 
-    for (const k in item.annotations) {
+    const res: CLUSTER.PodInTable = item;
+    Object.keys(res.annotations).forEach((k) => {
       if (!k.startsWith('cloudnative.music.netease.com/git')) {
-        delete item.annotations[k];
+        delete res.annotations[k];
       }
-    }
-    return item;
+    });
+    return res;
   }).sort((a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
     if (a.createTime < b.createTime) {
       return 1;
@@ -473,32 +480,35 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
 
   const [podLifeCycle, setPodLifeCycle] = useState([]);
   const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
-    const lifeCycle: any = [];
+    const lifeCycleList: any = [];
     podInfo.lifeCycle.forEach((value) => {
-      if (value.message === '') {
-        switch (value.status) {
+      const lifeCycle: CLUSTER.PodLifeCycle = value;
+      if (lifeCycle.message === '') {
+        switch (lifeCycle.status) {
           case LifeCycleItemSuccess:
-            value.message = '成功';
+            lifeCycle.message = '成功';
             break;
           case LifeCycleItemAbnormal:
-            switch (value.type) {
+            switch (lifeCycle.type) {
               case 'ContainerStartup':
-                value.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。';
+                lifeCycle.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。';
                 break;
               case 'ContainerOnline':
-                value.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。';
+                lifeCycle.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。';
                 break;
               case 'HealthCheck':
-                value.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。';
+                lifeCycle.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。';
                 break;
               default:
-                value.message = '执行失败，请联系管理员。';
+                lifeCycle.message = '执行失败，请联系管理员。';
             }
             break;
           case LifeCycleItemRunning:
-            switch (value.type) {
+            switch (lifeCycle.type) {
               case 'PreStop':
-                value.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
+                lifeCycle.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
+                break;
+              default:
                 break;
             }
             break;
@@ -506,27 +516,31 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
             break;
         }
       }
-      lifeCycle.push({
-        type: <div
-          className={podLifeCycleStatusMap[value.status].style}
-        >
-          {value.type}
-              </div>,
-        task: <div
-          className={podLifeCycleStatusMap[value.status].style}
-          key={value.type}
-        >
-          {podLifeCycleStatusMap[value.status].icon}
-          {' '}
-          {podLifeCycleTypeMap[value.type]}
-        </div>,
-        message: <span className={podLifeCycleStatusMap[value.status].style}>
-          {' '}
-          {value.message}
-                 </span>,
+      lifeCycleList.push({
+        type: (
+          <div className={podLifeCycleStatusMap[lifeCycle.status].style}>
+            {lifeCycle.type}
+          </div>
+        ),
+        task: (
+          <div
+            className={podLifeCycleStatusMap[lifeCycle.status].style}
+            key={lifeCycle.type}
+          >
+            {podLifeCycleStatusMap[lifeCycle.status].icon}
+            {' '}
+            {podLifeCycleTypeMap[lifeCycle.type]}
+          </div>
+        ),
+        message: (
+          <span className={podLifeCycleStatusMap[lifeCycle.status].style}>
+            {' '}
+            {lifeCycle.message}
+          </span>
+        ),
       });
     });
-    setPodLifeCycle(lifeCycle);
+    setPodLifeCycle(lifeCycleList);
     setShowLifeCycle(true);
   };
 
@@ -592,11 +606,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
             status = <PodPending text="Pending" />;
         }
         let lifeCycleButtonStyle = styles.lifecycleButtonBlue;
-        for (const lifeCycleItem of record.lifeCycle) {
+        record.lifeCycle.forEach((lifeCycleItem) => {
           if (lifeCycleItem.status === LifeCycleItemAbnormal) {
             lifeCycleButtonStyle = styles.lifecycleButtonRed;
           }
-        }
+        });
         return (
           <div>
             {status}
@@ -637,15 +651,15 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
       title: '注释',
       dataIndex: 'annotations',
       key: 'annotations',
-      render: (text: any, record: CLUSTER.PodInTable) =>
+      render: (text: any, record: CLUSTER.PodInTable) => (
         // return <collapseList defaultCount={2} data={record.annotations}/>
-        (Object.keys(record.annotations).length > 0
+        Object.keys(record.annotations).length > 0
           ? (
             <div style={{ minWidth: '260px', maxWidth: '390px', wordBreak: 'break-all' }}>
               <CollapseList defaultCount={2} data={record.annotations} />
             </div>
-          ) : <div />)
-      ,
+          ) : <div />
+      ),
     },
     {
       title: '启动时间',
@@ -675,8 +689,15 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
           >
             Terminal
           </Button>
-          <a style={{ color: '#1890ff' }} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
+          <Button
+            type="link"
+            style={{ padding: 0 }}
+            href={formatPodMonitorURL(record)}
+          >
+            Monitor
+          </Button>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
               More
               {' '}
@@ -732,6 +753,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
         }}
         title={renderTile}
         expandable={{
+          // eslint-disable-next-line react/no-unstable-nested-components
           expandedRowRender: (record) => {
             if (!containersCache[record.podName]) {
               return <div />;
@@ -764,7 +786,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                       return <div />;
                     }
                     const stateKey = Object.keys(container.status.state);
-                    if (stateKey.length == 0) {
+                    if (stateKey.length === 0) {
                       return <div />;
                     }
                     switch (stateKey[0]) {
@@ -823,6 +845,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
                   title: formatMessage('action', '操作'),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
+                    // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
                     <a
                       style={{ color: '#1890ff' }}
                       onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}
@@ -854,6 +877,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
               });
             }
           },
+          // eslint-disable-next-line react/no-unstable-nested-components
           expandIcon: ({ expanded, onExpand, record }) => (expanded ? (
             <MinusSquareTwoTone className={styles.expandedIcon} onClick={(e) => onExpand(record, e)} />
           ) : (
@@ -878,7 +902,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster }
             }
           }
         }}
-
         onClose={
         () => {
           setFullscreen(false);
