@@ -222,8 +222,8 @@ const adminRoutes = [
     component: 'admin/Environments'
   },
   {
-    path: '/admin/harbors',
-    component: 'admin/Harbors'
+    path: '/admin/registries',
+    component: 'admin/Registries'
   },
   {
     path: '/admin/idps',

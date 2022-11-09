@@ -48,15 +48,15 @@ const getBreadcrumbs = (fullName: string) => {
     const releasePattern = /\/templates\/.*\/-\/releases\/(.*?)(\/edit)?\/?$/;
     const isRelease = releasePattern.test(pathname);
     const path = pathname.replace(/\/-.+$/, '');
-    const filteredPath = path.split('/').filter((item) => item != '' && item != 'templates');
+    const filteredPath = path.split('/').filter((item) => item !== '' && item !== 'templates');
     let currentLink = '';
-    for (const x of filteredPath.slice(0, filteredPath.length - 1)) {
+    filteredPath.slice(0, filteredPath.length - 1).forEach((x) => {
       currentLink += `/${x}`;
       result.push({
         path: currentLink,
         breadcrumbName: x,
       });
-    }
+    });
     const item = filteredPath[filteredPath.length - 1];
     currentLink += `/${item}`;
     result.push({
@@ -278,7 +278,7 @@ export const pathnameInStaticRoutes = (): boolean => {
   const { pathname } = history.location;
   // handle url end with '/'
   let path = pathname;
-  if (pathname.startsWith('/admin/')) {
+  if (pathname.startsWith('/admin')) {
     return true;
   }
   if (pathname.endsWith('/')) {
