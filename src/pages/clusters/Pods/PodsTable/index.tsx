@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import './index.less';
 import { useRequest } from '@@/plugin-request/request';
-import { history } from 'umi';
+import { history, Link } from 'umi';
 import Dropdown from 'antd/es/dropdown';
 import {
   CheckCircleOutlined,
@@ -482,7 +482,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
   const onClickLifeCycle = (podInfo: CLUSTER.PodInTable) => {
     const lifeCycleList: any = [];
     podInfo.lifeCycle.forEach((value) => {
-      const lifeCycle: CLUSTER.PodLifeCycle = value;
+      const lifeCycle = value;
       if (lifeCycle.message === '') {
         switch (lifeCycle.status) {
           case LifeCycleItemSuccess:
@@ -689,13 +689,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           >
             Terminal
           </Button>
-          <Button
-            type="link"
-            style={{ padding: 0 }}
-            href={formatPodMonitorURL(record)}
-          >
-            Monitor
-          </Button>
+          <Link to={formatPodMonitorURL(record)}>Monitor</Link>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
@@ -845,13 +839,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   title: formatMessage('action', '操作'),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
-                    // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
-                    <a
-                      style={{ color: '#1890ff' }}
-                      onClick={() => history.push(formatContainerMonitorURL(record.podName, container.name))}
-                    >
-                      Monitor
-                    </a>
+                    <Link to={formatContainerMonitorURL(record.podName, container.name)}>Monitor</Link>
                   ),
                 },
               ]
