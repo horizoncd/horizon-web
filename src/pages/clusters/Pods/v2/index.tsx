@@ -25,7 +25,7 @@ import PodsTable from '../PodsTable';
 import {
   deleteCluster,
   freeCluster,
-  getCluster,
+  getClusterV2,
   getClusterStatus,
   getPipelines,
   next,
@@ -260,7 +260,7 @@ export default () => {
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
   const [fullscreen, setFullscreen] = useState(false);
 
-  const { data: cluster } = useRequest(() => getCluster(id), {});
+  const { data: cluster } = useRequest(() => getClusterV2(id), {});
 
   const { data: envs } = useRequest(queryEnvironments, {
     onSuccess: () => {

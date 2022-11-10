@@ -243,18 +243,18 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             {' '}
             <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
           </span>
-)}
+        )}
       >
         <Menu.Item key="5">
           <a style={{ fontWeight: 'bold' }} href="/slo">SLO</a>
         </Menu.Item>
         {
-            initialState?.currentUser?.isAdmin && (
+          initialState?.currentUser?.isAdmin && (
             <Menu.Item key="6">
               <a style={{ fontWeight: 'bold' }} href="/admin">Admin</a>
             </Menu.Item>
-            )
-          }
+          )
+        }
       </SubMenu>
     </Menu>
   ),
@@ -334,8 +334,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         return loopMenuItem([
           ...routes,
           {
-            path: '/admin/harbors',
-            name: 'Harbors',
+            path: '/admin/registries',
+            name: 'Registries',
             icon: 'database',
           }, {
             path: '/admin/kubernetes',

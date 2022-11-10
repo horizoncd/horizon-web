@@ -51,7 +51,7 @@ export default (props: any) => {
   const url = 'url';
   const subfolder = 'subfolder';
   const buildConfigKey = 'buildConfig';
-  const templateBasicKey = 'templateInfo';
+  const templateBasicKey = 'templateBasic';
   const templateConfigKey = 'templateConfig';
   const basicFieldsToValidate = [
     name, environment, url,
@@ -328,7 +328,7 @@ export default (props: any) => {
       buildConfig,
       templateInfo: {
         name: templateBasic.name,
-        release: templateBasic.release,
+        release: releaseName,
       },
       templateConfig,
     };

@@ -43,8 +43,8 @@ export default () => {
         value: region?.server,
       },
       {
-        key: 'harbor',
-        value: region?.harbor.name,
+        key: 'registry',
+        value: region?.registry.name,
       },
     ],
     [
@@ -58,15 +58,17 @@ export default () => {
       },
       {
         key: 'certificate',
-        value: <Popover
-          overlayInnerStyle={{ width: 800 }}
-          title={
-            <TextArea value={region?.certificate} autoSize={{ minRows: 5 }} />
-        }
-          placement="bottom"
-        >
-          鼠标悬停查看
-        </Popover>,
+        value: (
+          <Popover
+            overlayInnerStyle={{ width: 800 }}
+            title={
+              <TextArea value={region?.certificate} autoSize={{ minRows: 5 }} />
+          }
+            placement="bottom"
+          >
+            鼠标悬停查看
+          </Popover>
+        ),
       },
       {
         key: '启用状态',
@@ -118,7 +120,7 @@ export default () => {
               删除
             </Button>
           </Space>
-      )}
+        )}
       />
       <Card title="标签管理">
         <DynamicTagForm

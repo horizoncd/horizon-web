@@ -267,6 +267,7 @@ export default (props: any) => {
               // deploy template
               current === 2 && (
                 <Template
+                  apiVersion="v2"
                   template={templateBasic}
                   resetTemplate={resetTemplate}
                 />

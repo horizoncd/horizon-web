@@ -1,4 +1,4 @@
-﻿export const routes = [
+export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -8,38 +8,6 @@
     path: '/user/login/callback',
     layout: false,
     component: 'user/Callback',
-  },
-  {
-    path: '/admin',
-    redirect: '/admin/kubernetes',
-  },
-  {
-    path: '/admin/kubernetes',
-    component: 'admin/Kubernetes',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/environments',
-    component: 'admin/Environments',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/harbors',
-    component: 'admin/Harbors',
-    wrappers: [
-      '@/wrappers/auth',
-    ],
-  },
-  {
-    path: '/admin/idps',
-    component: 'admin/IDPs/Main',
-    wrappers: [
-      '@/wrappers/auth',
-    ]
   },
   {
     path: '/templates',
@@ -242,6 +210,26 @@ const clusterRoutes = [
 
 const adminRoutes = [
   {
+    path: '/admin',
+    redirect: '/admin/kubernetes',
+  },
+  {
+    path: '/admin/kubernetes',
+    component: 'admin/Kubernetes'
+  },
+  {
+    path: '/admin/environments',
+    component: 'admin/Environments'
+  },
+  {
+    path: '/admin/registries',
+    component: 'admin/Registries'
+  },
+  {
+    path: '/admin/idps',
+    component: 'admin/IDPs/Main'
+  },
+  {
     path: '/admin/kubernetes/new',
     component: 'admin/Kubernetes/New'
   }, {
@@ -251,14 +239,14 @@ const adminRoutes = [
     path: '/admin/kubernetes/:id/edit',
     component: 'admin/Kubernetes/Edit'
   }, {
-    path: '/admin/harbors/new',
-    component: 'admin/Harbors/New'
+    path: '/admin/registries/new',
+    component: 'admin/Registries/New'
   }, {
-    path: '/admin/harbors/:id',
-    component: 'admin/Harbors/Detail'
+    path: '/admin/registries/:id',
+    component: 'admin/Registries/Detail'
   }, {
-    path: '/admin/harbors/:id/edit',
-    component: 'admin/Harbors/Edit'
+    path: '/admin/registries/:id/edit',
+    component: 'admin/Registries/Edit'
   }, {
     path: '/admin/environments/new',
     component: 'admin/Environments/New'
@@ -280,6 +268,12 @@ const adminRoutes = [
     component: 'admin/IDPs/Detail',
   }
 ]
+
+adminRoutes.forEach((route) => {
+  route['wrappers'] =     [
+      '@/wrappers/auth',
+    ]
+})
 
 const templateRoutes = [
   {
