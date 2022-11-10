@@ -307,6 +307,7 @@ declare namespace API {
 
   type Role = {
     name: string,
+    desc: string,
     rules: RoleRule[]
   };
 

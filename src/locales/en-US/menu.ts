@@ -9,4 +9,5 @@ export default {
   'menu.Pods': 'Pods',
   'menu.Monitoring': 'Monitoring',
   'menu.Template overview': 'Template overview',
+  'menu.Settings.Access Token': 'Access Token',
 };

@@ -206,4 +206,17 @@ export default {
   'pages.profile.phone': 'Phone',
   'pages.profile.link': 'Link',
   'pages.profile.unlink': 'Unlink',
+
+  'pages.accesstokens.addToken.title': 'Add an access token',
+  'pages.accesstokens.addToken.scopes.desc': 'Scope is used for fine-grained control of permissions, the final permission of the token depends on the intersection of scope and role',
+  'pages.accesstokens.addToken.name.title': 'Name',
+  'pages.accesstokens.addToken.expiresAt.title': 'Expiration date',
+  'pages.accesstokens.addToken.expiresAt.desc': 'Default is never expires',
+  'pages.accesstokens.addToken.role.title': 'Role',
+  'pages.accesstokens.addToken.scopes.title': 'Scopes',
+  'pages.accesstokens.addToken.add': 'Add',
+  'pages.accesstokens.name.ruleMessage': 'name is required, the length must be greater than 1 and less than 40, supports a combination of letters, numbers and underscores, and must start with a letter',
+  'pages.accesstokens.desc': 'The access token can help you pass authentication when calling the api. When using it, you need to put it in the request header "Authorization: Bearer {token}" for use',
+  'pages.accesstokens.tokenList.title': 'Active project access tokens',
+  'pages.accesstokens.addToken.code.title': 'This is the only chance to copy the token. If you lose it, you can only revoke and recreate it.',
 };
