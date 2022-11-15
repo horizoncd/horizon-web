@@ -1,5 +1,5 @@
 import { PropsWithChildren, useState } from 'react';
-import { useRequest } from 'umi';
+import { useIntl, useRequest } from 'umi';
 import DetailCard, { Param } from '@/components/DetailCard';
 import {
   ComponentWithParamIDProps, PageWithBreadcrumb, PageWithInitialState, PageWithInitialStateProps,
@@ -17,6 +17,7 @@ export type UserDetailProps = { userPage: boolean } & ComponentWithParamIDProps;
 export function UserDetail(props: UserDetailProps) {
   const { pathID, userPage } = props;
 
+  const intl = useIntl();
   const [user, setUser] = useState({} as API.User);
   const { refresh } = useRequest(
     () => getUserByID(pathID),
@@ -26,33 +27,37 @@ export function UserDetail(props: UserDetailProps) {
       },
     },
   );
-  const isAdminInUserPage = user.isAdmin ? '是' : '否';
-  const isBannedeInUserPage = user.isBanned ? '是' : '否';
+  const isAdminInUserPage = user.isAdmin
+    ? intl.formatMessage({ id: 'pages.common.yes' })
+    : intl.formatMessage({ id: 'pages.common.no' });
+  const isBannedeInUserPage = user.isBanned
+    ? intl.formatMessage({ id: 'pages.common.yes' })
+    : intl.formatMessage({ id: 'pages.common.no' });
 
   const data: Param[][] = [
     [
       {
-        key: '名称',
+        key: intl.formatMessage({ id: 'pages.common.name' }),
         value: user.name,
       },
       {
-        key: 'Email',
+        key: intl.formatMessage({ id: 'pages.profile.email' }),
         value: user.email,
       },
       {
-        key: '电话',
+        key: intl.formatMessage({ id: 'pages.profile.phone' }),
         value: user.phone,
       },
     ],
     [
       {
-        key: '是否为admin',
+        key: intl.formatMessage({ id: 'pages.profile.isAdmin' }),
         value: userPage
           ? isAdminInUserPage
           : <AdminSwitch id={user.id} isAdmin={user.isAdmin} onSwith={refresh} />,
       },
       {
-        key: '是否禁用',
+        key: intl.formatMessage({ id: 'pages.profile.isBanned' }),
         value: userPage
           ? isBannedeInUserPage
           : <BanSwitch id={user.id} isBanned={user.isBanned} onSwith={refresh} />,
@@ -60,11 +65,11 @@ export function UserDetail(props: UserDetailProps) {
     ],
     [
       {
-        key: '创建时间',
+        key: intl.formatMessage({ id: 'pages.common.createdAt' }),
         value: <ExactTime time={user.createdAt} />,
       },
       {
-        key: '修改时间',
+        key: intl.formatMessage({ id: 'pages.common.updatedAt' }),
         value: <ExactTime time={user.updatedAt} />,
       },
     ],
@@ -72,7 +77,7 @@ export function UserDetail(props: UserDetailProps) {
   return (
     <>
       <DetailCard
-        title="基础信息"
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
       />
       <LinkList userID={pathID} withButton={userPage} />

@@ -1,4 +1,4 @@
-import { useRequest } from 'umi';
+import { useIntl, useRequest } from 'umi';
 import { useState } from 'react';
 import { Button, Table } from 'antd';
 import { getAuthEndpoints } from '@/services/idp/idp';
@@ -10,6 +10,7 @@ import { MainText } from '@/components/Widget';
 export default function LinkList(props: { userID: number, withButton: boolean }) {
   const { userID, withButton } = props;
 
+  const intl = useIntl();
   const [idps, setIdps] = useState([] as (API.AuthEndpoint & { link?: API.Link })[]);
 
   const { loading: idpsLoading } = useRequest(() => getAuthEndpoints(window.location.toString()), {
@@ -32,12 +33,12 @@ export default function LinkList(props: { userID: number, withButton: boolean })
 
   const columns = [
     {
-      title: '名称',
+      title: intl.formatMessage({ id: 'pages.common.name' }),
       width: '30%',
       dataIndex: 'displayName',
     },
     {
-      title: 'sub',
+      title: 'Sub',
       dataIndex: 'link',
       render: (link: API.Link) => {
         if (link) {
@@ -47,7 +48,7 @@ export default function LinkList(props: { userID: number, withButton: boolean })
       },
     },
     {
-      title: 'link',
+      title: intl.formatMessage({ id: 'pages.profile.link' }),
       width: '30%',
       dataIndex: 'link',
       render: (link: API.Link, item: API.AuthEndpoint) => {
@@ -60,7 +61,7 @@ export default function LinkList(props: { userID: number, withButton: boolean })
                 deleteLinks(link.id).then(refresh);
               }}
             >
-              Unlink
+              {intl.formatMessage({ id: 'pages.profile.unlink' })}
             </Button>
           );
         }
@@ -74,7 +75,7 @@ export default function LinkList(props: { userID: number, withButton: boolean })
               );
             }}
             >
-              Link
+              {intl.formatMessage({ id: 'pages.profile.link' })}
             </Button>
           );
         }

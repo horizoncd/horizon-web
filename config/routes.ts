@@ -61,7 +61,7 @@ export const routes = [
   },
   {
     path: '/profile',
-    component: 'user/Detail'
+    component: 'user/Detail',
   },
 ];
 

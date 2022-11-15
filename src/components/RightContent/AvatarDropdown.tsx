@@ -42,7 +42,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         logout();
       }
       if (key === 'profile') {
-        history.push('/profile');
+        window.location.href = '/profile';
       }
     },
     [setInitialState],

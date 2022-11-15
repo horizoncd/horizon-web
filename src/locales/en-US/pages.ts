@@ -13,6 +13,9 @@ export default {
   'pages.common.updatedAt': 'UpdateTime',
   'pages.common.basicInfo': 'Basic Info',
   'pages.common.actions': 'Actions',
+  'pages.common.name': 'Name',
+  'pages.common.yes': 'Yes',
+  'pages.common.no': 'No',
 
   'pages.pods.nextStep': 'Next batch',
 
@@ -195,4 +198,12 @@ export default {
   'pages.idps.entity.displayName': 'Display name',
   'pages.idps.entity.displayName.extra': 'The name displayed to the user can be filled in as many times as you like',
   'pages.idps.entity.scopes.extra': 'OIDC scopes seperated by blank space',
+
+  'pages.profile.entry': 'Personal Space',
+  'pages.profile.isAdmin': 'Is Admin',
+  'pages.profile.isBanned': 'Is Banned',
+  'pages.profile.email': 'Email',
+  'pages.profile.phone': 'Phone',
+  'pages.profile.link': 'Link',
+  'pages.profile.unlink': 'Unlink',
 };
