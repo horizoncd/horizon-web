@@ -1,7 +1,7 @@
 import { request } from 'umi';
 import { API } from '../typings';
 
-export async function listUsers(params: { namelike: string, pageSize?: number, pageNumber?: number } = { namelike: '' }) {
+export async function listUsers(params: { filter: string, pageSize?: number, pageNumber?: number } = { filter: '' }) {
   return request<{
     data: API.PageResult<API.User>;
   }>('/apis/core/v1/users', {

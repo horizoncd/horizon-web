@@ -1,10 +1,11 @@
 import { PropsWithChildren, useState } from 'react';
 import { useIntl, useRequest } from 'umi';
+import { Card, Divider } from 'antd';
 import DetailCard, { Param } from '@/components/DetailCard';
 import {
   ComponentWithParamIDProps, PageWithBreadcrumb, PageWithInitialState, PageWithInitialStateProps,
 } from '@/components/Enhancement';
-import { ExactTime } from '@/components/Widget';
+import { ExactTime, MaxSpace } from '@/components/Widget';
 import { AdminSwitch, BanSwitch } from '@/pages/user/components';
 import { API } from '@/services/typings';
 import { getUserByID } from '@/services/users/users';
@@ -80,7 +81,12 @@ export function UserDetail(props: UserDetailProps) {
         title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
       />
-      <LinkList userID={pathID} withButton={userPage} />
+      <MaxSpace direction="vertical">
+        <Card title={`OIDC ${intl.formatMessage({ id: 'pages.profile.link' })}`}>
+          <LinkList userID={pathID} withButton={userPage} />
+        </Card>
+        <Divider />
+      </MaxSpace>
       <ResourceTabs userID={user.id} />
     </>
   );

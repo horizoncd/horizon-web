@@ -5,7 +5,7 @@ import CenterSpin from '@/components/Widget/CenterSpin';
 import { getIDPByID } from '@/services/idps';
 import DetailCard, { Param } from '@/components/DetailCard';
 import PageWithID from '@/components/PageEnhancement/PageWithID/PageWithID';
-import PopupTime from '@/components/Widget/Time';
+import PopupTime from '@/components/Widget/PopupTime';
 import { IDPDeleteButton, IDPEditButton } from '../Components/Bottons';
 
 const defaultTime = '2006-05-04 03:02:01';

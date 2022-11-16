@@ -85,6 +85,7 @@ export default function LinkList(props: { userID: number, withButton: boolean })
   ];
   return (
     <Table
+      bordered
       columns={columns}
       dataSource={idps}
       pagination={false}

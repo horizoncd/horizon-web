@@ -316,6 +316,7 @@ export const handleHref = (event: any, link: string) => {
   window.location.href = link;
 };
 
+// generate oidc authn link
 export function IdpSetState(u: string, link: boolean = false, customRedirect?: string) {
   const url = new URL(u);
   let state = url.searchParams.get('state');
