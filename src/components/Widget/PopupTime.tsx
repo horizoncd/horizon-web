@@ -1,16 +1,19 @@
 import { Tooltip } from 'antd';
 import utils from '@/utils';
 
-function PopupTime(props: { time: string }) {
-  const { time } = props;
+function PopupTime(props: { time: string, prefix?: string }) {
+  const { prefix, time } = props;
 
   return (
     <Tooltip title={utils.timeToLocal(time)}>
-      Updated
-      {' '}
+      {prefix}
       {utils.timeFromNowEnUS(time)}
     </Tooltip>
   );
 }
+
+PopupTime.defaultProps = {
+  prefix: '',
+};
 
 export default PopupTime;

@@ -2,6 +2,7 @@ import { history } from 'umi';
 import { getLocale } from '@@/plugin-locale/localeExports';
 import moment, { isMoment } from 'moment';
 import { routes } from '../config/routes';
+import { IndexURL, RedirectURL } from './const';
 
 const getResourcePath = () => {
   const { pathname } = history.location;
@@ -27,7 +28,7 @@ const getResourcePath = () => {
 const getBreadcrumbs = (fullName: string) => {
   const result = [];
   const { pathname } = history.location;
-  if (pathname.startsWith('/admin/')) {
+  if (pathname.startsWith('/admin/') || pathname.startsWith('/profile')) {
     const filteredPath = pathname.split('/').filter((item) => item !== '');
     let currentLink = '';
     for (let i = 0; i < filteredPath.length; i += 1) {
@@ -278,7 +279,7 @@ export const pathnameInStaticRoutes = (): boolean => {
   const { pathname } = history.location;
   // handle url end with '/'
   let path = pathname;
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/profile')) {
     return true;
   }
   if (pathname.endsWith('/')) {
@@ -314,6 +315,30 @@ export const handleHref = (event: any, link: string) => {
   }
   window.location.href = link;
 };
+
+// generate oidc authn link
+export function IdpSetState(u: string, link: boolean = false, customRedirect?: string) {
+  const url = new URL(u);
+  let state = url.searchParams.get('state');
+  if (state === null) {
+    return u;
+  }
+  state = window.atob(state);
+
+  const stateParams = new URLSearchParams(state);
+  let redirect = history.location.query?.redirect ?? IndexURL;
+  if (typeof redirect !== 'string') {
+    redirect = (redirect as string[]).at(0) || '';
+  }
+  if (customRedirect) {
+    redirect = customRedirect;
+  }
+  stateParams.set('redirect', redirect);
+  stateParams.set('link', link ? 'true' : 'false');
+  url.searchParams.set('state', window.btoa(stateParams.toString()));
+  url.searchParams.set('redirect_uri', RedirectURL);
+  return url.toString();
+}
 
 export const tagShouldOmit = (tag: TAG.Tag) => (tag.key.length > 16 || tag.value.length > 16);
 

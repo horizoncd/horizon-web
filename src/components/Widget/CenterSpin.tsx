@@ -1,5 +1,5 @@
 import { Spin } from 'antd';
-import LocationBox from '../Layout/LocationBox';
+import LocationBox from './LocationBox';
 
 function CenterSpin() {
   return (

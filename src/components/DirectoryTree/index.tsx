@@ -5,6 +5,7 @@ import type { DataNode } from 'rc-tree/lib/interface';
 import React from 'react';
 import styles from './index.less';
 import utils from '@/utils';
+import NoData from '../NoData';
 
 const { DirectoryTree } = Tree;
 
@@ -113,7 +114,7 @@ DTreeItem.defaultProps = {
 const defaultRender = (node: TreeDataNode): React.ReactNode => {
   const { title, fullPath, updatedAt } = node;
 
-  return <DTreeItem title={title} fullPath={fullPath} updatedAt={updatedAt} />;
+  return <DTreeItem key={title} title={title} fullPath={fullPath} updatedAt={updatedAt} />;
 };
 
 export interface DTreeItemProp {
@@ -125,6 +126,9 @@ export interface DTreeItemProp {
 }
 export function DTree(props: { items: DTreeItemProp[], render?: (node: TreeDataNode) => React.ReactNode }) {
   const { items, render } = props;
+  if (items === null || items.length === 0) {
+    return <NoData title="" desc="没有数据" />;
+  }
   const data = items.map((item: DTreeItemProp) => {
     const treeData = {
       key: item.id,

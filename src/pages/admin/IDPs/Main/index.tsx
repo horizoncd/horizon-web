@@ -4,9 +4,9 @@ import { Space, Table } from 'antd';
 import { listIDPs } from '@/services/idps';
 import { API } from '@/services/typings';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import PopupTime from '@/components/Widget/Time';
+import PopupTime from '@/components/Widget/PopupTime';
 import { IDPDeleteButton, IDPEditButton, IDPNewButton } from '../Components/Bottons';
-import LocationBox from '@/components/Layout/LocationBox';
+import LocationBox from '@/components/Widget/LocationBox';
 import MaxSpace from '@/components/Widget/MaxSpace';
 
 function IDPList() {

@@ -8,7 +8,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { queryTemplate, updateTemplate } from '@/services/templates/templates';
 import { TemplateForm } from '../Components/Form';
 import rbac from '@/rbac';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { API } from '@/services/typings';
 
 function TemplateEdit(props: { initialState: API.InitialState }) {

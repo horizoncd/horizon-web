@@ -11,7 +11,7 @@ import { ReleasesTable } from '../Releases';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RBAC from '@/rbac';
 import { ResourceType } from '@/const';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { API } from '@/services/typings';
 
 function TemplateDetail(props: { initialState: API.InitialState }) {

@@ -40,9 +40,10 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         // @ts-ignore
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         logout();
-        return;
       }
-      history.push(`/account/${key}`);
+      if (key === 'profile') {
+        window.location.href = '/profile';
+      }
     },
     [setInitialState],
   );
@@ -65,25 +66,23 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || !currentUser.name) {
+  if (!currentUser || currentUser.fullName === undefined) {
     return loading;
   }
 
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
+      <Menu.Item key="profile">
+        <UserOutlined />
+        个人中心
+      </Menu.Item>
+      <Menu.Divider />
       {menu && (
         <Menu.Item key="settings">
           <SettingOutlined />
           个人设置
         </Menu.Item>
       )}
-      {menu && <Menu.Divider />}
 
       {menu && <Menu.Divider />}
 
@@ -96,7 +95,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
-        <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+        <span className={`${styles.name} anticon`}>{currentUser.fullName}</span>
       </span>
     </HeaderDropdown>
   );

@@ -8,14 +8,12 @@ export enum StatusCode {
   StatusOutOfSync,
 }
 
-export async function queryTemplates(fullpath: boolean = false, selfOnly: boolean = false) {
+export async function listTemplates(params: { fullpath: boolean, selfOnly?: boolean }) {
   return request<{
     data: Templates.Template[];
   }>('/apis/core/v1/templates', {
     method: 'GET',
-    params: {
-      fullpath, selfOnly,
-    },
+    params,
   });
 }
 
@@ -49,7 +47,7 @@ export async function queryTemplate(template: string | number, withReleases: boo
 }
 
 export async function getTemplatesByUser(fullpath: boolean = false) {
-  return queryTemplates(fullpath, true);
+  return listTemplates({ fullpath, selfOnly: true });
 }
 
 export async function updateTemplate(template: string | number, data: Templates.UpdateTemplateRequest) {
@@ -94,6 +92,21 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
     data,
   };
   return request(path, config);
+}
+
+export async function listTemplatesV2(
+  params: API.PageParam & {
+    fullpath: boolean,
+    groupIDRecursive?: number,
+    filter?: string,
+    userID?: number },
+) {
+  const path = '/apis/core/v2/templates';
+  const config = {
+    method: 'GET',
+    params,
+  };
+  return request<{ data: API.PageResult<Templates.Template> }>(path, config);
 }
 
 export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false, apiVersion: string = 'v1') {

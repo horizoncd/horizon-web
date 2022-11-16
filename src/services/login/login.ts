@@ -12,11 +12,11 @@ export async function login(params: { redirectUrl: string, fromHost: string }) {
   });
 }
 
-export async function loginCallback(code: string, state: string) {
+export async function loginCallback(code: string, state: string, redirectUrl: string) {
   return request('/apis/core/v1/login/callback', {
     method: 'GET',
     params: {
-      code, state,
+      redirectUrl, code, state,
     },
   });
 }
@@ -41,7 +41,7 @@ export async function outLogin() {
 export async function currentUser() {
   return request<{
     data: API.CurrentUser
-  }>('/apis/login/v1/status', {
+  }>('/apis/core/v1/users/self', {
     method: 'GET',
   });
 }

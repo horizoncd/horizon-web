@@ -5,7 +5,7 @@ export async function queryUsers(pageNumber: number, pageSize: number, filter?: 
   if (filter) {
     params.filter = filter;
   }
-  return request('/apis/front/v1/users/search', {
+  return request('/apis/core/v1/users', {
     method: 'GET',
     params,
   });

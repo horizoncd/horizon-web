@@ -59,6 +59,10 @@ export const routes = [
     menuRender: false,
     component: 'more/SLO',
   },
+  {
+    path: '/profile',
+    component: 'user/Detail',
+  },
 ];
 
 const groupRoutes = [
@@ -262,10 +266,22 @@ const adminRoutes = [
   }, {
     path: '/admin/idps/new',
     component: 'admin/IDPs/New',
-  },
-  {
+  }, {
     path: '/admin/idps/:id',
     component: 'admin/IDPs/Detail',
+  }, {
+    path: '/admin/users',
+    component: 'admin/Users'
+  }, {
+    path: '/admin/users/:id',
+    component: 'admin/Users/Detail'
+  }
+]
+
+const userRoutes = [
+  {
+    path: '/profile/user',
+    component: 'user/Detail'
   }
 ]
 
@@ -321,6 +337,7 @@ allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
+allRoute.push(...userRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

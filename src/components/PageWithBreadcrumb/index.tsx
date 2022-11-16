@@ -1,13 +1,13 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import { useModel } from '@@/plugin-model/useModel';
 import { Alert, Divider } from 'antd';
-import { PropsWithChildren, useEffect } from 'react';
-import { history } from 'umi';
-import utils, { pathnameInStaticRoutes } from '../../utils';
-import NotFount from '@/pages/404';
-import WithTheme from '@/theme';
-import styles from './index.less';
 import './index.less';
+import { PropsWithChildren, useEffect } from 'react';
+import { Link } from 'umi';
+import NotFount from '@/pages/404';
+import utils, { pathnameInStaticRoutes } from '../../utils';
+import styles from './index.less';
+import WithTheme from '@/theme';
 
 export default (props: PropsWithChildren<any>) => {
   const { children } = props;
@@ -23,8 +23,7 @@ export default (props: PropsWithChildren<any>) => {
   const itemRender = (route: any) => {
     const { path, breadcrumbName, subResource } = route;
     if (subResource) {
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
-      return <a onClick={() => history.push(path)}>{breadcrumbName}</a>;
+      return <Link to={path}>{breadcrumbName}</Link>;
     }
     return <a href={path}>{breadcrumbName}</a>;
   };

@@ -9,7 +9,7 @@ import { getRelease, updateRelease } from '@/services/templates/templates';
 import { ReleaseForm } from '../../Components/Form';
 import rbac from '@/rbac';
 import { API } from '@/services/typings';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 
 function EditRelease(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();

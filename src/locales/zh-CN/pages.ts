@@ -15,6 +15,9 @@ export default {
   'pages.common.updatedAt': '更新时间',
   'pages.common.basicInfo': '基础信息',
   'pages.common.actions': '操作',
+  'pages.common.name': '名称',
+  'pages.common.yes': '是',
+  'pages.common.no': '否',
 
   'pages.pods.nextStep': '下一批次',
 
@@ -199,4 +202,12 @@ export default {
   'pages.idps.entity.displayName': '展示名',
   'pages.idps.entity.displayName.extra': 'Horizon向用户展示的名称，可以随意填写',
   'pages.idps.entity.scopes.extra': '由空格分割的oidc scopes',
+
+  'pages.profile.entry': '个人中心',
+  'pages.profile.isAdmin': '是否为Admin',
+  'pages.profile.isBanned': '是否禁用',
+  'pages.profile.email': '电子邮件',
+  'pages.profile.phone': '电话',
+  'pages.profile.link': '连接',
+  'pages.profile.unlink': '断开',
 };
