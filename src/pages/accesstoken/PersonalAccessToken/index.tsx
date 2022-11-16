@@ -1,4 +1,5 @@
 import AccessTokenManagement from '../components/AccessTokenManagement';
+import { ComponentWithParamID, PageWithBreadcrumb } from '@/components/Enhancement';
 
 function PersonalAccessToken() {
   return (
@@ -6,4 +7,6 @@ function PersonalAccessToken() {
   );
 }
 
-export default PersonalAccessToken;
+export default PageWithBreadcrumb(
+  ComponentWithParamID(PersonalAccessToken),
+);

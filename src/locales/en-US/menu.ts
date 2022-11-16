@@ -10,4 +10,5 @@ export default {
   'menu.Monitoring': 'Monitoring',
   'menu.Template overview': 'Template overview',
   'menu.Settings.Access Token': 'Access Token',
+  'menu.Settings.Personal Access Token': 'Personal Access Token',
 };

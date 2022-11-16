@@ -20,7 +20,8 @@ import {
   SnippetsOutlined,
   TagsOutlined,
   UserOutlined,
-  ProfileOutlined
+  ProfileOutlined,
+  KeyOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
@@ -54,7 +55,8 @@ const IconMap = {
   edit: <EditOutlined />,
   idp: <ApiOutlined />,
   user: <UserOutlined />,
-  profile: <ProfileOutlined />
+  profile: <ProfileOutlined />,
+  accessToken: <KeyOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, children, ...item }) => ({
@@ -367,9 +369,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         return loopMenuItem([
           ...routes,
           {
-            path: '/profile',
+            path: '/profile/user',
             name: 'Profile',
             icon: 'user',
+          },
+          {
+            path: '/profile/personalaccesstoken',
+            name: 'Personal Access Token',
+            icon: 'accessToken',
           }
         ])
       }

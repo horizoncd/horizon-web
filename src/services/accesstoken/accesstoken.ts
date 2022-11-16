@@ -4,7 +4,7 @@ import { API } from '../typings';
 export async function createPersonalAccessToken(data: ACCESSTOKEN.CreatePersonalAccessTokenReq) {
   return request<{
     data: ACCESSTOKEN.CreateResourceAccessTokenResp
-  }>('/apis/core/v1/accesstokens', {
+  }>('/apis/core/v1/personalaccesstokens', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export async function createResourceAccessToken(data: ACCESSTOKEN.CreateResource
 export async function listPersonalAccessTokens(params: API.PageParam) {
   return request<{
     data: API.PageResult<ACCESSTOKEN.PersonalAccessToken>;
-  }>('/apis/core/v1/accesstokens', {
+  }>('/apis/core/v1/personalaccesstokens', {
     method: 'GET',
     params,
   });

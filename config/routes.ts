@@ -297,6 +297,10 @@ const userRoutes = [
   {
     path: '/profile/user',
     component: 'user/Detail'
+  },
+  {
+    path: '/profile/personalaccesstoken',
+    component: 'accesstoken/PersonalAccessToken'
   }
 ]
 

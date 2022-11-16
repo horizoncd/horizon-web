@@ -10,35 +10,28 @@ import moment from 'moment';
 import copy from 'copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
 import Label from '@/components/Label';
-import PopupTime from '@/components/Widget/Time';
-import Detail from '@/components/PageWithBreadcrumb';
+import PopupTime from '@/components/Widget/PopupTime';
 import {
   createPersonalAccessToken, createResourceAccessToken, listPersonalAccessTokens, listResourceAccessTokens, listScopes, revokePersonalAccessToken, revokeResourceAccessToken,
 } from '@/services/accesstoken/accesstoken';
 import { API } from '@/services/typings';
 import rbac from '@/rbac';
 
-function AccessTokenManagement(props: { resourceScope?: boolean, initialState: API.InitialState }) {
-  const { resourceScope, initialState } = props;
+function AccessTokenManagement(props: { resourceType?: string, resourceID?: number, role?:string, resourceScope?: boolean }) {
+  const {
+    resourceType, resourceID, resourceScope, role,
+  } = props;
   const intl = useIntl();
   const { successAlert, errorAlert } = useModel('alert');
   const [pageNumber, setPageNumber] = useState(1);
   const [tokenCode, setTokenCode] = useState('');
   const pageSize = 10;
-  const {
-    resource: {
-      id: resourceID = 0,
-      type: resourceType,
-    },
-    currentUser = { role: '' },
-  } = initialState;
 
   const { data: { items: accessTokens, total } = { total: 0, items: [] }, run: refreshAccessTokens } = useRequest(
     () => {
       if (resourceScope) {
-        return listResourceAccessTokens({ pageNumber, pageSize }, resourceType, resourceID);
+        return listResourceAccessTokens({ pageNumber, pageSize }, resourceType!, resourceID!);
       }
       return listPersonalAccessTokens({ pageNumber, pageSize });
     },
@@ -95,7 +88,7 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
 
   const onFinish = (formData: ACCESSTOKEN.CreatePersonalAccessTokenReq | ACCESSTOKEN.CreateResourceAccessTokenReq) => {
     if (resourceScope) {
-      createResourceAccessToken(formData as ACCESSTOKEN.CreateResourceAccessTokenReq, resourceType, resourceID).then(
+      createResourceAccessToken(formData as ACCESSTOKEN.CreateResourceAccessTokenReq, resourceType!, resourceID!).then(
         ({ data: resp }) => {
           successAlert(intl.formatMessage({ id: 'pages.accesstokens.operations.create.success' }));
           setTokenCode(resp.token);
@@ -161,11 +154,6 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
         return <div>never</div>;
       },
     },
-    resourceScope ? {
-      title: intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' }),
-      dataIndex: 'role',
-      key: 'role',
-    } : null,
     {
       title: intl.formatMessage({ id: 'pages.accesstokens.tokenList.createdBy.title' }),
       dataIndex: 'createdBy',
@@ -216,8 +204,16 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
     },
   ];
 
+  if (resourceScope) {
+    columns.splice(3, 0, {
+      title: intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' }),
+      dataIndex: 'role',
+      key: 'role',
+    });
+  }
+
   return (
-    <Detail>
+    <>
       <h1> Access Token </h1>
       <Description>
         {intl.formatMessage({ id: 'pages.accesstokens.desc' })}
@@ -253,7 +249,6 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
             valuePropName="date"
             initialValue="never"
           >
-            {/* eslint-disable */}
             <DatePicker
               style={{ display: 'flex' }}
               placeholder={intl.formatMessage({ id: 'pages.accesstokens.addToken.expiresAt.desc' })}
@@ -261,17 +256,20 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
               allowClear
               disabledDate={(current) => current <= moment()}
             />
-            {/* eslint-enable */}
           </Form.Item>
-          <Form.Item
-            label={<FormLabel>{intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' })}</FormLabel>}
-            name="role"
-            rules={required}
-          >
-            <Select
-              options={roleList.slice(roleRank.get(currentUser.role)).map((role: string) => ({ key: role, label: role, value: role }))}
-            />
-          </Form.Item>
+          {
+            resourceScope && (
+            <Form.Item
+              label={<FormLabel>{intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' })}</FormLabel>}
+              name="role"
+              rules={required}
+            >
+              <Select
+                options={roleList.slice(roleRank.get(role!)).map((r: string) => ({ key: r, label: r, value: r }))}
+              />
+            </Form.Item>
+            )
+          }
           <Form.Item
             label={<FormLabel>{intl.formatMessage({ id: 'pages.accesstokens.addToken.scopes.title' })}</FormLabel>}
             name="scopes"
@@ -351,12 +349,15 @@ function AccessTokenManagement(props: { resourceScope?: boolean, initialState: A
           }}
         />
       </TokenListCard>
-    </Detail>
+    </>
   );
 }
 
 AccessTokenManagement.defaultProps = {
   resourceScope: false,
+  resourceType: '',
+  resourceID: 0,
+  role: '',
 };
 
-export default PageWithInitialState(AccessTokenManagement);
+export default AccessTokenManagement;

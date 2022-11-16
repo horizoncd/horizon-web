@@ -1,9 +1,21 @@
 import AccessTokenManagement from '../components/AccessTokenManagement';
+import { PageWithInitialState } from '@/components/Enhancement/PageWithInitialState';
+import Detail from '@/components/PageWithBreadcrumb';
 
-function PersonalAccessToken() {
+function ResourceAccessToken(props: { initialState: API.InitialState }) {
+  const { initialState } = props;
+  const {
+    resource: {
+      id: resourceID = 0,
+      type: resourceType,
+    },
+    currentUser = { role: '' },
+  } = initialState;
   return (
-    <AccessTokenManagement resourceScope />
+    <Detail>
+      <AccessTokenManagement resourceID={resourceID} resourceType={resourceType} role={currentUser.role} resourceScope />
+    </Detail>
   );
 }
 
-export default PersonalAccessToken;
+export default PageWithInitialState(ResourceAccessToken);

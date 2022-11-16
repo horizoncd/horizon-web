@@ -220,7 +220,7 @@ export default {
   'pages.accesstokens.addToken.scopes.desc': 'scope主要用于进一步收缩权限，token的最终权限取决于角色和scopes的交集',
   'pages.accesstokens.addToken.code.title': '以下是你创建的token，这是唯一一次复制该token的机会，若丢失，只能销毁重新创建',
   'pages.accesstokens.name.ruleMessage': '名称是必填项，长度必须大于1，小于40，支持字母、数字和中划线的组合，且必须以字母开头',
-  'pages.accesstokens.desc': 'access token可以帮助你在调用接口时通过认证鉴权，需要放在请求头"Authorization: Bearer {token}"中进行使用',
+  'pages.accesstokens.desc': 'access token可以帮助你在调用接口时通过认证鉴权，需要放在请求头"Authorization: Bearer $token"中进行使用',
   'pages.accesstokens.tokenList.title': '现有token',
 
   'pages.accesstokens.operations.create.success': '创建成功',
