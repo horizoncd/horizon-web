@@ -557,7 +557,7 @@ function formatApplicationMenu(fullPath: string) {
           name: 'Advance',
         },
         {
-          path: `/applitaions${fullPath}/-/settings/accesstokens`,
+          path: `/applications${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
       ],

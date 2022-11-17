@@ -154,6 +154,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
       title: intl.formatMessage({ id: 'pages.accesstokens.addToken.scopes.title' }),
       dataIndex: 'scopes',
       key: 'scopes',
+      width: '23%',
       render: (scopeNames: string[]) => (
         scopeNames.map((scopeName) => (
           <Label
@@ -240,7 +241,9 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
 
   return (
     <>
-      <h1> Access Token </h1>
+      <h1>
+        { resourceScope ? 'Access Token' : 'Personal Access Token'}
+      </h1>
       <Description>
         {intl.formatMessage({ id: 'pages.accesstokens.desc' })}
       </Description>
