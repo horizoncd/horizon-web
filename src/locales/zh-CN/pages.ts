@@ -204,6 +204,8 @@ export default {
   'pages.idps.entity.scopes.extra': '由空格分割的oidc scopes',
 
   'pages.profile.entry': '个人中心',
+  'pages.profile.setting': '个人设置',
+  'pages.profile.exit': '退出登录',
   'pages.profile.isAdmin': '是否为Admin',
   'pages.profile.isBanned': '是否禁用',
   'pages.profile.email': '电子邮件',

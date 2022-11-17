@@ -10,6 +10,7 @@ import moment from 'moment';
 import copy from 'copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { ResourceType } from '@/const';
 import Label from '@/components/Label';
 import PopupTime from '@/components/Widget/PopupTime';
 import {
@@ -85,6 +86,30 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
       min: 1,
     },
   ];
+
+  let canCreate = false;
+  if (!resourceScope) {
+    canCreate = true;
+  } else {
+    const resourcePerssions = {
+      [ResourceType.GROUP]: rbac.Permissions.createGroupAccessTokens.allowed,
+      [ResourceType.APPLICATION]: rbac.Permissions.createApplicationAccessTokens.allowed,
+      [ResourceType.CLUSTER]: rbac.Permissions.createClusterAccessTokens.allowed,
+    };
+    canCreate = resourcePerssions[resourceType!];
+  }
+
+  let canDelete = false;
+  if (!resourceScope) {
+    canDelete = true;
+  } else {
+    const resourcePerssions = {
+      [ResourceType.GROUP]: rbac.Permissions.deleteGroupAccessTokens.allowed,
+      [ResourceType.APPLICATION]: rbac.Permissions.deleteApplicationAccessTokens.allowed,
+      [ResourceType.CLUSTER]: rbac.Permissions.deleteClusterAccessTokens.allowed,
+    };
+    canDelete = resourcePerssions[resourceType!];
+  }
 
   const onFinish = (formData: ACCESSTOKEN.CreatePersonalAccessTokenReq | ACCESSTOKEN.CreateResourceAccessTokenReq) => {
     if (resourceScope) {
@@ -179,6 +204,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
       key: 'operation',
       render: (record: ACCESSTOKEN.PersonalAccessToken | ACCESSTOKEN.ResourceAccessToken) => (
         <Button
+          disabled={!canDelete || (resourceScope && roleRank.get((record as ACCESSTOKEN.ResourceAccessToken).role) < roleRank.get(role))}
           type="link"
           onClick={() => Modal.confirm({
             title: intl.formatMessage({ id: 'pages.accesstokens.operations.delete.prompt' }),
@@ -220,6 +246,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
       </Description>
       <Divider />
       <Card
+        hidden={!canCreate}
         tabList={[{
           key: 'createAccessToken',
           tab: (

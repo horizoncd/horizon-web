@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu, Spin } from 'antd';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import { history, useModel } from 'umi';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -32,7 +33,7 @@ const logout = async () => {
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
+  const intl = useIntl();
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
@@ -42,7 +43,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         logout();
       }
       if (key === 'profile') {
-        window.location.href = '/profile';
+        window.location.href = '/profile/user';
       }
     },
     [setInitialState],
@@ -74,13 +75,13 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
       <Menu.Item key="profile">
         <UserOutlined />
-        个人中心
+        {intl.formatMessage({ id: 'pages.profile.entry' })}
       </Menu.Item>
       <Menu.Divider />
       {menu && (
         <Menu.Item key="settings">
           <SettingOutlined />
-          个人设置
+          {intl.formatMessage({ id: 'pages.profile.setting' })}
         </Menu.Item>
       )}
 
@@ -88,7 +89,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
       <Menu.Item key="logout">
         <LogoutOutlined />
-        退出登录
+        {intl.formatMessage({ id: 'pages.profile.exit' })}
       </Menu.Item>
     </Menu>
   );

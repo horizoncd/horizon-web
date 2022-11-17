@@ -200,6 +200,8 @@ export default {
   'pages.idps.entity.scopes.extra': 'OIDC scopes seperated by blank space',
 
   'pages.profile.entry': 'Personal Space',
+  'pages.profile.exit': 'Exit',
+  'pages.profile.setting': 'Setting',
   'pages.profile.isAdmin': 'Is Admin',
   'pages.profile.isBanned': 'Is Banned',
   'pages.profile.email': 'Email',

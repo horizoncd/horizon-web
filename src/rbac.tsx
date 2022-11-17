@@ -38,6 +38,8 @@ const Resource = {
   regionselectors: 'regionselectors',
   template: 'templates',
   templaterelease: 'templatereleases',
+  accesstokens: 'accesstokens',
+  personalaccesstokens: 'personalaccesstokens',
 };
 
 // 操作
@@ -120,7 +122,7 @@ const Permissions = {
     action: Action.create,
     env: new Array<string>(),
     allowed: false,
-    allowedEnv: (env: string) => (env == '' && Permissions.createCluster.env.length > 0)
+    allowedEnv: (env: string) => (env === '' && Permissions.createCluster.env.length > 0)
         || Permissions.createCluster.env.includes(AllowAll) || Permissions.createCluster.env.includes(env),
   },
   // 删除集群
@@ -334,6 +336,41 @@ const Permissions = {
     action: Action.create,
     allowed: false,
   },
+  createGroupAccessTokens: {
+    resource: `${Resource.group}/${Resource.accesstokens}`,
+    action: Action.create,
+    allowed: false,
+  },
+  createApplicationAccessTokens: {
+    resource: `${Resource.application}/${Resource.accesstokens}`,
+    action: Action.create,
+    allowed: false,
+  },
+  createClusterAccessTokens: {
+    resource: `${Resource.cluster}/${Resource.accesstokens}`,
+    action: Action.create,
+    allowed: false,
+  },
+  createPersonalAccessTokens: {
+    resource: `${Resource.personalaccesstokens}`,
+    action: Action.create,
+    allowed: false,
+  },
+  deleteGroupAccessTokens: {
+    resource: `${Resource.group}/${Resource.accesstokens}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  deleteApplicationAccessTokens: {
+    resource: `${Resource.application}/${Resource.accesstokens}`,
+    action: Action.delete,
+    allowed: false,
+  },
+  deleteClusterAccessTokens: {
+    resource: `${Resource.cluster}/${Resource.accesstokens}`,
+    action: Action.delete,
+    allowed: false,
+  },
 };
 
 // RefreshPermissions用于基于roles接口返回结果和用户自身的role刷新Permissions
@@ -385,14 +422,14 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
   //    }
   // }
   const rolePolicy = {};
-  for (const role of roles) {
+  roles.forEach((role) => {
     if (role.name !== currentUser.role) {
-      continue;
+      return;
     }
-    for (const rule of role.rules) {
-      for (const verb of rule.verbs) {
-        for (const resource of rule.resources) {
-          for (const scope of rule.scopes) {
+    role.rules.forEach((rule) => {
+      rule.verbs.forEach((verb) => {
+        rule.resources.forEach((resource) => {
+          rule.scopes.forEach((scope) => {
             if (!rolePolicy[verb]) {
               rolePolicy[verb] = {};
             }
@@ -402,11 +439,11 @@ const RefreshPermissions = (roles: API.Role[], currentUser: API.CurrentUser) => 
             const parts = scope.split('/');
             const env = parts[0];
             rolePolicy[verb][resource] = rolePolicy[verb][resource].concat(env);
-          }
-        }
-      }
-    }
-  }
+          });
+        });
+      });
+    });
+  });
 
   // 遍历Permissions的每个属性，若 action 和 resource 在 rolePolicy 中被记录，则认为对应操作被允许
   Object.keys(Permissions).forEach((operation) => {
@@ -447,7 +484,7 @@ const GetRoleList = () => {
   let roleList: string[] = [];
 
   roleRank.set(AdminRole, 0);
-  for (let i = 0; i < initialState!.roles!.length; i++) {
+  for (let i = 0; i < initialState!.roles!.length; i += 1) {
     const role = initialState!.roles![i];
     roleRank.set(role.name, i);
     roleList = roleList.concat(role.name);
