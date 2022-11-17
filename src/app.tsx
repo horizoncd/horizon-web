@@ -20,7 +20,8 @@ import {
   SnippetsOutlined,
   TagsOutlined,
   UserOutlined,
-  ProfileOutlined
+  ProfileOutlined,
+  KeyOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
@@ -54,7 +55,8 @@ const IconMap = {
   edit: <EditOutlined />,
   idp: <ApiOutlined />,
   user: <UserOutlined />,
-  profile: <ProfileOutlined />
+  profile: <ProfileOutlined />,
+  accessToken: <KeyOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, children, ...item }) => ({
@@ -367,9 +369,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         return loopMenuItem([
           ...routes,
           {
-            path: '/profile',
+            path: '/profile/user',
             name: 'Profile',
             icon: 'user',
+          },
+          {
+            path: '/profile/personalaccesstoken',
+            name: 'Personal Access Token',
+            icon: 'accessToken',
           }
         ])
       }
@@ -461,6 +468,10 @@ function formatGroupMenu(fullPath: string) {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,
           parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
         },
+        {
+          path: `/groups${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
       ],
     },
     {
@@ -545,6 +556,10 @@ function formatApplicationMenu(fullPath: string) {
           path: `/applications${fullPath}/-/settings/advance`,
           name: 'Advance',
         },
+        {
+          path: `/applitaions${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
       ],
     },
   ];
@@ -600,6 +615,17 @@ function formatClusterMenu(fullPath: string) {
       headerRender: false,
       menuHeaderRender: false,
       footerRender: false,
+    },
+    {
+      path: `/clusters${fullPath}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+      children: [
+        {
+          path: `/clusters${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
+      ],
     },
   ];
 }

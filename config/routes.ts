@@ -1,4 +1,4 @@
-export const routes = [
+﻿export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -109,6 +109,11 @@ const groupRoutes = [
     path: `/groups/*/-/newoauthapp`,
     menuRender: false,
     component: 'oauthapp/New'
+  },
+  {
+    path: `/groups/*/-/settings/accesstokens`,
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -152,6 +157,11 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/stats/pipeline',
     component: 'applications/stats/Pipeline',
+  },
+  {
+    path: '/applications/*/-/settings/accesstokens',
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -209,6 +219,11 @@ const clusterRoutes = [
     path: '/clusters/*/-/admintags',
     menuRender: false,
     component: 'clusters/AdminTag',
+  },
+  {
+    path: '/clusters/*/-/settings/accesstokens',
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -282,6 +297,10 @@ const userRoutes = [
   {
     path: '/profile/user',
     component: 'user/Detail'
+  },
+  {
+    path: '/profile/personalaccesstoken',
+    component: 'accesstoken/PersonalAccessToken'
   }
 ]
 
