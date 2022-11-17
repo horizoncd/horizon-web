@@ -222,4 +222,14 @@ export default {
   'pages.accesstokens.desc': 'The access token can help you pass authentication when calling the api. When using it, you need to put it in the request header "Authorization: Bearer {token}" for use',
   'pages.accesstokens.tokenList.title': 'Active project access tokens',
   'pages.accesstokens.addToken.code.title': 'This is the only chance to copy the token. If you lose it, you can only revoke and recreate it.',
+
+  'pages.accesstokens.operations.create.success': 'create access token successfully',
+  'pages.accesstokens.operations.delete.success': 'delete access token successfully',
+  'pages.accesstokens.operations.delete.prompt': 'Are you sure to delete the following acecss token：',
+  'pages.accesstokens.operations.copy.success': 'copy access token successfully',
+  'pages.accesstokens.operations.copy.failed': 'copy access token successfully',
+  'pages.accesstokens.operations.operation.title': 'Operation',
+  'pages.accesstokens.operations.delete.title': 'Delete',
+  'pages.accesstokens.tokenList.createdAt.title': 'Creation Time',
+  'pages.accesstokens.tokenList.createdBy.title': 'Creator',
 };
