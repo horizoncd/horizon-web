@@ -208,6 +208,7 @@ export default {
   'pages.profile.phone': 'Phone',
   'pages.profile.link': 'Link',
   'pages.profile.unlink': 'Unlink',
+  'pages.profile.sub': 'Subject',
 
   'pages.accesstokens.addToken.title': 'Add an access token',
   'pages.accesstokens.addToken.scopes.desc': 'Scope is used for fine-grained control of permissions, the final permission of the token depends on the intersection of scope and role',

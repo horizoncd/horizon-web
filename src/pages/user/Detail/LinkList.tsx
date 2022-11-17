@@ -38,7 +38,7 @@ export default function LinkList(props: { userID: number, withButton: boolean })
       dataIndex: 'displayName',
     },
     {
-      title: 'Sub',
+      title: intl.formatMessage({ id: 'pages.profile.sub' }),
       dataIndex: 'link',
       render: (link: API.Link) => {
         if (link) {

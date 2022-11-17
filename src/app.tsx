@@ -276,7 +276,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     const { name: t, fullPath: f, type } = initialState?.resource || {};
     
     const title = t || history.location.pathname.startsWith('/admin')? 'admin' : 'profile';
-    const fullPath = f || history.location.pathname.startsWith('/admin') ? '/admin' : 'profile';
+    const fullPath = f || history.location.pathname.startsWith('/admin') ? '/admin' : '/profile/user';
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
