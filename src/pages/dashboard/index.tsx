@@ -13,14 +13,14 @@ import { BookOutlined, DownOutlined, FolderOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
 import { FundOutlined, GitlabOutlined, RocketTwoTone } from '@ant-design/icons/lib';
 import { querySubGroups, searchGroups } from '@/services/groups/groups';
-import { searchApplications, searchMyApplications } from '@/services/applications/applications';
-import { searchClusters, searchMyClusters } from '@/services/clusters/clusters';
+import { listApplications } from '@/services/applications/applications';
+import { listClusters } from '@/services/clusters/clusters';
 import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
 import { ResourceType } from '@/const';
 import withTrim from '@/components/WithTrim';
 import { queryEnvironments } from '@/services/environments/environments';
-import { queryReleases, queryTemplates } from '@/services/templates/templates';
+import { queryReleases, listTemplates } from '@/services/templates/templates';
 import styles from '@/pages/clusters/Pods/index.less';
 import type { CLUSTER } from '@/services/clusters';
 import type { API } from '@/services/typings';
@@ -112,10 +112,10 @@ export default (props: any) => {
     },
   });
 
-  const { data: tpls } = useRequest(() => queryTemplates(false), {
-    onSuccess: () => {
+  useRequest(() => listTemplates({ fullpath: false }), {
+    onSuccess: (items) => {
       const t: CLUSTER.TemplateOptions[] = [];
-      tpls?.forEach((item) => {
+      items.forEach((item) => {
         t.push({ label: item.name, value: item.name, isLeaf: false });
       });
       setFilterOptions(t);
@@ -123,7 +123,8 @@ export default (props: any) => {
   });
 
   // search your applications
-  useRequest(() => searchMyApplications({
+  useRequest(() => listApplications({
+    userID: initialState?.currentUser?.id,
     filter,
     pageSize,
     pageNumber,
@@ -139,7 +140,7 @@ export default (props: any) => {
     },
   });
   // search all applications
-  useRequest(() => searchApplications({
+  useRequest(() => listApplications({
     filter,
     pageSize,
     pageNumber,
@@ -155,7 +156,8 @@ export default (props: any) => {
   });
 
   // search your clusters
-  useRequest(() => searchMyClusters({
+  useRequest(() => listClusters({
+    userID: initialState?.currentUser?.id,
     filter,
     pageSize,
     pageNumber,
@@ -174,7 +176,7 @@ export default (props: any) => {
     },
   });
   // search all clusters
-  useRequest(() => searchClusters({
+  useRequest(() => listClusters({
     filter,
     pageSize,
     pageNumber,
@@ -420,42 +422,42 @@ export default (props: any) => {
     ) : (
       <div>
         {
-        pathname.endsWith('clusters')
-        && (
-        <Cascader
-          allowClear
-          style={{ maxWidth: '150px' }}
-          placeholder="Filter by template"
-          options={filterOptions}
+          pathname.endsWith('clusters')
+          && (
+            <Cascader
+              allowClear
+              style={{ maxWidth: '150px' }}
+              placeholder="Filter by template"
+              options={filterOptions}
+              // @ts-ignore
+              onClear={() => { setTpl(''); setTplRelease(''); }}
+              loadData={CascaderLoadData}
+              onChange={onCascadeChange}
+              changeOnSelect
+            />
+          )
+        }
+        {
           // @ts-ignore
-          onClear={() => { setTpl(''); setTplRelease(''); }}
-          loadData={CascaderLoadData}
-          onChange={onCascadeChange}
-          changeOnSelect
-        />
-        )
-      }
+          pathname.endsWith('clusters')
+          && (
+            <Select
+              allowClear
+              style={{ maxWidth: '150px', marginLeft: '5px' }}
+              placeholder="Filter by env"
+              onSelect={setEnvironment}
+              onClear={() => setEnvironment('')}
+            >
+              {envs?.map((item) => (
+                <Option key={item.name} value={item.name}>
+                  {item.displayName}
+                </Option>
+              ))}
+            </Select>
+          )
+        }
         {
-        // @ts-ignore
-        pathname.endsWith('clusters')
-        && (
-        <Select
-          allowClear
-          style={{ maxWidth: '150px', marginLeft: '5px' }}
-          placeholder="Filter by env"
-          onSelect={setEnvironment}
-          onClear={() => setEnvironment('')}
-        >
-          {envs?.map((item) => (
-            <Option key={item.name} value={item.name}>
-              {item.displayName}
-            </Option>
-          ))}
-        </Select>
-        )
-      }
-        {
-        // @ts-ignore
+          // @ts-ignore
           <Search
             style={pathname.endsWith('clusters') ? { width: '40%', marginLeft: '5px' } : {}}
             placeholder="Search"
@@ -464,7 +466,7 @@ export default (props: any) => {
             onChange={onChange}
             value={filter}
           />
-      }
+        }
       </div>
     );
 
@@ -530,96 +532,96 @@ export default (props: any) => {
           {
             pathname.indexOf('clusters') > -1
             && (
-            <TabPane tab={formatTabTitle('Your clusters', totalClusters)} key="/dashboard/clusters">
-              {clusters.map((item: CLUSTER.Cluster) => {
-                const treeData = {
-                  title: item.fullName?.split('/').join('  /  '),
-                  ...item,
-                };
-                return (
-                  <div key={item.id}>
-                    {clusterTitleRender(treeData)}
-                    <Divider style={{ margin: '5px 0 5px 0' }} />
-                  </div>
-                );
-              })}
-            </TabPane>
+              <TabPane tab={formatTabTitle('Your clusters', totalClusters)} key="/dashboard/clusters">
+                {clusters && clusters.length > 0 && clusters.map((item: CLUSTER.Cluster) => {
+                  const treeData = {
+                    title: item.fullName?.split('/').join('  /  '),
+                    ...item,
+                  };
+                  return (
+                    <div key={item.id}>
+                      {clusterTitleRender(treeData)}
+                      <Divider style={{ margin: '5px 0 5px 0' }} />
+                    </div>
+                  );
+                })}
+              </TabPane>
             )
           }
           {
             pathname.indexOf('clusters') > -1
             && (
-            <TabPane tab="All clusters" key="/explore/clusters">
-              {clusters.map((item: CLUSTER.Cluster) => {
-                const treeData = {
-                  title: item.fullName?.split('/').join('  /  '),
-                  ...item,
-                };
-                return (
-                  <div key={item.id}>
-                    {clusterTitleRender(treeData)}
-                    <Divider style={{ margin: '5px 0 5px 0' }} />
-                  </div>
-                );
-              })}
-            </TabPane>
+              <TabPane tab="All clusters" key="/explore/clusters">
+                {clusters && clusters.length > 0 && clusters.map((item: CLUSTER.Cluster) => {
+                  const treeData = {
+                    title: item.fullName?.split('/').join('  /  '),
+                    ...item,
+                  };
+                  return (
+                    <div key={item.id}>
+                      {clusterTitleRender(treeData)}
+                      <Divider style={{ margin: '5px 0 5px 0' }} />
+                    </div>
+                  );
+                })}
+              </TabPane>
             )
           }
 
           {
             pathname.indexOf('applications') > -1
             && (
-            <TabPane tab={formatTabTitle('Your applications', totalApplications)} key="/dashboard/applications">
-              <DTree
-                items={
-                  applications.map((item) => ({
-                    icon: <BookOutlined />,
-                    ...item,
-                  }))
-                }
-              />
-            </TabPane>
+              <TabPane tab={formatTabTitle('Your applications', totalApplications)} key="/dashboard/applications">
+                <DTree
+                  items={
+                    applications.map((item) => ({
+                      icon: <BookOutlined />,
+                      ...item,
+                    }))
+                  }
+                />
+              </TabPane>
             )
           }
           {
             pathname.indexOf('applications') > -1
             && (
-            <TabPane tab="All applications" key="/explore/applications">
-              <DTree
-                items={
-                  applications.map((item) => ({
-                    icon: <BookOutlined />,
-                    ...item,
-                  }))
-                }
-              />
-            </TabPane>
+              <TabPane tab="All applications" key="/explore/applications">
+                <DTree
+                  items={
+                    applications.map((item) => ({
+                      icon: <BookOutlined />,
+                      ...item,
+                    }))
+                  }
+                />
+              </TabPane>
             )
           }
 
           {
             pathname.indexOf('groups') > -1
             && (
-            <TabPane tab="All groups" key="/explore/groups">
-              {groups.map((item: API.GroupChild) => {
-                const treeData = formatTreeData([item]);
-                const hasChildren = item.childrenCount > 0;
-                return (
-                  <div key={item.id}>
-                    <DirectoryTree
-                      onExpand={onExpand}
-                      showLine={hasChildren ? { showLeafIcon: false } : false}
-                      switcherIcon={<DownOutlined />}
-                      treeData={treeData}
-                      titleRender={titleRender}
-                      onSelect={onSelectGroup}
-                      expandedKeys={expandedKeys}
-                    />
-                    <Divider style={{ margin: '5px 0 5px 0' }} />
-                  </div>
-                );
-              })}
-            </TabPane>
+              <TabPane tab="All groups" key="/explore/groups">
+                {groups.map((item: API.GroupChild) => {
+                  const treeData = formatTreeData([item]);
+                  const hasChildren = item.childrenCount > 0;
+                  return (
+                    <div key={item.id}>
+                      <DirectoryTree
+                        onExpand={onExpand}
+                        showLine={hasChildren ? { showLeafIcon: false } : false}
+                        switcherIcon={<DownOutlined />}
+                        treeData={treeData}
+                        titleRender={titleRender}
+                        onSelect={onSelectGroup}
+                        expandedKeys={expandedKeys}
+                      />
+                      <Divider style={{ margin: '5px 0 5px 0' }} />
+                    </div>
+                  );
+                })}
+              </TabPane>
             )
           }
         </Tabs>

@@ -6,7 +6,7 @@ declare namespace Templates {
     description?: string
     repository: string
     group: number
-    fullPath?: string
+    fullPath: string
     fullName: string
     createdAt: string
     updatedAt: string

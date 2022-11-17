@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu, Spin } from 'antd';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import { history, useModel } from 'umi';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -32,7 +33,7 @@ const logout = async () => {
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
+  const intl = useIntl();
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
@@ -40,9 +41,10 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         // @ts-ignore
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         logout();
-        return;
       }
-      history.push(`/account/${key}`);
+      if (key === 'profile') {
+        window.location.href = '/profile/user';
+      }
     },
     [setInitialState],
   );
@@ -65,38 +67,36 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || !currentUser.name) {
+  if (!currentUser || currentUser.fullName === undefined) {
     return loading;
   }
 
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
+      <Menu.Item key="profile">
+        <UserOutlined />
+        {intl.formatMessage({ id: 'pages.profile.entry' })}
+      </Menu.Item>
+      <Menu.Divider />
       {menu && (
         <Menu.Item key="settings">
           <SettingOutlined />
-          个人设置
+          {intl.formatMessage({ id: 'pages.profile.setting' })}
         </Menu.Item>
       )}
-      {menu && <Menu.Divider />}
 
       {menu && <Menu.Divider />}
 
       <Menu.Item key="logout">
         <LogoutOutlined />
-        退出登录
+        {intl.formatMessage({ id: 'pages.profile.exit' })}
       </Menu.Item>
     </Menu>
   );
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
-        <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+        <span className={`${styles.name} anticon`}>{currentUser.fullName}</span>
       </span>
     </HeaderDropdown>
   );

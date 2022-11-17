@@ -2,9 +2,11 @@ import { history } from '@@/core/history';
 import { Spin } from 'antd';
 import { useRequest } from 'umi';
 import { loginCallback } from '@/services/login/login';
+import { RedirectURL } from '@/const';
 
 export default () => {
-  let { code, state } = history.location.query;
+  const { code } = history.location.query;
+  let { state } = history.location.query;
   state = window.atob(state);
   const params = new URLSearchParams(state);
   let redirect = params.get('redirect');
@@ -15,7 +17,7 @@ export default () => {
   }
   params.set('redirect', redirect);
   useRequest(
-    () => loginCallback(code, window.btoa(params.toString())),
+    () => loginCallback(code, window.btoa(params.toString()), RedirectURL),
     {
       onSuccess: () => {
         window.location.href = redirect;

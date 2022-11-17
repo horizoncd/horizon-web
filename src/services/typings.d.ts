@@ -12,6 +12,7 @@ declare namespace API {
 
   type CurrentUser = {
     name: string;
+    fullName: string;
     id: number;
     isAdmin: boolean;
     role: string;
@@ -121,6 +122,46 @@ declare namespace API {
     name: string,
     fullName: string,
     email: string,
+    isAdmin: boolean,
+    isBanned: boolean,
+    phone: string,
+    updatedAt: string,
+    createdAt: string,
+  };
+
+  type AuthEndpoint = {
+    id: number,
+    displayName: string,
+    authURL: string,
+  };
+
+  type IDP = {
+    id: number,
+    displayName: string,
+    name: string,
+    avatar: string,
+    authorizationEndpoint: string,
+    tokenEndpoint: string,
+    userinfoEndpoint: string,
+    revocationEndpoint: string,
+    issuer: string,
+    scopes: string,
+    tokenEndpointAuthMethod: string,
+    jwks: string,
+    clientID: string,
+    createdAt: string,
+    updatedAt: string,
+
+  };
+
+  type Link = {
+    id: number,
+    sub: string,
+    idpId: number,
+    userId: number,
+    name: string,
+    email: string,
+    unlinkable: boolean,
   };
 
   type AppSchemeConfigs = {
@@ -266,6 +307,7 @@ declare namespace API {
 
   type Role = {
     name: string,
+    desc: string,
     rules: RoleRule[]
   };
 

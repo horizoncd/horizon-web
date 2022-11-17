@@ -15,4 +15,6 @@ export default {
   'menu.Templates': '模板',
   'menu.Stats': '统计',
   'menu.Stats.Pipeline': '流水线',
+  'menu.Settings.Access Token': 'Access Token',
+  'menu.Settings.Personal Access Token': 'Personal Access Token',
 };

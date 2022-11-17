@@ -19,7 +19,9 @@ import {
   SmileOutlined,
   SnippetsOutlined,
   TagsOutlined,
-  ProfileOutlined
+  UserOutlined,
+  ProfileOutlined,
+  KeyOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
@@ -52,7 +54,9 @@ const IconMap = {
   templates: <SnippetsOutlined />,
   edit: <EditOutlined />,
   idp: <ApiOutlined />,
-  profile: <ProfileOutlined />
+  user: <UserOutlined />,
+  profile: <ProfileOutlined />,
+  accessToken: <KeyOutlined />
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, children, ...item }) => ({
@@ -88,6 +92,7 @@ export async function getInitialState(): Promise<API.InitialState> {
   let currentUser: API.CurrentUser | undefined = {
     id: 0,
     name: '',
+    fullName: '',
     isAdmin: false,
     role: RBAC.AnonymousRole,
   };
@@ -102,6 +107,7 @@ export async function getInitialState(): Promise<API.InitialState> {
 
     currentUser.id = userData.id;
     currentUser.name = userData.name;
+    currentUser.fullName = userData.fullName
     currentUser.isAdmin = userData.isAdmin;
 
     const { data: rolesData } = await queryRoles();
@@ -268,8 +274,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   },
   menuHeaderRender: () => {
     const { name: t, fullPath: f, type } = initialState?.resource || {};
-    const title = t || 'admin';
-    const fullPath = f || '/admin';
+    
+    const title = t || history.location.pathname.startsWith('/admin')? 'admin' : 'profile';
+    const fullPath = f || history.location.pathname.startsWith('/admin') ? '/admin' : '/profile/user';
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
@@ -345,6 +352,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          }, {
+            path: '/admin/users',
+            name: 'Users',
+            icon: 'user',
           },
           {
             path: '/admin/idps',
@@ -352,6 +363,22 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             icon: 'idp',
           },
         ]);
+      }
+
+      if (history.location.pathname.startsWith('/profile')) {
+        return loopMenuItem([
+          ...routes,
+          {
+            path: '/profile/user',
+            name: 'Profile',
+            icon: 'user',
+          },
+          {
+            path: '/profile/personalaccesstoken',
+            name: 'Personal Access Token',
+            icon: 'accessToken',
+          }
+        ])
       }
 
       if (pathnameInStaticRoutes() || !initialState) {
@@ -441,6 +468,10 @@ function formatGroupMenu(fullPath: string) {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,
           parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
         },
+        {
+          path: `/groups${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
       ],
     },
     {
@@ -525,6 +556,10 @@ function formatApplicationMenu(fullPath: string) {
           path: `/applications${fullPath}/-/settings/advance`,
           name: 'Advance',
         },
+        {
+          path: `/applications${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
       ],
     },
   ];
@@ -580,6 +615,17 @@ function formatClusterMenu(fullPath: string) {
       headerRender: false,
       menuHeaderRender: false,
       footerRender: false,
+    },
+    {
+      path: `/clusters${fullPath}/-/settings`,
+      name: 'Settings',
+      icon: 'setting',
+      children: [
+        {
+          path: `/clusters${fullPath}/-/settings/accesstokens`,
+          name: 'Access Token',
+        },
+      ],
     },
   ];
 }

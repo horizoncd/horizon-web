@@ -1,11 +1,12 @@
 import { request } from 'umi';
+import { API } from '../typings';
 
 export async function queryUsers(pageNumber: number, pageSize: number, filter?: string) {
   const params: any = { pageNumber, pageSize };
   if (filter) {
     params.filter = filter;
   }
-  return request('/apis/front/v1/users/search', {
+  return request('/apis/core/v1/users', {
     method: 'GET',
     params,
   });
@@ -94,7 +95,9 @@ export async function updateMember(memberID: number, body: API.UpdateMember) {
 }
 
 export async function queryRoles() {
-  return request('/apis/core/v1/roles', {
+  return request<{
+    data: API.Role[]
+  }>('/apis/core/v1/roles', {
     method: 'GET',
   });
 }

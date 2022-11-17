@@ -70,19 +70,10 @@ export async function deleteApplication(id: number) {
   });
 }
 
-export async function searchApplications(params: API.PageParam) {
+export async function listApplications(params: { userID?: number } & API.PageParam) {
   return request<{
     data: API.PageResult<API.Application>;
-  }>('/apis/front/v1/applications/searchapplications', {
-    method: 'GET',
-    params,
-  });
-}
-
-export async function searchMyApplications(params: API.PageParam) {
-  return request<{
-    data: API.PageResult<API.Application>;
-  }>('/apis/front/v1/applications/searchmyapplications', {
+  }>('/apis/core/v1/applications', {
     method: 'GET',
     params,
   });

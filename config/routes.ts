@@ -1,4 +1,4 @@
-export const routes = [
+﻿export const routes = [
   {
     path: '/user/login',
     layout: false,
@@ -59,6 +59,10 @@ export const routes = [
     menuRender: false,
     component: 'more/SLO',
   },
+  {
+    path: '/profile',
+    component: 'user/Detail',
+  },
 ];
 
 const groupRoutes = [
@@ -105,6 +109,11 @@ const groupRoutes = [
     path: `/groups/*/-/newoauthapp`,
     menuRender: false,
     component: 'oauthapp/New'
+  },
+  {
+    path: `/groups/*/-/settings/accesstokens`,
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -148,6 +157,11 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/stats/pipeline',
     component: 'applications/stats/Pipeline',
+  },
+  {
+    path: '/applications/*/-/settings/accesstokens',
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -205,6 +219,11 @@ const clusterRoutes = [
     path: '/clusters/*/-/admintags',
     menuRender: false,
     component: 'clusters/AdminTag',
+  },
+  {
+    path: '/clusters/*/-/settings/accesstokens',
+    menuRender: false,
+    component: 'accesstoken/ResourceAccessToken'
   }
 ];
 
@@ -262,10 +281,30 @@ const adminRoutes = [
   }, {
     path: '/admin/idps/new',
     component: 'admin/IDPs/New',
-  },
-  {
+  }, {
     path: '/admin/idps/:id',
     component: 'admin/IDPs/Detail',
+  }, {
+    path: '/admin/users',
+    component: 'admin/Users'
+  }, {
+    path: '/admin/users/:id',
+    component: 'admin/Users/Detail'
+  }
+]
+
+const userRoutes = [
+  {
+    path: '/profile',
+    redirect: '/profile/user',
+  },
+  {
+    path: '/profile/user',
+    component: 'user/Detail'
+  },
+  {
+    path: '/profile/personalaccesstoken',
+    component: 'accesstoken/PersonalAccessToken'
   }
 ]
 
@@ -321,6 +360,7 @@ allRoute.push(...applicationRoutes);
 allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
+allRoute.push(...userRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
