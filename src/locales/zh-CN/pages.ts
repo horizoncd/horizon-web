@@ -212,6 +212,8 @@ export default {
   'pages.profile.phone': '电话',
   'pages.profile.link': '连接',
   'pages.profile.unlink': '断开',
+  'pages.profile.sub': '唯一标识',
+
   'pages.accesstokens.addToken.title': '添加新token',
   'pages.accesstokens.addToken.name.title': '名称',
   'pages.accesstokens.addToken.expiresAt.title': '过期时间',

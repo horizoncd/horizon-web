@@ -295,6 +295,10 @@ const adminRoutes = [
 
 const userRoutes = [
   {
+    path: '/profile',
+    redirect: '/profile/user',
+  },
+  {
     path: '/profile/user',
     component: 'user/Detail'
   },
