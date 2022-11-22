@@ -51,11 +51,11 @@ export default (props: any) => {
         const link = `/clusters${fullPath}/-/pipelines/${record.id}`;
         switch (text) {
           case 'ok':
-            return <Succeeded link={link} text="Passed" />;
+            return <Succeeded link={link} text={formatMessage('status.passed')} />;
           case 'failed':
             return <Failed link={link} />;
           case 'created':
-            return <Progressing link={link} text="Created" />;
+            return <Progressing link={link} text={formatMessage('status.created')} />;
           case 'cancelled':
             return <Cancelled link={link} />;
           default:

@@ -168,7 +168,7 @@ const DynamicTagForm = (props: Props) => {
 
 DynamicTagForm.defaultProps = {
   callback: () => {},
-  disabled: true,
+  disabled: false,
 };
 
 export default DynamicTagForm;

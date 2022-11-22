@@ -356,7 +356,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           style={{ marginLeft: '10px' }}
           onClick={() => {
             Modal.confirm({
-              title: intl.formatMessage({ id: 'pages.message.pods.reschedule.content' }),
+              title: intl.formatMessage({ id: 'pages.message.pods.reschedule.content' }, { number: selectedPods.length }),
               onOk() {
                 deletePods(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
                   hookAfterBatchOps(formatMessage('reschedulePod'), d);
@@ -815,7 +815,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: formatMessage('startedAt'),
+                  title: formatMessage('createdAt'),
                   dataIndex: 'startedAt',
                   key: 'startedAt',
                   width: '20%',

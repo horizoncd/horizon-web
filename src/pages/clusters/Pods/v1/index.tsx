@@ -123,6 +123,7 @@ function DeployStep({
                 {item.title}
                 <br />
                 {replicas[idx]}
+                {' '}
                 {intl.formatMessage({ id: 'pages.pods.replica' })}
               </span>
               )}

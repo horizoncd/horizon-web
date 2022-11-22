@@ -18,4 +18,7 @@ export default {
   'menu.Stats.Pipeline': '流水线',
   'menu.Settings.Access Token': 'Access Token',
   'menu.Settings.Personal Access Token': 'Personal Access Token',
+  'menu.Registries': '仓库',
+  'menu.Environments': '环境',
+  'menu.Users': '用户',
 };

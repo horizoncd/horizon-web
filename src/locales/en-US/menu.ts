@@ -16,4 +16,9 @@ export default {
   'menu.Templates': 'Templates',
   'menu.Stats': 'Statistics',
   'menu.Stats.Pipeline': 'Pipelines',
+  'menu.Settings.Access Token': 'Access Token',
+  'menu.Settings.Personal Access Token': 'Personal Access Token',
+  'menu.Registries': 'Registries',
+  'menu.Environments': 'Environments',
+  'menu.Users': 'Users',
 };
