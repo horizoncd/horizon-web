@@ -65,7 +65,7 @@ export default forwardRef((props: any, ref) => {
         <div>
           {item.name}
           {' '}
-          <span style={{ color: 'red' }}>(推荐)</span>
+          <span style={{ color: 'red' }}>{intl.formatMessage({ id: 'pages.common.recommend' })}</span>
         </div>
       );
     }

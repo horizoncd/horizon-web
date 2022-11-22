@@ -1,5 +1,15 @@
+import { useIntl } from 'umi';
+
 function DocsLink() {
-  return <a style={{ color: 'white' }} href="/horizon-docs">文档</a>;
+  const intl = useIntl();
+  return (
+    <a
+      style={{ color: 'white' }}
+      href="/horizon-docs"
+    >
+      {intl.formatMessage({ id: 'pages.header.docs' })}
+    </a>
+  );
 }
 
 export default DocsLink;

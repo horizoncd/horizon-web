@@ -6,6 +6,7 @@ import './index.less';
 import { useEffect, useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { history } from '@@/core/history';
+import { useIntl } from 'umi';
 import { getGroupByID, updateGroupDetail } from '@/services/groups/groups';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RBAC from '@/rbac';
@@ -15,6 +16,7 @@ const { TextArea } = Input;
 export default () => {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
+  const intl = useIntl();
 
   const { initialState, refresh } = useModel('@@initialState');
   const { id } = initialState?.resource || {};
@@ -31,6 +33,7 @@ export default () => {
       form.setFieldsValue(data);
     };
     updateDetail();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const formatLabel = (labelName: string) => (
@@ -39,9 +42,9 @@ export default () => {
     </strong>
   );
 
-  const groupNameLabel = formatLabel('名称');
-  const groupDescLabel = formatLabel('描述');
-  const groupURLLabel = formatLabel('路径');
+  const groupNameLabel = formatLabel(intl.formatMessage({ id: 'pages.common.name' }));
+  const groupDescLabel = formatLabel(intl.formatMessage({ id: 'pages.common.description' }));
+  const groupURLLabel = formatLabel(intl.formatMessage({ id: 'pages.common.path' }));
 
   const getGroupNameLabelStyle = () => ({
     width: '30%',
@@ -58,7 +61,7 @@ export default () => {
 
   const onFinish = (values: API.Group) => {
     updateGroupDetail(id!, values).then(() => {
-      successAlert('分组修改成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.groups.editSuccess' }));
       const newFullPath = `${detail.fullPath.substring(0, detail.fullPath.length - detail.path.length)}${values.path}`;
       history.replace(`/groups${newFullPath}/-/settings/basic`);
       refresh();
@@ -67,17 +70,17 @@ export default () => {
 
   const nameRules: Rule[] = [{
     required: true,
-    message: 'name required, max length: 64',
+    message: intl.formatMessage({ id: 'pages.message.name.hint' }),
     max: 64,
   }];
 
-  const pathRegx = new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$');
+  const pathRegx = /^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$/;
 
   const pathRules: Rule[] = [
     {
       required: true,
       pattern: pathRegx,
-      message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
+      message: intl.formatMessage({ id: 'pages.message.path.hint' }),
     },
   ];
 
@@ -93,7 +96,6 @@ export default () => {
             <Input
               disabled={!RBAC.Permissions.updateGroup.allowed}
               style={getGroupNameLabelStyle()}
-              placeholder="My awesome group"
             />
           </Form.Item>
           <Form.Item label={groupDescLabel} name="description">
@@ -111,7 +113,7 @@ export default () => {
           {
               RBAC.Permissions.updateGroup.allowed && (
               <Form.Item style={getSubmitBtnStyle()}>
-                <Button type="primary" htmlType="submit">保存</Button>
+                <Button type="primary" htmlType="submit">{intl.formatMessage({ id: 'pages.common.submit' })}</Button>
               </Form.Item>
               )
             }

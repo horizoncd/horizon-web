@@ -14,7 +14,7 @@ const StatusCodeSettings: Record<StatusCode, { color: string, hint?: string, tit
   [StatusCode.StatusOutOfSync]: {
     title: 'OutOfSync',
     color: '#fa8c16',
-    hint: 'git仓库对应tag发生了改变，需要用户手动Sync',
+    hint: 'The corresponding tag in git repo has changed. Please sync it manually',
   },
   [StatusCode.StatusUnknown]: {
     title: 'Unknown',

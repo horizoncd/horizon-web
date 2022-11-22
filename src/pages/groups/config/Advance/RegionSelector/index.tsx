@@ -1,20 +1,22 @@
 import { Card } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
+import { useIntl } from 'umi';
 import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
 import { getGroupByID, updateGroupRegionSelector } from '@/services/groups/groups';
 import RBAC from '@/rbac';
 
 export default () => {
   const { initialState } = useModel('@@initialState');
+  const intl = useIntl();
   const { id } = initialState!.resource;
 
   const title = (
     <div>
       <div>
-        关联Kubernetes
+        {intl.formatMessage({ id: 'pages.groups.linkK8s' })}
       </div>
       <div style={{ fontWeight: 300, fontSize: 14 }}>
-        分组和kubernetes通过标签进行关联，具体标签信息请访问kubernetes管理页进行查看
+        {intl.formatMessage({ id: 'pages.message.groups.linkK8s' })}
       </div>
     </div>
   );

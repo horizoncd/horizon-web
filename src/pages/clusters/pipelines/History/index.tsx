@@ -4,12 +4,12 @@ import {
 import { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
-import { history } from 'umi';
+import { history, useIntl, Link } from 'umi';
 import { getPipelines } from '@/services/clusters/clusters';
 import Utils from '@/utils';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
-  Failed, NotFount, Progressing, Succeeded, Cancelled,
+  Failed, NotFound, Progressing, Succeeded, Cancelled,
 } from '@/components/State';
 import { DeployTypeMap } from '@/const';
 import RBAC from '@/rbac';
@@ -19,6 +19,7 @@ const { TabPane } = Tabs;
 export default (props: any) => {
   const { location } = props;
   const { query } = location;
+  const intl = useIntl();
   // 1. all 2. rollback
   const { category = 'all' } = query;
 
@@ -39,9 +40,11 @@ export default (props: any) => {
     history.push(`/clusters${fullPath}/-/pipelines/${pipeline.id}?rollback=true`);
   };
 
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
+
   const columns = [
     {
-      title: '状态',
+      title: formatMessage('status'),
       dataIndex: 'status',
       key: 'status',
       render: (text: string, record: PIPELINES.Pipeline) => {
@@ -56,46 +59,46 @@ export default (props: any) => {
           case 'cancelled':
             return <Cancelled link={link} />;
           default:
-            return <NotFount link={link} />;
+            return <NotFound link={link} />;
         }
       },
     },
     {
-      title: 'Pipeline',
+      title: formatMessage('pipeline'),
       dataIndex: 'key',
       key: 'key',
       render: (text: any) => (
         <Space size="middle">
-          <a onClick={() => history.push(`/clusters${fullPath}/-/pipelines/${text}`)}>
+          <Link to={`/clusters${fullPath}/-/pipelines/${text}`}>
             #
             {text}
-          </a>
+          </Link>
         </Space>
       ),
     },
     {
-      title: '标题',
+      title: formatMessage('title'),
       dataIndex: 'title',
       key: 'title',
     },
     {
-      title: '触发者',
+      title: formatMessage('trigger'),
       dataIndex: 'trigger',
       key: 'trigger',
     },
     {
-      title: '触发类型',
+      title: formatMessage('triggerType'),
       dataIndex: 'action',
       key: 'action',
       render: (text: any) => DeployTypeMap.get(text),
     },
     {
-      title: '创建时间',
+      title: formatMessage('createdAt'),
       dataIndex: 'createdAt',
       key: 'createdAt',
     },
     {
-      title: '操作',
+      title: formatMessage('operation'),
       key: 'operations',
       render: (text: string, record: PIPELINES.Pipeline) => (
         record.canRollback && (
@@ -107,7 +110,7 @@ export default (props: any) => {
             onClick={() => onRetry(record)}
           >
             <Tooltip title="点击进入详情页进行二次确认">
-              回滚到此版本
+              {formatMessage('rollback')}
             </Tooltip>
           </Button>
         </Space>
@@ -150,10 +153,10 @@ export default (props: any) => {
         }}
         animated={false}
       >
-        <TabPane tab="所有" key="all">
+        <TabPane tab={formatMessage('all')} key="all">
           {table}
         </TabPane>
-        <TabPane tab="可回滚" key="rollback">
+        <TabPane tab={formatMessage('canRollback')} key="rollback">
           {table}
         </TabPane>
       </Tabs>

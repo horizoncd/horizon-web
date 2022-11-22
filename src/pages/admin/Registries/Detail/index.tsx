@@ -1,58 +1,61 @@
-import { useParams } from 'umi';
+import { useIntl, useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import { Button, Modal, Space } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import Utils from '@/utils';
 import { deleteRegistryByID, getRegistryByID } from '@/services/registries/registries';
-import NotFount from '@/pages/404';
+import NotFound from '@/pages/404';
 import DetailCard, { Param } from '@/components/DetailCard';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 
 export default () => {
+  const intl = useIntl();
   const params = useParams<{ id: string }>();
   if (!params.id || isNaN(parseInt(params.id, 10))) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const { successAlert } = useModel('alert');
   const registryID = parseInt(params.id, 10);
   const { data: registry } = useRequest(() => getRegistryByID(registryID), {});
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.registry.${suffix}` });
+
   const data: Param[][] = [
     [
       {
-        key: '名称',
+        key: formatMessage('name'),
         value: registry?.name,
       },
       {
-        key: 'server',
+        key: 'Server',
         value: registry?.server,
       },
       {
-        key: 'path',
+        key: formatMessage('path'),
         value: registry?.path,
       },
       {
-        key: 'token',
+        key: 'Token',
         value: registry?.token,
       },
     ],
     [
       {
-        key: '跳过TLS认证',
+        key: formatMessage('tls'),
         value: JSON.stringify(registry?.insecureSkipTLSVerify),
       },
       {
-        key: 'registry类型',
+        key: formatMessage('type'),
         value: registry?.kind,
       },
       {
-        key: '创建时间',
+        key: formatMessage('createdAt'),
         value: Utils.timeToLocal(registry?.createdAt || ''),
       },
       {
-        key: '修改时间',
+        key: formatMessage('updatedAt'),
         value: Utils.timeToLocal(registry?.updatedAt || ''),
       },
     ],
@@ -61,7 +64,7 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={(
           <Space>
@@ -71,23 +74,23 @@ export default () => {
                 history.push(`/admin/registries/${registryID}/edit`);
               }}
             >
-              编辑
+              {intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             <Button
               danger
               onClick={() => {
                 Modal.confirm({
-                  title: `确认删除Registry: ${registry?.name}`,
+                  title: intl.formatMessage({ id: 'pages.message.registry.delete.confirm' }, { name: registry?.name }),
                   onOk: () => {
                     deleteRegistryByID(registryID).then(() => {
-                      successAlert('Registry 删除成功');
+                      successAlert(intl.formatMessage({ id: 'pages.common.delete.success' }));
                       history.push('/admin/registries');
                     });
                   },
                 });
               }}
             >
-              删除
+              {intl.formatMessage({ id: 'pages.common.delete' })}
             </Button>
           </Space>
         )}

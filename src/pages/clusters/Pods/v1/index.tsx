@@ -44,11 +44,12 @@ import CodeEditor from '@/components/CodeEditor';
 import type { Param } from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard';
 import Utils from '@/utils';
-import { getStatusComponent, isRestrictedStatus } from '@/components/State';
+import { StatusComponent, isRestrictedStatus } from '@/components/State';
 import RBAC from '@/rbac';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import FullscreenModal from '@/components/FullscreenModal';
+import Intl from '@/components/Intl';
 
 const { TabPane } = Tabs;
 const { Step } = Steps;
@@ -64,18 +65,27 @@ const taskStatus2Entity = new Map<TaskStatus, {
   stepStatus: 'wait' | 'process' | 'finish' | 'error',
 }>([
   [TaskStatus.PENDING, {
-    icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process',
+    icon: loading,
+    buildTitle: <Intl id="pages.cluster.status.building" />,
+    deployTitle: <Intl id="pages.cluster.status.deploying" />,
+    stepStatus: 'process',
   }],
   [TaskStatus.RUNNING, {
-    icon: loading, buildTitle: '构建中...', deployTitle: '发布中...', stepStatus: 'process',
+    icon: loading,
+    buildTitle: <Intl id="pages.cluster.status.building" />,
+    deployTitle: <Intl id="pages.cluster.status.deploying" />,
+    stepStatus: 'process',
   }],
   [TaskStatus.SUCCEEDED, {
-    icon: smile, buildTitle: '构建完成', deployTitle: '发布完成', stepStatus: 'finish',
+    icon: smile,
+    buildTitle: <Intl id="pages.cluster.status.built" />,
+    deployTitle: <Intl id="pages.cluster.status.deployed" />,
+    stepStatus: 'finish',
   }],
   [TaskStatus.FAILED, {
     icon: frown,
-    buildTitle: <span style={{ color: 'red' }}>构建失败</span>,
-    deployTitle: <span style={{ color: 'red' }}>发布失败</span>,
+    buildTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.buildFail" /></span>,
+    deployTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.deployFail" /></span>,
     stepStatus: 'error',
   }],
 ]);
@@ -83,10 +93,11 @@ const taskStatus2Entity = new Map<TaskStatus, {
 function DeployStep({
   index, total, replicas, statusData,
 }: { index: number, total: number, replicas: string[], statusData: CLUSTER.ClusterStatus }) {
+  const intl = useIntl();
   const s = [];
   for (let i = 0; i < total; i += 1) {
     s.push({
-      title: `批次${i + 1}`,
+      title: intl.formatMessage({ id: 'pages.pods.step' }, { index: i + 1 }),
     });
   }
   return (
@@ -112,7 +123,7 @@ function DeployStep({
                 {item.title}
                 <br />
                 {replicas[idx]}
-                副本
+                {intl.formatMessage({ id: 'pages.pods.replica' })}
               </span>
               )}
             icon={icon}
@@ -141,21 +152,21 @@ interface DeployPageProps {
 function DeployPage({
   step, onNext, onPause, onResume, onPromote, onCancelDeploy, status, nextStepString,
 }: DeployPageProps) {
+  const intl = useIntl();
   const { index, total, replicas } = step;
   return (
-    <div title="发布阶段">
+    <div title={intl.formatMessage({ id: 'pages.pods.deployStep' })}>
       <DeployStep index={index} total={total} replicas={replicas} statusData={status} />
       <div style={{ textAlign: 'center' }}>
         {
         status.clusterStatus.manualPaused ? (
           <Button
             type="primary"
-            disabled={!status.clusterStatus.manualPaused
-                                                    || !RBAC.Permissions.resumeCluster.allowed}
+            disabled={!status.clusterStatus.manualPaused || !RBAC.Permissions.resumeCluster.allowed}
             style={{ margin: '0 8px' }}
             onClick={onResume}
           >
-            取消暂停
+            {intl.formatMessage({ id: 'pages.pods.unpause' })}
           </Button>
         ) : (
           <Button
@@ -166,7 +177,7 @@ function DeployPage({
             style={{ margin: '0 8px' }}
             onClick={onPause}
           >
-            人工暂停
+            {intl.formatMessage({ id: 'pages.pods.manualPause' })}
           </Button>
         )
       }
@@ -193,7 +204,7 @@ function DeployPage({
           style={{ margin: '0 8px' }}
           onClick={onPromote}
         >
-          全部发布
+          {intl.formatMessage({ id: 'pages.pods.deployAll' })}
         </Button>
         <Button
           danger
@@ -204,7 +215,7 @@ function DeployPage({
           style={{ margin: '0 8px' }}
           onClick={onCancelDeploy}
         >
-          取消发布
+          {intl.formatMessage({ id: 'pages.pods.deployCancel' })}
         </Button>
       </div>
     </div>
@@ -223,6 +234,7 @@ word-break: break-all;
 
 const DurationDisplay = (props: { seconds: number }) => {
   const { seconds } = props;
+  const intl = useIntl();
 
   let day = Math.floor(seconds / 3600 / 24);
   let hour = Math.round((seconds / 3600) % 24);
@@ -231,13 +243,15 @@ const DurationDisplay = (props: { seconds: number }) => {
     hour = 0;
   }
   if (day >= 1) {
-    const ttlText = hour === 0 ? `${day}天` : `${day}天${hour}小时`;
+    const ttlText = hour === 0
+      ? intl.formatMessage({ id: 'pages.common.time.dayHour' }, { day, hour })
+      : intl.formatMessage({ id: 'pages.common.time.day' }, { day });
     return (
       <DefaultText>{ttlText}</DefaultText>
     );
   }
   return (
-    <AlertText>{`${hour}小时`}</AlertText>
+    <AlertText>{intl.formatMessage({ id: 'pages.common.time.hour' }, { hour })}</AlertText>
   );
 };
 
@@ -301,11 +315,11 @@ export default () => {
     icon: JSX.Element
   }[]>([
     {
-      title: '待构建',
+      title: intl.formatMessage({ id: 'pages.cluster.status.toBuild' }),
       icon: waiting,
     },
     {
-      title: '待发布',
+      title: intl.formatMessage({ id: 'pages.cluster.status.toDeploy' }),
       icon: waiting,
     },
   ]);
@@ -411,7 +425,7 @@ export default () => {
     onSuccess: () => {
       if (statusData?.clusterStatus.status === ClusterStatus.FREED) {
         if (freeAlerted) {
-          successAlert('集群已释放，配置保留，点击构建发布或直接发布可一键快速拉起');
+          successAlert(intl.formatMessage({ id: 'pages.message.cluster.free.hint' }));
           setFreeAlerted(false);
         }
       }
@@ -469,8 +483,10 @@ export default () => {
 
   const podsInfo = refreshPodsInfo(statusData);
 
-  const currentPodsTabTitle = podsInfo.oldPods.length > 0 ? '新Pods' : 'Pods';
-  const oldPodsTitle = '旧Pods';
+  const currentPodsTabTitle = podsInfo.oldPods.length > 0
+    ? intl.formatMessage({ id: 'pages.cluster.podsTable.newPods' })
+    : intl.formatMessage({ id: 'pages.cluster.podsTable.pods' });
+  const oldPodsTitle = intl.formatMessage({ id: 'pages.cluster.podsTable.oldPods' });
   const formatTabTitle = (title: string, length: number) => (
     <div>
       {title}
@@ -486,41 +502,31 @@ export default () => {
   const baseInfo: Param[][] = [
     [
       {
-        key: '集群状态',
-        value: getStatusComponent(clusterStatus),
-        description: `创建中：集群正在创建中，请勿操作
-        正常： 集群已正常发布
-        异常： 集群处于异常状态
-        未发布： 集群尚未发布
-        发布中： 集群正在发布中
-        已释放： 集群的资源已被释放，与未发布状态类似，可重新构建发布
-        释放中： 集群处于资源释放中，无法继续操作集群
-        删除中： 集群处于删除中，无法继续操作集群
-        批次暂停： 集群处于发布批次暂停中
-        人工暂停： 集群处于人工暂停中，发布/回滚操作会在取消暂停后生效
-        `,
+        key: intl.formatMessage({ id: 'pages.cluster.basic.status' }),
+        value: <StatusComponent status={clusterStatus} />,
+        description: intl.formatMessage({ id: 'pages.message.cluster.status.desc' }),
       },
       {
-        key: 'Pods数量',
+        key: intl.formatMessage({ id: 'pages.cluster.basic.podsNum' }),
         value: {
-          正常: podsInfo.healthyPods.length,
-          异常: podsInfo.notHealthyPods.length,
+          [intl.formatMessage({ id: 'pages.cluster.status.normal' })]: podsInfo.healthyPods.length,
+          [intl.formatMessage({ id: 'pages.cluster.status.abnormal' })]: podsInfo.notHealthyPods.length,
         },
       },
     ],
     [
       {
-        key: '区域',
+        key: intl.formatMessage({ id: 'pages.common.region' }),
         value: (cluster && region2DisplayName) ? region2DisplayName.get(cluster.scope.region) : '',
       },
       {
-        key: '环境',
+        key: intl.formatMessage({ id: 'pages.common.env' }),
         value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : '',
       },
     ],
     [
       {
-        key: '镜像',
+        key: intl.formatMessage({ id: 'pages.common.images' }),
         value: Array.from(podsInfo.images),
       },
     ],
@@ -528,9 +534,9 @@ export default () => {
 
   if (typeof statusData?.ttlSeconds === 'number') {
     baseInfo[0].push({
-      key: '剩余时长',
+      key: intl.formatMessage({ id: 'pages.cluster.basic.expireIn' }),
       value: <DurationDisplay seconds={statusData?.ttlSeconds as number} />,
-      description: '根据最近操作时间实时计算，到期后会自动释放集群',
+      description: intl.formatMessage({ id: 'pages.message.cluster.ttl.hint' }),
     });
   }
 
@@ -554,28 +560,28 @@ export default () => {
         break;
       case 'restart':
         Modal.confirm({
-          title: '确定重启所有Pods?',
+          title: intl.formatMessage({ id: 'pages.message.cluster.restart.confirm' }),
           onOk() {
             restart(id).then(() => {
-              successAlert('重启操作提交成功');
+              successAlert(intl.formatMessage({ id: 'pages.message.cluster.restart.success' }));
             });
           },
         });
         break;
       case 'rollback':
         history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
-        successAlert('请选择流水线进行回滚');
+        successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.hint' }));
         break;
       case 'editCluster':
         history.push(`/clusters${fullPath}/-/edit`);
         break;
       case 'freeCluster':
         Modal.confirm({
-          title: '确定释放集群?',
-          content: '销毁所有pod并归还资源，保留集群配置',
+          title: intl.formatMessage({ id: 'pages.message.cluster.free.confirm' }),
+          content: intl.formatMessage({ id: 'pages.message.cluster.free.content' }),
           onOk() {
             freeCluster(id).then(() => {
-              successAlert('开始释放集群...');
+              successAlert(intl.formatMessage({ id: 'pages.message.cluster.free.process' }));
             });
           },
         });
@@ -588,9 +594,9 @@ export default () => {
     const needResumePrompt = ['builddeploy', 'deploy', 'restart', 'rollback'];
     if (clusterStatus === ClusterStatus.MANUALPAUSED && needResumePrompt.includes(key)) {
       Modal.info({
-        title: '该集群处于人工暂停状态，该操作会在取消暂停之后生效。',
+        title: intl.formatMessage({ id: 'pages.message.cluster.resume.hint' }),
         icon: <ExclamationCircleOutlined />,
-        okText: '确定',
+        okText: intl.formatMessage({ id: 'pages.common.confirm' }),
         onOk: () => {
           onClickOperation({ key });
         },
@@ -605,11 +611,11 @@ export default () => {
 
   const onDeleteCluster = () => {
     Modal.confirm({
-      title: '确定删除集群?',
-      content: '删除后，数据将无法恢复',
+      title: intl.formatMessage({ id: 'pages.message.cluster.delete.confirm' }),
+      content: intl.formatMessage({ id: 'pages.message.cluster.delete.content' }),
       onOk() {
         deleteCluster(cluster!.id).then(() => {
-          successAlert('开始删除集群');
+          successAlert(intl.formatMessage({ id: 'pages.message.cluster.delete.process' }));
           window.location.href = `${cluster!.fullPath.substring(0, cluster!.fullPath.lastIndexOf('/'))}`;
         });
       },
@@ -624,14 +630,22 @@ export default () => {
       >
         {intl.formatMessage({ id: 'pages.cluster.action.rollback' })}
       </Menu.Item>
-      <Menu.Item disabled={!RBAC.Permissions.updateCluster.allowed} key="editCluster">修改集群</Menu.Item>
       <Menu.Item
-        disabled={!RBAC.Permissions.freeCluster.allowed || isRestrictedStatus(clusterStatus) || clusterStatus === ClusterStatus.FREED}
+        disabled={!RBAC.Permissions.updateCluster.allowed}
+        key="editCluster"
+      >
+        {intl.formatMessage({ id: 'pages.cluster.action.edit' })}
+      </Menu.Item>
+      <Menu.Item
+        disabled={!RBAC.Permissions.freeCluster.allowed
+          || isRestrictedStatus(clusterStatus) || clusterStatus === ClusterStatus.FREED}
         key="freeCluster"
       >
         {intl.formatMessage({ id: 'pages.cluster.action.free' })}
       </Menu.Item>
-      <Tooltip title={clusterStatus !== ClusterStatus.FREED && '请先释放集群，再进行删除'}>
+      <Tooltip
+        title={clusterStatus !== ClusterStatus.FREED && intl.formatMessage({ id: 'pages.message.cluster.delete.freeFirst' })}
+      >
         <div>
           <Menu.Item
             onClick={onDeleteCluster}
@@ -656,62 +670,78 @@ export default () => {
       <div style={{ display: 'inline-block', textAlign: 'left' }}>
         【
         {' '}
-        {strongTxt('温馨提示1')}
+        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip1' }))}
         {' '}
-        】当某个Pod长时间处于【
+        】
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.1' })}
+        【
         {' '}
-        {strongTxt('非Running')}
+        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip.notRunning' }))}
         {' '}
-        】状态，建议采用如下手段进行问题排查：
+        】
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.3' })}
         <br />
-        &nbsp; 1. 点击
+        &nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.4' })}
         {' '}
-        {strongTxt('More')}
+        {strongTxt(intl.formatMessage({ id: 'pages.cluster.podsTable.more' }))}
         {' '}
-        操作展开列表
-        {' '}
-        <br />
-        &nbsp;&nbsp;1.1【 Stdout 】: 查看启动日志中是否有异常信息
-        {' '}
-        <br />
-        &nbsp;&nbsp;1.2【 Mlog 】: 查看Mlog是否有异常日志
-        {' '}
-        <br />
-        &nbsp;&nbsp;1.3【 Events 】: 查看事件列表中是否有Warning类型的事件
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.5' })}
         {' '}
         <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.3.1 确认健康检查端口配置
+        &nbsp;&nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.1' })}
         {' '}
         <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.3.2 确认上线接口调用耗时是否过长
+        &nbsp;&nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.2' })}
         {' '}
         <br />
-        &nbsp; 2. 点击
-        {' '}
-        {strongTxt('Monitor')}
-        {' '}
-        查看资源使用是否存在瓶颈，如存在瓶颈可考虑升级规格
+        &nbsp;&nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3' })}
         {' '}
         <br />
-        &nbsp; 3. Java应用可检查jvm参数中是否正确配置 -Dserver.port，并与健康检查端口保持一致
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3.1' })}
+        {' '}
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3.2' })}
+        {' '}
+        <br />
+        &nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.1' })}
+        {' '}
+        {strongTxt(intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' }))}
+        {' '}
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.2' })}
+        {' '}
+        <br />
+        &nbsp;
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content3' })}
         {' '}
         <br />
         <br />
         <br />
         【
         {' '}
-        {strongTxt('温馨提示2')}
+        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip2' }))}
         {' '}
-        】集群处于【
+        】
+        {intl.formatMessage({ id: 'pages.message.pods.tip2.content1' })}
+        【
         {' '}
-        {strongTxt('人工暂停')}
+        {strongTxt(intl.formatMessage({ id: 'pages.pods.manualPause' }))}
         {' '}
-        】状态时，
-        任何发布/回滚操作均会在【
+        】
+        {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
+        {intl.formatMessage({ id: 'pages.message.pods.tip2.content2' })}
         {' '}
-        {strongTxt('取消暂停')}
+        {strongTxt(intl.formatMessage({ id: 'pages.pods.unpause' }))}
         {' '}
-        】之后才生效
+        】
+        {intl.formatMessage({ id: 'pages.message.pods.tip2.content3' })}
         <br />
       </div>
     </div>
@@ -777,7 +807,7 @@ export default () => {
       </div>
 
       <DetailCard
-        title="基础信息"
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={baseInfo}
       />
 
@@ -801,7 +831,11 @@ export default () => {
                   currentTab === 0 && (
                   <div>
                     <div style={{ display: 'flex' }}>
-                      <span style={{ marginBottom: '10px', fontSize: '16px', fontWeight: 'bold' }}>构建日志</span>
+                      <span
+                        style={{ marginBottom: '10px', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        {intl.formatMessage({ id: 'pages.pods.buildLog' })}
+                      </span>
                       {
                         canCancelPublish(statusData)
                         && (
@@ -810,11 +844,11 @@ export default () => {
                           style={{ marginLeft: '10px', marginBottom: '10px' }}
                           onClick={() => {
                             cancelPipeline(statusData!.latestPipelinerun!.id).then(() => {
-                              successAlert('取消发布成功');
+                              successAlert(intl.formatMessage({ id: 'pages.message.cluster.deployCancel.success' }));
                             });
                           }}
                         >
-                          取消发布
+                          {intl.formatMessage({ id: 'pages.pods.deployCancel' })}
                         </Button>
                         )
                       }
@@ -842,7 +876,12 @@ export default () => {
                         onNext={
                           () => {
                             next(id).then(() => {
-                              successAlert(`第${statusData.clusterStatus.step!.index + 1}批次开始发布`);
+                              successAlert(
+                                intl.formatMessage(
+                                  { id: 'pages.message.pods.step.deploy' },
+                                  { index: statusData.clusterStatus.step!.index + 1 },
+                                ),
+                              );
                               refreshStatus();
                             });
                           }
@@ -850,7 +889,7 @@ export default () => {
                         onPause={
                           () => {
                             pause(id).then(() => {
-                              successAlert('人工暂停成功');
+                              successAlert(intl.formatMessage({ id: 'pages.message.cluster.manualPause.success' }));
                               refreshStatus();
                             });
                           }
@@ -858,7 +897,7 @@ export default () => {
                         onResume={
                           () => {
                             resume(id).then(() => {
-                              successAlert('取消暂停成功');
+                              successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
                               refreshStatus();
                             });
                           }
@@ -867,32 +906,44 @@ export default () => {
                           () => {
                             Modal.confirm(
                               {
-                                title: <div className={styles.boldText}>确定要全部发布？</div>,
+                                title: (
+                                  <div className={styles.boldText}>
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.confirm' })}
+                                  </div>
+                                ),
                                 content: (
                                   <div className={styles.promotePrompt}>
-                                    将按照如下策略进行自动分批发布：
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content1' })}
                                     <br />
                                     1.
                                     {' '}
-                                    <span className={styles.textGreen}>安全</span>
-                                    ：自动发布过程中，时刻保证存活且可服务实例数不小于当前设置副本数
+                                    <span className={styles.textGreen}>
+                                      {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategySafe' })}
+                                    </span>
+                                    :
+                                    {' '}
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content2' })}
                                     {' '}
                                     <br />
                                     2.
                                     {' '}
-                                    <span className={styles.textGreen}>滚动</span>
-                                    ：自动发布过程中，时刻保证最大副本数不超过当前设置副本数的125%（预发和线上环境）
+                                    <span className={styles.textGreen}>
+                                      {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategyRoll' })}
+                                    </span>
+                                    :
+                                    {' '}
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content3' })}
                                     <br />
-                                    注：
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content4' })}
                                     <br />
-                                    1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content5' })}
                                     <br />
-                                    2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%
+                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content6' })}
                                   </div>
                                 ),
                                 onOk: () => {
                                   promote(id).then(() => {
-                                    successAlert('开始发布剩余批次');
+                                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
                                     refreshStatus();
                                   });
                                 },
@@ -912,16 +963,24 @@ export default () => {
                               if (total === 0) {
                                 Modal.confirm(
                                   {
-                                    title: <div className={styles.boldText}>确定要取消发布？</div>,
+                                    title: (
+                                      <div className={styles.boldText}>
+                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
+                                      </div>
+                                    ),
                                     content: (
                                       <div>
-                                        当前集群是第一次发布，
-                                        <strong style={{ color: 'red' }}>取消发布将直接释放集群</strong>
+                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content1' })}
+                                        <strong style={{ color: 'red' }}>
+                                          {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content2' })}
+                                        </strong>
                                       </div>
                                     ),
                                     onOk: () => {
                                       freeCluster(id).then(() => {
-                                        successAlert('取消发布成功，开始释放集群');
+                                        successAlert(intl.formatMessage(
+                                          { id: 'pages.message.cluster.deployCancel.first.success' },
+                                        ));
                                       });
                                     },
                                     width: '750px',
@@ -930,17 +989,23 @@ export default () => {
                               } else {
                                 Modal.confirm(
                                   {
-                                    title: <div className={styles.boldText}>确定要取消发布？</div>,
+                                    title: (
+                                      <div className={styles.boldText}>
+                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
+                                      </div>
+                                    ),
                                     content: (
                                       <div>
-                                        <strong style={{ color: 'red' }}>将跳转到流水线页面，选择目标流水线回滚以取消当前发布</strong>
+                                        <strong style={{ color: 'red' }}>
+                                          {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.content' })}
+                                        </strong>
                                         <br />
                                       </div>
                                     ),
                                     onOk: () => {
                                       history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
                                     },
-                                    okText: '跳转',
+                                    okText: intl.formatMessage({ id: 'pages.common.confirm' }),
                                     width: '750px',
                                   },
                                 );

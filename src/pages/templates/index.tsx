@@ -1,10 +1,11 @@
 import {
-  Button, Row, Col, Tabs, Popover, Tooltip,
+  Button, Row, Col, Tabs, Popover,
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import React, { useState } from 'react';
 import type { ColumnsType } from 'antd/lib/table';
+import { useIntl } from 'umi';
 import NoData from '@/components/NoData';
 import { getRootTemplates, getTemplatesByUser } from '@/services/templates/templates';
 import utils, { handleHref } from '@/utils';
@@ -15,6 +16,7 @@ import {
 import { API } from '@/services/typings';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { ComponentWithPagination } from '../../components/Enhancement';
+import PopupTime from '@/components/Widget/PopupTime';
 
 const { TabPane } = Tabs;
 
@@ -29,7 +31,7 @@ const NameLink: React.FC<{ fullpath: string }> = (props) => {
 
 export const TemplateTableColumns: ColumnsType<Templates.Template> = [
   {
-    title: '名称',
+    title: 'Name',
     dataIndex: 'name',
     width: NameWidth,
     render: (name: string, t: Templates.Template) => {
@@ -40,7 +42,7 @@ export const TemplateTableColumns: ColumnsType<Templates.Template> = [
     },
   },
   {
-    title: '描述',
+    title: 'Description',
     dataIndex: 'description',
     render: (desc: string) => {
       if (desc.length < 50) {
@@ -54,22 +56,26 @@ export const TemplateTableColumns: ColumnsType<Templates.Template> = [
     },
   },
   {
-    title: '时间',
+    title: 'Updated at',
     dataIndex: 'updatedAt',
     width: '20%',
-    render: (updatedAt: string) => (
-      <Tooltip title={utils.timeToLocal(updatedAt)}>
-        Updated
-        {' '}
-        {utils.timeFromNowEnUS(updatedAt)}
-      </Tooltip>
-    ),
+    render: (updatedAt: string) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const intl = useIntl();
+      return (
+        <PopupTime
+          time={updatedAt}
+          prefix={intl.formatMessage({ id: 'pages.common.updated' })}
+        />
+      );
+    },
   },
 ];
 
 const GroupSource = (props: { groupID: number }) => {
   const { groupID } = props;
   const { data: group } = useRequest(() => getGroupByID(groupID), {});
+  const intl = useIntl();
   if (!group) {
     return null;
   }
@@ -89,7 +95,8 @@ const GroupSource = (props: { groupID: number }) => {
         }
       }
     >
-      {'from group '}
+      {intl.formatMessage({ id: 'pages.template.fromGroup' })}
+      {' '}
       <a href={group?.fullPath}>{group?.fullName}</a>
     </div>
   );
@@ -97,8 +104,8 @@ const GroupSource = (props: { groupID: number }) => {
 
 export const TemplateTableLocale = {
   emptyText: <NoData
-    title="templates"
-    desc="template是horizon创建application/cluster的模板，包含了CI/CD流程"
+    titleID="pages.common.template"
+    descID="pages.noData.templates.desc"
   />,
 };
 
@@ -199,8 +206,9 @@ const RootMyTemplateTable = () => {
 };
 
 function TemplateList(props: { initialState: API.InitialState }) {
-  const [selectedTab, setSelectedTab] = useState('1');
   const { initialState: { currentUser } } = props;
+  const [selectedTab, setSelectedTab] = useState('1');
+  const intl = useIntl();
   if (!currentUser) {
     return null;
   }
@@ -213,7 +221,7 @@ function TemplateList(props: { initialState: API.InitialState }) {
         history.push('/templates/new');
       }}
     >
-      创建templates
+      {intl.formatMessage({ id: 'pages.template.new' })}
     </Button>
   );
 
@@ -225,10 +233,10 @@ function TemplateList(props: { initialState: API.InitialState }) {
           createButton={currentUser.isAdmin && selectedTab === '2' && queryInput}
           onSelect={(key: string) => { setSelectedTab(key); }}
         >
-          <TabPane tab="Your Templates" key="1">
+          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.your.templates' })} key="1">
             <RootMyTemplateTable />
           </TabPane>
-          <TabPane tab="Public Templates" key="2">
+          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.public.templates' })} key="2">
             <RootAllTemplateTable />
           </TabPane>
         </TemplateTab>

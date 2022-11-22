@@ -48,7 +48,7 @@ export default (props: any) => {
     formatResult: (res) => res,
   });
 
-  const formatMessage = (suffix: string, defaultMsg: string) => intl.formatMessage({ id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
 
   let refType = 'branch';
   let refValue = '';
@@ -66,25 +66,25 @@ export default (props: any) => {
   const data: Param[][] = [
     [
       {
-        key: '状态/Status',
+        key: formatMessage('status'),
         value: pipeline?.status || 'Unknown',
       },
       {
-        key: '启动时间/Started',
+        key: formatMessage('createdAt'),
         value: Utils.timeToLocal(pipeline?.createdAt || ''),
       },
       {
-        key: '持续时间/Duration',
+        key: formatMessage('duration'),
         value: pipeline ? `${Utils.timeSecondsDuration(pipeline!.createdAt, pipeline!.finishedAt || moment().format('YYYY-MM-DD HH:mm:ss'))}s` : '',
       },
     ],
     [
       {
-        key: '触发者/Trigger',
+        key: formatMessage('trigger'),
         value: pipeline?.createdBy.userName || '',
       },
       {
-        key: 'Git info',
+        key: formatMessage('gitInfo'),
         value: {
           'Commit ID': pipeline?.gitCommit || '',
         },
@@ -99,16 +99,16 @@ export default (props: any) => {
   const cardTab = (pipeline && pipeline.action === PublishType.BUILD_DEPLOY) ? [
     {
       key: 'Changes',
-      tab: '变更内容',
+      tab: formatMessage('changes'),
     },
     {
       key: 'BuildLog',
-      tab: '构建日志',
+      tab: formatMessage('buildLog'),
     },
   ] : [
     {
       key: 'Changes',
-      tab: '变更内容',
+      tab: formatMessage('changes'),
     },
   ];
 
@@ -124,9 +124,9 @@ export default (props: any) => {
 
   const onCopyButtonClick = () => {
     if (copy(buildLog)) {
-      successAlert(intl.formatMessage({ id: 'component.FullscreenModal.copySuccess' }));
+      successAlert(intl.formatMessage({ id: 'pages.message.copy.success' }));
     } else {
-      errorAlert(intl.formatMessage({ id: 'component.FullscreenModal.copyFailed' }));
+      errorAlert(intl.formatMessage({ id: 'pages.message.copy.fail' }));
     }
   };
 
@@ -154,7 +154,7 @@ export default (props: any) => {
         {
         pipeline?.action === PublishType.BUILD_DEPLOY
         && (
-        <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('codeChange')} className={styles.gapBetweenCards}>
           <b>Commit ID</b>
           <br />
           {diff?.codeInfo.commitID}
@@ -172,7 +172,7 @@ export default (props: any) => {
         </Card>
         )
       }
-        <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('configChange')} className={styles.gapBetweenCards}>
           <CodeDiff diff={diff?.configDiff.diff || ''} />
         </Card>
       </div>
@@ -189,26 +189,26 @@ export default (props: any) => {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={showRollback ? (
           <Button
             loading={loading}
             onClick={() => {
               Modal.confirm({
-                title: '确定要进行回滚？',
+                title: intl.formatMessage({ id: 'pages.message.cluster.rollback.confirm' }),
                 icon: <ExclamationCircleOutlined />,
                 onOk: () => {
                   setLoading(true);
                   rollback(id, { pipelinerunID: pipelineID }).then(() => {
-                    successAlert('提交回滚成功');
+                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
                     history.push(`${fullPath}`);
                   });
                 },
               });
             }}
           >
-            确认回滚
+            {formatMessage('rollback.confirm')}
           </Button>
         ) : null}
       />

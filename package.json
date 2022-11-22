@@ -73,6 +73,8 @@
     "omit.js": "^2.0.2",
     "patch-package": "^6.4.7",
     "pikaday": "^1.8.2",
+    "prop-types": "^15.8.1",
+    "query-string": "^7.1.1",
     "rc-field-form": "^1.27.1",
     "qiankun": "^2.8.1",
     "react": "^17.0.0",

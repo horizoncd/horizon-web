@@ -1,4 +1,5 @@
 import { Form, Input, Select } from 'antd';
+import { useIntl } from 'umi';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -6,27 +7,34 @@ const { TextArea } = Input;
 const DescriptionInput = () => <TextArea autoSize={{ minRows: 2, maxRows: 6 }} />;
 
 export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur: (s: string) => void }) => {
-  const { onRepositoryBlur } = props;
-  const { editRepository } = props;
+  const { onRepositoryBlur, editRepository } = props;
+  const intl = useIntl();
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.template.${suffix}` });
+
   return (
     <div>
-      <Form.Item label="描述" name="description" extra="对template的详细描述">
+      <Form.Item
+        label={formatMessage('description')}
+        name="description"
+        extra={intl.formatMessage({ id: 'pages.message.template.desc.extra' })}
+      >
         <DescriptionInput />
       </Form.Item>
       <Form.Item
-        label="仅Owner可见"
+        label={formatMessage('onlyOwner')}
         name="onlyOwner"
         required
         rules={[{ required: true }]}
-        extra="该template只有Owner可见"
+        extra={intl.formatMessage({ id: 'pages.message.template.onlyOwner.extra' })}
       >
         <Select>
-          <Option key="true" value>是</Option>
-          <Option key="false" value={false}>否</Option>
+          <Option key="true" value>{intl.formatMessage({ id: 'pages.common.yes' })}</Option>
+          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.common.no' })}</Option>
         </Select>
       </Form.Item>
       <Form.Item
-        label="gitlab仓库"
+        label={formatMessage('gitRepo')}
         name="repository"
         required
         rules={[
@@ -39,12 +47,12 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
           },
           {
             pattern: /^(?:http(?:s?)|ssh):\/\/.+?\/(.+?)(?:.git)?$/,
-            message: '不是正确的gitlab链接格式',
+            message: intl.formatMessage({ id: 'pages.message.template.gitRepo.ruleMessage' }),
           },
         ]}
         extra={!editRepository
-          ? '\n不能修改仓库地址，因为该template还存在Release'
-          : 'template的clone链接，horizon通过链接拉取template'}
+          ? intl.formatMessage({ id: 'pages.message.template.gitRepo.noEdit' })
+          : intl.formatMessage({ id: 'pages.message.template.gitRepo.extra' })}
       >
         <Input
           disabled={!editRepository}
@@ -76,6 +84,7 @@ TemplateForm.defaultProps = {
 
 export const ReleaseForm = (props: { prefix: string[] }) => {
   const { prefix } = props;
+  const intl = useIntl();
 
   const calculateName = (name: string) => {
     if (prefix.length === 0) {
@@ -83,35 +92,42 @@ export const ReleaseForm = (props: { prefix: string[] }) => {
     }
     return [...prefix, name];
   };
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.template.${suffix}` });
+
   return (
     <div>
-      <Form.Item label="描述" name={calculateName('description')} extra="对release的详细描述">
+      <Form.Item
+        label={formatMessage('description')}
+        name={calculateName('description')}
+        extra={intl.formatMessage({ id: 'pages.message.release.desc.extra' })}
+      >
         <DescriptionInput />
       </Form.Item>
       <Form.Item
-        label="仅Owner可见"
+        label={formatMessage('onlyOwner')}
         name={calculateName('onlyOwner')}
         required
         initialValue={false}
         rules={[{ required: true }]}
-        extra="该release只有Owner可见"
+        extra={intl.formatMessage({ id: 'pages.message.release.onlyOwner.extra' })}
       >
         <Select>
-          <Option key="true" value>是</Option>
-          <Option key="false" value={false}>否</Option>
+          <Option key="true" value>{intl.formatMessage({ id: 'pages.common.yes' })}</Option>
+          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.common.no' })}</Option>
         </Select>
       </Form.Item>
       <Form.Item
-        label="推荐"
+        label={formatMessage('recommended')}
         name={calculateName('recommended')}
         required
         rules={[{ required: true }]}
         initialValue={false}
-        extra="是否将当前tag，设为对应template的推荐版本"
+        extra={intl.formatMessage({ id: 'pages.message.release.recommended.extra' })}
       >
         <Select>
-          <Option key="true" value>是</Option>
-          <Option key="false" value={false}>否</Option>
+          <Option key="true" value>{intl.formatMessage({ id: 'pages.common.yes' })}</Option>
+          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.common.no' })}</Option>
         </Select>
       </Form.Item>
     </div>

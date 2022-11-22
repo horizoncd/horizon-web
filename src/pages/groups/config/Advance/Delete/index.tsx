@@ -14,7 +14,7 @@ export default () => {
 
   const onDelete = () => {
     deleteGroup({ id: groupID }).then(() => {
-      successAlert('Delete Group Success');
+      successAlert(intl.formatMessage({ id: 'pages.message.groups.deleteSuccess' }));
       history.push('/');
       refresh();
     });
@@ -31,9 +31,9 @@ export default () => {
   };
 
   return (
-    <Card title="Delete Group">
+    <Card title={intl.formatMessage({ id: 'pages.groups.delete' })}>
       <p>
-        {intl.formatMessage({ id: 'pages.group.delete.desc' })}
+        {intl.formatMessage({ id: 'pages.message.groups.delete.hint' })}
       </p>
       <Button
         style={deleteGroupStyle()}
@@ -42,13 +42,13 @@ export default () => {
           Modal.confirm({
             title: 'Delete Group',
             icon: <ExclamationCircleOutlined />,
-            okText: <div>{intl.formatMessage({ id: 'pages.confirm.ok' })}</div>,
-            cancelText: <div>{intl.formatMessage({ id: 'pages.confirm.cancel' })}</div>,
+            okText: <div>{intl.formatMessage({ id: 'pages.common.confirm' })}</div>,
+            cancelText: <div>{intl.formatMessage({ id: 'pages.common.cancel' })}</div>,
             onOk: onDelete,
           });
         }}
       >
-        删除分组
+        {intl.formatMessage({ id: 'pages.common.delete' })}
       </Button>
     </Card>
   );

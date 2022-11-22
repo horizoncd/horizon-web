@@ -41,7 +41,7 @@ export const parseGitRef = (gitInfo: GitInfo) => {
 
 export const gitRefTypeList = [
   {
-    displayName: '分支',
+    displayName: 'Branch',
     key: GitRefType.Branch,
   },
   {

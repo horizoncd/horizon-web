@@ -11,7 +11,7 @@ import { useState } from 'react';
 import CodeDiff from '@/components/CodeDiff';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import SubmitCancelButton from '@/components/SubmitCancelButton';
-import NotFount from '@/pages/404';
+import NotFound from '@/pages/404';
 import { PublishType } from '@/const';
 import {
   buildDeploy, deploy, diffsOfCode, getCluster,
@@ -21,6 +21,7 @@ import {
 } from '@/services/code/code';
 import styles from '@/pages/clusters/NewOrEdit/index.less';
 import HForm from '@/components/HForm';
+import ButtonWithoutPadding from '@/components/Widget/ButtonWithoutPadding';
 
 const { Option } = Select;
 
@@ -35,23 +36,13 @@ export default (props: any) => {
   const { type } = query;
   const [refType, setRefType] = useState('');
   if (!type) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
-  const formatMessage = (suffix: string, defaultMsg: string) => intl.formatMessage({ id: `pages.pipelineNew.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
 
   const { data, run: refreshDiff } = useRequest((gitRef) => diffsOfCode(id!, form.getFieldValue('refType'), gitRef), {
     manual: true,
-  });
-
-  const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => listGitRef({
-    refType: form.getFieldValue('refType'),
-    giturl: cluster!.git.url,
-    filter,
-    pageNumber: 1,
-    pageSize: 50,
-  }), {
-    debounceInterval: 100,
   });
 
   const { data: cluster } = useRequest(() => getCluster(id!), {
@@ -63,12 +54,22 @@ export default (props: any) => {
         refValue: gitRef,
       });
       refreshDiff(gitRef);
-      refreshGitRefList();
     },
   });
 
+  const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => listGitRef({
+    refType: form.getFieldValue('refType'),
+    giturl: cluster!.git.url,
+    filter,
+    pageNumber: 1,
+    pageSize: 50,
+  }), {
+    debounceInterval: 100,
+    ready: !!cluster,
+  });
+
   const hookAfterSubmit = () => {
-    successAlert(formatMessage('submit', 'Pipeline Started'));
+    successAlert(formatMessage('submit'));
     // jump to pods' url
     history.push(`${fullPath}`);
   };
@@ -126,7 +127,7 @@ export default (props: any) => {
 
   return (
     <PageWithBreadcrumb>
-      <Card title={formatMessage('title', '基础信息')} className={styles.gapBetweenCards}>
+      <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
         <HForm
           layout="vertical"
           form={form}
@@ -136,16 +137,16 @@ export default (props: any) => {
             }
           }}
         >
-          <Form.Item label={formatMessage('title', 'Title')} name="title" rules={requiredRule}>
+          <Form.Item label={formatMessage('title')} name="title" rules={requiredRule}>
             <Input />
           </Form.Item>
-          <Form.Item label={formatMessage('description', '描述')} name="description">
+          <Form.Item label={formatMessage('description')} name="description">
             <TextArea maxLength={255} autoSize={{ minRows: 3 }} />
           </Form.Item>
           {
             type === PublishType.BUILD_DEPLOY && (
               <Form.Item
-                label="版本"
+                label={formatMessage('version')}
                 name="ref"
                 rules={requiredRule}
               >
@@ -157,7 +158,7 @@ export default (props: any) => {
                     onSelect={(key: any) => {
                       setRefType(key);
                       form.setFieldsValue({ refValue: '' });
-                      if (key != GitRefType.Commit) {
+                      if (key !== GitRefType.Commit) {
                         refreshGitRefList();
                       }
                     }}
@@ -172,7 +173,7 @@ export default (props: any) => {
                   style={{ display: 'inline-block', width: 'calc(100% - 100px)' }}
                 >
                   {
-                    refType == GitRefType.Commit ? (
+                    refType === GitRefType.Commit ? (
                       <Input
                         onPressEnter={() => {
                           refreshDiff(form.getFieldValue('refValue'));
@@ -202,11 +203,11 @@ export default (props: any) => {
         </HForm>
       </Card>
 
-      <Card title={formatMessage('changes', '变更')} className={styles.gapBetweenCards}>
+      <Card title={formatMessage('changes')} className={styles.gapBetweenCards}>
         {
           type === PublishType.BUILD_DEPLOY
           && (
-          <Card title={formatMessage('codeChange', '代码变更')} className={styles.gapBetweenCards}>
+          <Card title={formatMessage('codeChange')} className={styles.gapBetweenCards}>
             <b>Commit ID</b>
             <br />
             {data?.codeInfo.commitID}
@@ -219,11 +220,16 @@ export default (props: any) => {
             <br />
             <b>Commit History</b>
             <br />
-            <a style={{ color: '#1890ff' }} onClick={() => window.open(data?.codeInfo.link)}>Link</a>
+            <ButtonWithoutPadding
+              type="link"
+              onClick={() => window.open(data?.codeInfo.link)}
+            >
+              Link
+            </ButtonWithoutPadding>
           </Card>
           )
         }
-        <Card title={formatMessage('configChange', '配置变更')} className={styles.gapBetweenCards}>
+        <Card title={formatMessage('configChange')} className={styles.gapBetweenCards}>
           <CodeDiff diff={data?.configDiff || ''} />
         </Card>
       </Card>

@@ -75,7 +75,7 @@ const GroupCards = (props: GroupTemplateProps) => {
   }
 
   if (data.length === 0) {
-    return <NoData title="Template" desc="在该group中没有找到template" />;
+    return <NoData titleID="pages.common.template" descID="pages.noData.templates.hint" />;
   }
 
   return (

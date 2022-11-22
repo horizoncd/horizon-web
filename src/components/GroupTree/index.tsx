@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import { BookOutlined, DownOutlined, FolderOutlined } from '@ant-design/icons';
 import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import { useIntl } from 'umi';
 import Utils, { handleHref } from '@/utils';
 import './index.less';
 import {
@@ -19,6 +20,7 @@ const { TabPane } = Tabs;
 
 export default (props: any) => {
   const { groupID, tabPane } = props;
+  const intl = useIntl();
   const pageSize = 10;
 
   const searchFunc = groupID ? searchChildren : searchGroups;
@@ -155,7 +157,7 @@ export default (props: any) => {
   // @ts-ignore
   const queryInput = (
     <Search
-      placeholder="Search"
+      placeholder={intl.formatMessage({ id: 'pages.common.search' })}
       onPressEnter={onPressEnter}
       onSearch={onSearch}
       value={searchValue}
@@ -219,10 +221,8 @@ export default (props: any) => {
             );
           }) : (
             <NoData
-              title="分组用于高效管理你的应用"
-              desc={'比如统一的权限管理，为分组下的\n'
-          + '不用应用设置不同的权限。赋予不同的角色以应有的权限\n'
-          + '比如只读guest只能查看、项目owner、maintainer可以进行发布和修改'}
+              titleID="pages.noData.groups.title"
+              descID="pages.noData.groups.desc"
             />
           )}
         </TabPane>

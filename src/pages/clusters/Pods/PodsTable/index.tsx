@@ -128,7 +128,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     },
   });
 
-  const formatMessage = (suffix: string, defaultMsg: string) => intl.formatMessage({ id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg });
 
   const formatConsoleURL = (p: CLUSTER.PodInTable) => {
     const { environment } = cluster?.scope || {};
@@ -143,7 +143,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const eventTableColumns = [
     {
-      title: <span className={styles.tableColumnTitle}>类型</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('events.type')}</span>,
       dataIndex: 'type',
       key: 'type',
       width: '70px',
@@ -155,23 +155,23 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       },
     },
     {
-      title: <span className={styles.tableColumnTitle}>原因</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('events.type')}</span>,
       dataIndex: 'reason',
       key: 'reason',
     },
     {
-      title: <span className={styles.tableColumnTitle}>信息</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('events.message')}</span>,
       dataIndex: 'message',
       key: 'message',
     },
     {
-      title: <span className={styles.tableColumnTitle}>数量</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('events.count')}</span>,
       dataIndex: 'count',
       key: 'count',
       width: '70px',
     },
     {
-      title: <span className={styles.tableColumnTitle}>时间</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('events.time')}</span>,
       dataIndex: 'eventTimestamp',
       key: 'eventTimestamp',
       width: '200px',
@@ -189,9 +189,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const onCopyClick = (text: string) => {
     if (copy(text)) {
-      successAlert('复制成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.copy.success' }));
     } else {
-      errorAlert('复制失败');
+      errorAlert(intl.formatMessage({ id: 'pages.message.copy.fail' }));
     }
   };
 
@@ -285,15 +285,17 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       errorAlert(
         <span>
           {ops}
-          操作执行结果
+          {formatMessage('operation.result')}
           <br />
-          成功列表:  [
+          {formatMessage('operation.successList')}
+          :  [
           {' '}
           {succeedList.join(',')}
           {' '}
           ]
           <br />
-          失败列表:
+          {formatMessage('operation.failList')}
+          :
           <br />
           {failedList.map((item) => (
             <div>
@@ -311,9 +313,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       successAlert(
         <span>
           {ops}
-          操作执行结果
+          {formatMessage('operation.result')}
           <br />
-          成功列表: [
+          {formatMessage('operation.successList')}
+          :  [
           {' '}
           {succeedList.join(',')}
           {' '}
@@ -353,10 +356,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           style={{ marginLeft: '10px' }}
           onClick={() => {
             Modal.confirm({
-              title: `此操作将导致所有被选中的Pod（共${selectedPods.length}台）在优雅停机后被销毁，并创建出同等数量的新Pod，请注意评估流量风险！`,
+              title: intl.formatMessage({ id: 'pages.message.pods.reschedule.content' }),
               onOk() {
                 deletePods(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
-                  hookAfterBatchOps('销毁重建', d);
+                  hookAfterBatchOps(formatMessage('reschedulePod'), d);
                 });
               },
             });
@@ -364,7 +367,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           disabled={!selectedPods.length || !RBAC.Permissions.deletePods.allowed}
         >
           <Tooltip
-            title="优雅停机并销毁被选中的Pod，并创建出同等数量的新Pod"
+            title={intl.formatMessage({ id: 'pages.message.pods.reschedule.hint' })}
           >
             {formatMessage('reschedulePod', '销毁重建')}
           </Tooltip>
@@ -422,33 +425,33 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const lifeCycleColumns = [
     {
-      title: <span className={styles.tableColumnTitle}>类型</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('statusDetail.type')}</span>,
       dataIndex: 'type',
       key: 'type',
       onHeaderCell: noWrap,
       onCell: noWrap,
     },
     {
-      title: <span className={styles.tableColumnTitle}>任务</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('statusDetail.task')}</span>,
       dataIndex: 'task',
       key: 'task',
       onHeaderCell: noWrap,
       onCell: noWrap,
     },
     {
-      title: <span className={styles.tableColumnTitle}>信息</span>,
+      title: <span className={styles.tableColumnTitle}>{formatMessage('statusDetail.message')}</span>,
       dataIndex: 'message',
       key: 'message',
     },
   ];
 
   const podLifeCycleTypeMap = {
-    PodSchedule: '节点分配',
-    PodInitialize: '环境初始化',
-    ContainerStartup: '业务启动及端口检查',
-    ContainerOnline: '业务上线',
-    HealthCheck: '健康检查',
-    PreStop: '应用下线',
+    PodSchedule: formatMessage('lifeCycle.podSchedule'),
+    PodInitialize: formatMessage('lifeCycle.podInitialize'),
+    ContainerStartup: formatMessage('lifeCycle.containerStartup'),
+    ContainerOnline: formatMessage('lifeCycle.containerOnline'),
+    HealthCheck: formatMessage('lifeCycle.healthCheck'),
+    PreStop: formatMessage('lifeCycle.preStop'),
   };
 
   const podLifeCycleStatusMap = {
@@ -478,27 +481,27 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       if (lifeCycle.message === '') {
         switch (lifeCycle.status) {
           case LifeCycleItemSuccess:
-            lifeCycle.message = '成功';
+            lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.success' });
             break;
           case LifeCycleItemAbnormal:
             switch (lifeCycle.type) {
               case 'ContainerStartup':
-                lifeCycle.message = '启动失败，请检查业务代码或者集群自定义配置（健康检查->port、存活状态）是否正确，具体报错信息可查看日志和events。';
+                lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.containerStartup' });
                 break;
               case 'ContainerOnline':
-                lifeCycle.message = '上线失败，请检查集群自定义配置（健康检查->上线接口）是否正确，具体报错信息可查看events。';
+                lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.containerOnline' });
                 break;
               case 'HealthCheck':
-                lifeCycle.message = '健康检查失败，请检查集群自定义配置（健康检查->存活状态/就绪状态）是否正确，具体报错信息可查看events。';
+                lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.healthCheck' });
                 break;
               default:
-                lifeCycle.message = '执行失败，请联系管理员。';
+                lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.default' });
             }
             break;
           case LifeCycleItemRunning:
             switch (lifeCycle.type) {
               case 'PreStop':
-                lifeCycle.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
+                lifeCycle.message = intl.formatMessage({ id: 'pages.message.pods.lifeCycle.preStop' });
                 break;
               default:
                 break;
@@ -542,13 +545,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         disabled={!RBAC.Permissions.getContainerLog.allowed}
         onClick={() => onClickStdout(record)}
       >
-        <div style={{ color: '#1890ff' }}>Stdout</div>
+        <div style={{ color: '#1890ff' }}>{formatMessage('more.stdout')}</div>
       </Menu.Item>
       <Menu.Item
         disabled={!RBAC.Permissions.getEvents.allowed}
         onClick={() => onClickEvents(record)}
       >
-        <div style={{ color: '#1890ff' }}>Events</div>
+        <div style={{ color: '#1890ff' }}>{formatMessage('more.events')}</div>
       </Menu.Item>
     </Menu>
   );
@@ -556,13 +559,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
   // @ts-ignore
   const columns = [
     {
-      title: formatMessage('podName', '副本'),
+      title: formatMessage('podName'),
       dataIndex: 'podName',
       key: 'podName',
       render: (text: any) => renderPodNameAndIP('podName', text),
     },
     {
-      title: formatMessage('status', 'pod 状态'),
+      title: formatMessage('podStatus'),
       dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
@@ -602,7 +605,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             {status}
             <Button type="link" className={lifeCycleButtonStyle}>
               <Tooltip
-                title="查看状态详情"
+                title={intl.formatMessage({ id: 'pages.message.pods.lifeCycle.hint' })}
               >
                 <EyeOutlined
                   onClick={() => {
@@ -623,18 +626,18 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       render: (text: any) => renderPodNameAndIP('ip', text),
     },
     {
-      title: formatMessage('onlineStatus', '上线状态'),
+      title: formatMessage('onlineStatus'),
       dataIndex: 'onlineStatus',
       key: 'onlineStatus',
       render: (text: string) => status2StateNode.get(text),
     },
     {
-      title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount', '重启次数')}</div>,
+      title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount')}</div>,
       dataIndex: 'restartCount',
       key: 'restartCount',
     },
     {
-      title: '注释',
+      title: formatMessage('annotations'),
       dataIndex: 'annotations',
       key: 'annotations',
       render: (text: any, record: CLUSTER.PodInTable) => (
@@ -648,7 +651,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       ),
     },
     {
-      title: '启动时间',
+      title: formatMessage('createdAt'),
       dataIndex: 'createTime',
       key: 'createTime',
       render: (text: string) => {
@@ -662,7 +665,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       },
     },
     {
-      title: formatMessage('action', '操作'),
+      title: formatMessage('action'),
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="small" style={{ maxWidth: '200px', whiteSpace: 'nowrap' }}>
@@ -673,7 +676,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             href={formatConsoleURL(record)}
             target="_blank"
           >
-            Terminal
+            {formatMessage('terminal')}
           </Button>
           <MicroApp
             name="log"
@@ -682,11 +685,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             env={env2MlogEnv.get(cluster?.scope.environment || 'dev')}
             podName={record.podName}
           />
-          <Link to={formatPodMonitorURL(record)}>Monitor</Link>
+          <Link to={formatPodMonitorURL(record)}>
+            {formatMessage('monitor')}
+          </Link>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
-              More
+              {formatMessage('more')}
               {' '}
               <DownOutlined />
             </a>
@@ -711,9 +716,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const locale = {
     emptyText: <NoData
-      title="Pod"
-      desc={'你可以对Pod执行一系列操作\n'
-    + '比如查看日志、查看基础资源监控、登陆Pod等'}
+      titleID="pages.common.Pod"
+      descID="pages.noData.pod.desc"
     />,
   };
 
@@ -751,20 +755,20 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                 columns={
               [
                 {
-                  title: '容器名称',
+                  title: formatMessage('containerName'),
                   dataIndex: 'name',
                   width: '15%',
                   key: 'name',
                   render: (text: string) => <span>{text}</span>,
                 },
                 {
-                  title: '镜像',
+                  title: intl.formatMessage({ id: 'pages.common.image' }),
                   dataIndex: 'image',
                   key: 'image',
                   width: '50%',
                 },
                 {
-                  title: '容器状态',
+                  title: formatMessage('containerStatus'),
                   dataIndex: 'status',
                   key: 'status',
                   width: '5%',
@@ -787,7 +791,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: formatMessage('onlineStatus', '上线状态'),
+                  title: formatMessage('onlineStatus'),
                   dataIndex: 'onlineStatus',
                   key: 'onlineStatus',
                   render: (text: string, container: CLUSTER.ContainerDetail) => {
@@ -798,7 +802,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: <div style={{ whiteSpace: 'nowrap' }}>重启次数</div>,
+                  title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount')}</div>,
                   dataIndex: 'restartCount',
                   key: 'restartCount',
                   width: '10%',
@@ -811,7 +815,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: '启动时间',
+                  title: formatMessage('startedAt'),
                   dataIndex: 'startedAt',
                   key: 'startedAt',
                   width: '20%',
@@ -829,10 +833,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: formatMessage('action', '操作'),
+                  title: formatMessage('action'),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
-                    <Link to={formatContainerMonitorURL(record.podName, container.name)}>Monitor</Link>
+                    <Link to={formatContainerMonitorURL(record.podName, container.name)}>{formatMessage('monitor')}</Link>
                   ),
                 },
               ]
@@ -867,7 +871,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         }}
       />
       <FullscreenModal
-        title="Stdout信息"
+        title="Stdout"
         visible={fullscreen}
         listToSelect={pod?.containers.map((container) => container.name)}
         onSelectChange={(value: string) => {
@@ -894,7 +898,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         />
       </FullscreenModal>
       <Modal
-        title="Events"
+        title={formatMessage('events')}
         visible={showEvents}
         closable
         footer={[]}
@@ -917,7 +921,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       </Modal>
       <Modal
         visible={showLifeCycle}
-        title="Pod状态详情"
+        title={formatMessage('statusDetail')}
         footer={[]}
         onCancel={() => {
           setShowLifeCycle(false);

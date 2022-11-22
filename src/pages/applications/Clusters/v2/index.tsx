@@ -309,13 +309,8 @@ export default () => {
 
   const locale = {
     emptyText: <NoData
-      title="集群为特定应用的部署实例"
-      desc={
-      '你可以将你的cluster集群部署到各种不同的环境（测试线上）\n'
-      + '和区域（杭州、新加坡等），集群继承应用的各项配置，当然也可以对大多数配置进行修改。\n'
-      + '为不同人员赋予cluster的不同权限\n'
-      + '比如只读guest只能查看、项目owner、maintainer可以进行发布的修改'
-}
+      titleID="pages.noData.cluster.title"
+      descID="pages.noData.cluster.desc"
     />,
   };
 

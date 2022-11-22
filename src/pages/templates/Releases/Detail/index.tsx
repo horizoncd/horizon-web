@@ -1,4 +1,4 @@
-import { history, useModel } from 'umi';
+import { history, useIntl, useModel } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { FireOutlined } from '@ant-design/icons';
 import { Space, Button, Modal } from 'antd';
@@ -19,6 +19,7 @@ import { PageWithInitialState } from '@/components/Enhancement';
 function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactElement {
   const { initialState } = props;
   const { successAlert } = useModel('alert');
+  const intl = useIntl();
   const releaseID = initialState.resource.id;
   const { fullName } = initialState.resource;
   const { data: release, refresh } = useRequest(() => getRelease(releaseID));
@@ -28,18 +29,20 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
   }
   const [, templatePath, releasePath] = matches;
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.template.${suffix}` });
+
   const data: Param[][] = [
     [
       {
-        key: '版本',
+        key: formatMessage('release'),
         value: release?.name,
       },
       {
-        key: '推荐',
-        value: release?.recommended ? <FireOutlined style={{ color: '#FF4500' }} /> : '非推荐版本',
+        key: formatMessage('recommended'),
+        value: release?.recommended ? <FireOutlined style={{ color: '#FF4500' }} /> : formatMessage('recommended.no'),
       },
       {
-        key: '描述',
+        key: formatMessage('description'),
         value: release?.description,
       },
     ],
@@ -49,21 +52,21 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
         value: release?.commitID,
       },
       {
-        key: '同步状态',
+        key: formatMessage('release.syncStatus'),
         value: <SyncStatus statusCode={release?.syncStatusCode} />,
       },
       {
-        key: '最后同步时间',
+        key: formatMessage('release.lastSyncAt'),
         value: new Date(release?.lastSyncAt ?? '').toLocaleString(),
       },
     ],
     [
       {
-        key: '创建日期',
+        key: formatMessage('createdAt'),
         value: new Date(release?.createdAt ?? '').toLocaleString(),
       },
       {
-        key: '更新日期',
+        key: formatMessage('updatedAt'),
         value: new Date(release?.updatedAt ?? '').toLocaleString(),
       },
     ],
@@ -71,7 +74,7 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
 
   if (!release || release.syncStatus === 'Failed') {
     data[1].push({
-      key: '失败原因',
+      key: formatMessage('release.failReason'),
       value: release?.failedReason,
     });
   }
@@ -79,7 +82,7 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={(
           release?.id && (
@@ -90,11 +93,11 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
                 || !rbac.Permissions.syncRelease.allowed}
               onClick={() => {
                 syncReleaseToRepo(release.id).then(() => {
-                  successAlert('同步Release成功');
+                  successAlert(intl.formatMessage({ id: 'pages.message.release.sync.success' }));
                 });
               }}
             >
-              同步
+              {formatMessage('release.sync')}
             </Button>
             <Button
               type="primary"
@@ -104,7 +107,7 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
                 refresh();
               }}
             >
-              编辑
+              {intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             <Button
               danger
@@ -112,18 +115,18 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
               disabled={!rbac.Permissions.deleteRelease.allowed}
               onClick={() => {
                 Modal.confirm({
-                  title: `确认删除Release: ${release?.name}`,
-                  content: '该版本template有可能正在被application或cluster使用，删除前请确认',
+                  title: intl.formatMessage({ id: 'pages.message.release.delete.confirm' }, { release: release.name }),
+                  content: intl.formatMessage({ id: 'pages.message.release.delete.content' }),
                   onOk: () => {
                     deleteRelease(releaseID).then(() => {
-                      successAlert('删除Release成功');
+                      successAlert(intl.formatMessage({ id: 'pages.message.release.delete.success' }));
                       window.location.href = (`/templates/${templatePath}/-/detail`);
                     });
                   },
                 });
               }}
             >
-              删除
+              {intl.formatMessage({ id: 'pages.common.delete' })}
             </Button>
           </Space>
           )

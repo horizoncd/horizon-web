@@ -2,6 +2,7 @@ import { Button, Space, Table } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import styled from 'styled-components';
+import { Link, useIntl } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NoData from '@/components/NoData';
 import { queryRegions } from '@/services/regions/regions';
@@ -16,24 +17,27 @@ const QueryInput = styled(Button)`
 `;
 
 export default () => {
+  const intl = useIntl();
   const { data: regions } = useRequest(() => queryRegions(), {});
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.kubernetes.${suffix}` });
 
   const columns = [
     {
-      title: '名称',
+      title: formatMessage('name'),
       dataIndex: 'displayName',
       render: (name: string, r: SYSTEM.Region) => (
         <Space size="middle">
-          <a onClick={() => history.push(`/admin/kubernetes/${r.id}`)}>{name}</a>
+          <Link to={`/admin/kubernetes/${r.id}`}>{name}</Link>
         </Space>
       ),
     },
     {
-      title: '域名',
+      title: formatMessage('domain'),
       dataIndex: 'server',
     },
     {
-      title: '标签',
+      title: intl.formatMessage({ id: 'pages.common.tag' }),
       width: '250px',
       dataIndex: 'tags',
       render: (tags: [API.Tag]) => {
@@ -48,18 +52,18 @@ export default () => {
       },
     },
     {
-      title: '启用状态',
+      title: formatMessage('status'),
       width: '100px',
       dataIndex: 'disabled',
-      render: (disabled: boolean) => (disabled ? <span style={{ color: 'red' }}>已禁用</span> : '启用中'),
+      render: (disabled: boolean) => (disabled ? <span style={{ color: 'red' }}>{formatMessage('status.off')}</span> : formatMessage('status.on')),
     },
     {
-      title: '创建时间',
+      title: formatMessage('createdAt'),
       dataIndex: 'createdAt',
       render: (v: string) => Utils.timeToLocal(v),
     },
     {
-      title: '更新时间',
+      title: formatMessage('updatedAt'),
       dataIndex: 'updatedAt',
       render: (v: string) => Utils.timeToLocal(v),
     },
@@ -67,8 +71,8 @@ export default () => {
 
   const locale = {
     emptyText: <NoData
-      title="区域"
-      desc="区域指应用集群可供选择的部署目的地，需配置该区域对应的计算K8S信息"
+      titleID="pages.common.region"
+      descID="pages.noData.region.desc"
     />,
   };
 
@@ -95,7 +99,7 @@ export default () => {
           history.push('/admin/kubernetes/new');
         }}
       >
-        创建区域
+        {formatMessage('new')}
       </QueryInput>
       {table}
     </PageWithBreadcrumb>

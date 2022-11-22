@@ -3,6 +3,7 @@ import {
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import TextArea from 'antd/es/input/TextArea';
+import { useIntl } from 'umi';
 import { queryRegistries } from '@/services/registries/registries';
 import common from '@/pages/admin/common';
 
@@ -10,40 +11,78 @@ const { Option } = Select;
 
 export default () => {
   const { data: registries } = useRequest(() => queryRegistries(), {});
+  const intl = useIntl();
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.kubernetes.${suffix}` });
 
   return (
     <div>
-      <Form.Item label="展示名" name="displayName" rules={[{ required: true }]} extra="系统内部展示名称，一般可填为中文名">
+      <Form.Item
+        label={formatMessage('displayName')}
+        name="displayName"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.displayName.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="访问地址" name="server" rules={common.formRules.url} extra="api-server访问地址，一般建议填为域名">
+      <Form.Item
+        label={formatMessage('domain')}
+        name="server"
+        rules={common.formRules.url}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.domain.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="certificate" name="certificate" rules={[{ required: true }]} extra="访问Kubernetes所需的配置文件，即kubeconfig">
+      <Form.Item
+        label={formatMessage('certificate')}
+        name="certificate"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.certificate.extra' })}
+      >
         <TextArea autoSize={{ minRows: 5 }} />
       </Form.Item>
-      <Form.Item label="ingress域名" name="ingressDomain" rules={common.formRules.domain} extra="k8s集群中ingress-nginx组件所绑定的域名">
+      <Form.Item
+        label={formatMessage('ingress')}
+        name="ingressDomain"
+        rules={common.formRules.domain}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.ingress.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="prometheus地址" name="prometheusURL" rules={common.formRules.noRequiredURL} extra="k8s集群中prometheus的访问地址，建议启用此组件，可获得丰富的指标监控能力">
+      <Form.Item
+        label={formatMessage('prometheus')}
+        name="prometheusURL"
+        rules={common.formRules.noRequiredURL}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.prometheus.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="Registry" name="registryID" rules={[{ required: true }]} extra="k8s集群中所关联的registry服务，业务负载的镜像将推送到此registry">
+      <Form.Item
+        label={formatMessage('registry')}
+        name="registryID"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.registry.extra' })}
+      >
         <Select>
           {
             registries?.map((item: SYSTEM.Registry) => <Option key={item.id} value={item.id}>{item.name}</Option>)
           }
         </Select>
       </Form.Item>
-      <Form.Item label="禁用" name="disabled" rules={[{ required: true }]} extra="当k8s需要临时维护或下线时，可选择将其禁用，此后用户创建应用集群时无法再选择到此k8s">
+      <Form.Item
+        label={formatMessage('disabled')}
+        name="disabled"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.k8s.disabled.extra' })}
+      >
         <Select>
-          <Option key="true" value>是</Option>
-          <Option key="false" value={false}>否</Option>
+          <Option key="true" value>{intl.formatMessage({ id: 'pages.common.yes' })}</Option>
+          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.common.no' })}</Option>
         </Select>
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+          {intl.formatMessage({ id: 'pages.common.submit' })}
         </Button>
       </Form.Item>
     </div>

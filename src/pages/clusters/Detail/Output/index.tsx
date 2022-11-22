@@ -2,6 +2,7 @@ import { Card, Table, Tooltip } from 'antd';
 import { useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
+import { useIntl } from 'umi';
 import styles from '../index.less';
 import {
   getClusterOutputs,
@@ -10,6 +11,8 @@ import { CardTitle, BoldText } from '../Widget';
 
 export default function Output(props: any) {
   const { clusterID } = props;
+
+  const intl = useIntl();
 
   const [clusterOutputArray, setClusterOutputArray] = useState();
 
@@ -30,7 +33,7 @@ export default function Output(props: any) {
 
   const outputColumns = [
     {
-      title: <BoldText>键</BoldText>,
+      title: <BoldText>{intl.formatMessage({ id: 'pages.tags.key' })}</BoldText>,
       dataIndex: 'key',
       key: 'key',
       render: (text: string, record: any) => (
@@ -56,7 +59,7 @@ export default function Output(props: any) {
       className: styles.tableHeader,
     },
     {
-      title: <BoldText>值</BoldText>,
+      title: <BoldText>{intl.formatMessage({ id: 'pages.tags.value' })}</BoldText>,
       dataIndex: 'value',
       key: 'value',
       width: '70%',
@@ -67,7 +70,7 @@ export default function Output(props: any) {
   return (
     <Card
       type="inner"
-      title={(<CardTitle>输出</CardTitle>)}
+      title={(<CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.output' })}</CardTitle>)}
     >
       <Table
         tableLayout="fixed"

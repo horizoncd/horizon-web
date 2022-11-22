@@ -93,7 +93,7 @@ export default (props: any) => {
     {
       pattern: /^ssh:\/\/.+[.]git$/,
       required: true,
-      message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
+      message: formatMessage('url.ruleMessage'),
       max: 128,
     },
   ];
@@ -110,7 +110,7 @@ export default (props: any) => {
         <div>
           {item.name}
           {' '}
-          <span style={{ color: 'red' }}>(推荐)</span>
+          <span style={{ color: 'red' }}>{intl.formatMessage({ id: 'pages.common.recommend' })}</span>
         </div>
       );
     }
@@ -165,10 +165,10 @@ export default (props: any) => {
                 autoSize={{ minRows: 3 }}
               />
             </Form.Item>
-            <Form.Item label={formatMessage('template', '模版')}>
+            <Form.Item label={formatMessage('template')}>
               <Input disabled value={template?.name} />
             </Form.Item>
-            <Form.Item label={formatMessage('release', '模版版本')} name="release">
+            <Form.Item label={formatMessage('release')} name="release">
               <Select disabled={readOnly}>
                 {releases?.map((item: any) => (
                   <Option key={item.name} value={item.name}>
@@ -207,7 +207,7 @@ export default (props: any) => {
               name="expireTime"
               rules={requiredRule}
               initialValue={`${expireTimeOptions[2] * 24}h0m0s`}
-              extra="配置集群的使用时长，到期后集群会自动释放，配置保留，可一键快速拉起"
+              extra={intl.formatMessage({ id: 'pages.message.expireTime.hint' })}
             >
               <Select
                 disabled={readOnly}
@@ -234,19 +234,18 @@ export default (props: any) => {
               <Input disabled={readOnly} />
             </Form.Item>
             <Form.Item
-              label="版本"
+              label={formatMessage('version')}
               rules={[{ required: true }]}
             >
               <Input.Group compact>
                 <Form.Item
                   name="refType"
-                  rules={[{ required: true, message: 'git ref is required' }]}
+                  rules={[{ required: true, message: formatMessage('refType.ruleMessage') }]}
                 >
                   <Select
                     disabled={readOnly}
                     defaultValue={gitRefTypeList[0]}
                     onSelect={(key: any) => {
-                    // props.form.setFieldsValue({"refValue": ""})
                       if (key !== GitRefType.Commit) {
                         refreshGitRefList();
                       }
@@ -259,7 +258,7 @@ export default (props: any) => {
                 </Form.Item>
                 <Form.Item
                   name="refValue"
-                  rules={[{ required: true, message: 'git ref is required' }]}
+                  rules={[{ required: true, message: formatMessage('refValue.ruleMessage') }]}
                   style={{ display: 'inline-block', width: 'calc(100% - 100px)' }}
                 >
                   {

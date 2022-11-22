@@ -1,7 +1,7 @@
 import {
   Button, Col, Divider, Form, Input, Row,
 } from 'antd';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import type { Rule } from 'rc-field-form/lib/interface';
 import './index.less';
 import { useModel } from '@@/plugin-model/useModel';
@@ -12,12 +12,13 @@ const { TextArea } = Input;
 
 export default () => {
   const [form] = Form.useForm();
+  const intl = useIntl();
   const { successAlert } = useModel('alert');
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
 
-  const groupNameLabel = formatLabel('Group name');
-  const groupPathLabel = formatLabel('Group URL');
-  const groupDescLabel = formatLabel('Group description');
+  const groupNameLabel = formatLabel(intl.formatMessage({ id: 'pages.common.name' }));
+  const groupPathLabel = formatLabel(intl.formatMessage({ id: 'pages.common.path' }));
+  const groupDescLabel = formatLabel(intl.formatMessage({ id: 'pages.common.description' }));
 
   const getURLPrefix = () => `${window.location.origin}/`;
 
@@ -35,7 +36,7 @@ export default () => {
 
   const onFinish = (values: API.NewGroup) => {
     const hook = () => {
-      successAlert('分组新建成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.groups.newSuccess' }));
       window.location.href = `/${values.path}`;
     };
 
@@ -50,24 +51,24 @@ export default () => {
   const nameRules: Rule[] = [
     {
       required: true,
-      message: 'name required, max length: 64',
+      message: intl.formatMessage({ id: 'pages.message.name.hint' }),
       max: 64,
     },
   ];
 
-  const pathRegx = new RegExp('^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$');
+  const pathRegx = /^(?=[a-z])(([a-z][-a-z0-9]*)?[a-z0-9])?$/;
 
   const pathRules: Rule[] = [
     {
       required: true,
       pattern: pathRegx,
-      message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
+      message: intl.formatMessage({ id: 'pages.message.path.hint' }),
     },
   ];
 
   return (
     <PageWithBreadcrumb>
-      <div style={{ fontSize: '20px' }}>创建分组</div>
+      <div style={{ fontSize: '20px' }}>{intl.formatMessage({ id: 'pages.groups.New group' })}</div>
       <Divider />
       <Row>
         <Col span={5} />
@@ -80,12 +81,13 @@ export default () => {
               // query regions when environment selected
               if (a[0].name[0] === 'name') {
                 if (pathRegx.test(a[0].value)) {
-                  for (let i = 0; i < b.length; i++) {
-                    if (b[i].name[0] === 'path') {
-                      b[i].value = a[0].value;
+                  const allFields = b;
+                  for (let i = 0; i < allFields.length; i += 1) {
+                    if (allFields[i].name[0] === 'path') {
+                      allFields[i].value = a[0].value;
                     }
                   }
-                  form.setFields(b);
+                  form.setFields(allFields);
                   form.validateFields(['path']);
                 }
               }
@@ -106,10 +108,10 @@ export default () => {
             <Form.Item style={getSubmitBtnStyle()}>
               <div className="form-actions">
                 <Button type="primary" htmlType="submit">
-                  提交
+                  {intl.formatMessage({ id: 'pages.common.submit' })}
                 </Button>
                 <Button style={{ float: 'right' }} onClick={cancel}>
-                  取消
+                  {intl.formatMessage({ id: 'pages.common.cancel' })}
                 </Button>
               </div>
             </Form.Item>

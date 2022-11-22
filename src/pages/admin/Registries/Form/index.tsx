@@ -1,36 +1,70 @@
 import {
   Button, Form, Input, Select,
 } from 'antd';
-import { useRequest } from 'umi';
+import { useIntl, useRequest } from 'umi';
 import common from '@/pages/admin/common';
 import { getKinds } from '@/services/registries/registries';
 
 const { Option } = Select;
 
 function RegistryForm() {
+  const intl = useIntl();
   const { data: kinds } = useRequest(getKinds);
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.registry.${suffix}` });
+
   return (
     <div>
-      <Form.Item label="名称" name="name" rules={[{ required: true }]} extra="Registry唯一名称标识">
+      <Form.Item
+        label={formatMessage('name')}
+        name="name"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.registry.name.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="URL" name="server" rules={common.formRules.url} extra="Registry访问地址">
+      <Form.Item
+        label="Server"
+        name="server"
+        rules={common.formRules.url}
+        extra={intl.formatMessage({ id: 'pages.message.registry.server.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="Path" name="path" rules={[{ required: true }]} extra="image的统一前缀">
+      <Form.Item
+        label={formatMessage('path')}
+        name="path"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.registry.path.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="token" name="token" rules={[{ required: true }]} extra="通过API访问Registry所需的token">
+      <Form.Item
+        label="Token"
+        name="token"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.registry.token.extra' })}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="跳过证书验证" name="insecureSkipTLSVerify" rules={[{ required: true }]} extra="https请求中，跳过tls证书验证">
+      <Form.Item
+        label={formatMessage('tls')}
+        name="insecureSkipTLSVerify"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.registry.tls.extra' })}
+      >
         <Select>
           {/* eslint-disable-next-line react/jsx-boolean-value */}
-          <Option value={true}>true</Option>
-          <Option value={false}>false</Option>
+          <Option value={true}>{intl.formatMessage({ id: 'pages.common.yes' })}</Option>
+          <Option value={false}>{intl.formatMessage({ id: 'pages.common.no' })}</Option>
         </Select>
       </Form.Item>
-      <Form.Item label="registry类型" name="kind" rules={[{ required: true }]} extra="标识registry的具体类型">
+      <Form.Item
+        label={formatMessage('type')}
+        name="kind"
+        rules={[{ required: true }]}
+        extra={intl.formatMessage({ id: 'pages.message.registry.type.extra' })}
+      >
         <Select>
           {
             kinds?.map((kind) => <Option value={kind}>{kind}</Option>)
@@ -39,7 +73,7 @@ function RegistryForm() {
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+          {intl.formatMessage({ id: 'pages.common.submit' })}
         </Button>
       </Form.Item>
     </div>
