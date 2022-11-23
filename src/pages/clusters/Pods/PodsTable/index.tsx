@@ -603,7 +603,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             status = <PodPending text="Terminated" message={message} />;
             break;
           default:
-            status = <PodPending text="Pending" />;
+            status = <PodPending text={text} message={message} />;
         }
         let lifeCycleButtonStyle = styles.lifecycleButtonBlue;
         record.lifeCycle.forEach((lifeCycleItem) => {
