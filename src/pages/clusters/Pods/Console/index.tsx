@@ -50,9 +50,7 @@ export default (props: any) => {
           )
         }
         <span style={{ marginInline: '5px', fontWeight: 'bold' }}>
-          {' '}
-          in
-          {podName}
+          {` of ${podName}`}
         </span>
       </Card>
       <Terminal
@@ -68,6 +66,7 @@ export default (props: any) => {
                 ]),
               );
             } catch (error) {
+              // eslint-disable-next-line no-console
               console.log(error);
             }
           }
@@ -81,6 +80,7 @@ export default (props: any) => {
           ]);
           return tempData;
         }}
+        // eslint-disable-next-line consistent-return
         postSocketMessage={(event) => {
           try {
             const msg = JSON.parse(JSON.parse(event.data.slice(1))[0]);
@@ -90,9 +90,11 @@ export default (props: any) => {
               case 'stderr':
                 return msg.Data;
               default:
+                // eslint-disable-next-line no-console
                 console.error('Unexpected message type:', msg);
             }
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.log('data error.', event.data);
           }
         }}
