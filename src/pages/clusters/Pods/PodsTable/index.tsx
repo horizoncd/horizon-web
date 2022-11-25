@@ -1,8 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-param-reassign */
 import {
   Button, Input, Menu, Modal, Space, Table, Tooltip,
 } from 'antd';
@@ -506,7 +501,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                 lifeCycle.message = '应用正在下线中，若耗时较长，请检查集群自定义配置（健康检查->下线接口）是否配置有误。';
                 break;
               default:
-                value.message = '获取应用状态失败';
+                break;
             }
             break;
           default:
@@ -687,7 +682,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             env={env2MlogEnv.get(cluster?.scope.environment || 'dev')}
             podName={record.podName}
           />
-          <a style={{ color: '#1890ff' }} onClick={() => history.push(formatPodMonitorURL(record))}>Monitor</a>
+          <Link to={formatPodMonitorURL(record)}>Monitor</Link>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
