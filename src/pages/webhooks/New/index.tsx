@@ -1,7 +1,7 @@
 import { useModel, history } from 'umi';
 import { Form } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { ResourceTriggers, WebhookConfig, WebhookButtons } from '../components/WebhookComponents';
 import { createWebhook } from '@/services/webhooks/webhooks';
 

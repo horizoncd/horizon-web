@@ -1,7 +1,7 @@
 import { Form } from 'antd';
 import { useParams, useRequest } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { getWebhook } from '@/services/webhooks/webhooks';
 import { WebhookLogs } from '../components/WebhookComponents';
 

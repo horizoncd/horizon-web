@@ -4,7 +4,9 @@ import { history } from 'umi';
 import {
   Button, Modal, Space, Table,
 } from 'antd';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { useIntl } from '@@/plugin-locale/localeExports';
+import styled from 'styled-components';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { deleteWebhook, listWebhooks, updateWebhook } from '@/services/webhooks/webhooks';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import utils from '@/utils';
@@ -28,12 +30,17 @@ function WebhookList(props: { initialState: API.InitialState }) {
     type: resourceType,
   } = initialState.resource;
 
+  const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [total, setTotal] = useState(0);
   const [webhookTableData, setWebhookTableData] = useState<WebhookData[]>();
   const pageSize = 10;
   const { successAlert } = useModel('alert');
   const isAdminPage = resourceType === 'group' && resourceID === 0;
+  const Description = styled.div`
+    color: rgba(0, 0, 0, 0.45);
+    font-size: '8px';
+  `;
 
   const createWebhookURL = isAdminPage ? '/admin/webhooks/new' : `/${resourceType}s${resourceFullPath}/-/settings/newwebhook`;
   const getEditWebhookURL = (id: number) => {
@@ -81,27 +88,21 @@ function WebhookList(props: { initialState: API.InitialState }) {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      key: 'id',
-      render: (id: number) => (
-        <Button
-          type="link"
-          onClick={() => { window.location.href = getWebhookLogsURL(id); }}
-        >
-          #
-          {id}
-        </Button>
-      ),
-    },
-    {
       title: 'URL',
       dataIndex: 'url',
       key: 'url',
       width: '20%',
+      render: (url: string, record: WebhookData) => (
+        <Button
+          type="link"
+          onClick={() => { window.location.href = getWebhookLogsURL(record.id); }}
+        >
+          {url}
+        </Button>
+      ),
     },
     {
-      title: '触发事件',
+      title: intl.formatMessage({ id: 'pages.webhook.list.columns.triggers' }),
       dataIndex: 'triggers',
       key: 'triggers',
       width: '25%',
@@ -114,17 +115,17 @@ function WebhookList(props: { initialState: API.InitialState }) {
       ),
     },
     {
-      title: '描述',
+      title: intl.formatMessage({ id: 'pages.webhook.list.columns.desc' }),
       dataIndex: 'description',
       key: 'description',
     },
     {
-      title: '创建时间',
+      title: intl.formatMessage({ id: 'pages.webhook.list.columns.createdAt' }),
       dataIndex: 'createdAt',
       key: 'createdAt',
     },
     {
-      title: '操作',
+      title: intl.formatMessage({ id: 'pages.webhook.list.columns.operations' }),
       key: 'operation',
       render: (record: WebhookData) => (
         <Space
@@ -135,28 +136,28 @@ function WebhookList(props: { initialState: API.InitialState }) {
             type="link"
             onClick={() => toggleWebhookEnabled(record.id, !record.enabled)}
           >
-            {record.enabled ? '禁用' : '启用'}
+            {record.enabled ? intl.formatMessage({ id: 'pages.webhook.list.action.disable' }) : intl.formatMessage({ id: 'pages.webhook.list.action.enable' })}
           </Button>
           <Button
             type="link"
             onClick={() => { window.location.href = getEditWebhookURL(record.id); }}
           >
-            编辑
+            {intl.formatMessage({ id: 'pages.webhook.list.action.edit' }) }
           </Button>
           <Button
             type="link"
             onClick={() => Modal.confirm({
-              title: '是否确认要删除下列webhook：',
+              title: intl.formatMessage({ id: 'pages.webhook.list.action.delete.prompt' }),
               content: `${record.url}`,
               onOk: () => {
                 deleteWebhook(record.id).then(() => {
-                  successAlert('删除webhook成功');
+                  successAlert(intl.formatMessage({ id: 'pages.webhook.list.action.delete.success' }));
                   refreshWebhookList();
                 });
               },
             })}
           >
-            删除
+            {intl.formatMessage({ id: 'pages.webhook.list.action.delete' })}
           </Button>
         </Space>
       ),
@@ -165,18 +166,12 @@ function WebhookList(props: { initialState: API.InitialState }) {
 
   return (
     <PageWithBreadcrumb>
-      <div
-        style={{
-          fontWeight: 'bold',
-          marginBottom: '10px',
-          fontSize: 'larger',
-        }}
-      >
+      <h1>
         Webhook
-      </div>
-      <span>
-        您可以使用webhook将特定事件发送给外部系统，配置使用的secret，会放在请求头： X-Horizon-Webhook-Secret 中
-      </span>
+      </h1>
+      <Description>
+        {intl.formatMessage({ id: 'pages.webhook.list.desc' })}
+      </Description>
       <div
         style={{ marginTop: '30px' }}
       >
@@ -187,14 +182,14 @@ function WebhookList(props: { initialState: API.InitialState }) {
             fontSize: 'larger',
           }}
         >
-          已添加
+          {intl.formatMessage({ id: 'pages.webhook.list.title.created' })}
         </span>
         <Button
           type="primary"
           style={{ float: 'right' }}
           onClick={() => history.push(createWebhookURL)}
         >
-          创建
+          {intl.formatMessage({ id: 'pages.webhook.list.action.create' })}
         </Button>
       </div>
       <Table

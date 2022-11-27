@@ -31,6 +31,10 @@ declare namespace Webhooks {
     trigger: string
     status: string
     errorMessage: string
+    resourceType: string
+    resourceName: string
+    resourceID: number
+    action: string
     createdAt: string
     updatedAt: string
     createdBy: API.User

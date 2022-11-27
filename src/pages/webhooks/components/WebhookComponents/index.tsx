@@ -1,11 +1,11 @@
 import {
-  Button, Checkbox, CheckboxOptionType, Col, Form, Input, Row, Space, Switch, Table,
+  Button, Checkbox, CheckboxOptionType, Col, Form, Input, Row, Space, Switch, Table, Tooltip,
 } from 'antd';
 import { history, useModel, useRequest } from 'umi';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import { useState } from 'react';
 import { retryWebhookLogs, listWebhookLogs } from '@/services/webhooks/webhooks';
 import { Succeeded, Failed, Progressing } from '@/components/State';
-import Label from '@/components/Label';
 import utils from '@/utils';
 
 const { TextArea } = Input;
@@ -58,39 +58,40 @@ const ResourceTriggers = {
 };
 
 function WebhookConfig() {
+  const intl = useIntl();
   return (
     <>
       <Form.Item
         label="URL"
         name="url"
-        extra="仅支持http/https"
+        extra={intl.formatMessage({ id: 'pages.webhook.component.form.url' })}
         rules={required}
       >
         <Input />
       </Form.Item>
       <Form.Item
         name="enabled"
-        label="是否启用"
+        label={intl.formatMessage({ id: 'pages.webhook.component.form.enabled' })}
         valuePropName="checked"
       >
         <Switch />
       </Form.Item>
-      <Form.Item label="描述" name="description">
+      <Form.Item label={intl.formatMessage({ id: 'pages.webhook.component.form.desc' })} name="description">
         <TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
-      <Form.Item label="Secret" name="secret" extra="Secret会被放在 X-Horizon-Webhook-Secret 中发送">
+      <Form.Item label="Secret" name="secret" extra={intl.formatMessage({ id: 'pages.webhook.component.form.secret.extra' })}>
         <Input />
       </Form.Item>
       <Form.Item
         name="sslVerifyEnabled"
-        label="是否校验tls证书"
+        label={intl.formatMessage({ id: 'pages.webhook.component.form.sslVerify' })}
         valuePropName="checked"
       >
         <Switch />
       </Form.Item>
 
       <div>
-        触发条件
+        {intl.formatMessage({ id: 'pages.webhook.component.form.triggers' })}
       </div>
       <div
         style={{ padding: '20px' }}
@@ -126,6 +127,7 @@ function WebhookConfig() {
 }
 
 function WebhookButtons(props: { onCancel: ()=>void }) {
+  const intl = useIntl();
   const { onCancel } = props;
   return (
     <Space
@@ -135,19 +137,20 @@ function WebhookButtons(props: { onCancel: ()=>void }) {
       <Button
         onClick={onCancel}
       >
-        取消
+        {intl.formatMessage({ id: 'pages.webhook.component.form.submit' })}
       </Button>
       <Button
         type="primary"
         htmlType="submit"
       >
-        确定
+        {intl.formatMessage({ id: 'pages.webhook.component.form.cancel' })}
       </Button>
     </Space>
   );
 }
 
 function WebhookLogs(props: { webhookID: number, detailURL: string }) {
+  const intl = useIntl();
   const { webhookID, detailURL } = props;
   const { successAlert } = useModel('alert');
   const pageSize = 10;
@@ -170,13 +173,12 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
       ),
     },
     {
-      title: '触发事件',
-      dataIndex: 'trigger',
-      key: 'trigger',
-      render: (trigger: string) => (
-        <Label>
-          {trigger}
-        </Label>
+      title: intl.formatMessage({ id: 'pages.webhook.component.table.event' }),
+      key: 'event',
+      render: (record: Webhooks.LogSummary) => (
+        <span>
+          {`${record.action} ${record.resourceType} ${record.resourceName}(${record.resourceID})`}
+        </span>
       ),
     },
     {
@@ -190,20 +192,28 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
       ),
     },
     {
-      title: '状态',
+      title: intl.formatMessage({ id: 'pages.webhook.component.table.status' }),
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
+      render: (status: string, record: Webhooks.LogSummary) => {
         if (status === 'success') {
           return <Succeeded />;
         } if (status === 'failed') {
-          return <Failed />;
+          return (
+            <Tooltip
+              title={record.errorMessage}
+            >
+              <div>
+                <Failed />
+              </div>
+            </Tooltip>
+          );
         }
         return <Progressing text={status} />;
       },
     },
     {
-      title: '耗时',
+      title: intl.formatMessage({ id: 'pages.webhook.component.table.duration' }),
       key: 'duration',
       render: (record: Webhooks.LogSummary) => (
         <div>
@@ -213,7 +223,7 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
       ),
     },
     {
-      title: '发送时间',
+      title: intl.formatMessage({ id: 'pages.webhook.component.table.createdAt' }),
       key: 'created_at',
       render: (record: Webhooks.LogSummary) => (
         <div>
@@ -222,15 +232,15 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
       ),
     },
     {
-      title: '操作',
+      title: intl.formatMessage({ id: 'pages.webhook.component.table.operations' }),
       key: 'operation',
       render: (record: Webhooks.LogSummary) => (
         <Space>
           <Button
             type="link"
-            onClick={() => { retryWebhookLogs(record.id).then(() => successAlert('开始重新发送该请求')); }}
+            onClick={() => { retryWebhookLogs(record.id).then(() => successAlert(intl.formatMessage({ id: 'pages.webhook.component.table.operation.retry.prompt' }))); }}
           >
-            重新发送
+            {intl.formatMessage({ id: 'pages.webhook.component.table.operations.retry' })}
           </Button>
         </Space>
       ),

@@ -3,7 +3,7 @@ import {
   useModel, useParams, useRequest, history,
 } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import PageWithInitialState from '@/components/PageWithInitialState/PageWithInitialState';
+import { PageWithInitialState } from '@/components/Enhancement';
 import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
 import { ResourceTriggers, WebhookButtons, WebhookConfig } from '../components/WebhookComponents';
 
