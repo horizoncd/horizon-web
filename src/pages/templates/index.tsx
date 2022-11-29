@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import type { ColumnsType } from 'antd/lib/table';
 import NoData from '@/components/NoData';
 import { getRootTemplates, getTemplatesByUser } from '@/services/templates/templates';
-import utils from '@/utils';
+import utils, { handleHref } from '@/utils';
 import { getGroupByID } from '@/services/groups/groups';
 import {
   DTree, DTreeItem, DTreeItemProp, TreeDataNode,
@@ -84,8 +84,8 @@ const GroupSource = (props: { groupID: number }) => {
         }
       }
       onClick={
-        () => {
-          window.location.href = group.fullPath;
+        (e: any) => {
+          handleHref(e, group.fullPath);
         }
       }
     >

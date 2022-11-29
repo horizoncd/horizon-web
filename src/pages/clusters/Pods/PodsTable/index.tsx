@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import './index.less';
 import { useRequest } from '@@/plugin-request/request';
-import { history, Link } from 'umi';
+import { Link } from 'umi';
 import Dropdown from 'antd/es/dropdown';
 import {
   CheckCircleOutlined,
@@ -38,7 +38,7 @@ import RBAC from '@/rbac';
 import withTrim from '@/components/WithTrim';
 import CollapseList from '@/components/CollapseList';
 import styles from './index.less';
-import Utils from '@/utils';
+import Utils, { handleHref } from '@/utils';
 import { env2MlogEnv } from '@/const';
 import type { CLUSTER } from '@/services/clusters';
 
@@ -212,10 +212,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           <Button
             type="link"
             onClick={
-            () => {
-              history.push({
-                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
-              });
+            (e) => {
+              handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
             }
           }
           >
@@ -244,10 +242,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             type="link"
             className={styles.podnameButtonClass}
             onClick={
-            () => {
-              history.push({
-                pathname: `/clusters${cluster!.fullPath}/-/pods/${text}`,
-              });
+            (e) => {
+              handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
             }
           }
           >

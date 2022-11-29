@@ -28,7 +28,7 @@ import RBAC from '@/rbac';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
-import Utils, { pathnameInStaticRoutes } from '@/utils';
+import Utils, { handleHref, pathnameInStaticRoutes } from '@/utils';
 import { queryResource } from '@/services/core';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const';
@@ -236,7 +236,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/applications')}>Applications</a>
       </Menu.Item>
       <Menu.Item key="3">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/explore/groups')}>Groups</a>
+        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/groups')}>Groups</a>
       </Menu.Item>
       <Menu.Item key="7">
         <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/templates')}>Templates</a>
@@ -286,11 +286,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         <Tooltip title={title}>
           <span
             style={{ alignItems: 'center', lineHeight: '40px' }}
-            onClick={() => {
+            onClick={(e: any) => {
               if (type === ResourceType.TEMPLATE) {
-                window.location.href = `/templates${fullPath}/-/detail`;
+                handleHref(e,`/templates${fullPath}/-/detail`)
               } else {
-                window.location.href = fullPath;
+                handleHref(e, fullPath)
               }
             }}
           >
@@ -312,11 +312,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       <Tooltip title={title}>
         <span
           style={{ alignItems: 'center', lineHeight: '40px' }}
-          onClick={() => {
+          onClick={(e) => {
             if (type === ResourceType.TEMPLATE) {
-              window.location.href = `/templates${fullPath}/-/detail`;
+              handleHref(e, `/templates${fullPath}/-/detail`);
             } else {
-              window.location.href = fullPath;
+              handleHref(e, fullPath);
             }
           }}
         >

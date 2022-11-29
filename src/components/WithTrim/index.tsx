@@ -1,24 +1,24 @@
-import { Component } from 'react';
+import React, { ChangeEvent, ChangeEventHandler, EventHandler } from 'react';
 
-// @ts-ignore
-const withTrim = (WrappedComponent) => class extends Component {
-  // @ts-ignore
-  constructor(props) {
-    super(props);
-    this.state = { value: undefined };
-  }
+function withTrim<Props extends { onChange?: ChangeEventHandler<HTMLInputElement>, placeholder?: string }>(
+  WrappedComponent: React.ComponentType<Props>,
+) {
+  return function Inner(props: Props) {
+    const { onChange: originOnChange } = props;
 
-  // 去除头尾空格
-  onChange = (e: any) => {
-    e.target.value = e.target.value.trim();
-    // @ts-ignore
-    this.props.onChange(e);
+    const onChange: EventHandler<ChangeEvent<HTMLInputElement>> = (e) => {
+      const t = e.target! as { value: string };
+      t.value = t.value.trim();
+      if (originOnChange) originOnChange(e);
+    };
+
+    const newPorps = {
+      ...props, onChange,
+    };
+
+    /* eslint-disable react/jsx-props-no-spreading */ //@ts-ignore
+    return <WrappedComponent {...newPorps} />;
   };
-
-  render() {
-    // @ts-ignore
-    return <WrappedComponent {...this.props} onChange={this.onChange} />;
-  }
-};
+}
 
 export default withTrim;

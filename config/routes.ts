@@ -25,29 +25,19 @@
     redirect: '/dashboard/clusters',
   },
   {
-    path: '/explore/groups',
+    path: '/dashboard/groups',
     menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Groups',
   },
   {
     path: '/dashboard/applications',
     menuRender: false,
-    component: 'dashboard',
-  },
-  {
-    path: '/explore/applications',
-    menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Applications',
   },
   {
     path: '/dashboard/clusters',
     menuRender: false,
-    component: 'dashboard',
-  },
-  {
-    path: '/explore/clusters',
-    menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Clusters',
   },
   {
     path: '/groups/new',
