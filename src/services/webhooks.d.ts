@@ -1,9 +1,4 @@
 declare namespace Webhooks {
-  type Resource = {
-    resourceType: string
-    resourceID: number
-  };
-
   type UpdateWebhookReq = {
     url?: string
     enabled?: boolean

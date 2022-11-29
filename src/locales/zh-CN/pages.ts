@@ -715,7 +715,7 @@ export default {
   'pages.webhook.component.form.desc': '描述',
   'pages.webhook.component.form.sslVerify': '是否校验tls证书',
   'pages.webhook.component.form.secret.extra': 'Secret会被放在 X-Horizon-Webhook-Secret 中发送',
-  'pages.webhook.component.form.url': '仅支持http/https',
+  'pages.webhook.component.form.url': '请输入包含url和schema的完整地址，如：http://xxxxx/apis/webhook',
   'pages.webhook.component.form.triggers': '触发条件',
   'pages.webhook.component.form.submit': '确定',
   'pages.webhook.component.form.cancel': '取消',

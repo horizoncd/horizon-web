@@ -5,7 +5,7 @@ import {
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
-import { ResourceTriggers, WebhookButtons, WebhookConfig } from '../components/WebhookComponents';
+import { WebhookButtons, WebhookConfig } from '../components/WebhookComponents';
 
 function EditWebhook(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
@@ -33,17 +33,8 @@ function EditWebhook(props: { initialState: API.InitialState }) {
           enabled: webhook!.enabled,
           sslVerifyEnabled: webhook!.sslVerifyEnabled,
           secret: webhook!.secret,
+          triggers: webhook!.triggers,
         };
-        webhook!.triggers.forEach((trigger: string) => {
-          const parts = trigger.split('_');
-          if (parts.length < 2) {
-            return;
-          }
-          if (!formData[parts[0]]) {
-            formData[parts[0]] = [];
-          }
-          formData[parts[0]] = formData[parts[0]].concat(trigger);
-        });
         form.setFieldsValue(formData);
       },
     },
@@ -56,11 +47,8 @@ function EditWebhook(props: { initialState: API.InitialState }) {
       secret: formData.secret,
       description: formData.description,
       sslVerifyEnabled: formData.sslVerifyEnabled,
-      triggers: [],
+      triggers: formData.triggers,
     };
-    Object.keys(ResourceTriggers).forEach((k) => {
-      data.triggers = data.triggers!.concat(formData[k]);
-    });
     updateWebhook(id, data).then(
       () => {
         successAlert('webhook更新成功');

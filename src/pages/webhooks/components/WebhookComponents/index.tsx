@@ -1,12 +1,14 @@
 import {
-  Button, Checkbox, CheckboxOptionType, Col, Form, Input, Row, Space, Switch, Table, Tooltip,
+  Button, Form, Input, Space, Switch, Table, Tooltip, Tree,
 } from 'antd';
 import { history, useModel, useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useState } from 'react';
+import { Rule } from 'antd/lib/form';
 import { retryWebhookLogs, listWebhookLogs } from '@/services/webhooks/webhooks';
 import { Succeeded, Failed, Progressing } from '@/components/State';
 import utils from '@/utils';
+import { listEventActions } from '@/services/events/events';
 
 const { TextArea } = Input;
 
@@ -14,50 +16,16 @@ const required = [{
   required: true,
 }];
 
-const ResourceTriggers = {
-  applications: [
-    {
-      label: 'applications_created',
-      value: 'applications_created',
-    },
-    {
-      label: 'applications_deleted',
-      value: 'applications_deleted',
-    },
-    {
-      label: 'applications_transfered',
-      value: 'applications_transfered',
-    },
-  ],
-  clusters: [
-    {
-      label: 'clusters_created',
-      value: 'clusters_created',
-    },
-    {
-      label: 'clusters_deleted',
-      value: 'clusters_deleted',
-    },
-    {
-      label: 'clusters_builded',
-      value: 'clusters_builded',
-    },
-    {
-      label: 'clusters_deployed',
-      value: 'clusters_deployed',
-    },
-    {
-      label: 'clusters_rollbacked',
-      value: 'clusters_rollbacked',
-    },
-    {
-      label: 'clusters_freed',
-      value: 'clusters_freed',
-    },
-  ],
-};
+const urlRules: Rule[] = [{
+  required: true,
+  pattern: /(http|https):\/\/.*/,
+}];
 
 function WebhookConfig() {
+  const { data: triggers = {} } = useRequest(
+    () => listEventActions(),
+  );
+
   const intl = useIntl();
   return (
     <>
@@ -65,7 +33,7 @@ function WebhookConfig() {
         label="URL"
         name="url"
         extra={intl.formatMessage({ id: 'pages.webhook.component.form.url' })}
-        rules={required}
+        rules={urlRules}
       >
         <Input />
       </Form.Item>
@@ -90,38 +58,47 @@ function WebhookConfig() {
         <Switch />
       </Form.Item>
 
-      <div>
-        {intl.formatMessage({ id: 'pages.webhook.component.form.triggers' })}
-      </div>
-      <div
-        style={{ padding: '20px' }}
+      <Form.Item
+        name="triggers"
+        label={intl.formatMessage({ id: 'pages.webhook.component.form.triggers' })}
+        valuePropName="checkedKeys"
+        trigger="onCheck"
+        rules={required}
+        getValueFromEvent={(triggerList) => {
+          // when actions of one resource are all checked, only xxx_* is kept
+          const arrChangeMap = (arr: string[]) => new Map(arr.map((v, index) => [v, index]));
+          let result: string[] = [];
+          const ts = arrChangeMap(triggerList);
+          ts.forEach((_, trigger) => {
+            if (trigger.indexOf('*') !== -1) {
+              result = result.concat(trigger);
+              return;
+            }
+            const parts = trigger.split('_');
+            if (parts.length < 2) {
+              return;
+            }
+            const resource = parts[0];
+            if (ts.has(`${resource}_*`)) {
+              return;
+            }
+            result = result.concat(trigger);
+          });
+          return result;
+        }}
       >
-        {
-          Object.keys(ResourceTriggers).map((k) => (
-            <Form.Item
-              label={k}
-              name={k}
-              key={k}
-            >
-              <Checkbox.Group
-                style={{ marginLeft: '20px' }}
-              >
-                <Row>
-                  {
-                    ResourceTriggers[k].map((trigger: CheckboxOptionType) => (
-                      <Col span={12}>
-                        <Checkbox value={trigger.value}>
-                          {trigger.value}
-                        </Checkbox>
-                      </Col>
-                    ))
-                  }
-                </Row>
-              </Checkbox.Group>
-            </Form.Item>
-          ))
-        }
-      </div>
+        <Tree
+          checkable
+          treeData={Object.keys(triggers).map((k) => ({
+            title: k,
+            key: `${k}_*`,
+            children: triggers[k].map((trigger) => ({
+              title: trigger,
+              key: `${k}_${trigger}`,
+            })),
+          }))}
+        />
+      </Form.Item>
     </>
   );
 }
@@ -137,13 +114,13 @@ function WebhookButtons(props: { onCancel: ()=>void }) {
       <Button
         onClick={onCancel}
       >
-        {intl.formatMessage({ id: 'pages.webhook.component.form.submit' })}
+        {intl.formatMessage({ id: 'pages.webhook.component.form.cancel' })}
       </Button>
       <Button
         type="primary"
         htmlType="submit"
       >
-        {intl.formatMessage({ id: 'pages.webhook.component.form.cancel' })}
+        {intl.formatMessage({ id: 'pages.webhook.component.form.submit' })}
       </Button>
     </Space>
   );
@@ -155,8 +132,12 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
   const { successAlert } = useModel('alert');
   const pageSize = 10;
   const [pageNumber, setPageNumber] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [webhookLogs, setWebhookLogs] = useState<Webhooks.LogSummary[]>([]);
+  const { data: webhookLogsResp, run: refreshWebhookLogs } = useRequest(() => listWebhookLogs(
+    webhookID,
+    { pageNumber, pageSize },
+  ), {
+    refreshDeps: [pageNumber, pageSize],
+  });
   const columns = [
     {
       title: 'id',
@@ -198,6 +179,8 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
       render: (status: string, record: Webhooks.LogSummary) => {
         if (status === 'success') {
           return <Succeeded />;
+        } if (status === 'waiting') {
+          return <Progressing text="Waiting" />;
         } if (status === 'failed') {
           return (
             <Tooltip
@@ -238,7 +221,14 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
         <Space>
           <Button
             type="link"
-            onClick={() => { retryWebhookLogs(record.id).then(() => successAlert(intl.formatMessage({ id: 'pages.webhook.component.table.operation.retry.prompt' }))); }}
+            onClick={() => {
+              retryWebhookLogs(record.id).then(
+                () => {
+                  successAlert(intl.formatMessage({ id: 'pages.webhook.component.table.operations.retry.prompt' }));
+                  refreshWebhookLogs();
+                },
+              );
+            }}
           >
             {intl.formatMessage({ id: 'pages.webhook.component.table.operations.retry' })}
           </Button>
@@ -247,25 +237,15 @@ function WebhookLogs(props: { webhookID: number, detailURL: string }) {
     },
   ];
 
-  const { data: webhookLogsResp } = useRequest(() => listWebhookLogs(
-    webhookID,
-    { pageNumber, pageSize },
-  ), {
-    onSuccess: () => {
-      setWebhookLogs(webhookLogsResp!.items);
-      setTotal(webhookLogsResp!.total);
-    },
-  });
-
   return (
     <Table
       columns={columns}
-      dataSource={webhookLogs}
+      dataSource={webhookLogsResp?.items}
       pagination={{
         position: ['bottomCenter'],
         current: pageNumber,
         hideOnSinglePage: true,
-        total,
+        total: webhookLogsResp?.total || 1,
         onChange: (page) => setPageNumber(page),
       }}
     />
@@ -279,7 +259,6 @@ WebhookConfig.defaultProps = {
 };
 
 export {
-  ResourceTriggers,
   WebhookConfig,
   WebhookButtons,
   WebhookLogs,

@@ -2,7 +2,7 @@ import { useModel, history } from 'umi';
 import { Form } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
-import { ResourceTriggers, WebhookConfig, WebhookButtons } from '../components/WebhookComponents';
+import { WebhookConfig, WebhookButtons } from '../components/WebhookComponents';
 import { createWebhook } from '@/services/webhooks/webhooks';
 
 function New(props: { initialState: API.InitialState }) {
@@ -24,11 +24,9 @@ function New(props: { initialState: API.InitialState }) {
       secret: formData.secret,
       description: formData.description,
       sslVerifyEnabled: formData.sslVerifyEnabled,
-      triggers: [],
+      triggers: formData.triggers,
     };
-    Object.keys(ResourceTriggers).forEach((k) => {
-      data.triggers = data.triggers.concat(formData[k]);
-    });
+
     createWebhook(resourceType!, resourceID!, data).then(
       () => {
         successAlert('webhook创建成功');

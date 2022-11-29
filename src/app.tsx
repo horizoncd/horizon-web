@@ -441,12 +441,11 @@ function formatGroupMenu(fullPath: string) {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,
           parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
         },
-        {
+        RBAC.Permissions.listClusterWebhooks.allowed && {
           path: `/groups${fullPath}/-/settings/webhooks`,
           name: 'Webhooks',
-          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
         },
-        {
+       {
           path: `/groups${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
@@ -534,10 +533,9 @@ function formatApplicationMenu(fullPath: string) {
           path: `/applications${fullPath}/-/settings/advance`,
           name: 'Advance',
         },
-        {
+        RBAC.Permissions.listClusterWebhooks.allowed && {
           path: `/applications${fullPath}/-/settings/webhooks`,
           name: 'Webhooks',
-          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
         },
         {
           path: `/applications${fullPath}/-/settings/accesstokens`,
@@ -608,10 +606,9 @@ function formatClusterMenu(fullPath: string) {
           path: `/clusters${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
-        {
+        RBAC.Permissions.listClusterWebhooks.allowed && {
           path: `/clusters${fullPath}/-/settings/webhooks`,
           name: 'Webhooks',
-          // menuRender: RBAC.Permissions.listClusterWebhooks.allowed,
         },
       ],
     },
