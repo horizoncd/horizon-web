@@ -4,7 +4,7 @@ import {
 import type { DataNode } from 'rc-tree/lib/interface';
 import React from 'react';
 import styles from './index.less';
-import utils from '@/utils';
+import utils, { handleHref } from '@/utils';
 import NoData from '../NoData';
 
 const { DirectoryTree } = Tree;
@@ -83,7 +83,7 @@ export function DTreeItem(props: DTreeItemProps) {
       <Space>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          onClick={() => { window.location.href = fullPath; }}
+          onClick={(e: any) => handleHref(e, fullPath)}
         >
           <Space size="large">
             <DTreeAvatar title={title} size={48} />

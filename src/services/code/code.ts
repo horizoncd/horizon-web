@@ -8,6 +8,7 @@ export enum GitRefType {
 }
 
 export type GitInfo = {
+  httpURL: string | URL | undefined;
   url: string
   subfolder: string
   branch: string
@@ -55,7 +56,7 @@ export const gitRefTypeList = [
 
 export async function listGitRef(params: API.CodeBranchSearchParam) {
   let url = '/apis/front/v1/code/listbranch';
-  if (params.refType == 'tag') {
+  if (params.refType === 'tag') {
     url = '/apis/front/v1/code/listtag';
   }
   return request<{

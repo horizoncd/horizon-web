@@ -299,7 +299,7 @@ export const pathnameInStaticRoutes = (): boolean => {
   return false;
 };
 
-export const handleHref = (event: any, link: string) => {
+export const handleHref = (event: any, link: string, type: string = 'window') => {
   const { metaKey, ctrlKey } = event;
 
   // mac 平台 判断 metaKey; 其他平台判断ctrlKey
@@ -313,7 +313,11 @@ export const handleHref = (event: any, link: string) => {
     window.open(link);
     return;
   }
-  window.location.href = link;
+  if (type === 'window') {
+    window.location.href = link;
+  } else {
+    history.push(link);
+  }
 };
 
 // generate oidc authn link
