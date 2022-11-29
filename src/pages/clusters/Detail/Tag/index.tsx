@@ -3,7 +3,8 @@ import {
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useHistory, useIntl } from 'umi';
-import { CardTitle, BoldText } from '../Widget';
+import { CardTitle } from '../Widget';
+import { BoldText } from '@/components/Widget';
 import styles from '../index.less';
 import RBAC from '@/rbac';
 import {

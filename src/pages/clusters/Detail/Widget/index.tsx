@@ -40,11 +40,7 @@ const CardTitle = styled.span`
   font-weight: 600;
 `;
 
-const BoldText = styled.span`
-  font-weight: bold;
-`;
-
 export {
   AvatarBlock, AvatarText, FlexColumn, TitleText, IDText,
-  BoldText, CardTitle, DividerWithMargin, NoPaddingButton,
+  CardTitle, DividerWithMargin, NoPaddingButton,
 };

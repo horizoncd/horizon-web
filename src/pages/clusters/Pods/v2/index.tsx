@@ -486,7 +486,7 @@ export default () => {
 
   const currentPodsTabTitle = podsInfo.oldPods.length > 0
     ? intl.formatMessage({ id: 'pages.cluster.podsTable.newPods' })
-    : intl.formatMessage({ id: 'pages.cluster.podsTable.pods' });
+    : intl.formatMessage({ id: 'pages.common.pods' });
   const oldPodsTitle = intl.formatMessage({ id: 'pages.cluster.podsTable.oldPods' });
   const formatTabTitle = (title: string, length: number) => (
     <div>
@@ -508,7 +508,7 @@ export default () => {
         description: intl.formatMessage({ id: 'pages.message.cluster.status.desc' }),
       },
       {
-        key: intl.formatMessage({ id: 'pages.cluster.basic.podsNum' }),
+        key: intl.formatMessage({ id: 'pages.common.pods' }),
         value: {
           [intl.formatMessage({ id: 'pages.cluster.status.normal' })]: podsInfo.healthyPods.length,
           [intl.formatMessage({ id: 'pages.cluster.status.abnormal' })]: podsInfo.notHealthyPods.length,
@@ -686,7 +686,7 @@ export default () => {
         &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.4' })}
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.cluster.podsTable.more' }))}
+        {strongTxt(intl.formatMessage({ id: 'pages.common.more' }))}
         {' '}
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.5' })}
         {' '}
@@ -800,7 +800,7 @@ export default () => {
           </Button>
           <Dropdown overlay={operateDropdown} trigger={['click']} overlayStyle={{}}>
             <Button>
-              {intl.formatMessage({ id: 'pages.applicationDetail.basic.operate' })}
+              {intl.formatMessage({ id: 'pages.common.more' })}
               <DownOutlined />
             </Button>
           </Dropdown>

@@ -6,9 +6,8 @@ export default {
   'pages.header.clusters': 'Clusters',
   'pages.header.groups': 'Groups',
   'pages.header.templates': 'Templates',
-  'pages.header.more': 'More',
-  'pages.header.more.slo': 'SLO',
-  'pages.header.more.admin': 'Admin',
+  'pages.header.slo': 'SLO',
+  'pages.header.admin': 'Admin',
 
   'pages.dashboard.title.your.clusters': 'Your clusters',
   'pages.dashboard.title.all.clusters': 'All clusters',
@@ -48,6 +47,7 @@ export default {
   'pages.common.default': 'Default',
   'pages.common.result': 'Result',
 
+  'pages.common.more': 'More',
   'pages.common.application': 'Application',
   'pages.common.cluster': 'Cluster',
   'pages.common.name': 'Name',
@@ -57,8 +57,8 @@ export default {
   'pages.common.env': 'Environment',
   'pages.common.region': 'Region',
   'pages.common.template': 'Template',
-  'pages.common.Pod': 'Pod',
-  'pages.common.Release': 'Release',
+  'pages.common.pod': 'Pod',
+  'pages.common.pods': 'Pods',
   'pages.common.tag': 'Tag',
   'pages.common.recommend': 'recommended',
   'pages.common.images': 'Images',
@@ -124,9 +124,8 @@ export default {
   'pages.applicationDetail.basic.release': 'Release',
   'pages.applicationDetail.basic.recommendedRelease': 'Recommended release',
   'pages.applicationDetail.basic.edit': 'Edit',
-  'pages.applicationDetail.basic.operate': 'Operations',
   'pages.applicationDetail.basic.createCluster': 'Create cluster',
-  'pages.applicationDetail.basic.delete': 'Delete application',
+  'pages.applicationDetail.basic.delete': 'Delete',
   'pages.applicationDetail.basic.detail': 'Application details',
   'pages.applicationDetail.basic.config': 'Application configs',
   'pages.applicationDelete.success': 'Delete application successfully',
@@ -170,12 +169,12 @@ export default {
   'pages.clusterNew.basic.expireTime': 'Duration (d)',
   'pages.clusterEdit.header': 'Editing [ {cluster} ], please fill in the information step by step',
   'pages.clusterEdit.success': 'Update cluster successfully',
-  'pages.clusterEdit.prompt.buildDeploy.title': 'Do you want to build and deploy?',
-  'pages.clusterEdit.prompt.buildDeploy.create.content': 'Build and deploy: Pull code to build and deploy based on build artifacts.\nThis change includes the build configuration, which should be built and deployed before it can take effect.',
-  'pages.clusterEdit.prompt.buildDeploy.edit.content': 'Build and deploy: Pull code to build and deploy based on build artifacts.\nRebuild and deploy with latest settings.',
-  'pages.clusterEdit.prompt.deploy.title': 'Do you want to deploy?',
-  'pages.clusterEdit.prompt.deploy.create.content': 'Deploy: redeploy with latest settings.\nThis change includes the deploy configuration, which should be deployed before it can take effect.',
-  'pages.clusterEdit.prompt.deploy.edit.content': 'Deploy: redeploy with latest settings.',
+  'pages.clusterEdit.prompt.buildDeploy.title': 'Do you want to run build and deploy?',
+  'pages.clusterEdit.prompt.buildDeploy.create.content': 'Build and deploy: Pull code to run build and then deploy your cluster based on artifacts.',
+  'pages.clusterEdit.prompt.buildDeploy.edit.content': 'Run build and deploy again to publish your latest configuration',
+  'pages.clusterEdit.prompt.deploy.title': 'Do you want to run deploy?',
+  'pages.clusterEdit.prompt.deploy.create.content': 'Deploy: Deploy your cluster with the latest configuration based on artifacts',
+  'pages.clusterEdit.prompt.deploy.edit.content': 'Run deploy again to publish your latest configuration.',
 
   'pages.clusterDetail.basic.detail': 'Cluster details',
   'pages.clusterDetail.basic.config': 'Cluster configs',
@@ -229,8 +228,7 @@ export default {
   'pages.cluster.status.stepPaused': 'Step paused',
 
   'pages.cluster.basic.status': 'Status',
-  'pages.cluster.basic.podsNum': 'Number of pods',
-  'pages.cluster.basic.expireIn': 'Expire in',
+  'pages.cluster.basic.expireIn': 'Expires',
 
   'pages.cluster.podsTable.events': 'Events',
   'pages.cluster.podsTable.events.type': 'Type',
@@ -240,16 +238,13 @@ export default {
   'pages.cluster.podsTable.events.time': 'Time',
   'pages.cluster.podsTable.newPods': 'New pods',
   'pages.cluster.podsTable.oldPods': 'Old pods',
-  'pages.cluster.podsTable.pods': 'Pods',
-  'pages.cluster.podsTable.podName': 'Pod name',
-  'pages.cluster.podsTable.podStatus': 'Pod status',
+  'pages.cluster.podsTable.podStatus': 'Status',
   'pages.cluster.podsTable.containerName': 'Container name',
   'pages.cluster.podsTable.containerStatus': 'Container status',
   'pages.cluster.podsTable.onlineStatus': 'Online status',
-  'pages.cluster.podsTable.restartCount': 'Restart count',
+  'pages.cluster.podsTable.restartCount': 'Restarts',
   'pages.cluster.podsTable.annotations': 'Annotations',
   'pages.cluster.podsTable.createdAt': 'Created at',
-  'pages.cluster.podsTable.action': 'Action',
   'pages.cluster.podsTable.terminal': 'Terminal',
   'pages.cluster.podsTable.monitor': 'Monitor',
   'pages.cluster.podsTable.more': 'More',
@@ -258,7 +253,7 @@ export default {
   'pages.cluster.podsTable.online': 'Online',
   'pages.cluster.podsTable.offline': 'Offline',
   'pages.cluster.podsTable.restartPod': 'Restart',
-  'pages.cluster.podsTable.reschedulePod': 'Reschedule',
+  'pages.cluster.podsTable.delete': 'Delete',
   'pages.cluster.podsTable.operation.result': 'Operation result',
   'pages.cluster.podsTable.operation.successList': 'Success list',
   'pages.cluster.podsTable.operation.failList': 'Failure list',
@@ -282,7 +277,7 @@ export default {
   'pages.cluster.pod.nodeName': 'Node name',
   'pages.cluster.pod.nodeIP': 'Node IP',
   'pages.cluster.pod.nodeSelector': 'Node selector',
-  'pages.cluster.pod.statusDetail': 'Status details',
+  'pages.cluster.pod.statusDetail': 'Conditions',
   'pages.cluster.pod.statusDetail.type': 'Type',
   'pages.cluster.pod.statusDetail.status': 'Status',
   'pages.cluster.pod.statusDetail.lastProbeTime': 'Last probe time',
@@ -297,10 +292,10 @@ export default {
   'pages.cluster.container.message': 'Message',
   'pages.cluster.container.ready': 'Ready',
   'pages.cluster.container.started': 'Started',
-  'pages.cluster.container.volumeMount': 'Volume mount',
+  'pages.cluster.container.volumeMount': 'Mounts',
   'pages.cluster.container.readonly': 'Read only',
   'pages.cluster.container.mountPath': 'Mount path',
-  'pages.cluster.container.subpath': 'subpath',
+  'pages.cluster.container.subpath': 'Sub path',
 
   'pages.cluster.monitor.autoRefresh': 'Auto refresh',
   'pages.cluster.monitor.autoRefresh.30s': '30 s',
@@ -349,7 +344,7 @@ export default {
 
   'pages.application.members.title': 'Application Members',
   'pages.groups.members.title': 'Group Members',
-  'pages.cluster.members.title': 'Application Cluster members',
+  'pages.cluster.members.title': 'Cluster members',
   'pages.members.user.title': 'Invite user',
   'pages.members.user.email.label': 'User name or Email address',
   'pages.members.user.email.threshold': 'Search for users to invite',
@@ -363,7 +358,7 @@ export default {
   'pages.application.transfer.desc': 'Transfer application to another group, only PE, Owner or Maintainer of the destination group can do this.',
   'pages.members.list.title': 'Members with access to ',
   'pages.members.list.leave': 'Leave',
-  'pages.members.list.label': 'Existing shares',
+  'pages.members.list.label': 'Members',
   'pages.members.remove.confirm.title': 'Are you sure to remove this member:{member}?',
   'pages.members.leave.confirm.title': 'Are you sure to leave?',
   'pages.members.add.success': 'Add member success',
@@ -384,7 +379,6 @@ export default {
   'pages.template.onlyOwner': 'Visible only to Owner',
   'pages.template.gitRepo': 'Git repo',
   'pages.template.recommended': 'Recommended',
-  'pages.template.recommended.no': 'Not recommended',
   'pages.template.createdAt': 'Created at',
   'pages.template.updatedAt': 'Updated at',
   'pages.template.release': 'Release',
@@ -542,7 +536,7 @@ export default {
   'pages.message.subfolder.hint': 'Not required, defaults to the project root',
   'pages.message.clusterSearch.tooltip': 'The relationship between multiple search criteria is "AND", and tags with key/value lengths longer than 16 characters will not be automatically prompted',
   'pages.message.searchByTag.hint': 'Search by tags or name',
-  'pages.message.expireTime.hint': 'Configure the duration of the cluster. The expired cluster will be automatically released, which configuration is retained and can be quickly deployed with one click',
+  'pages.message.expireTime.hint': 'Configure the duration of the cluster. The expired cluster will be automatically freed, which configuration is retained and can be quickly deployed with one click',
   'pages.message.copy.success': 'Copy successfully',
   'pages.message.copy.fail': 'Copy failed',
   'pages.message.copyID.tooltip': 'Click to copy the ID',
@@ -570,23 +564,23 @@ export default {
   'pages.message.release.update.success': 'The release is updated successfully',
   'pages.message.release.create.success': 'The release is created successfully',
 
-  'pages.message.defaultRegion.hint': 'You can configure the default deployment region for different environments. When you create a cluster for a environment, the default region for the environment is automatically populated',
+  'pages.message.defaultRegion.hint': 'You can configure the default region for different environments. When you create a cluster for a environment, the default region for the environment is automatically populated',
   'pages.message.defaultRegion.success': 'The default region is updated successfully',
   'pages.message.cluster.free.hint': 'The cluster has been freed and its configuration has been reserved. You can quickly deploy it by clicking [Build and deploy] or [Deploy]',
-  'pages.message.cluster.ttl.hint': 'The expiration time is calculated in real time based on the latest operation time, and the expired cluster will be automatically released',
-  'pages.message.cluster.status.desc': `Creating: Creating: The cluster is being created, do not perform operations
-    Normal: The cluster is published normally
-    Abnormal: The cluster is in an exceptional state
+  'pages.message.cluster.ttl.hint': 'The expiration time is calculated in real time based on the latest operation time, and the expired cluster will be automatically freed',
+  'pages.message.cluster.status.desc': `Creating: The cluster is being created, do not perform operations
+    Normal: The cluster is deployed normally
+    Abnormal: The cluster is in an abnormal state
     No deploy: The cluster has not been deployed
     Deploying: The cluster is being deployed
-    Released: The cluster's resources have been released, similar to the no deploy state, and can be rebuilt
-    Releasing: The cluster is in the process of resource releasing and you cannot continue to operate the cluster
-    Deleting: The cluster is being deleted and you cannot continue to operate the cluster
-    Step paused: The cluster is in the step pause state
-    Manual paused: The cluster is in a manual pause, and the deploy/rollback operation takes effect after the pause is unpaused
+    Freed: The cluster's resources have been freed, similar to state [no deploy], and can be rebuilt
+    Freeing: The cluster is in the process of resource freeing and you cannot perform operations
+    Deleting: The cluster is being deleted and you cannot perform operations
+    Step paused: The cluster is in the step paused state
+    Manual paused: The cluster is in a manual paused state, and the latest deploy/rollback operation takes effect after unpause
   `,
   'pages.message.cluster.restart.confirm': 'Are you sure to restart all pods?',
-  'pages.message.cluster.restart.success': 'The restart operation is submitted successfully',
+  'pages.message.cluster.restart.success': 'Restart is submitted successfully',
   'pages.message.cluster.rollback.hint': 'Please select a pipeline to rollback',
   'pages.message.cluster.rollback.confirm': 'Are you sure to rollback?',
   'pages.message.cluster.rollback.submitted': 'Submit rollback successfully',
@@ -611,11 +605,11 @@ export default {
   'pages.message.cluster.deployAll.strategySafe': 'Safe',
   'pages.message.cluster.deployAll.strategyRoll': 'Rolling',
   'pages.message.cluster.deployAll.content1': 'Steps will deployed automatically according to the following strategies:',
-  'pages.message.cluster.deployAll.content2': 'During the automatic deploying process, the number of viable and serviceable instances is always guaranteed to be not less than the number of currently set replicas',
-  'pages.message.cluster.deployAll.content3': 'During the automatic deploying process, ensure that the maximum number of replicas does not exceed 125% of the currently set number (pre-release and online environment)',
+  'pages.message.cluster.deployAll.content2': 'During the automatic deploying process, the number of active and serviceable replicas is always guaranteed to be not less than expected',
+  'pages.message.cluster.deployAll.content3': 'During the automatic deploying process, the maximum number of replicas does not exceed 125% of the currently set number (pre and online environment)',
   'pages.message.cluster.deployAll.content4': 'Note that: ',
   'pages.message.cluster.deployAll.content5': '1. If the number of instances is too large, please pay attention to the pressure on the environment',
-  'pages.message.cluster.deployAll.content6': '2. In addition to the pre-release and online environments, the maximum number of replicas in the deploy process is 200% for efficiency.',
+  'pages.message.cluster.deployAll.content6': '2. In addition to the pre and online environments, the maximum number of replicas in the deploy process is 200% for efficiency.',
 
   'pages.message.pods.step.deploy': 'The step {index} starts to deploy',
   'pages.message.pods.tip1': 'Tip 1',
@@ -637,8 +631,8 @@ export default {
   'pages.message.pods.tip2.content2': 'Any deploy/rollback operations take effect after',
   'pages.message.pods.tip2.content3': '',
   'pages.message.pods.tip.notRunning': 'Non-running',
-  'pages.message.pods.reschedule.content': 'This action will cause all selected pods (total {number}) to be destroyed after a graceful shutdown and an equal number of new pods will be created, please take care to the traffic risk!',
-  'pages.message.pods.reschedule.hint': 'Gracefully shutdown and destroy selected pods and create an equal number of new pods',
+  'pages.message.pods.delete.content': 'This action will cause all selected pods (total {number}) to be deleted after a graceful shutdown and an equal number of new pods will be created, please take care to the traffic risk!',
+  'pages.message.pods.delete.hint': 'Gracefully shutdown and delete selected pods and create an equal number of new pods',
   'pages.message.pods.lifeCycle.hint': 'View status detail info',
   'pages.message.pods.lifeCycle.success': 'Success',
   'pages.message.pods.lifeCycle.containerStartup': '',

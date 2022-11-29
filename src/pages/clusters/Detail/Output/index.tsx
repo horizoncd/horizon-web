@@ -7,7 +7,8 @@ import styles from '../index.less';
 import {
   getClusterOutputs,
 } from '@/services/clusters/clusters';
-import { CardTitle, BoldText } from '../Widget';
+import { CardTitle } from '../Widget';
+import { BoldText } from '@/components/Widget';
 
 export default function Output(props: any) {
   const { clusterID } = props;

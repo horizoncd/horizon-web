@@ -239,7 +239,7 @@ export default (props: any): React.ReactNode => {
               [
                 [
                   {
-                    key: intl.formatMessage({ id: 'pages.cluster.podsTable.podName' }),
+                    key: intl.formatMessage({ id: 'pages.common.name' }),
                     value: podName,
                   },
                   {

@@ -356,10 +356,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           style={{ marginLeft: '10px' }}
           onClick={() => {
             Modal.confirm({
-              title: intl.formatMessage({ id: 'pages.message.pods.reschedule.content' }, { number: selectedPods.length }),
+              title: intl.formatMessage({ id: 'pages.message.pods.delete.content' }, { number: selectedPods.length }),
               onOk() {
                 deletePods(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
-                  hookAfterBatchOps(formatMessage('reschedulePod'), d);
+                  hookAfterBatchOps(formatMessage('delete'), d);
                 });
               },
             });
@@ -367,9 +367,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           disabled={!selectedPods.length || !RBAC.Permissions.deletePods.allowed}
         >
           <Tooltip
-            title={intl.formatMessage({ id: 'pages.message.pods.reschedule.hint' })}
+            title={intl.formatMessage({ id: 'pages.message.pods.delete.hint' })}
           >
-            {formatMessage('reschedulePod', '销毁重建')}
+            {formatMessage('delete', '销毁重建')}
           </Tooltip>
         </Button>
       </div>
@@ -559,7 +559,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
   // @ts-ignore
   const columns = [
     {
-      title: formatMessage('podName'),
+      title: intl.formatMessage({ id: 'pages.common.name' }),
       dataIndex: 'podName',
       key: 'podName',
       render: (text: any) => renderPodNameAndIP('podName', text),
@@ -665,7 +665,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       },
     },
     {
-      title: formatMessage('action'),
+      title: intl.formatMessage({ id: 'pages.common.actions' }),
       key: 'action',
       render: (text: any, record: CLUSTER.PodInTable) => (
         <Space size="small" style={{ maxWidth: '200px', whiteSpace: 'nowrap' }}>
@@ -691,7 +691,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a>
-              {formatMessage('more')}
+              {intl.formatMessage({ id: 'pages.common.more' })}
               {' '}
               <DownOutlined />
             </a>
@@ -716,7 +716,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const locale = {
     emptyText: <NoData
-      titleID="pages.common.Pod"
+      titleID="pages.common.pod"
       descID="pages.noData.pod.desc"
     />,
   };
@@ -833,7 +833,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                   },
                 },
                 {
-                  title: formatMessage('action'),
+                  title: intl.formatMessage({ id: 'pages.common.actions' }),
                   key: 'action',
                   render: (text: any, container: CLUSTER.ContainerDetail) => (
                     <Link to={formatContainerMonitorURL(record.podName, container.name)}>{formatMessage('monitor')}</Link>

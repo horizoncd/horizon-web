@@ -39,7 +39,7 @@ function ReleaseDetail(props: { initialState: API.InitialState }): React.ReactEl
       },
       {
         key: formatMessage('recommended'),
-        value: release?.recommended ? <FireOutlined style={{ color: '#FF4500' }} /> : formatMessage('recommended.no'),
+        value: release?.recommended ? <FireOutlined style={{ color: '#FF4500' }} /> : intl.formatMessage({ id: 'pages.common.no' }),
       },
       {
         key: formatMessage('description'),

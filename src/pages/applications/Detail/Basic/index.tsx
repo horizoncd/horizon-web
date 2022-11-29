@@ -74,7 +74,7 @@ export default (props: any) => {
       trigger={['click']}
     >
       <Button>
-        {intl.formatMessage({ id: 'pages.applicationDetail.basic.operate' })}
+        {intl.formatMessage({ id: 'pages.common.more' })}
         <DownOutlined />
       </Button>
     </Dropdown>
