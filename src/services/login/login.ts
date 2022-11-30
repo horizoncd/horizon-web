@@ -45,3 +45,10 @@ export async function currentUser() {
     method: 'GET',
   });
 }
+
+export async function loginByPasswd(data: { email: string, password: string }) {
+  return request('/apis/core/v1/users/login', {
+    method: 'POST',
+    data,
+  });
+}

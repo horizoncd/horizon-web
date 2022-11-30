@@ -232,4 +232,7 @@ export default {
   'pages.accesstokens.operations.delete.title': 'Delete',
   'pages.accesstokens.tokenList.createdAt.title': 'Creation Time',
   'pages.accesstokens.tokenList.createdBy.title': 'Creator',
+
+  'pages.login.oidcLogin': 'By OIDC',
+  'pages.login.passwordLogin': 'By Password',
 };

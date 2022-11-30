@@ -236,4 +236,7 @@ export default {
   'pages.accesstokens.operations.delete.title': '删除',
   'pages.accesstokens.tokenList.createdAt.title': '创建时间',
   'pages.accesstokens.tokenList.createdBy.title': '创建者',
+
+  'pages.login.oidcLogin': 'OIDC',
+  'pages.login.passwordLogin': 'Password',
 };

@@ -7,7 +7,10 @@ import PopupTime from './PopupTime';
 import { MainText } from './Text';
 import ResourceAvatar from './ResourceAvatar';
 import LocationBox from './LocationBox';
+import BoldText from './BoldText';
+import StyledDropdownSwitch from './DropdownSwitch';
 
 export {
-  CenterSpin, DangerMessage, DropdownSwitch, ExactTime, MaxSpace, PopupTime, MainText, ResourceAvatar, LocationBox,
+  DangerMessage, DropdownSwitch, ExactTime, MainText, LocationBox,
+  MaxSpace, BoldText, CenterSpin, StyledDropdownSwitch, ResourceAvatar, PopupTime,
 };
