@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { BookOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
 import { Input, Tabs } from 'antd';
-import { Location } from 'umi';
+import { Location, useIntl } from 'umi';
 import { listApplications } from '@/services/applications/applications';
 import '@/components/GroupTree/index.less';
 import type { API } from '@/services/typings';
@@ -33,6 +33,7 @@ function Applications(props: MyApplicationsProps) {
   const { initialState, location } = props;
   const { [QueryName]: qName = '', [QueryMode]: qMode = Mode.Own } = location.query ?? {};
 
+  const intl = useIntl();
   const [filter, setFilter] = useState(qName as string);
   const [total, setTotal] = useState(0);
   const [showTotal, setShowTotal] = useState(0);
@@ -66,11 +67,11 @@ function Applications(props: MyApplicationsProps) {
 
   const applicationQueryInput = useMemo(() => (
     <Search
-      placeholder="Search"
+      placeholder={intl.formatMessage({ id: 'pages.common.search' })}
       onChange={(e) => { setFilter(e.target.value); }}
       value={filter}
     />
-  ), [filter]);
+  ), [filter, intl]);
 
   const onPageChange = (page: number, pz: number) => {
     setPageNumber(page);
@@ -102,13 +103,18 @@ function Applications(props: MyApplicationsProps) {
       style={{ marginTop: '15px' }}
     >
       <TabPane
-        tab={<TitleWithCount name="Your applications" count={showTotal} />}
+        tab={(
+          <TitleWithCount
+            name={intl.formatMessage({ id: 'pages.dashboard.title.your.applications' })}
+            count={showTotal}
+          />
+        )}
         key={Mode.Own}
       >
         {appList}
       </TabPane>
       <TabPane
-        tab="All Applications"
+        tab={intl.formatMessage({ id: 'pages.dashboard.title.all.applications' })}
         key={Mode.All}
       >
         {appList}

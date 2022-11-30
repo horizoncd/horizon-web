@@ -8,7 +8,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'umi';
 import NoData from '@/components/NoData';
 import { getRootTemplates, getTemplatesByUser } from '@/services/templates/templates';
-import utils, { handleHref } from '@/utils';
+import { handleHref } from '@/utils';
 import { getGroupByID } from '@/services/groups/groups';
 import {
   DTree, DTreeItem, DTreeItemProp, TreeDataNode,

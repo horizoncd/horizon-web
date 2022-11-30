@@ -5,11 +5,17 @@ function PopupTime(props: { time: string, prefix?: string }) {
   const { prefix, time } = props;
 
   return (
-    <Tooltip title={utils.timeToLocal(time)}>
-      {prefix}
-      {' '}
-      {utils.timeFromNow(time)}
-    </Tooltip>
+    prefix ? (
+      <Tooltip title={utils.timeToLocal(time)}>
+        {prefix}
+        {' '}
+        {utils.timeFromNow(time)}
+      </Tooltip>
+    ) : (
+      <Tooltip title={utils.timeToLocal(time)}>
+        {utils.timeFromNow(time)}
+      </Tooltip>
+    )
   );
 }
 

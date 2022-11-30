@@ -27,7 +27,7 @@ const GlobalHeaderContent: React.FC = () => {
         </a>
       </Menu.Item>
       <Menu.Item key="3">
-        <a onClick={() => history.push('/explore/groups')}>
+        <a onClick={() => history.push('/dashboard/groups')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.groups' })}</BoldText>
         </a>
       </Menu.Item>
