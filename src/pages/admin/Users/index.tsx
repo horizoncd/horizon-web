@@ -30,7 +30,7 @@ function UsersPage() {
         setItems(dataItems);
         setTotal(dataTotal);
       },
-      pollingInterval: 1000,
+      debounceInterval: 300,
       refreshDeps: [pageNumber, pageSize, namelike],
     },
   );
