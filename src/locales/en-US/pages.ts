@@ -438,7 +438,7 @@ export default {
   'pages.registry.name': 'Name',
   'pages.registry.path': 'Path',
   'pages.registry.tls': 'Skip TLS',
-  'pages.registry.type': 'Registry type',
+  'pages.registry.type': 'Type',
   'pages.registry.createdAt': 'Created at',
   'pages.registry.updatedAt': 'Updated at',
 

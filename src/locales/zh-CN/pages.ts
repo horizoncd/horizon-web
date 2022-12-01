@@ -422,7 +422,7 @@ export default {
   'pages.kubernetes.name': '名称',
   'pages.kubernetes.displayName': '展示名',
   'pages.kubernetes.domain': '域名',
-  'pages.kubernetes.registry': '仓库',
+  'pages.kubernetes.registry': '镜像仓库',
   'pages.kubernetes.ingress': 'Ingress域名',
   'pages.kubernetes.prometheus': 'Prometheus地址',
   'pages.kubernetes.certificate': '证书',
@@ -434,11 +434,11 @@ export default {
   'pages.kubernetes.updatedAt': '更新时间',
   'pages.kubernetes.disabled': '禁用',
 
-  'pages.registry.new': '创建仓库',
+  'pages.registry.new': '创建镜像仓库',
   'pages.registry.name': '名称',
   'pages.registry.path': '路径',
   'pages.registry.tls': '跳过TLS认证',
-  'pages.registry.type': '仓库类型',
+  'pages.registry.type': '类型',
   'pages.registry.createdAt': '创建时间',
   'pages.registry.updatedAt': '更新时间',
 
@@ -658,7 +658,7 @@ export default {
   'pages.message.k8s.certificate.extra': '访问Kubernetes所需的配置文件',
   'pages.message.k8s.ingress.extra': 'k8s集群中ingress-nginx组件所绑定的域名',
   'pages.message.k8s.prometheus.extra': 'k8s集群中prometheus的访问地址，建议启用此组件，可获得丰富的指标监控能力',
-  'pages.message.k8s.registry.extra': 'k8s集群中所关联的仓库，业务负载的镜像将推送到此仓库',
+  'pages.message.k8s.registry.extra': 'k8s集群中所关联的镜像仓库，业务负载的镜像将推送到此仓库',
   'pages.message.k8s.disabled.extra': '当k8s需要临时维护或下线时，可选择将其禁用，此后用户创建应用集群时无法再选择到此k8s',
 
   'pages.message.k8s.setDefault.confirm': '确认将此Kubernetes设置为默认Kubernetes？',
@@ -668,13 +668,13 @@ export default {
   'pages.message.k8s.delete.confirm': '确认删除kubernetes: {name}？',
   'pages.message.k8s.delete.content': '此为危险操作！如果某个环境已将此kubernetes设置为默认部署Kubernetes，将导致该环境失去默认部署kubernetes，需要选择其他Kubernetes作为默认部署Kubernetes',
 
-  'pages.message.registry.delete.confirm': '确认删除仓库：{name}？',
-  'pages.message.registry.name.extra': '仓库唯一名称标识',
-  'pages.message.registry.server.extra': '仓库访问地址',
+  'pages.message.registry.delete.confirm': '确认删除镜像仓库：{name}？',
+  'pages.message.registry.name.extra': '镜像仓库唯一名称标识',
+  'pages.message.registry.server.extra': '镜像仓库访问地址',
   'pages.message.registry.path.extra': '镜像统一前缀',
-  'pages.message.registry.token.extra': '通过API访问仓库所需的token',
+  'pages.message.registry.token.extra': '通过API访问镜像仓库所需的token',
   'pages.message.registry.tls.extra': 'https请求中，跳过tls证书验证',
-  'pages.message.registry.type.extra': '仓库的具体类型',
+  'pages.message.registry.type.extra': '镜像仓库的具体类型',
 
   'pages.message.user.banned.desc': '该用户已被禁止登录',
 
@@ -684,8 +684,8 @@ export default {
   'pages.noData.groups.desc': '比如统一的权限管理，为分组下的不用应用设置不同的权限。赋予不同的角色以应有的权限比如只读guest只能查看、项目owner、maintainer可以进行发布和修改',
   'pages.noData.env.desc': '可创建测试、预发、线上等各个环境',
   'pages.noData.templates.desc': '模板是 Horizon 创建应用或集群的模板，包含了CI/CD流程',
-  'pages.noData.registry.title': '仓库',
-  'pages.noData.registry.desc': '仓库是一个镜像中心服务，负责存储和分发容器镜像',
+  'pages.noData.registry.title': '镜像仓库',
+  'pages.noData.registry.desc': '镜像仓库是一个镜像中心服务，负责存储和分发容器镜像',
   'pages.noData.region.desc': '区域指应用集群可供选择的部署目的地，需配置该区域对应的计算K8S信息',
   'pages.noData.cluster.title': '集群为特定应用的部署实例',
   'pages.noData.cluster.desc': '你可以将你的集群部署到各种不同的环境（测试、线上等）\n'
