@@ -241,27 +241,24 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       <Menu.Item key="7">
         <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/templates')}>Templates</a>
       </Menu.Item>
-      <SubMenu
-        key="4"
-        title={(
-          <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More
-            {' '}
-            <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
-          </span>
-        )}
-      >
-        <Menu.Item key="5">
-          <a style={{ fontWeight: 'bold' }} href="/slo">SLO</a>
-        </Menu.Item>
-        {
+      {
           initialState?.currentUser?.isAdmin && (
-            <Menu.Item key="6">
-              <a style={{ fontWeight: 'bold' }} href="/admin">Admin</a>
-            </Menu.Item>
+            <SubMenu
+              key="4"
+              title={(
+                <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
+                  More
+                  {' '}
+                  <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
+                </span>
+              )}
+            >
+              <Menu.Item key="6">
+                <a style={{ fontWeight: 'bold' }} href="/admin">Admin</a>
+              </Menu.Item>
+            </SubMenu>
           )
-        }
-      </SubMenu>
+      }
     </Menu>
   ),
   rightContentRender: () => <RightContent />,

@@ -22,7 +22,7 @@ const MonitorSearchForm = () => {
   ];
 
   const varPods = history.location.query!['var-pod'];
-  const singlePod = (varPods === 'All' || Array.isArray(varPods)) ? '' : `&podName=${varPods}`;
+  const singlePod = (varPods === 'All' || Array.isArray(varPods) || !varPods) ? '' : `&podName=${varPods}`;
 
   return (
     <div>

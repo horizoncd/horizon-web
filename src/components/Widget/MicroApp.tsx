@@ -1,6 +1,6 @@
-import { MicroApp as UmiMicroApp } from 'umi';
-import { Props as MicroAppProps } from 'src/.umi/plugin-qiankun/MicroApp';
 import { PropsWithChildren, useState } from 'react';
+import { MicroApp as UmiMicroApp } from 'umi';
+import { Props as MicroAppProps } from '../../.umi/plugin-qiankun/MicroApp';
 import { qiankun } from '@/app';
 
 function WithCheck<Props extends MicroAppProps>(WrappedComponent: React.ComponentType<Props>): React.FC<Props> {

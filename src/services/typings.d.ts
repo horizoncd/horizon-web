@@ -324,11 +324,6 @@ declare namespace API {
     resourceType?: string,
   };
 
-  type SLODashboards = {
-    overview: string;
-    history: string;
-  };
-
   type Tag = {
     key: string,
     value: string,
