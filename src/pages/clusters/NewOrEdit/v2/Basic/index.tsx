@@ -201,7 +201,7 @@ export default (props: any) => {
               <Input disabled={readOnly} />
             </Form.Item>
             <Form.Item
-              label={formatMessage('version')}
+              label={formatMessage('revision')}
               rules={[{ required: true }]}
             >
               <Input.Group compact>

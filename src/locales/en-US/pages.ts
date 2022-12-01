@@ -22,6 +22,8 @@ export default {
 
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',
+  'pages.common.true': 'True',
+  'pages.common.false': 'False',
   'pages.common.search': 'Search',
   'pages.common.next': 'Next',
   'pages.common.back': 'Back',
@@ -59,7 +61,7 @@ export default {
   'pages.common.template': 'Template',
   'pages.common.pod': 'Pod',
   'pages.common.pods': 'Pods',
-  'pages.common.tag': 'Tag',
+  'pages.common.tags': 'Tags',
   'pages.common.recommend': 'recommended',
   'pages.common.images': 'Images',
   'pages.common.image': 'Image',
@@ -111,7 +113,7 @@ export default {
   'pages.applicationNew.basic.repo': 'Repo',
   'pages.applicationNew.basic.url': 'URL',
   'pages.applicationNew.basic.url.ruleMessage': 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
-  'pages.applicationNew.basic.version': 'Version',
+  'pages.applicationNew.basic.revision': 'Revision',
   'pages.applicationNew.basic.subfolder': 'Subfolder',
   'pages.applicationNew.basic.branch': 'Branch',
   'pages.applicationNew.basic.template': 'Template',
@@ -159,7 +161,7 @@ export default {
   'pages.clusterNew.basic.repo': 'Git repo',
   'pages.clusterNew.basic.url': 'URL',
   'pages.clusterNew.basic.url.ruleMessage': 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
-  'pages.clusterNew.basic.version': 'Version',
+  'pages.clusterNew.basic.revision': 'Revision',
   'pages.clusterNew.basic.subfolder': 'Subfolder',
   'pages.clusterNew.basic.branch': 'Branch',
   'pages.clusterNew.basic.refType.ruleMessage': 'Ref type is required',
@@ -213,22 +215,22 @@ export default {
   'pages.cluster.status.unreleased': 'Unreleased',
   'pages.cluster.status.toBuild': 'Wait for build',
   'pages.cluster.status.building': 'Building',
-  'pages.cluster.status.built': 'Built',
+  'pages.cluster.status.built': 'Build completion',
   'pages.cluster.status.buildFail': 'Build failed',
   'pages.cluster.status.toDeploy': 'Wait for deploy',
   'pages.cluster.status.deploying': 'Deploying',
-  'pages.cluster.status.deployed': 'Deployed',
+  'pages.cluster.status.deployed': 'Deploy completion',
   'pages.cluster.status.deployFail': 'Deploy failed',
   'pages.cluster.status.freeing': 'Freeing',
   'pages.cluster.status.freed': 'Freed',
   'pages.cluster.status.deleting': 'Deleting',
-  'pages.cluster.status.normal': 'Normal',
-  'pages.cluster.status.abnormal': 'Abnormal',
+  'pages.cluster.status.normal': 'Healthy',
+  'pages.cluster.status.abnormal': 'Unhealthy',
   'pages.cluster.status.manualPaused': 'Manual paused',
   'pages.cluster.status.stepPaused': 'Step paused',
 
   'pages.cluster.basic.status': 'Status',
-  'pages.cluster.basic.expireIn': 'Expires',
+  'pages.cluster.basic.expireIn': 'Expires in',
 
   'pages.cluster.podsTable.events': 'Events',
   'pages.cluster.podsTable.events.type': 'Type',
@@ -321,7 +323,7 @@ export default {
   'pages.pipeline.submit': 'Pipeline started',
   'pages.pipeline.title': 'Title',
   'pages.pipeline.description': 'Description',
-  'pages.pipeline.version': 'Version',
+  'pages.pipeline.revision': 'Revision',
   'pages.pipeline.branch': 'Branch',
   'pages.pipeline.changes': 'Changes',
   'pages.pipeline.codeChange': 'Code change',
@@ -357,18 +359,18 @@ export default {
   'pages.application.transfer.title': 'Transfer application',
   'pages.application.transfer.desc': 'Transfer application to another group, only PE, Owner or Maintainer of the destination group can do this.',
   'pages.members.list.title': 'Members with access to ',
-  'pages.members.list.leave': 'Leave',
+  'pages.members.list.leave': 'Quit',
   'pages.members.list.label': 'Members',
   'pages.members.remove.confirm.title': 'Are you sure to remove this member:{member}?',
-  'pages.members.leave.confirm.title': 'Are you sure to leave?',
-  'pages.members.add.success': 'Add member success',
-  'pages.members.update.success': 'Update member success',
-  'pages.members.remove.success': 'Remove member success',
-  'pages.members.leave.success': 'Leave success',
-  'pages.members.list.givenAccess': 'given access by {grantorName} {grantedTime}',
-  'pages.members.list.sourceFrom': 'source from {resourceName}，',
-  'pages.members.role.tip': `1.Permission from high to low: Owner、Maintainer、Developer、Reporter、Guest
-  2.All members could manage other members whose permission is equal to or lower then self`,
+  'pages.members.leave.confirm.title': 'Are you sure to quit?',
+  'pages.members.add.success': 'Add member successfully',
+  'pages.members.update.success': 'Update member successfully',
+  'pages.members.remove.success': 'Remove member successfully',
+  'pages.members.leave.success': 'Quit successfully',
+  'pages.members.list.givenAccess': 'granted access permission by {grantorName} {grantedTime}',
+  'pages.members.list.sourceFrom': 'From {resourceName}, ',
+  'pages.members.role.tip': `1. Permission from high to low: Owner, Maintainer, Developer, Reporter, Guest
+  2. High-privilege members can manage low-privilege ones`,
   'pages.members.user.anonymous.alert': 'Please ask for other members to invite you first',
 
   'pages.template.new': 'New template',
@@ -423,7 +425,7 @@ export default {
   'pages.kubernetes.registry': 'Registry',
   'pages.kubernetes.ingress': 'Ingress domain',
   'pages.kubernetes.prometheus': 'Prometheus url',
-  'pages.kubernetes.certificate': 'Certificate',
+  'pages.kubernetes.certificate': 'Kubeconfig',
   'pages.kubernetes.certificate.show': 'Hover to view',
   'pages.kubernetes.status': 'Status',
   'pages.kubernetes.status.on': 'In use',
@@ -460,6 +462,7 @@ export default {
   'pages.profile.link': 'Link',
   'pages.profile.unlink': 'Unlink',
   'pages.profile.sub': 'Subject',
+  'pages.profile.resources': 'Resources',
 
   'pages.accesstokens.addToken.title': 'Add an access token',
   'pages.accesstokens.addToken.scopes.desc': 'Scope is used for fine-grained control of permissions, the final permission of the token depends on the intersection of scope and role',
@@ -470,7 +473,8 @@ export default {
   'pages.accesstokens.addToken.scopes.title': 'Scopes',
   'pages.accesstokens.addToken.add': 'Add',
   'pages.accesstokens.name.ruleMessage': 'name is required, the length must be greater than 1 and less than 40, supports a combination of letters, numbers and underscores, and must start with a letter',
-  'pages.accesstokens.desc': 'The access token can help you pass authentication when calling the api. When using it, you need to put it in the request header "Authorization: Bearer {token}" for use',
+  'pages.accesstokens.desc': `Use access tokens scoped to your resources that need access to the Horizon API to authenticate over HTTP(S).
+    You need to put it in the request header: "Authorization: Bearer {token}"`,
   'pages.accesstokens.tokenList.title': 'Active project access tokens',
   'pages.accesstokens.addToken.code.title': 'This is the only chance to copy the token. If you lose it, you can only revoke and recreate it.',
 
@@ -530,7 +534,7 @@ export default {
     underscores, and decimal points, and must start and end with upper and lower case letters and numbers`,
   'pages.message.tags.value.placeholder': 'Support multiple values',
   'pages.message.tags.limit': 'The number of tags is limited to 20',
-  'pages.message.tags.tooltip': 'For tags with keys or values longer than 16 characters, go to the cluster homepage',
+  'pages.message.tags.tooltip': 'For tags whose key or value exceeds 16 characters, please check it on the cluster homepage.',
   'pages.message.oauth.delete.hint': 'This action cannot be undone. This oauth will stop working immediately. Are you sure you want to delete this oauth app?',
   'pages.message.oauth.hint': 'Manage Oauth app that can use Horizon as an OAuth provider',
   'pages.message.subfolder.hint': 'Not required, defaults to the project root',
@@ -569,9 +573,9 @@ export default {
   'pages.message.cluster.free.hint': 'The cluster has been freed and its configuration has been reserved. You can quickly deploy it by clicking [Build and deploy] or [Deploy]',
   'pages.message.cluster.ttl.hint': 'The expiration time is calculated in real time based on the latest operation time, and the expired cluster will be automatically freed',
   'pages.message.cluster.status.desc': `Creating: The cluster is being created, do not perform operations
-    Normal: The cluster is deployed normally
-    Abnormal: The cluster is in an abnormal state
-    No deploy: The cluster has not been deployed
+    Healthy: The cluster is deployed normally
+    Unhealthy: The cluster is in an abnormal state
+    Unreleased: The cluster has not been deployed
     Deploying: The cluster is being deployed
     Freed: The cluster's resources have been freed, similar to state [no deploy], and can be rebuilt
     Freeing: The cluster is in the process of resource freeing and you cannot perform operations
@@ -582,6 +586,7 @@ export default {
   'pages.message.cluster.restart.confirm': 'Are you sure to restart all pods?',
   'pages.message.cluster.restart.success': 'Restart is submitted successfully',
   'pages.message.cluster.rollback.hint': 'Please select a pipeline to rollback',
+  'pages.message.cluster.rollback.tooltip': 'Click to confirm the rollback details',
   'pages.message.cluster.rollback.confirm': 'Are you sure to rollback?',
   'pages.message.cluster.rollback.submitted': 'Submit rollback successfully',
   'pages.message.cluster.free.confirm': 'Are you sure to free the cluster?',
@@ -648,13 +653,13 @@ export default {
   'pages.message.environment.delete.success': 'The environment is deleted successfully',
 
   'pages.message.k8s.name.extra': 'A unique name identifier for Kubernetes',
-  'pages.message.k8s.displayName.extra': 'System internal display name, generally can be filled in Chinese name',
+  'pages.message.k8s.displayName.extra': 'System internal display name, generally Chinese name',
   'pages.message.k8s.domain.extra': 'Api-server access address. Domain name is recommended',
-  'pages.message.k8s.certificate.extra': 'Access the configuration file required for Kubernetes, that is, kubeconfig',
+  'pages.message.k8s.certificate.extra': 'Configuration file for accessing Kubernetes',
   'pages.message.k8s.ingress.extra': 'The domain name bound to the ingress-nginx component in the k8s cluster',
-  'pages.message.k8s.prometheus.extra': 'Access address of prometheus in the k8s cluster. You are advised to enable this component to provide rich indicator monitoring capabilities',
+  'pages.message.k8s.prometheus.extra': 'Access address of prometheus providing rich indicator monitoring capabilities in the k8s cluster',
   'pages.message.k8s.registry.extra': 'Registry associated with the k8s cluster to which the mirror of the workload will be pushed',
-  'pages.message.k8s.disabled.extra': 'If the k8s needs to be temporarily maintained or offline, you can disable it. After that, you cannot select the k8s when creating an application cluster',
+  'pages.message.k8s.disabled.extra': 'Disable for maintenance or offline, After disable, you cannot select the k8s when creating an application cluster',
 
   'pages.message.k8s.setDefault.confirm': 'Are you sure to set the Kubernetes to default Kubernetes?',
   'pages.message.k8s.setDefault.success': 'Set the default Kubernetes successfully',
@@ -670,6 +675,8 @@ export default {
   'pages.message.registry.token.extra': 'Token required to access the registry through the API',
   'pages.message.registry.tls.extra': 'Whether to skip TLS certificate authentication in https requests',
   'pages.message.registry.type.extra': 'Type of registry',
+
+  'pages.message.user.banned.desc': 'The user is banned from logging in',
 
   'pages.noData.default.title': ' ',
   'pages.noData.default.desc': 'No data',
@@ -687,7 +694,7 @@ export default {
     such as read-only guest can only view it, project owner and maintainer can change the deployment`,
   'pages.noData.templates.hint': 'No template found in this group',
   'pages.noData.pod.desc': 'You can perform a series of operations on the Pod, such as viewing logs, viewing monitoring, logging in to the Pod, etc.',
-  'pages.noData.release.desc': 'Release is the version of the template, associated with the gitlab tag',
+  'pages.noData.release.desc': 'Release is the revision of the template, associated with the gitlab tag',
   'pages.noData.release.application.desc': 'Show all applications using this release',
   'pages.noData.release.cluster.desc': 'Show all clusters using this release',
 };

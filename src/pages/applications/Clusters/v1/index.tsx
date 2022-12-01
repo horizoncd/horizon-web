@@ -109,7 +109,7 @@ export default () => {
     {
       title: (
         <div className={styles.tagTitle}>
-          <div>{intl.formatMessage({ id: 'pages.common.tag' })}</div>
+          <div>{intl.formatMessage({ id: 'pages.common.tags' })}</div>
           <Tooltip
             title={intl.formatMessage({ id: 'pages.message.tags.tooltip' })}
           >

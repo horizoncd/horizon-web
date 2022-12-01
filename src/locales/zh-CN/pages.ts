@@ -22,6 +22,8 @@ export default {
 
   'pages.common.yes': '是',
   'pages.common.no': '否',
+  'pages.common.true': '是',
+  'pages.common.false': '否',
   'pages.common.search': '搜索',
   'pages.common.next': '下一步',
   'pages.common.back': '上一步',
@@ -59,7 +61,7 @@ export default {
   'pages.common.template': '模板',
   'pages.common.pod': 'Pod',
   'pages.common.pods': 'Pods',
-  'pages.common.tag': '标签',
+  'pages.common.tags': '标签',
   'pages.common.recommend': '推荐',
   'pages.common.images': '镜像',
   'pages.common.image': '镜像',
@@ -111,7 +113,7 @@ export default {
   'pages.applicationNew.basic.repo': 'Git仓库',
   'pages.applicationNew.basic.url': '地址',
   'pages.applicationNew.basic.url.ruleMessage': '格式不正确! 示例: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
-  'pages.applicationNew.basic.version': '版本',
+  'pages.applicationNew.basic.revision': '版本',
   'pages.applicationNew.basic.subfolder': '代码目录',
   'pages.applicationNew.basic.branch': '分支',
   'pages.applicationNew.basic.template': '模版',
@@ -159,7 +161,7 @@ export default {
   'pages.clusterNew.basic.repo': 'Git仓库',
   'pages.clusterNew.basic.url': '地址',
   'pages.clusterNew.basic.url.ruleMessage': '格式不正确! 示例: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
-  'pages.clusterNew.basic.version': '版本',
+  'pages.clusterNew.basic.revision': '版本',
   'pages.clusterNew.basic.subfolder': '代码目录',
   'pages.clusterNew.basic.branch': '分支',
   'pages.clusterNew.basic.refType.ruleMessage': '版本类型是必填项',
@@ -321,7 +323,7 @@ export default {
   'pages.pipeline.submit': '流水线创建成功，开始发布',
   'pages.pipeline.title': '标题',
   'pages.pipeline.description': '描述',
-  'pages.pipeline.version': '版本',
+  'pages.pipeline.revision': '版本',
   'pages.pipeline.branch': '分支',
   'pages.pipeline.changes': '变更',
   'pages.pipeline.codeChange': '代码变更',
@@ -367,8 +369,8 @@ export default {
   'pages.members.leave.success': '退出成功',
   'pages.members.list.givenAccess': '由 {grantorName} 添加于 {grantedTime}',
   'pages.members.list.sourceFrom': '来源于{resourceName}，',
-  'pages.members.role.tip': `1.按照权限由高到低为：pe、owner、maintainer、guest
-  2.所有成员可管理权限低于或等于自己的其他成员`,
+  'pages.members.role.tip': `1. 按照权限由高到低为：pe、owner、maintainer、guest
+  2. 成员可管理权限低于或等于自己的其他成员`,
   'pages.members.user.anonymous.alert': '你需要先请其中一位成员邀请你加入',
 
   'pages.template.new': '新建模板',
@@ -460,6 +462,7 @@ export default {
   'pages.profile.link': '连接',
   'pages.profile.unlink': '断开',
   'pages.profile.sub': '唯一标识',
+  'pages.profile.resources': '资源',
 
   'pages.accesstokens.addToken.title': '添加新token',
   'pages.accesstokens.addToken.name.title': '名称',
@@ -471,7 +474,8 @@ export default {
   'pages.accesstokens.addToken.scopes.desc': 'scope主要用于进一步收缩权限，token的最终权限取决于角色和scopes的交集',
   'pages.accesstokens.addToken.code.title': '以下是你创建的token，这是唯一一次复制该token的机会，若丢失，只能销毁重新创建',
   'pages.accesstokens.name.ruleMessage': '名称是必填项，长度必须大于1，小于40，支持字母、数字和中划线的组合，且必须以字母开头',
-  'pages.accesstokens.desc': 'access token可以帮助你在调用接口时通过认证鉴权，需要放在请求头"Authorization: Bearer $token"中进行使用',
+  'pages.accesstokens.desc': `access token帮助你调用Horizon接口时通过认证鉴权，
+    需要放在请求头"Authorization: Bearer $token"中使用`,
   'pages.accesstokens.tokenList.title': '现有token',
 
   'pages.accesstokens.operations.create.success': '创建成功',
@@ -582,6 +586,7 @@ export default {
   'pages.message.cluster.restart.confirm': '确定重启所有Pods?',
   'pages.message.cluster.restart.success': '重启操作提交成功',
   'pages.message.cluster.rollback.hint': '请选择流水线进行回滚',
+  'pages.message.cluster.rollback.tooltip': '点击进入详情页进行二次确认',
   'pages.message.cluster.rollback.confirm': '确定要进行回滚？',
   'pages.message.cluster.rollback.submitted': '提交回滚成功',
   'pages.message.cluster.free.confirm': '确定释放集群?',
@@ -650,7 +655,7 @@ export default {
   'pages.message.k8s.name.extra': 'Kubernetes唯一名称标识',
   'pages.message.k8s.displayName.extra': '系统内部展示名称，一般可填为中文名',
   'pages.message.k8s.domain.extra': 'api-server访问地址，一般建议填为域名',
-  'pages.message.k8s.certificate.extra': '访问Kubernetes所需的配置文件，即kubeconfig',
+  'pages.message.k8s.certificate.extra': '访问Kubernetes所需的配置文件',
   'pages.message.k8s.ingress.extra': 'k8s集群中ingress-nginx组件所绑定的域名',
   'pages.message.k8s.prometheus.extra': 'k8s集群中prometheus的访问地址，建议启用此组件，可获得丰富的指标监控能力',
   'pages.message.k8s.registry.extra': 'k8s集群中所关联的仓库，业务负载的镜像将推送到此仓库',
@@ -670,6 +675,8 @@ export default {
   'pages.message.registry.token.extra': '通过API访问仓库所需的token',
   'pages.message.registry.tls.extra': 'https请求中，跳过tls证书验证',
   'pages.message.registry.type.extra': '仓库的具体类型',
+
+  'pages.message.user.banned.desc': '该用户已被禁止登录',
 
   'pages.noData.default.title': ' ',
   'pages.noData.default.desc': '没有数据',

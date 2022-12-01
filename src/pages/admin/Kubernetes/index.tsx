@@ -37,7 +37,7 @@ export default () => {
       dataIndex: 'server',
     },
     {
-      title: intl.formatMessage({ id: 'pages.common.tag' }),
+      title: intl.formatMessage({ id: 'pages.common.tags' }),
       width: '250px',
       dataIndex: 'tags',
       render: (tags: [API.Tag]) => {

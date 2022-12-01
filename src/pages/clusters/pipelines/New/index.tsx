@@ -146,7 +146,7 @@ export default (props: any) => {
           {
             type === PublishType.BUILD_DEPLOY && (
               <Form.Item
-                label={formatMessage('version')}
+                label={formatMessage('revision')}
                 name="ref"
                 rules={requiredRule}
               >

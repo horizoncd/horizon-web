@@ -174,7 +174,7 @@ export default (props: any) => {
             />
           </Form.Item>
           <Form.Item
-            label={formatMessage('version')}
+            label={formatMessage('revision')}
             name="refType"
             rules={gitRevisionRules}
           >

@@ -109,7 +109,7 @@ export default (props: any) => {
             disabled={!RBAC.Permissions.rollbackCluster.allowed}
             onClick={() => onRetry(record)}
           >
-            <Tooltip title="点击进入详情页进行二次确认">
+            <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.rollback.tooltip' })}>
               {formatMessage('rollback')}
             </Tooltip>
           </Button>

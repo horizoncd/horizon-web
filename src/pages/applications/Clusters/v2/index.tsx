@@ -82,7 +82,7 @@ export default () => {
 
   const columns = [
     {
-      title: '集群名',
+      title: intl.formatMessage({ id: 'pages.clusterNew.basic.name' }),
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => (
@@ -92,26 +92,26 @@ export default () => {
       ),
     },
     {
-      title: '环境',
+      title: intl.formatMessage({ id: 'pages.common.env' }),
       dataIndex: 'environment',
       key: 'environment',
     },
     {
-      title: '区域',
+      title: intl.formatMessage({ id: 'pages.common.region' }),
       dataIndex: 'regionDisplayName',
       key: 'region',
     },
     {
-      title: '模版',
+      title: intl.formatMessage({ id: 'pages.common.template' }),
       dataIndex: 'template',
       key: 'template',
     },
     {
       title: (
         <div className={styles.tagTitle}>
-          <div>标签</div>
+          <div>{intl.formatMessage({ id: 'pages.common.tags' })}</div>
           <Tooltip
-            title={<span>键/值长度超过16个字符的标签请到集群主页查看</span>}
+            title={intl.formatMessage({ id: 'pages.message.tags.tooltip' })}
           >
             <QuestionCircleOutlined style={{ display: 'block', marginLeft: '5px' }} />
           </Tooltip>
@@ -138,12 +138,12 @@ export default () => {
       },
     },
     {
-      title: '创建时间',
+      title: intl.formatMessage({ id: 'pages.common.createdAt' }),
       dataIndex: 'createdTime',
       key: 'createdTime',
     },
     {
-      title: '修改时间',
+      title: intl.formatMessage({ id: 'pages.common.updatedAt' }),
       dataIndex: 'updatedTime',
       key: 'updatedTime',
     },
@@ -365,7 +365,7 @@ export default () => {
       />
       <div style={{ marginLeft: '10px' }}>
         <Tooltip
-          title={<span>多个搜索条件之间是“与”的关系，键/值长度超过16个字符的标签不会自动提示</span>}
+          title={intl.formatMessage({ id: 'pages.message.clusterSearch.tooltip' })}
         >
           <QuestionCircleOutlined style={{ display: 'block' }} />
         </Tooltip>
@@ -382,7 +382,7 @@ export default () => {
         onChange={tabOnChange}
         animated={false}
       >
-        <TabPane tab="所有" key="">
+        <TabPane tab={intl.formatMessage({ id: 'pages.common.all' })} key="">
           {tagSearch}
           {table}
         </TabPane>

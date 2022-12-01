@@ -27,6 +27,7 @@ import { PublishType } from '@/const';
 import { rollback } from '@/services/clusters/clusters';
 import FullscreenModal from '@/components/FullscreenModal';
 import { GitRefType } from '@/services/code/code';
+import ButtonWithoutPadding from '@/components/Widget/ButtonWithoutPadding';
 
 export default (props: any) => {
   const params = useParams<{ id: string }>();
@@ -167,8 +168,12 @@ export default (props: any) => {
           <br />
           <b>Commit History</b>
           <br />
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions */}
-          <a onClick={() => window.open(diff?.codeInfo.link)}>Link</a>
+          <ButtonWithoutPadding
+            type="link"
+            onClick={() => window.open(diff?.codeInfo.link)}
+          >
+            Link
+          </ButtonWithoutPadding>
         </Card>
         )
       }
