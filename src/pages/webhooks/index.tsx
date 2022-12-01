@@ -7,7 +7,9 @@ import {
 import { useIntl } from '@@/plugin-locale/localeExports';
 import styled from 'styled-components';
 import { PageWithInitialState } from '@/components/Enhancement';
-import { deleteWebhook, listWebhooks, updateWebhook } from '@/services/webhooks/webhooks';
+import {
+  deleteWebhook, enableOrDisableWebhook, listWebhooks,
+} from '@/services/webhooks/webhooks';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import utils from '@/utils';
 import Label from '@/components/Label';
@@ -75,9 +77,9 @@ function WebhookList(props: { initialState: API.InitialState }) {
     },
   });
 
-  const { run: toggleWebhookEnabled } = useRequest((id: number, enabled: boolean) => updateWebhook(
+  const { run: toggleWebhookEnabled } = useRequest((id: number, enabled: boolean) => enableOrDisableWebhook(
     id,
-    { enabled },
+    enabled,
   ), {
     onSuccess: () => {
       successAlert('更新webhook成功');
@@ -91,7 +93,7 @@ function WebhookList(props: { initialState: API.InitialState }) {
       title: 'URL',
       dataIndex: 'url',
       key: 'url',
-      width: '20%',
+      width: '10%',
       render: (url: string, record: WebhookData) => (
         <Button
           type="link"

@@ -1,10 +1,10 @@
 import { request } from 'umi';
 
 // eslint-disable-next-line import/prefer-default-export
-export async function listEventActions() {
+export async function listSupportEvents() {
   return request<{
-    data: Record<string, string[]>;
-  }>('/apis/front/v1/eventactions', {
+    data: Record<string, EVENT.ActionWithDesc[]>;
+  }>('/apis/core/v1/supportevents', {
     method: 'GET',
   });
 }

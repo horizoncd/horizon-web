@@ -17,7 +17,7 @@ export async function getWebhook(id: number) {
   });
 }
 
-export async function createWebhook(resourceType: string, resourceID: number, data: Webhooks.CreateWebhookReq) {
+export async function createWebhook(resourceType: string, resourceID: number, data: Webhooks.CreateOrUpdateWebhookReq) {
   return request<{
     data: Webhooks.Webhook;
   }>(`/apis/core/v1/${resourceType}/${resourceID}/webhooks`, {
@@ -26,12 +26,23 @@ export async function createWebhook(resourceType: string, resourceID: number, da
   });
 }
 
-export async function updateWebhook(id: number, data: Webhooks.UpdateWebhookReq) {
+export async function updateWebhook(id: number, data: Webhooks.CreateOrUpdateWebhookReq) {
   return request<{
     data: Webhooks.Webhook;
   }>(`/apis/core/v1/webhooks/${id}`, {
     method: 'PUT',
     data,
+  });
+}
+
+export async function enableOrDisableWebhook(id: number, enabled: boolean) {
+  return request<{
+    data: Webhooks.Webhook;
+  }>(`/apis/core/v1/webhooks/${id}`, {
+    method: 'PUT',
+    data: {
+      enabled,
+    },
   });
 }
 
@@ -58,10 +69,10 @@ export async function getWebhookLog(id: number) {
   });
 }
 
-export async function retryWebhookLogs(id: number) {
+export async function resendWebhookLogs(id: number) {
   return request<{
     data: Webhooks.Log;
-  }>(`/apis/core/v1/webhooklogs/${id}/retry`, {
+  }>(`/apis/core/v1/webhooklogs/${id}/resend`, {
     method: 'POST',
   });
 }

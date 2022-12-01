@@ -1,8 +1,7 @@
 import { useModel, history } from 'umi';
-import { Form } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
-import { WebhookConfig, WebhookButtons } from '../components/WebhookComponents';
+import { WebhookConfig } from '../components/WebhookComponents';
 import { createWebhook } from '@/services/webhooks/webhooks';
 
 function New(props: { initialState: API.InitialState }) {
@@ -17,16 +16,7 @@ function New(props: { initialState: API.InitialState }) {
   const isAdminPage = originResourceType === 'group' && resourceID === 0;
   const listWebhooksURL = isAdminPage ? '/admin/webhooks' : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
 
-  const onFinish = (formData: Webhooks.CreateWebhookReq) => {
-    const data: Webhooks.CreateWebhookReq = {
-      url: formData.url,
-      enabled: formData.enabled,
-      secret: formData.secret,
-      description: formData.description,
-      sslVerifyEnabled: formData.sslVerifyEnabled,
-      triggers: formData.triggers,
-    };
-
+  const onFinish = (data: Webhooks.CreateOrUpdateWebhookReq) => {
     createWebhook(resourceType!, resourceID!, data).then(
       () => {
         successAlert('webhook创建成功');
@@ -49,17 +39,10 @@ function New(props: { initialState: API.InitialState }) {
       <div
         style={{ padding: '20px' }}
       >
-        <Form
-          layout="vertical"
+        <WebhookConfig
           onFinish={onFinish}
-          initialValues={{
-            enabled: true,
-            sslVerifyEnabled: true,
-          }}
-        >
-          <WebhookConfig />
-          <WebhookButtons onCancel={() => history.push(listWebhooksURL)} />
-        </Form>
+          onCancel={() => history.push(listWebhooksURL)}
+        />
       </div>
     </PageWithBreadcrumb>
   );

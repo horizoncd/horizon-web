@@ -1,14 +1,12 @@
 declare namespace Webhooks {
-  type UpdateWebhookReq = {
-    url?: string
-    enabled?: boolean
-    description?: string
-    sslVerifyEnabled?: boolean
-    secret?: string
-    triggers?: string[]
+  type CreateOrUpdateWebhookReq = {
+    url: string
+    enabled: boolean
+    description: string
+    sslVerifyEnabled: boolean
+    secret: string
+    triggers: string[]
   };
-
-  type CreateWebhookReq = Required<UpdateWebhookReq>;
 
   type Webhook = CreateWebhookReq & {
     id: number

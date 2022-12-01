@@ -1,14 +1,13 @@
-import { Form } from 'antd';
 import {
   useModel, useParams, useRequest, history,
 } from 'umi';
+import { useState } from 'react';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
-import { WebhookButtons, WebhookConfig } from '../components/WebhookComponents';
+import { WebhookConfig } from '../components/WebhookComponents';
 
 function EditWebhook(props: { initialState: API.InitialState }) {
-  const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
   const { initialState } = props;
   const {
@@ -20,6 +19,7 @@ function EditWebhook(props: { initialState: API.InitialState }) {
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr, 10);
   const isAdminPage = originResourceType === 'group' && resourceID === 0;
+  const [formData, setFormData] = useState<Webhooks.CreateOrUpdateWebhookReq>();
   const listWebhooksURL = isAdminPage ? '/admin/webhooks' : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
   const { data: webhook } = useRequest(
     () => getWebhook(
@@ -27,7 +27,7 @@ function EditWebhook(props: { initialState: API.InitialState }) {
     ),
     {
       onSuccess: () => {
-        const formData = {
+        const data = {
           url: webhook!.url,
           description: webhook!.description,
           enabled: webhook!.enabled,
@@ -35,20 +35,12 @@ function EditWebhook(props: { initialState: API.InitialState }) {
           secret: webhook!.secret,
           triggers: webhook!.triggers,
         };
-        form.setFieldsValue(formData);
+        setFormData(data);
       },
     },
   );
 
-  const onFinish = (formData: Webhooks.UpdateWebhookReq) => {
-    const data: Webhooks.UpdateWebhookReq = {
-      url: formData.url,
-      enabled: formData.enabled,
-      secret: formData.secret,
-      description: formData.description,
-      sslVerifyEnabled: formData.sslVerifyEnabled,
-      triggers: formData.triggers,
-    };
+  const onFinish = (data : Webhooks.CreateOrUpdateWebhookReq) => {
     updateWebhook(id, data).then(
       () => {
         successAlert('webhook更新成功');
@@ -71,15 +63,11 @@ function EditWebhook(props: { initialState: API.InitialState }) {
       <div
         style={{ padding: '20px' }}
       >
-        <Form
+        <WebhookConfig
           onFinish={onFinish}
-          form={form}
-          layout="vertical"
-        >
-          <WebhookConfig />
-          <WebhookButtons onCancel={() => history.push(listWebhooksURL)} />
-          {}
-        </Form>
+          data={formData}
+          onCancel={() => history.push(listWebhooksURL)}
+        />
       </div>
     </PageWithBreadcrumb>
   );
