@@ -631,7 +631,8 @@ function formatClusterMenu(fullPath: string) {
 }
 
 // 从接口中获取子应用配置，export 出的 qiankun 变量是一个 promise
-export const qiankun = fetch('http://localhost:3010/config.json')
+// @ts-ignore
+export const qiankun = fetch(__MICRO_APP_LOC)
 .then((res) => res.json())
 .then(({apps}) => ({
   // 注册子应用信息
