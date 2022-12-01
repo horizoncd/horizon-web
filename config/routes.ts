@@ -45,11 +45,6 @@
     component: 'groups/NewGroup',
   },
   {
-    path: '/slo',
-    menuRender: false,
-    component: 'more/SLO',
-  },
-  {
     path: '/profile',
     component: 'user/Detail',
   },
