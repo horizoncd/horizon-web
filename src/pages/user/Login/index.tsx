@@ -263,7 +263,6 @@ function Home(props: HomeProps) {
   return (
     <div className={styles.container} style={{ backgroundColor: 'black' }}>
       <div className={styles.content}>
-        <div style={{ float: 'right', margin: '12px' }}>{button}</div>
         <div className={styles.contentBlock}>
           <div className={styles.textBlock}>
             <div className={styles.title}>Horizon ready for you</div>
@@ -271,6 +270,7 @@ function Home(props: HomeProps) {
               The platform for your cloudnative application delivery
             </div>
             <div className={styles.description}>for any kind of workload, webserver serverless middleware...</div>
+            <div style={{}}>{button}</div>
           </div>
           <div style={{ textAlign: 'center', alignSelf: 'center' }}>
             <div>
@@ -300,8 +300,8 @@ const Page = () => {
 
   const SwitchButton = useCallback((label: ReactNode) => (
     <Button
-      type="link"
-      style={chosen === State.home ? { color: 'white' } : {}}
+      style={{ width: '20%', marginTop: '10px' }}
+      className={styles.signInButton}
       onClick={() => { if (chosen === State.home) setChosen(State.login); else setChosen(State.home); }}
     >
       {label}
