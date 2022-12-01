@@ -52,7 +52,7 @@ export async function deleteWebhook(id: number) {
   });
 }
 
-export async function listWebhookLogs(webhookID: number, params: API.PageParam) {
+export async function listWebhookLogs(webhookID: number, params: API.PageParam & { eventType: string }) {
   return request<{
     data: API.PageResult<Webhooks.LogSummary>;
   }>(`/apis/core/v1/webhooks/${webhookID}/logs`, {

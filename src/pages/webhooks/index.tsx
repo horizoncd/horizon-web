@@ -1,27 +1,24 @@
 import { useState } from 'react';
-import { useModel, useRequest } from 'umi';
-import { history } from 'umi';
+import { history, useModel, useRequest } from 'umi';
 import {
-  Button, Modal, Space, Table,
+  Button, Modal, Space, Switch, Table,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
-import styled from 'styled-components';
 import { PageWithInitialState } from '@/components/Enhancement';
-import {
-  deleteWebhook, enableOrDisableWebhook, listWebhooks,
-} from '@/services/webhooks/webhooks';
+import { deleteWebhook, enableOrDisableWebhook, listWebhooks } from '@/services/webhooks/webhooks';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import utils from '@/utils';
 import Label from '@/components/Label';
+import Description from '@/components/Description';
+import { PopupTime } from '@/components/Widget';
 
 type WebhookData = {
-  key: number,
-  id: number,
-  enabled: boolean,
-  url: string,
-  triggers: string[],
-  description: string,
-  createdAt: string,
+  key: number;
+  id: number;
+  enabled: boolean;
+  url: string;
+  triggers: string[];
+  description: string;
+  createdAt: string;
 };
 
 function WebhookList(props: { initialState: API.InitialState }) {
@@ -39,82 +36,68 @@ function WebhookList(props: { initialState: API.InitialState }) {
   const pageSize = 10;
   const { successAlert } = useModel('alert');
   const isAdminPage = resourceType === 'group' && resourceID === 0;
-  const Description = styled.div`
-    color: rgba(0, 0, 0, 0.45);
-    font-size: '8px';
-  `;
 
-  const createWebhookURL = isAdminPage ? '/admin/webhooks/new' : `/${resourceType}s${resourceFullPath}/-/settings/newwebhook`;
+  const createWebhookURL = isAdminPage
+    ? '/admin/webhooks/new'
+    : `/${resourceType}s${resourceFullPath}/-/settings/newwebhook`;
   const getEditWebhookURL = (id: number) => {
-    const editWebhookURL = isAdminPage ? `/admin/webhooks/${id}/edit` : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/edit`;
+    const editWebhookURL = isAdminPage
+      ? `/admin/webhooks/${id}/edit`
+      : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/edit`;
     return editWebhookURL;
   };
   const getWebhookLogsURL = (id: number) => {
-    const webhookLogsURL = isAdminPage ? `/admin/webhooks/${id}` : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}`;
+    const webhookLogsURL = isAdminPage
+      ? `/admin/webhooks/${id}`
+      : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}`;
     return webhookLogsURL;
   };
 
-  const { data: webhooks, run: refreshWebhookList } = useRequest(() => listWebhooks(
-    resourceType.concat('s'),
-    resourceID,
-    { pageNumber, pageSize },
-  ), {
-    onSuccess: () => {
-      const wh: WebhookData[] = webhooks!.items.map(
-        (w: Webhooks.Webhook) => (
-          {
+  const { data: webhooks, run: refreshWebhookList } = useRequest(
+    () => listWebhooks(resourceType.concat('s'), resourceID, { pageNumber, pageSize }),
+    {
+      onSuccess: () => {
+        const wh: WebhookData[] = webhooks!.items.map(
+          (w: Webhooks.Webhook) => ({
             key: w.id,
             id: w.id,
             enabled: w.enabled,
             url: w.url,
             triggers: w.triggers,
             description: w.description,
-            createdAt: utils.timeToLocal(w.createdAt),
+            createdAt: w.createdAt,
           } as WebhookData),
-      );
-      setWebhookTableData(wh);
-      setTotal(webhooks!.total);
+        );
+        setWebhookTableData(wh);
+        setTotal(webhooks!.total);
+      },
     },
-  });
+  );
 
-  const { run: toggleWebhookEnabled } = useRequest((id: number, enabled: boolean) => enableOrDisableWebhook(
-    id,
-    enabled,
-  ), {
-    onSuccess: () => {
-      successAlert('更新webhook成功');
-      refreshWebhookList();
+  const { run: toggleWebhookEnabled } = useRequest(
+    (id: number, enabled: boolean) => enableOrDisableWebhook(id, enabled),
+    {
+      onSuccess: () => {
+        successAlert(intl.formatMessage({ id: 'pages.webhook.list.alert.update success' }));
+        refreshWebhookList();
+      },
+      manual: true,
     },
-    manual: true,
-  });
+  );
 
   const columns = [
     {
       title: 'URL',
       dataIndex: 'url',
       key: 'url',
-      width: '10%',
-      render: (url: string, record: WebhookData) => (
-        <Button
-          type="link"
-          onClick={() => { window.location.href = getWebhookLogsURL(record.id); }}
-        >
-          {url}
-        </Button>
-      ),
+      width: '150px',
     },
     {
       title: intl.formatMessage({ id: 'pages.webhook.list.columns.triggers' }),
       dataIndex: 'triggers',
       key: 'triggers',
       width: '25%',
-      render: (triggers: string[]) => (
-        triggers.map((trigger) => (
-          <Label>
-            {trigger}
-          </Label>
-        ))
-      ),
+      render: (triggers: string[]) => triggers.map((trigger) => <Label>{trigger}</Label>),
     },
     {
       title: intl.formatMessage({ id: 'pages.webhook.list.columns.desc' }),
@@ -125,26 +108,38 @@ function WebhookList(props: { initialState: API.InitialState }) {
       title: intl.formatMessage({ id: 'pages.webhook.list.columns.createdAt' }),
       dataIndex: 'createdAt',
       key: 'createdAt',
+      render: (value: string) => <PopupTime time={value} />,
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.webhook.list.enable or not' }),
+      key: 'enableOrDisable',
+      render: (record: WebhookData) => (
+        <Switch
+          checked={record.enabled}
+          onChange={() => toggleWebhookEnabled(record.id, !record.enabled)}
+        />
+      ),
     },
     {
       title: intl.formatMessage({ id: 'pages.webhook.list.columns.operations' }),
       key: 'operation',
       render: (record: WebhookData) => (
-        <Space
-          size="small"
-          style={{ maxWidth: '200px', whiteSpace: 'nowrap' }}
-        >
+        <Space size="small">
           <Button
             type="link"
-            onClick={() => toggleWebhookEnabled(record.id, !record.enabled)}
+            onClick={() => {
+              window.location.href = getWebhookLogsURL(record.id);
+            }}
           >
-            {record.enabled ? intl.formatMessage({ id: 'pages.webhook.list.action.disable' }) : intl.formatMessage({ id: 'pages.webhook.list.action.enable' })}
+            {intl.formatMessage({ id: 'pages.webhook.list.action.view log' })}
           </Button>
           <Button
             type="link"
-            onClick={() => { window.location.href = getEditWebhookURL(record.id); }}
+            onClick={() => {
+              window.location.href = getEditWebhookURL(record.id);
+            }}
           >
-            {intl.formatMessage({ id: 'pages.webhook.list.action.edit' }) }
+            {intl.formatMessage({ id: 'pages.webhook.list.action.edit' })}
           </Button>
           <Button
             type="link"
@@ -153,7 +148,9 @@ function WebhookList(props: { initialState: API.InitialState }) {
               content: `${record.url}`,
               onOk: () => {
                 deleteWebhook(record.id).then(() => {
-                  successAlert(intl.formatMessage({ id: 'pages.webhook.list.action.delete.success' }));
+                  successAlert(
+                    intl.formatMessage({ id: 'pages.webhook.list.action.delete.success' }),
+                  );
                   refreshWebhookList();
                 });
               },
@@ -168,32 +165,15 @@ function WebhookList(props: { initialState: API.InitialState }) {
 
   return (
     <PageWithBreadcrumb>
-      <h1>
-        Webhook
-      </h1>
-      <Description>
-        {intl.formatMessage({ id: 'pages.webhook.list.desc' })}
-      </Description>
-      <div
-        style={{ marginTop: '30px' }}
+      <h1>Webhook</h1>
+      <Description>{intl.formatMessage({ id: 'pages.webhook.list.desc' })}</Description>
+      <Button
+        type="primary"
+        style={{ float: 'right', marginRight: '20px', marginBottom: '20px' }}
+        onClick={() => history.push(createWebhookURL)}
       >
-        <span
-          style={{
-            fontWeight: 'bold',
-            marginBottom: '10px',
-            fontSize: 'larger',
-          }}
-        >
-          {intl.formatMessage({ id: 'pages.webhook.list.title.created' })}
-        </span>
-        <Button
-          type="primary"
-          style={{ float: 'right' }}
-          onClick={() => history.push(createWebhookURL)}
-        >
-          {intl.formatMessage({ id: 'pages.webhook.list.action.create' })}
-        </Button>
-      </div>
+        {intl.formatMessage({ id: 'pages.webhook.list.action.create' })}
+      </Button>
       <Table
         columns={columns}
         dataSource={webhookTableData}

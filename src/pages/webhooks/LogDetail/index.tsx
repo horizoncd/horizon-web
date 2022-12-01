@@ -1,37 +1,14 @@
-import { Card, Divider } from 'antd';
 import { useParams, useRequest } from 'umi';
-import styled from 'styled-components';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { getWebhookLog } from '@/services/webhooks/webhooks';
-import utils from '@/utils';
-
-const Title = styled.span`
-  font-weight: bold;
-  font-size: '20px';
-`;
-
-const BasicInfo = styled.div`
-  margin-block: 15px;
-`;
-
-// this style refers to gitlab
-const ContentBlock = styled.pre`
-  background-color: #fafafa;
-  border-radius: 2px;
-  border: 1px solid #dbdbdb;
-  padding: 8px 12px;
-  font-size: 0.8125rem;
-`;
+import { WebhookLogDetail } from '../components/WebhookComponents';
 
 function LogList() {
+  const intl = useIntl();
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr, 10);
-  const { data: webhookLog } = useRequest(
-    () => getWebhookLog(
-      id,
-    ),
-    { },
-  );
+  const { data: webhookLog } = useRequest(() => getWebhookLog(id));
 
   return (
     <PageWithBreadcrumb>
@@ -42,68 +19,9 @@ function LogList() {
           fontSize: 'larger',
         }}
       >
-        Webhook触发记录详情
+        {intl.formatMessage({ id: 'pages.webhook.log.detail.title' })}
       </div>
-      <Card>
-        <BasicInfo>
-          <Title>
-            请求URL：
-          </Title>
-          <span>
-            {webhookLog?.url}
-          </span>
-        </BasicInfo>
-        <BasicInfo>
-          <Title>
-            触发条件：
-          </Title>
-          <span>
-            {webhookLog?.trigger}
-          </span>
-        </BasicInfo>
-        <BasicInfo>
-          <Title>
-            时长：
-          </Title>
-          <span>
-            {utils.timeSecondsDuration(webhookLog?.createdAt || '', webhookLog?.updatedAt || '')}
-            s
-          </span>
-        </BasicInfo>
-        <BasicInfo>
-          <Title>
-            发送时间：
-          </Title>
-          <span>
-            {webhookLog?.createdAt}
-          </span>
-        </BasicInfo>
-        <Divider />
-        <Title>
-          请求头
-        </Title>
-        <ContentBlock>
-          {webhookLog?.requestHeaders}
-        </ContentBlock>
-        <Title>
-          请求体
-        </Title>
-        <ContentBlock>
-          {JSON.stringify(JSON.parse(webhookLog?.requestData || '{}'), null, 4)}
-        </ContentBlock>
-        <Title>
-          返回头
-        </Title>
-        <ContentBlock>
-          {webhookLog?.responseHeaders}
-        </ContentBlock>
-        <Title>
-          返回体
-        </Title>
-        <ContentBlock>
-          {webhookLog?.responseBody}
-        </ContentBlock>
-      </Card>
+      <WebhookLogDetail webhookLog={webhookLog} />
     </PageWithBreadcrumb>
   );
 }

@@ -1,7 +1,6 @@
 import {
   useModel, useParams, useRequest, history,
 } from 'umi';
-import { useState } from 'react';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
@@ -19,55 +18,36 @@ function EditWebhook(props: { initialState: API.InitialState }) {
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr, 10);
   const isAdminPage = originResourceType === 'group' && resourceID === 0;
-  const [formData, setFormData] = useState<Webhooks.CreateOrUpdateWebhookReq>();
-  const listWebhooksURL = isAdminPage ? '/admin/webhooks' : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
-  const { data: webhook } = useRequest(
-    () => getWebhook(
-      id,
-    ),
-    {
-      onSuccess: () => {
-        const data = {
-          url: webhook!.url,
-          description: webhook!.description,
-          enabled: webhook!.enabled,
-          sslVerifyEnabled: webhook!.sslVerifyEnabled,
-          secret: webhook!.secret,
-          triggers: webhook!.triggers,
-        };
-        setFormData(data);
-      },
-    },
-  );
+  const listWebhooksURL = isAdminPage
+    ? '/admin/webhooks'
+    : `/${resourceType}${resourceFullPath}/-/settings/webhooks`;
+  const { data: webhook } = useRequest(() => getWebhook(id));
 
-  const onFinish = (data : Webhooks.CreateOrUpdateWebhookReq) => {
-    updateWebhook(id, data).then(
-      () => {
-        successAlert('webhook更新成功');
-        history.push(listWebhooksURL);
-      },
-    );
+  const onFinish = (data: Webhooks.CreateOrUpdateWebhookReq) => {
+    updateWebhook(id, data).then(() => {
+      successAlert('webhook更新成功');
+      history.push(listWebhooksURL);
+    });
   };
 
   return (
     <PageWithBreadcrumb>
-      <div
-        style={{
-          fontWeight: 'bold',
-          marginBottom: '10px',
-          fontSize: 'larger',
-        }}
-      >
-        编辑Webhook
-      </div>
-      <div
-        style={{ padding: '20px' }}
-      >
-        <WebhookConfig
-          onFinish={onFinish}
-          data={formData}
-          onCancel={() => history.push(listWebhooksURL)}
-        />
+      <h1>编辑Webhook</h1>
+      <div style={{ padding: '20px' }}>
+        {webhook && (
+          <WebhookConfig
+            onFinish={onFinish}
+            data={{
+              url: webhook?.url,
+              description: webhook?.description,
+              enabled: webhook?.enabled,
+              sslVerifyEnabled: webhook?.sslVerifyEnabled,
+              secret: webhook?.secret,
+              triggers: webhook?.triggers,
+            }}
+            onCancel={() => history.push(listWebhooksURL)}
+          />
+        )}
       </div>
     </PageWithBreadcrumb>
   );

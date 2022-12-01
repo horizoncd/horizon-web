@@ -27,7 +27,7 @@ declare namespace Webhooks {
     resourceType: string
     resourceName: string
     resourceID: number
-    action: string
+    eventType: string
     createdAt: string
     updatedAt: string
     createdBy: API.User

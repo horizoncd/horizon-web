@@ -1,10 +1,12 @@
 import { useModel, history } from 'umi';
+import { useIntl } from '@@/plugin-locale/localeExports';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { WebhookConfig } from '../components/WebhookComponents';
 import { createWebhook } from '@/services/webhooks/webhooks';
 
 function New(props: { initialState: API.InitialState }) {
+  const intl = useIntl();
   const { initialState } = props;
   const {
     id: resourceID = 0,
@@ -19,7 +21,7 @@ function New(props: { initialState: API.InitialState }) {
   const onFinish = (data: Webhooks.CreateOrUpdateWebhookReq) => {
     createWebhook(resourceType!, resourceID!, data).then(
       () => {
-        successAlert('webhook创建成功');
+        successAlert(intl.formatMessage({ id: 'pages.webhook.new.alert.create success' }));
         history.push(listWebhooksURL);
       },
     );
@@ -34,7 +36,7 @@ function New(props: { initialState: API.InitialState }) {
           fontSize: 'larger',
         }}
       >
-        新建Webhook
+        {intl.formatMessage({ id: 'pages.webhook.new.title' })}
       </div>
       <div
         style={{ padding: '20px' }}
