@@ -15,7 +15,11 @@ const theme: Theme = {
     xlarge: '1.5em',
     xxlarge: '2em',
   },
-  fontWeight: '600',
+  fontWeight: {
+    bold: '700',
+    normal: '400',
+    light: '300',
+  },
 };
 
 function WithTheme(props: { children: React.ReactNode }) {

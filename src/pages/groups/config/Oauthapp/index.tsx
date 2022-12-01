@@ -21,7 +21,7 @@ export default () => {
   const { data: cdata, run: runList } = useRequest(() => list(groupID));
   const columns: ColumnsType<API.APPBasicInfo> = [
     {
-      title: 'Name',
+      title: intl.formatMessage({ id: 'pages.common.name' }),
       dataIndex: 'appName',
       key: 'appName',
       render: (text, row) => (
@@ -61,16 +61,16 @@ export default () => {
             style={RBAC.Permissions.deleteOauthApplication.allowed ? { backgroundColor: '#dd2b0e', color: 'white' } : {}}
             onClick={() => {
               Modal.confirm({
-                title: 'Delete',
-                content: 'This action cannot be undone. This oauth will stop working immediately. Are you sure you want to delete this oauth app  ?',
+                title: intl.formatMessage({ id: 'pages.common.delete' }),
+                content: intl.formatMessage({ id: 'pages.message.oauth.delete.hint' }),
                 icon: <ExclamationCircleOutlined />,
-                okText: <div>OK</div>,
-                cancelText: <div>Cancel</div>,
+                okText: intl.formatMessage({ id: 'pages.common.confirm' }),
+                cancelText: intl.formatMessage({ id: 'pages.common.cancel' }),
                 onOk: onDelete,
               });
             }}
           >
-            Delete
+            {intl.formatMessage({ id: 'pages.common.delete' })}
           </Button>
         );
       },
@@ -80,8 +80,8 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <div>
-        <h2>OAuth apps</h2>
-        <p>Manage Oauth app that can use Horizon as an OAuth provider.</p>
+        <h2>{intl.formatMessage({ id: 'pages.oauth.title' })}</h2>
+        <p>{intl.formatMessage({ id: 'pages.message.oauth.hint' })}</p>
         <Button
           type="primary"
           className={styles.flex}

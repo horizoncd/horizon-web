@@ -2,12 +2,13 @@ import {
   Col, Form, Input, Row,
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { createRegion } from '@/services/regions/regions';
 import KubernetesForm from '../Form';
 
 export default () => {
+  const intl = useIntl();
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
 
@@ -20,12 +21,17 @@ export default () => {
             layout="vertical"
             onFinish={(v) => {
               createRegion(v).then(({ data: id }) => {
-                successAlert('Kubernetes 创建成功');
+                successAlert(intl.formatMessage({ id: 'pages.common.create.success' }));
                 history.push(`/admin/kubernetes/${id}`);
               });
             }}
           >
-            <Form.Item label="名称" name="name" rules={[{ required: true }]} extra="Kubernetes唯一名称标识">
+            <Form.Item
+              label={intl.formatMessage({ id: 'pages.kubernetes.name' })}
+              name="name"
+              rules={[{ required: true }]}
+              extra={intl.formatMessage({ id: 'pages.message.k8s.name.extra' })}
+            >
               <Input />
             </Form.Item>
             <KubernetesForm />

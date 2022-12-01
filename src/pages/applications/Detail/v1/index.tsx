@@ -144,7 +144,7 @@ export default () => {
         pipeline: totalFormData.pipeline,
       };
       updateApplicationEnvTemplate(id, currentEnv, updateData).then(() => {
-        successAlert('模版更新成功');
+        successAlert(intl.formatMessage({ id: 'pages.message.template.update.success' }));
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +186,7 @@ export default () => {
                 setEditing((prev) => !prev);
               }}
             >
-              {editing ? '提交' : '编辑'}
+              {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             {
             editing && (
@@ -200,7 +200,7 @@ export default () => {
                 });
               }}
             >
-              取消
+              {intl.formatMessage({ id: 'pages.common.cancel' })}
             </Button>
             )
           }
@@ -216,7 +216,7 @@ export default () => {
               }}
             >
               <Option key="default" value="">
-                默认
+                {intl.formatMessage({ id: 'pages.common.default' })}
               </Option>
               {environments?.map((item) => (
                 <Option key={item.name} value={item.name}>

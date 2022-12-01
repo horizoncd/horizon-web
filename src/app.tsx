@@ -1,7 +1,7 @@
 /* eslint-disable */
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { Menu, notification, Tooltip } from 'antd';
+import { notification, Tooltip } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import {
@@ -11,7 +11,6 @@ import {
   ClusterOutlined,
   ContactsOutlined,
   DatabaseOutlined,
-  DownOutlined,
   EditOutlined,
   EnvironmentOutlined,
   FundOutlined,
@@ -26,6 +25,7 @@ import {
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
 import RightContent from '@/components/RightContent';
+import HeaderContent from '@/components/HeaderContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
 import Utils, { handleHref, pathnameInStaticRoutes } from '@/utils';
@@ -38,7 +38,6 @@ import type { API } from './services/typings';
 const loginPath = '/user/login';
 const callbackPath = '/user/login/callback';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
-const { SubMenu } = Menu;
 
 const IconMap = {
   smile: <SmileOutlined />,
@@ -202,8 +201,8 @@ export const request: RequestConfig = {
     const { response, data } = error;
     if (!response) {
       notification.error({
-        message: '网络异常',
-        description: '您的网络发生异常，无法连接服务器',
+        message: 'Network anomaly',
+        description: 'Your network is abnormal and cannot connect to the server',
       });
     }
     if (response.headers.get(sessionExpireHeaderKey)) {
@@ -227,40 +226,7 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => ({
-  headerContentRender: () => (
-    <Menu mode="horizontal" theme="dark" style={{ marginLeft: '10px', color: '#989898' }} selectable={false}>
-      <Menu.Item key="1">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/clusters')}>Clusters</a>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/applications')}>Applications</a>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/groups')}>Groups</a>
-      </Menu.Item>
-      <Menu.Item key="7">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/templates')}>Templates</a>
-      </Menu.Item>
-      {
-          initialState?.currentUser?.isAdmin && (
-            <SubMenu
-              key="4"
-              title={(
-                <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-                  More
-                  {' '}
-                  <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
-                </span>
-              )}
-            >
-              <Menu.Item key="6">
-                <a style={{ fontWeight: 'bold' }} href="/admin">Admin</a>
-              </Menu.Item>
-            </SubMenu>
-          )
-      }
-    </Menu>
-  ),
+  headerContentRender: () => <HeaderContent />,
   rightContentRender: () => <RightContent />,
   footerRender: () => <Footer />,
   onPageChange: () => {
@@ -410,7 +376,7 @@ function formatTemplateMenu(fullPath: string): MenuDataItem[] {
   return [
     ...routes,
     {
-      name: '模板详细信息',
+      name: 'Template overview',
       icon: 'templates',
       path: `/templates${fullPath}/-/detail`,
     },
@@ -459,7 +425,7 @@ function formatGroupMenu(fullPath: string) {
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps`,
-          name: '开发者设置',
+          name: 'Developer',
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,

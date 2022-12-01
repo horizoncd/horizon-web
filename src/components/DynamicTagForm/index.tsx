@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { useIntl } from 'umi';
 
 export enum ValueType {
   Single,
@@ -23,12 +24,13 @@ interface Props {
   disabled?: boolean
 }
 
-export default (props: Props) => {
-  const [form] = Form.useForm();
-  const { successAlert, errorAlert } = useModel('alert');
+const DynamicTagForm = (props: Props) => {
   const {
     queryTags, updateTags, valueType, callback, disabled = false,
   } = props;
+  const [form] = Form.useForm();
+  const { successAlert, errorAlert } = useModel('alert');
+  const intl = useIntl();
 
   const { data, run: refresh } = useRequest(() => queryTags(), {
     onSuccess: () => {
@@ -39,10 +41,10 @@ export default (props: Props) => {
   const { run: update } = useRequest((request) => updateTags(request), {
     manual: true,
     onSuccess: () => {
-      successAlert('标签更新成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.tags.editSuccess' }));
     },
     onError: () => {
-      successAlert('标签更新失败');
+      successAlert(intl.formatMessage({ id: 'pages.message.tags.editFail' }));
     },
   });
 
@@ -55,26 +57,26 @@ export default (props: Props) => {
     });
   };
 
-  const valueKey = valueType == ValueType.Multiple ? 'values' : 'value';
-  const valueRules = valueType == ValueType.Multiple ? [] : [{
+  const valueKey = valueType === ValueType.Multiple ? 'values' : 'value';
+  const valueRules = valueType === ValueType.Multiple ? [] : [{
     required: true,
-    message: '值是必填项，长度不超过1280个字符',
+    message: intl.formatMessage({ id: 'pages.message.tags.value.hint' }),
     max: 1280,
   }];
 
-  const keyRuleMessage = '键是必填项，长度不超过63个字符,支持大小写字母、数字开头、横杠、斜杠、下划线、小数点的组合，且必须以大小写字母、数字开头和结尾';
+  const keyRuleMessage = intl.formatMessage({ id: 'pages.message.tags.key.hint' });
   return (
     <div>
       <Row style={{ marginBottom: 5 }}>
         <Col span={12}>
           <span style={{ color: 'red' }}>*</span>
           {' '}
-          键
+          {intl.formatMessage({ id: 'pages.tags.key' })}
         </Col>
         <Col>
           <span style={{ color: 'red' }}>*</span>
           {' '}
-          值
+          {intl.formatMessage({ id: 'pages.tags.value' })}
         </Col>
       </Row>
       <Form
@@ -102,8 +104,8 @@ export default (props: Props) => {
                         if (arr.length > 2) {
                           return Promise.reject(new Error(keyRuleMessage));
                         }
-                        const reg = new RegExp('^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$');
-                        for (let i = 0; i < arr.length; i++) {
+                        const reg = /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$/;
+                        for (let i = 0; i < arr.length; i += 1) {
                           if (!arr[i] || !reg.test(arr[i])) {
                             return Promise.reject(new Error(keyRuleMessage));
                           }
@@ -112,7 +114,7 @@ export default (props: Props) => {
                       },
                     })]}
                   >
-                    <Input disabled={disabled} placeholder="key" />
+                    <Input disabled={disabled} placeholder={intl.formatMessage({ id: 'pages.tags.key' })} />
                   </Form.Item>
                   <Form.Item
                     style={{ flex: 1, marginInline: '10px' }}
@@ -120,7 +122,14 @@ export default (props: Props) => {
                     rules={valueRules}
                   >
                     {
-                      valueType == ValueType.Multiple ? <Select disabled={disabled} mode="tags" placeholder="support multiple values" />
+                      valueType === ValueType.Multiple
+                        ? (
+                          <Select
+                            disabled={disabled}
+                            mode="tags"
+                            placeholder={intl.formatMessage({ id: 'pages.message.tags.value.placeholder' })}
+                          />
+                        )
                         : <Input disabled={disabled} placeholder="value" />
                     }
                   </Form.Item>
@@ -133,7 +142,7 @@ export default (props: Props) => {
                   type="dashed"
                   onClick={() => {
                     if (fields.length >= 20) {
-                      errorAlert('标签最多允许创建20个');
+                      errorAlert(intl.formatMessage({ id: 'pages.message.tags.limit' }));
                     } else {
                       add();
                     }
@@ -141,7 +150,7 @@ export default (props: Props) => {
                   block
                   icon={<PlusOutlined />}
                 >
-                  添加标签
+                  {intl.formatMessage({ id: 'pages.tags.add' })}
                 </Button>
               </Form.Item>
             </>
@@ -149,10 +158,17 @@ export default (props: Props) => {
         </Form.List>
         <Form.Item>
           <Button disabled={disabled} type="primary" htmlType="submit">
-            保存
+            {intl.formatMessage({ id: 'pages.common.submit' })}
           </Button>
         </Form.Item>
       </Form>
     </div>
   );
 };
+
+DynamicTagForm.defaultProps = {
+  callback: () => {},
+  disabled: false,
+};
+
+export default DynamicTagForm;

@@ -61,11 +61,11 @@ export default function Basic(props: any) {
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.name' }), value: cluster.name },
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.priority' }), value: cluster.priority },
       {
-        key: '区域',
+        key: intl.formatMessage({ id: 'pages.common.region' }),
         value: cluster ? regionName : '',
       },
       {
-        key: '环境',
+        key: intl.formatMessage({ id: 'pages.common.env' }),
         value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : '',
       },
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.description' }), value: cluster.description || '' },
@@ -109,7 +109,7 @@ export default function Basic(props: any) {
 
   const onIDClick = () => {
     copy(String(cluster.id));
-    successAlert('ID复制成功');
+    successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
   };
 
   return (
@@ -119,7 +119,7 @@ export default function Basic(props: any) {
         <FlexColumn>
           <TitleText>{cluster.name}</TitleText>
           <IDText>
-            <Tooltip title="单击可复制ID">
+            <Tooltip title={intl.formatMessage({ id: 'pages.message.copyID.tooltip' })}>
               {
                 // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                 <NoPaddingButton
@@ -127,8 +127,8 @@ export default function Basic(props: any) {
                   size="small"
                   onClick={onIDClick}
                 >
-                  Cluster ID:
-                  {' '}
+                  {intl.formatMessage({ id: 'pages.cluster.id' })}
+                  {': '}
                   {cluster.id}
                 </NoPaddingButton>
               }

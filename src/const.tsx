@@ -1,3 +1,5 @@
+import Intl from '@/components/Intl';
+
 export enum ResourceType {
   GROUP = 'group',
   APPLICATION = 'application',
@@ -45,12 +47,10 @@ export enum ClusterStatus {
 }
 
 const DeployTypeMap = new Map([
-  ['builddeploy', '构建发布'],
-  ['deploy', '直接发布'],
-  ['rollback', '回滚'],
-  ['restart', '重新启动'],
-  ['freeCluster', '释放集群'],
-  ['deleteCluster', '删除集群'],
+  ['builddeploy', <Intl id="pages.cluster.action.buildDeploy" />],
+  ['deploy', <Intl id="pages.cluster.action.deploy" />],
+  ['rollback', <Intl id="pages.cluster.action.rollback" />],
+  ['restart', <Intl id="pages.cluster.action.restart" />],
 ]);
 
 const pro = 'pro';

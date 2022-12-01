@@ -1,4 +1,4 @@
-import { useModel } from 'umi';
+import { useModel, useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import {
@@ -16,33 +16,36 @@ import { API } from '@/services/typings';
 
 function TemplateDetail(props: { initialState: API.InitialState }) {
   const { initialState: { resource: { type, fullName, id: templateID } } } = props;
+  const intl = useIntl();
   const { successAlert } = useModel('alert');
   const { data: template } = useRequest(() => queryTemplate(templateID), {});
   const { data: releases, refresh } = useRequest(() => queryReleases(templateID));
   const isRootGroup = type === ResourceType.TEMPLATE && template?.group === 0;
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.template.${suffix}` });
+
   const data: Param[][] = [
     [
       {
-        key: '名称',
+        key: formatMessage('name'),
         value: template?.name,
       },
       {
-        key: '描述',
+        key: formatMessage('description'),
         value: template?.description,
       },
       {
-        key: '仓库',
+        key: formatMessage('gitRepo'),
         value: template?.repository,
       },
     ],
     [
       {
-        key: '创建日期',
+        key: formatMessage('createdAt'),
         value: new Date(template?.createdAt || '').toLocaleString(),
       },
       {
-        key: '更新日期',
+        key: formatMessage('updatedAt'),
         value: new Date(template?.updatedAt || '').toLocaleString(),
       },
     ],
@@ -56,7 +59,7 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
         history.push(`/templates/${fullName}/-/newrelease`);
       }}
     >
-      创建release
+      {formatMessage('newRelease')}
     </Button>
   );
 
@@ -67,7 +70,7 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={(
           <Space>
@@ -78,7 +81,7 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
                 history.push(`/templates/${fullName}/-/edit`);
               }}
             >
-              编辑
+              {intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             <Button
               danger
@@ -86,11 +89,11 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
               disabled={!RBAC.Permissions.deleteTemplate.allowed}
               onClick={() => {
                 Modal.confirm({
-                  title: `确认删除Templates: ${template?.name}`,
-                  content: '该版本template有可能正在被application或cluster使用，删除前请确认',
+                  title: intl.formatMessage({ id: 'pages.message.template.delete.confirm' }, { template: template?.name }),
+                  content: intl.formatMessage({ id: 'pages.message.template.delete.content' }),
                   onOk: () => {
                     deleteTemplate(templateID).then(() => {
-                      successAlert('删除Template成功');
+                      successAlert(intl.formatMessage({ id: 'pages.message.template.delete.success' }));
                       if (isRootGroup) {
                         history.push('/templates');
                       } else {
@@ -106,7 +109,7 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
                 });
               }}
             >
-              删除
+              {intl.formatMessage({ id: 'pages.common.delete' })}
             </Button>
           </Space>
     )}

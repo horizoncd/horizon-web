@@ -81,8 +81,8 @@ export default () => {
                 successAlert('ID复制成功');
               }}
               >
-                Group ID:
-                {' '}
+                {intl.formatMessage({ id: 'pages.groups.id' })}
+                {': '}
                 {groupID}
               </span>
             </Tooltip>
@@ -92,7 +92,10 @@ export default () => {
         {header()}
       </div>
       <Divider className="group-divider" />
-      <GroupTree groupID={groupID} tabPane="子分组和应用" />
+      <GroupTree
+        groupID={groupID}
+        tabPane={intl.formatMessage({ id: 'pages.groups.groupsAndApplications' })}
+      />
     </PageWithBreadcrumb>
   );
 };

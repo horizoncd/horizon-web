@@ -3,22 +3,24 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import { MicroApp } from '@/components/Widget';
 
 const MonitorSearchForm = () => {
   const { initialState } = useModel('@@initialState');
   const { name } = initialState!.resource;
+  const intl = useIntl();
+  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.cluster.monitor.${suffix}`, defaultMessage: defaultMsg });
   // @ts-ignore
   const { timeRange, type = 'now-1h' } = history.location.query;
   const timeRanges = [
-    { key: 'now-1h', text: '最近1小时' },
-    { key: 'now-3h', text: '最近3小时' },
-    { key: 'now-6h', text: '最近6小时' },
-    { key: 'now-12h', text: '最近12小时' },
-    { key: 'now-1d', text: '最近1天' },
-    { key: 'now-3d', text: '最近3天' },
-    { key: 'custom', text: '自定义' },
+    { key: 'now-1h', text: formatMessage('last.1h') },
+    { key: 'now-3h', text: formatMessage('last.3h') },
+    { key: 'now-6h', text: formatMessage('last.6h') },
+    { key: 'now-12h', text: formatMessage('last.12h') },
+    { key: 'now-1d', text: formatMessage('last.1d') },
+    { key: 'now-3d', text: formatMessage('last.3d') },
+    { key: 'custom', text: formatMessage('custom') },
   ];
 
   const varPods = history.location.query!['var-pod'];
@@ -67,7 +69,8 @@ const MonitorSearchForm = () => {
           )
         }
         <span style={{ margin: '0 10px' }}>
-          自动刷新:
+          {formatMessage('autoRefresh')}
+          :
         </span>
         <span>
           <Select
@@ -82,10 +85,10 @@ const MonitorSearchForm = () => {
               });
             }}
           >
-            <Select.Option key="1" value="">关闭</Select.Option>
-            <Select.Option key="4" value="30s">30 秒</Select.Option>
-            <Select.Option key="5" value="1m">1 分钟</Select.Option>
-            <Select.Option key="6" value="5m">5 分钟</Select.Option>
+            <Select.Option key="1" value="">{intl.formatMessage({ id: 'pages.common.close' })}</Select.Option>
+            <Select.Option key="4" value="30s">{formatMessage('autoRefresh.30s')}</Select.Option>
+            <Select.Option key="5" value="1m">{formatMessage('autoRefresh.1min')}</Select.Option>
+            <Select.Option key="6" value="5m">{formatMessage('autoRefresh.5min')}</Select.Option>
           </Select>
         </span>
         <MicroApp name="monitoring" singlePod={singlePod} clusterName={name} />

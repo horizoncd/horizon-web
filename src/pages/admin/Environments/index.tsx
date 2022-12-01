@@ -2,7 +2,7 @@ import { Button, Space, Table } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useState } from 'react';
 import { history } from '@@/core/history';
-import { Link } from 'umi';
+import { Link, useIntl } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NoData from '@/components/NoData';
 import { queryEnvironments } from '@/services/environments/environments';
@@ -13,11 +13,14 @@ import dashboardStyles from '../../dashboard/index.less';
 import Utils from '@/utils';
 
 export default () => {
+  const intl = useIntl();
   const [envToRegions, setEnvToRegions] = useState<Map<string, SYSTEM.EnvironmentRegion[]>>(new Map());
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.environment.${suffix}` });
 
   const columns = [
     {
-      title: '名称',
+      title: formatMessage('name'),
       dataIndex: 'name',
       render: (name: number, r: SYSTEM.Environment) => (
         <Space size="middle">
@@ -26,7 +29,7 @@ export default () => {
       ),
     },
     {
-      title: '展示名',
+      title: formatMessage('displayName'),
       dataIndex: 'displayName',
     },
     {
@@ -35,17 +38,17 @@ export default () => {
       render: (text: any) => text,
     },
     {
-      title: '自动释放',
+      title: formatMessage('autoFree'),
       dataIndex: 'autoFree',
-      render: (text: boolean) => (text ? '已开启' : '已关闭'),
+      render: (text: boolean) => (text ? formatMessage('autoFree.on') : formatMessage('autoFree.off')),
     },
     {
-      title: '创建时间',
+      title: formatMessage('createdAt'),
       dataIndex: 'createdAt',
       render: (v: string) => Utils.timeToLocal(v),
     },
     {
-      title: '更新时间',
+      title: formatMessage('updatedAt'),
       dataIndex: 'updatedAt',
       render: (v: string) => Utils.timeToLocal(v),
     },
@@ -77,7 +80,7 @@ export default () => {
         history.push('/admin/environments/new');
       }}
     >
-      创建环境
+      {formatMessage('new')}
     </Button>
   );
 
@@ -90,14 +93,14 @@ export default () => {
           {
             region.isDefault && (
             <span className={dashboardStyles.userAccessRole}>
-              默认
+              {formatMessage('k8s.default')}
             </span>
             )
           }
           {
             region.disabled && (
             <span className={dashboardStyles.userAccessRole}>
-              已禁用
+              {formatMessage('k8s.status.off')}
             </span>
             )
           }
@@ -118,8 +121,8 @@ export default () => {
 
   const locale = {
     emptyText: <NoData
-      title="环境"
-      desc="可创建测试、预发、线上等各个环境"
+      titleID="pages.common.env"
+      descID="pages.noData.env.desc"
     />,
   };
   const table = (

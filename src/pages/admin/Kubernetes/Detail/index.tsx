@@ -1,4 +1,4 @@
-import { useParams } from 'umi';
+import { useIntl, useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import {
@@ -14,50 +14,53 @@ import {
   updateRegionTags,
 } from '@/services/regions/regions';
 import Utils from '@/utils';
-import NotFount from '@/pages/404';
+import NotFound from '@/pages/404';
 import DetailCard, { Param } from '@/components/DetailCard';
 import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
 
 export default () => {
+  const intl = useIntl();
   const params = useParams<{ id: string }>();
   if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const { successAlert } = useModel('alert');
   const regionID = parseInt(params.id, 10);
   const { data: region } = useRequest(() => getRegionByID(regionID), {});
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.kubernetes.${suffix}` });
+
   const data: Param[][] = [
     [
       {
-        key: '名称',
+        key: formatMessage('name'),
         value: region?.name,
       },
       {
-        key: '中文名',
+        key: formatMessage('displayName'),
         value: region?.displayName,
       },
       {
-        key: 'server',
+        key: 'Server',
         value: region?.server,
       },
       {
-        key: 'registry',
+        key: formatMessage('registry'),
         value: region?.registry.name,
       },
     ],
     [
       {
-        key: 'ingress域名',
+        key: formatMessage('ingress'),
         value: region?.ingressDomain,
       },
       {
-        key: 'prometheus地址',
+        key: formatMessage('prometheus'),
         value: region?.prometheusURL,
       },
       {
-        key: 'certificate',
+        key: formatMessage('certificate'),
         value: (
           <Popover
             overlayInnerStyle={{ width: 800 }}
@@ -66,22 +69,22 @@ export default () => {
           }
             placement="bottom"
           >
-            鼠标悬停查看
+            {formatMessage('certificate.show')}
           </Popover>
         ),
       },
       {
-        key: '启用状态',
-        value: region?.disabled ? <span style={{ color: 'red' }}>已禁用</span> : '启用中',
+        key: formatMessage('status'),
+        value: region?.disabled ? <span style={{ color: 'red' }}>{formatMessage('status.off')}</span> : formatMessage('status.on'),
       },
     ],
     [
       {
-        key: '创建时间',
+        key: formatMessage('createdAt'),
         value: Utils.timeToLocal(region?.createdAt || ''),
       },
       {
-        key: '修改时间',
+        key: formatMessage('updatedAt'),
         value: Utils.timeToLocal(region?.updatedAt || ''),
       },
     ],
@@ -90,7 +93,7 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={(
           <Space>
@@ -100,29 +103,29 @@ export default () => {
                 history.push(`/admin/kubernetes/${regionID}/edit`);
               }}
             >
-              编辑
+              {intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             <Button
               danger
               onClick={() => {
                 Modal.confirm({
-                  title: `确认删除Kubernetes: ${region?.name}`,
-                  content: '此为危险操作！如果某个环境已将此kubernetes设置为默认部署Kubernetes，将导致该环境失去默认部署kubernetes，需要选择其他Kubernetes作为默认部署Kubernetes',
+                  title: intl.formatMessage({ id: 'pages.message.k8s.delete.confirm' }, { name: region?.name }),
+                  content: intl.formatMessage({ id: 'pages.message.k8s.delete.content' }),
                   onOk: () => {
                     deleteRegionByID(regionID).then(() => {
-                      successAlert('Kubernetes 删除成功');
+                      successAlert(intl.formatMessage({ id: 'pages.common.delete.success' }));
                       history.push('/admin/kubernetes');
                     });
                   },
                 });
               }}
             >
-              删除
+              {intl.formatMessage({ id: 'pages.common.delete' })}
             </Button>
           </Space>
         )}
       />
-      <Card title="标签管理">
+      <Card title={intl.formatMessage({ id: 'pages.tags.normal.manage' })}>
         <DynamicTagForm
           queryTags={() => getRegionTags(regionID)}
           updateTags={(tags) => updateRegionTags(regionID, tags)}

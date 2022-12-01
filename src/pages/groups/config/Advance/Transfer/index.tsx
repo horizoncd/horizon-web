@@ -30,11 +30,13 @@ export default () => {
     [],
   );
   const groupMap = new Map();
-  const groupsOptions = authedGroups.filter((group) => group.id != groupID && group.id != parentID && (group.fullPath.indexOf(groupFullPath) != 0))
-    .map((group) => {
-      groupMap.set(group.id, group);
-      return <Option key={group.id} value={group.id}>{group.fullName}</Option>;
-    });
+  const groupsOptions = authedGroups.filter(
+    (group) => group.id !== groupID && group.id
+      !== parentID && (group.fullPath.indexOf(groupFullPath) !== 0),
+  ).map((group) => {
+    groupMap.set(group.id, group);
+    return <Option key={group.id} value={group.id}>{group.fullName}</Option>;
+  });
 
   // doTransfer
   const onTransferClick = (values: {
@@ -50,9 +52,9 @@ export default () => {
   };
 
   return (
-    <Card title="Transfer Group">
+    <Card title={intl.formatMessage({ id: 'pages.transfer' })}>
       <p>
-        {intl.formatMessage({ id: 'pages.group.transfer.desc' })}
+        {intl.formatMessage({ id: 'pages.message.groups.transfer.hint' })}
       </p>
       <Form
         onFinish={onTransferClick}

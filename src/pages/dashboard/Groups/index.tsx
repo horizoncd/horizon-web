@@ -19,6 +19,7 @@ import type { API } from '@/services/typings';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import WithContainer from '../components/WithContainer';
 import { setQuery as setQueryUtil } from '../utils';
+import { PopupTime } from '@/components/Widget';
 
 const Search = withTrim(Input.Search);
 const { TabPane } = Tabs;
@@ -117,9 +118,10 @@ function Groups(props: GroupProps) {
         <span style={{ marginLeft: 60 }}>{tmp}</span>
         <span style={{ float: 'right', fontSize: 14, color: '#666666' }}>
           <Tooltip title={Utils.timeToLocal(updatedAt)}>
-            Updated
-            {' '}
-            {Utils.timeFromNowEnUS(updatedAt)}
+            <PopupTime
+              time={Utils.timeToLocal(updatedAt)}
+              prefix={intl.formatMessage({ id: 'pages.common.updated' })}
+            />
           </Tooltip>
         </span>
       </span>
@@ -181,7 +183,7 @@ function Groups(props: GroupProps) {
     isAdmin && (
       <div>
         <Search
-          placeholder="Search"
+          placeholder={intl.formatMessage({ id: 'pages.common.search' })}
           onPressEnter={onPressEnter}
           onSearch={onSearch}
           value={filter}
@@ -241,7 +243,7 @@ function Groups(props: GroupProps) {
         animated={false}
         style={{ marginTop: '15px' }}
       >
-        <TabPane tab="All groups" key="/explore/groups">
+        <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.all.groups' })} key="/explore/groups">
           {groups.map((item: API.GroupChild) => {
             const treeData = formatTreeData([item]);
             const hasChildren = item.childrenCount > 0;

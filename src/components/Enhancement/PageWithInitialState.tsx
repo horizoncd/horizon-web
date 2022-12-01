@@ -1,6 +1,6 @@
 import { useModel } from 'umi';
 import React from 'react';
-import { NotFount } from '../State';
+import { NotFound } from '../State';
 import { API } from '@/services/typings';
 
 export interface PageWithInitialStateProps {
@@ -14,7 +14,7 @@ export function PageWithInitialState<Props extends PageWithInitialStateProps>(
   return function WithInitialPage(props: InnerProps): React.ReactElement {
     const { initialState, loading } = useModel('@@initialState');
     if (loading || !initialState) {
-      return <NotFount />;
+      return <NotFound />;
     }
 
     const unionProps = {

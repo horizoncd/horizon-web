@@ -2,7 +2,7 @@ import {
   Button, Col, Form, Input, Row,
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { queryTemplate, updateTemplate } from '@/services/templates/templates';
@@ -13,6 +13,7 @@ import { API } from '@/services/typings';
 
 function TemplateEdit(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
+  const intl = useIntl();
   const { successAlert } = useModel('alert');
 
   const { initialState: { resource: { id: templateID, fullName } } } = props;
@@ -32,17 +33,17 @@ function TemplateEdit(props: { initialState: API.InitialState }) {
             layout="vertical"
             onFinish={(v) => {
               updateTemplate(templateID, v).then(() => {
-                successAlert('更新成功');
+                successAlert(intl.formatMessage({ id: 'pages.message.template.update.success' }));
                 history.push(`/templates/${fullName}/-/detail`);
               });
             }}
           >
             <Form.Item
-              label="名称"
+              label={intl.formatMessage({ id: 'pages.template.name' })}
               name="name"
               required
               rules={[{ required: true }]}
-              extra="Templates唯一名称标识"
+              extra={intl.formatMessage({ id: 'pages.message.template.name.hint' })}
             >
               <Input disabled />
             </Form.Item>
@@ -56,7 +57,7 @@ function TemplateEdit(props: { initialState: API.InitialState }) {
                 disabled={!rbac.Permissions.updateTemplate.allowed}
                 htmlType="submit"
               >
-                Submit
+                {intl.formatMessage({ id: 'pages.common.submit' })}
               </Button>
             </Form.Item>
           </Form>

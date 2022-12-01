@@ -9,7 +9,7 @@ import { useRequest } from '@@/plugin-request/request';
 import {
   FundOutlined, GitlabOutlined, RocketTwoTone,
 } from '@ant-design/icons/lib';
-import { Location } from 'umi';
+import { Location, useIntl } from 'umi';
 import { listClusters } from '@/services/clusters/clusters';
 import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
@@ -22,6 +22,7 @@ import TitleWithCount from '../components/TitleWithCount';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { setQuery } from '../utils';
 import WithContainer from '../components/WithContainer';
+import { PopupTime } from '@/components/Widget';
 
 const { Option } = Select;
 const Search = withTrim(Input.Search);
@@ -42,6 +43,7 @@ function Title(props: {
   const {
     updatedAt, scope, template, name, fullPath, git, description, filter, env = '',
   } = props;
+  const intl = useIntl();
   const index = name.indexOf(filter);
   const beforeStr = name.substring(0, index);
   const afterStr = name.substring(index + filter.length);
@@ -82,13 +84,23 @@ function Title(props: {
       }}
       >
         <div style={{ display: 'flex', alignItems: 'center', fontSize: 'larger' }}>
-          <Tooltip title="构建发布">
-            <a aria-label="构建发布" href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}><RocketTwoTone /></a>
+          <Tooltip title={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}>
+            <a
+              aria-label={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
+              href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}
+            >
+              <RocketTwoTone />
+            </a>
           </Tooltip>
-          <Tooltip title="集群监控">
-            <a aria-label="集群监控" href={`/clusters${fullPath}/-/monitoring`}><FundOutlined style={{ marginLeft: '1rem' }} /></a>
+          <Tooltip title={intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' })}>
+            <a
+              aria-label={intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' })}
+              href={`/clusters${fullPath}/-/monitoring`}
+            >
+              <FundOutlined style={{ marginLeft: '1rem' }} />
+            </a>
           </Tooltip>
-          <Tooltip title="代码仓库">
+          <Tooltip title={intl.formatMessage({ id: 'pages.clusterNew.basic.repo' })}>
             <a
               onClick={() => {
                 window.open(git.httpURL);
@@ -104,9 +116,7 @@ function Title(props: {
         }}
         >
           <Tooltip title={Utils.timeToLocal(updatedAt)}>
-            Updated
-            {' '}
-            {Utils.timeFromNowEnUS(updatedAt)}
+            <PopupTime time={updatedAt} prefix={intl.formatMessage({ id: 'pages.common.updated' })} />
           </Tooltip>
         </div>
       </div>
@@ -142,6 +152,7 @@ function Clusters(props: ClustersProps) {
     [QueryMode]: qMode = Mode.Own,
   } = location.query ?? {};
 
+  const intl = useIntl();
   const [filter, setFilter] = useState(qName as string);
   const [total, setTotal] = useState(0);
   const [totalClusters, setTotalClusters] = useState(0);
@@ -248,7 +259,7 @@ function Clusters(props: ClustersProps) {
           <Cascader
             allowClear
             style={{ maxWidth: '150px' }}
-            placeholder="Filter by template"
+            placeholder={intl.formatMessage({ id: 'pages.dashboard.search.filterBy.template' })}
             options={templateOptions}
             // @ts-ignore
             onClear={() => { setTpl(''); setTplRelease(''); }}
@@ -265,7 +276,7 @@ function Clusters(props: ClustersProps) {
           <Select
             allowClear
             style={{ maxWidth: '150px', marginLeft: '5px' }}
-            placeholder="Filter by env"
+            placeholder={intl.formatMessage({ id: 'pages.dashboard.search.filterBy.env' })}
             onSelect={setEnvironment}
             onClear={() => setEnvironment('')}
           >
@@ -281,14 +292,14 @@ function Clusters(props: ClustersProps) {
         // @ts-ignore
           <Search
             style={{ width: '40%', marginLeft: '5px' }}
-            placeholder="Search"
+            placeholder={intl.formatMessage({ id: 'pages.common.search' })}
             onChange={onChange}
             value={filter}
           />
       }
       </div>
     );
-  }, [envs, filter, templateOptions, tpl]);
+  }, [envs, filter, intl, templateOptions, tpl]);
 
   const clusterList = useMemo(() => (
     clusters && clusters.map((item: CLUSTER.Cluster) => {
@@ -327,13 +338,18 @@ function Clusters(props: ClustersProps) {
         style={{ marginTop: '15px' }}
       >
         <TabPane
-          tab={<TitleWithCount name="Your clusters" count={totalClusters} />}
+          tab={(
+            <TitleWithCount
+              name={intl.formatMessage({ id: 'pages.dashboard.title.your.clusters' })}
+              count={totalClusters}
+            />
+          )}
           key={Mode.Own}
         >
           {clusterList}
         </TabPane>
         <TabPane
-          tab="All clusters"
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.all.clusters' })}
           key={Mode.All}
         >
           {clusterList}

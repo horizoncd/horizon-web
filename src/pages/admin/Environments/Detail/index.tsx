@@ -1,4 +1,4 @@
-import { useParams } from 'umi';
+import { useIntl, useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { history } from '@@/core/history';
 import {
@@ -16,16 +16,17 @@ import {
   setDefault,
 } from '@/services/environmentregions/environmentregions';
 import Utils from '@/utils';
-import NotFount from '@/pages/404';
+import NotFound from '@/pages/404';
 import DetailCard, { Param } from '@/components/DetailCard';
 import { queryRegions } from '@/services/regions/regions';
 
 const { Option } = Select;
 
 export default () => {
+  const intl = useIntl();
   const params = useParams<{ id: string }>();
   if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const { successAlert } = useModel('alert');
@@ -38,30 +39,32 @@ export default () => {
   });
   const { data: regions } = useRequest(() => queryRegions(), {});
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.environment.${suffix}` });
+
   const data: Param[][] = [
     [
       {
-        key: '环境',
+        key: intl.formatMessage({ id: 'pages.common.env' }),
         value: environment?.name,
       },
       {
-        key: '环境名',
+        key: formatMessage('displayName'),
         value: environment?.displayName,
       },
     ],
     [
       {
-        key: '自动释放',
-        value: environment?.autoFree ? '已开启' : '已关闭',
+        key: formatMessage('autoFree'),
+        value: environment?.autoFree ? formatMessage('autoFree.on') : formatMessage('autoFree.off'),
       },
     ],
     [
       {
-        key: '创建时间',
+        key: formatMessage('createdAt'),
         value: Utils.timeToLocal(environment?.createdAt || ''),
       },
       {
-        key: '修改时间',
+        key: formatMessage('updatedAt'),
         value: Utils.timeToLocal(environment?.updatedAt || ''),
       },
     ],
@@ -70,7 +73,7 @@ export default () => {
   return (
     <PageWithBreadcrumb>
       <DetailCard
-        title={<span>基础信息</span>}
+        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
         data={data}
         extra={(
           <Space>
@@ -80,29 +83,29 @@ export default () => {
                 history.push(`/admin/environments/${environmentID}/edit`);
               }}
             >
-              编辑
+              {intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             <Button
               danger
               onClick={() => {
                 Modal.confirm({
-                  title: `确认删除环境: ${environment?.displayName}`,
+                  title: intl.formatMessage({ id: 'pages.message.environment.delete.confirm' }, { name: environment?.displayName }),
                   onOk: () => {
                     deleteEnvironmentByID(environmentID).then(() => {
-                      successAlert('环境 删除成功');
+                      successAlert(intl.formatMessage({ id: 'pages.message.environment.delete.success' }));
                       history.push('/admin/environments');
                     });
                   },
                 });
               }}
             >
-              删除
+              {intl.formatMessage({ id: 'pages.common.delete' })}
             </Button>
           </Space>
       )}
       />
       <Card
-        title="关联的Kubernetes"
+        title={formatMessage('k8s.associated')}
         extra={(
           <Button
             type="primary"
@@ -110,7 +113,7 @@ export default () => {
               setRegionModalVisible(true);
             }}
           >
-            添加Kubernetes
+            {formatMessage('k8s.add')}
           </Button>
     )}
       >
@@ -118,21 +121,21 @@ export default () => {
           columns={
           [
             {
-              title: 'Kubernetes',
+              title: formatMessage('k8s'),
               dataIndex: 'regionDisplayName',
             },
             {
-              title: '默认',
+              title: formatMessage('k8s.default'),
               dataIndex: 'isDefault',
               render: (text: boolean) => (text ? <CheckOutlined /> : ''),
             },
             {
-              title: '启用状态',
+              title: formatMessage('k8s.status'),
               dataIndex: 'disabled',
-              render: (disabled: boolean) => (disabled ? <span style={{ color: 'red' }}>已禁用</span> : '启用中'),
+              render: (disabled: boolean) => (disabled ? <span style={{ color: 'red' }}>{formatMessage('k8s.status.off')}</span> : formatMessage('k8s.status.on')),
             },
             {
-              title: '操作',
+              title: formatMessage('k8s.operation'),
               dataIndex: 'id',
               render: (id: number, record: SYSTEM.EnvironmentRegion) => (
                 <div>
@@ -143,21 +146,21 @@ export default () => {
                         type="primary"
                         onClick={() => {
                           Modal.confirm({
-                            title: '确认将此Kubernetes设置为默认Kubernetes？',
+                            title: intl.formatMessage({ id: 'pages.message.k8s.setDefault.confirm' }),
                             onOk: () => {
                               setDefault(id).then(() => {
-                                successAlert('设置默认Kubernetes成功');
+                                successAlert(intl.formatMessage({ id: 'pages.message.k8s.setDefault.success' }));
                                 runEnvRegions();
                               });
                             },
                           });
                         }}
                       >
-                        设为默认
+                        {formatMessage('k8s.setDefault')}
                       </a>
                     ) : (
                       <span style={{ color: 'grey' }}>
-                        设为默认
+                        {formatMessage('k8s.setDefault')}
                       </span>
                     )
                   }
@@ -166,17 +169,17 @@ export default () => {
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
                     <a onClick={() => {
                       Modal.confirm({
-                        title: '确认删除此关联Kubernetes？',
+                        title: intl.formatMessage({ id: 'pages.message.k8s.delete.association.confirm' }),
                         onOk: () => {
                           deleteEnvironmentRegionByID(id).then(() => {
-                            successAlert('删除成功');
+                            successAlert(intl.formatMessage({ id: 'pages.message.k8s.delete.association.success' }));
                             runEnvRegions();
                           });
                         },
                       });
                     }}
                     >
-                      删除
+                      {intl.formatMessage({ id: 'pages.common.delete' })}
                     </a>
                   }
                 </div>
@@ -204,7 +207,7 @@ export default () => {
               ...v,
               environmentName: environment!.name,
             }).then(() => {
-              successAlert('创建成功');
+              successAlert(intl.formatMessage({ id: 'pages.common.create.success' }));
               runEnvRegions();
               setRegionModalVisible(false);
             });

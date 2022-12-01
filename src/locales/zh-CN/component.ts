@@ -5,4 +5,9 @@ export default {
   'component.FullscreenModal.copySuccess': '复制成功',
   'component.FullscreenModal.copyFailed': '复制失败',
   'component.FullscreenModal.autoRefresh': '自动刷新',
+
+  'components.signOut': '退出登录',
+
+  'components.collapseList.showAll': '显示所有',
+  'components.collapseList.collapse': '收起',
 };
