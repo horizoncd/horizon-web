@@ -1,4 +1,6 @@
-import { useIntl, useModel } from 'umi';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import { history, useIntl, useModel } from 'umi';
 import { Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons/lib';
 import { BoldText } from '@/components/Widget';
@@ -17,22 +19,22 @@ const GlobalHeaderContent: React.FC = () => {
       selectable={false}
     >
       <Menu.Item key="1">
-        <a href="/dashboard/clusters">
+        <a onClick={() => history.push('/dashboard/clusters')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.clusters' })}</BoldText>
         </a>
       </Menu.Item>
       <Menu.Item key="2">
-        <a href="/dashboard/applications">
+        <a onClick={() => history.push('/dashboard/applications')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.applications' })}</BoldText>
         </a>
       </Menu.Item>
       <Menu.Item key="3">
-        <a href="/dashboard/groups">
+        <a onClick={() => history.push('/dashboard/groups')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.groups' })}</BoldText>
         </a>
       </Menu.Item>
       <Menu.Item key="7">
-        <a href="/templates">
+        <a onClick={() => history.push('/templates')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.templates' })}</BoldText>
         </a>
       </Menu.Item>
