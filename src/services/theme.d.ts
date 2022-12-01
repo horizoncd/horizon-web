@@ -12,9 +12,15 @@ interface FontSize {
   xxlarge: string,
 }
 
+interface FontWeight {
+  light: string,
+  normal: string,
+  bold: string,
+}
+
 interface Theme {
   color: Color,
   fontFamily: string,
   fontSize: FontSize,
-  fontWeight: string,
+  fontWeight: FontWeight,
 }

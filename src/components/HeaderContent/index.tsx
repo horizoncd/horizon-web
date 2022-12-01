@@ -3,6 +3,7 @@ import { history, useIntl, useModel } from 'umi';
 import { Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons/lib';
 import { BoldText } from '@/components/Widget';
+import { PageWithTheme } from '../Enhancement';
 
 const { SubMenu } = Menu;
 
@@ -65,4 +66,4 @@ const GlobalHeaderContent: React.FC = () => {
   );
 };
 
-export default GlobalHeaderContent;
+export default PageWithTheme(GlobalHeaderContent);

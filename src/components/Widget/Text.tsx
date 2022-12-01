@@ -6,5 +6,5 @@ export const MainText = styled.span`
 `;
 
 export const BoldText = styled.span`
-  font-weight: bold;
+  font-weight: ${(props: { theme: Theme }) => props.theme.fontWeight.bold};
 `;
