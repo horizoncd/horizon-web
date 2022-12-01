@@ -4,6 +4,7 @@ import {
 import moment from 'moment';
 import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
+import { MicroApp } from '@/components/Widget';
 
 const MonitorSearchForm = () => {
   const { initialState } = useModel('@@initialState');
@@ -87,15 +88,7 @@ const MonitorSearchForm = () => {
             <Select.Option key="6" value="5m">5 分钟</Select.Option>
           </Select>
         </span>
-        <Button
-          style={{ marginLeft: 5 }}
-          type="primary"
-          onClick={() => {
-            window.open(`https://nss.netease.com/sentry/appMonitor/view?clusterName=${name}${singlePod}&sign=0`);
-          }}
-        >
-          哨兵监控
-        </Button>
+        <MicroApp name="monitoring" singlePod={singlePod} clusterName={name} />
       </div>
     </div>
   );

@@ -41,6 +41,7 @@ import styles from './index.less';
 import Utils, { handleHref } from '@/utils';
 import { env2MlogEnv } from '@/const';
 import type { CLUSTER } from '@/services/clusters';
+import { MicroApp } from '@/components/Widget';
 
 const Search = withTrim(Input.Search);
 const pollingInterval = 5000;
@@ -138,11 +139,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     setFullscreen(true);
     setPod(p);
     refreshPodLog(p.podName, p.containerName).then();
-  };
-
-  const onClickMlog = (p: CLUSTER.PodInTable) => {
-    const link = `http://music-pylon.hz.netease.com/cmslog-v2/log/list?clusterName=${cluster?.name}&env=${env2MlogEnv.get(cluster?.scope.environment || 'dev')}&hostname=${p.podName}`;
-    window.open(link);
   };
 
   const eventTableColumns = [
@@ -549,12 +545,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         <div style={{ color: '#1890ff' }}>Stdout</div>
       </Menu.Item>
       <Menu.Item
-        disabled={!RBAC.Permissions.getContainerLog.allowed}
-        onClick={() => onClickMlog(record)}
-      >
-        <div style={{ color: '#1890ff' }}>Mlog</div>
-      </Menu.Item>
-      <Menu.Item
         disabled={!RBAC.Permissions.getEvents.allowed}
         onClick={() => onClickEvents(record)}
       >
@@ -685,6 +675,13 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           >
             Terminal
           </Button>
+          <MicroApp
+            name="log"
+            disabled={!RBAC.Permissions.getContainerLog.allowed}
+            clusterName={cluster?.name}
+            env={env2MlogEnv.get(cluster?.scope.environment || 'dev')}
+            podName={record.podName}
+          />
           <Link to={formatPodMonitorURL(record)}>Monitor</Link>
           <Dropdown trigger={['click']} overlay={otherOperations(record)}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -886,12 +883,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             }
           }
         }}
-        onClose={
-        () => {
-          setFullscreen(false);
-          cancelPodLog();
-        }
-      }
+        onClose={() => { setFullscreen(false); cancelPodLog(); }}
         fullscreen={false}
         supportFullscreenToggle
         supportRefresh

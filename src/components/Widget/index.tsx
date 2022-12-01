@@ -9,8 +9,10 @@ import ResourceAvatar from './ResourceAvatar';
 import LocationBox from './LocationBox';
 import BoldText from './BoldText';
 import StyledDropdownSwitch from './DropdownSwitch';
+import MicroApp from './MicroApp';
 
 export {
-  DangerMessage, DropdownSwitch, ExactTime, MainText, LocationBox,
-  MaxSpace, BoldText, CenterSpin, StyledDropdownSwitch, ResourceAvatar, PopupTime,
+  BoldText, StyledDropdownSwitch, CenterSpin, DangerMessage,
+  DropdownSwitch, ExactTime, MaxSpace, PopupTime,
+  MainText, ResourceAvatar, LocationBox, MicroApp,
 };
