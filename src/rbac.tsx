@@ -1,5 +1,4 @@
 import { useModel } from '@@/plugin-model/useModel';
-import type { API } from './services/typings';
 
 const AnonymousRole = 'anonymous';
 const AdminRole = 'administrator';
@@ -40,6 +39,7 @@ const Resource = {
   templaterelease: 'templatereleases',
   accesstokens: 'accesstokens',
   personalaccesstokens: 'personalaccesstokens',
+  webhooks: 'webhooks',
 };
 
 // 操作
@@ -369,6 +369,11 @@ const Permissions = {
   deleteClusterAccessTokens: {
     resource: `${Resource.cluster}/${Resource.accesstokens}`,
     action: Action.delete,
+    allowed: false,
+  },
+  listClusterWebhooks: {
+    resource: `${Resource.cluster}/${Resource.webhooks}`,
+    action: Action.get,
     allowed: false,
   },
 };

@@ -1,5 +1,3 @@
-import type { GitInfo } from '@/services/code/code';
-// @ts-ignore
 declare namespace API {
   interface InitialState {
     settings?: Partial<LayoutSettings>;
@@ -388,4 +386,13 @@ declare namespace API {
   interface UpdateIDPParam extends IDP {
     id?: number,
   }
+
+  export type GitInfo = {
+    url: string
+    subfolder: string
+    branch: string
+    tag: string
+    commit: string
+  };
+
 }

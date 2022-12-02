@@ -1,5 +1,4 @@
 import { request } from 'umi';
-import { API } from '../typings';
 
 export enum GitRefType {
   Branch = 'branch',
