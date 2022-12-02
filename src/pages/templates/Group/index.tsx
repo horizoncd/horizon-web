@@ -1,5 +1,5 @@
 import { Button, Table, Tabs } from 'antd';
-import { history, useRequest } from 'umi';
+import { history, useIntl, useRequest } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RBAC from '@/rbac';
 import { getTemplates } from '@/services/templates/templates';
@@ -36,6 +36,8 @@ const GroupTemplateTable: React.FC<GroupTemplateTableProps> = (props: GroupTempl
 function TemplatesInGroup(props: { initialState: API.InitialState }) {
   const { initialState: { resource: { fullName, id } } } = props;
 
+  const intl = useIntl();
+
   const queryInput = (
     <Button
       type="primary"
@@ -44,14 +46,14 @@ function TemplatesInGroup(props: { initialState: API.InitialState }) {
         history.push(`/groups/${fullName}/-/newtemplate`);
       }}
     >
-      创建templates
+      {intl.formatMessage({ id: 'pages.template.new' })}
     </Button>
   );
 
   return (
     <PageWithBreadcrumb>
       <TemplateTab createButton={RBAC.Permissions.createTemplate.allowed && queryInput}>
-        <TabPane tab="Templates">
+        <TabPane tab={intl.formatMessage({ id: 'pages.header.templates' })}>
           <GroupTemplateTable key="1" groupID={id} />
         </TabPane>
       </TemplateTab>

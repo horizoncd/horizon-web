@@ -8,6 +8,7 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import { outLogin } from '@/services/login/login';
+import { handleHref } from '@/utils';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -43,7 +44,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         logout();
       }
       if (key === 'profile') {
-        window.location.href = '/profile/user';
+        handleHref(event.domEvent, '/profile/user');
       }
     },
     [setInitialState],

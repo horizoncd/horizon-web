@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import moment from 'moment';
 import queryString from 'query-string';
-import { withRouter } from 'umi';
+import { useIntl, withRouter } from 'umi';
 import {
   Col, Form, Row, Select, Tabs,
 } from 'antd';
@@ -13,9 +13,11 @@ import { queryDashboards } from '@/services/slo/slo';
 const { TabPane } = Tabs;
 
 // @ts-ignore
-const TaskDetailMonitor = ({ location, history }) => {
+const TaskDetailMonitor = (props: any) => {
+  const { location, history } = props;
   const { query } = location;
   const [env, setEnv] = useState('test');
+  const intl = useIntl();
 
   const { data: dashboards } = useRequest(() => queryDashboards(env), {
     refreshDeps: [env],
@@ -54,16 +56,17 @@ const TaskDetailMonitor = ({ location, history }) => {
       <Col span={2} />
       <Col span={20}>
         <Tabs activeKey="overview" size="large">
-          <TabPane tab="概览" key="overview">
+          <TabPane tab={intl.formatMessage({ id: 'pages.slo.overview' })} key="overview">
             <Form layout="inline">
-              <Form.Item label="环境" shouldUpdate>
+              <Form.Item label={intl.formatMessage({ id: 'pages.slo.env' })} shouldUpdate>
                 <Select style={{ width: 130 }} onSelect={(val: string) => setEnv(val)} value={env}>
-                  <Select.Option key="test" value="test">测试</Select.Option>
-                  <Select.Option key="online" value="online">线上</Select.Option>
+                  <Select.Option key="test" value="test">{intl.formatMessage({ id: 'pages.slo.env.test' })}</Select.Option>
+                  <Select.Option key="online" value="online">{intl.formatMessage({ id: 'pages.slo.env.online' })}</Select.Option>
                 </Select>
               </Form.Item>
             </Form>
             <iframe
+              title="overview"
               src={`${dashboards?.overview}`}
               style={{
                 border: 0, width: '100%', height: '580px', marginTop: 10,
@@ -72,9 +75,10 @@ const TaskDetailMonitor = ({ location, history }) => {
           </TabPane>
         </Tabs>
         <Tabs size="large">
-          <TabPane tab="历史" key="history">
+          <TabPane tab={intl.formatMessage({ id: 'pages.slo.history' })} key="history">
             <MonitorSearchForm formData={formData} onSubmit={onSearch} />
             <iframe
+              title="history"
               src={`${dashboards?.history}&${queryString.stringify({ from, to })}`}
               style={{
                 border: 0, width: '100%', height: '2820px', marginTop: 10,

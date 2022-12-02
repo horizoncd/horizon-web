@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import { BookOutlined, DownOutlined, FolderOutlined } from '@ant-design/icons';
 import type { DataNode, EventDataNode, Key } from 'rc-tree/lib/interface';
+import { useIntl } from 'umi';
 import Utils, { handleHref } from '@/utils';
 import './index.less';
 import {
@@ -18,7 +19,8 @@ const Search = withTrim(Input.Search);
 const { TabPane } = Tabs;
 
 export default (props: any) => {
-  const { groupID } = props;
+  const { groupID, tabPane } = props;
+  const intl = useIntl();
   const pageSize = 10;
 
   const searchFunc = groupID ? searchChildren : searchGroups;
@@ -32,25 +34,23 @@ export default (props: any) => {
   const defaultExpandedKeys: (string | number)[] = [];
   const [expandedKeys, setExpandedKeys] = useState(defaultExpandedKeys);
 
-  const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
-    for (let i = 0; i < data.length; i += 1) {
-      const node = data[i];
-      if (searchValue) {
-        expandedKeySet.add(node.parentID);
-      }
-      if (node.children) {
-        updateExpandedKeySet(node.children, expandedKeySet);
-      }
-    }
-  };
-
-  const updateExpandedKeys = (newGroups: API.GroupChild[]) => {
-    const expandedKeySet = new Set<string | number>();
-    updateExpandedKeySet(newGroups, expandedKeySet);
-    setExpandedKeys([...expandedKeySet]);
-  };
-
   useEffect(() => {
+    const updateExpandedKeySet = (data: API.GroupChild[], expandedKeySet: Set<string | number>) => {
+      for (let i = 0; i < data.length; i += 1) {
+        const node = data[i];
+        if (searchValue) {
+          expandedKeySet.add(node.parentID);
+        }
+        if (node.children) {
+          updateExpandedKeySet(node.children, expandedKeySet);
+        }
+      }
+    };
+    const updateExpandedKeys = (newGroups: API.GroupChild[]) => {
+      const expandedKeySet = new Set<string | number>();
+      updateExpandedKeySet(newGroups, expandedKeySet);
+      setExpandedKeys([...expandedKeySet]);
+    };
     const refreshGroups = async () => {
       const { data } = await searchFunc({
         groupID,
@@ -64,7 +64,7 @@ export default (props: any) => {
       updateExpandedKeys(items);
     };
     refreshGroups();
-  }, [query, groupID, pageNumber]);
+  }, [query, groupID, pageNumber, searchFunc, searchValue]);
 
   const titleRender = (node: any): React.ReactNode => {
     const { title } = node;
@@ -84,6 +84,7 @@ export default (props: any) => {
     const { fullPath, type } = node;
 
     return (
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <span onClick={(nativeEvent) => {
         let targetPath = fullPath;
         if (type === 'application') {
@@ -138,29 +139,25 @@ export default (props: any) => {
       nativeEvent: any
     },
   ) => {
-    const { node, nativeEvent } = info;
+    const { node } = info;
     const {
-      key, expanded, fullPath, childrenCount, type,
+      key, expanded, childrenCount,
     } = node;
     // 如果存在子节点，则展开/折叠该group，不然直接跳转
-    if (!childrenCount) {
+    if (childrenCount) {
       // title变为了element对象，需要注意下
-      let targetPath = fullPath;
-      if (type === 'application') {
-        targetPath = `${fullPath}`;
+      if (!expanded) {
+        setExpandedKeys([...expandedKeys, key]);
+      } else {
+        setExpandedKeys(expandedKeys.filter((item) => item !== key));
       }
-      handleHref(nativeEvent, targetPath);
-    } else if (!expanded) {
-      setExpandedKeys([...expandedKeys, key]);
-    } else {
-      setExpandedKeys(expandedKeys.filter((item) => item !== key));
     }
   };
 
   // @ts-ignore
   const queryInput = (
     <Search
-      placeholder="Search"
+      placeholder={intl.formatMessage({ id: 'pages.common.search' })}
       onPressEnter={onPressEnter}
       onSearch={onSearch}
       value={searchValue}
@@ -204,7 +201,7 @@ export default (props: any) => {
   return (
     <div>
       <Tabs defaultActiveKey="1" size="large" tabBarExtraContent={queryInput}>
-        <TabPane tab={props.tabPane} key="1">
+        <TabPane tab={tabPane} key="1">
           {groups.length > 0 ? groups.map((item: API.GroupChild) => {
             const treeData = formatTreeData([item]);
             const hasChildren = item.childrenCount > 0;
@@ -224,10 +221,8 @@ export default (props: any) => {
             );
           }) : (
             <NoData
-              title="分组用于高效管理你的应用"
-              desc={'比如统一的权限管理，为分组下的\n'
-          + '不用应用设置不同的权限。赋予不同的角色以应有的权限\n'
-          + '比如只读guest只能查看、项目owner、maintainer可以进行发布和修改'}
+              titleID="pages.noData.groups.title"
+              descID="pages.noData.groups.desc"
             />
           )}
         </TabPane>

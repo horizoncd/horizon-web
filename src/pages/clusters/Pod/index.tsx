@@ -1,42 +1,40 @@
 import React, { useState } from 'react';
 
-import { useParams, useRequest } from 'umi';
+import { useIntl, useParams, useRequest } from 'umi';
 import { useModel } from '@@/plugin-model/useModel';
 import type {
- V1ContainerState, V1ContainerStatus, V1Handler, V1Probe 
+  V1ContainerStatus, V1Handler, V1Probe,
 } from '@kubernetes/client-node';
-import { V1VolumeMount } from '@kubernetes/client-node';
 import {
- Button, Card, Collapse, Table, Tag 
+  Button, Card, Collapse, Table, Tag,
 } from 'antd';
 import CodeMirror from '@uiw/react-codemirror';
-import { StreamLanguage } from '@codemirror/language';
 import { json } from '@codemirror/lang-json';
 import { history } from '@@/core/history';
 import copy from 'copy-to-clipboard';
-import PodsTable from '../Pods/PodsTable';
-import Utils from '@/utils';
 import podStyles from './index.less';
 import styles from '@/pages/clusters/Pods/PodsTable/index.less';
 import DetailCard from '@/components/DetailCard';
 import type { Param } from '@/components/DetailCard';
-import { queryPodContainers, queryPodDetail } from '@/services/clusters/pods';
+import { queryPodDetail } from '@/services/clusters/pods';
 import Detail from '@/components/PageWithBreadcrumb';
-import { getClusterStatus } from '@/services/clusters/clusters';
 
 const { Panel } = Collapse;
 export default (props: any): React.ReactNode => {
+  const { location } = props;
+  const intl = useIntl();
   const params = useParams<{ name: string }>();
   const podName = params.name;
   const { initialState } = useModel('@@initialState');
   const { id: clusterID } = initialState!.resource;
 
-  const { query: q } = props.location;
+  const { query: q } = location;
   const { jsonMode = false } = q;
 
   const [containerStatus, setContainerStatus] = useState<Record<string, V1ContainerStatus>>({});
-  const [initContainerStatus, setInitContainerStatus] = useState<Record<string, V1ContainerStatus>>({});
   const { successAlert, errorAlert } = useModel('alert');
+
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.cluster.pod.${suffix}` });
 
   const { data: pod } = useRequest(() => queryPodDetail(clusterID, podName), {
     refreshDeps: [podName],
@@ -54,7 +52,6 @@ export default (props: any): React.ReactNode => {
           ist[s.name] = s;
         },
       );
-      setInitContainerStatus(ist);
     },
   });
 
@@ -169,9 +166,9 @@ export default (props: any): React.ReactNode => {
 
   const onCopyClick = () => {
     if (copy(JSON.stringify(pod, null, 2))) {
-      successAlert('复制成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.copy.success' }));
     } else {
-      errorAlert('复制失败');
+      errorAlert(intl.formatMessage({ id: 'pages.message.copy.fail' }));
     }
   };
 
@@ -184,7 +181,7 @@ export default (props: any): React.ReactNode => {
             style={{ marginRight: '10px' }}
             onClick={onCopyClick}
           >
-            复制
+            {intl.formatMessage({ id: 'pages.common.copy' })}
           </Button>
           )
         }
@@ -202,7 +199,7 @@ export default (props: any): React.ReactNode => {
               }}
               style={{ marginRight: '10px' }}
             >
-              普通视图
+              {formatMessage('normalView')}
             </Button>
           ) : (
             <Button
@@ -217,7 +214,7 @@ export default (props: any): React.ReactNode => {
               }}
               style={{ marginRight: '10px' }}
             >
-              JSON视图
+              {formatMessage('jsonView')}
             </Button>
           )
         }
@@ -233,12 +230,16 @@ export default (props: any): React.ReactNode => {
         ) : (
           <div>
             <DetailCard
-              title={<span className={styles.containerDetailHeading}>基本信息</span>}
+              title={(
+                <span className={styles.containerDetailHeading}>
+                  {intl.formatMessage({ id: 'pages.common.basicInfo' })}
+                </span>
+              )}
               data={
               [
                 [
                   {
-                    key: '名称',
+                    key: intl.formatMessage({ id: 'pages.common.name' }),
                     value: podName,
                   },
                   {
@@ -246,56 +247,60 @@ export default (props: any): React.ReactNode => {
                     value: pod?.metadata?.uid,
                   },
                   {
-                    key: '创建时间',
+                    key: intl.formatMessage({ id: 'pages.cluster.podsTable.createdAt' }),
                     value: pod?.metadata?.creationTimestamp,
                   },
                   {
-                    key: '状态',
+                    key: intl.formatMessage({ id: 'pages.cluster.podsTable.podStatus' }),
                     value: pod?.status?.phase || '',
                   },
                   {
-                    key: '标签',
-                    value: <div>
-                      {
-                        Object.keys(pod?.metadata?.labels || {}).map(
-                          (k) => (
-                            <Tag
-                              className={podStyles.annotation}
-                              key={k}
-                            >
-                              {k}
-                              :
-                              {pod!.metadata!.labels![k]}
-                            </Tag>
-                          ),
-                        )
-                      }
-                           </div>,
+                    key: formatMessage('labels'),
+                    value: (
+                      <div>
+                        {
+                          Object.keys(pod?.metadata?.labels || {}).map(
+                            (k) => (
+                              <Tag
+                                className={podStyles.annotation}
+                                key={k}
+                              >
+                                {k}
+                                :
+                                {pod!.metadata!.labels![k]}
+                              </Tag>
+                            ),
+                          )
+                        }
+                      </div>
+                    ),
                   },
                 ],
                 [
                   {
-                    key: '命名空间',
+                    key: formatMessage('namespace'),
                     value: pod?.metadata?.namespace || '',
                   },
                   {
-                    key: '注解',
-                    value: <div>
-                      {
-                        Object.keys(pod?.metadata?.annotations || {}).filter((k) => omitAnnotations.indexOf(k) < 0).map(
-                          (k) => (
-                            <Tag
-                              className={podStyles.annotation}
-                              key={k}
-                            >
-                              {k}
-                              :
-                              {pod!.metadata!.annotations![k]}
-                            </Tag>
-                          ),
-                        )
-                      }
-                           </div>,
+                    key: intl.formatMessage({ id: 'pages.cluster.podsTable.annotations' }),
+                    value: (
+                      <div>
+                        {
+                          Object.keys(pod?.metadata?.annotations || {}).filter((k) => omitAnnotations.indexOf(k) < 0).map(
+                            (k) => (
+                              <Tag
+                                className={podStyles.annotation}
+                                key={k}
+                              >
+                                {k}
+                                :
+                                {pod!.metadata!.annotations![k]}
+                              </Tag>
+                            ),
+                          )
+                        }
+                      </div>
+                    ),
                   },
                 ],
               ]
@@ -303,36 +308,42 @@ export default (props: any): React.ReactNode => {
             />
 
             <DetailCard
-              title={<span className={styles.containerDetailHeading}>资源信息</span>}
+              title={(
+                <span className={styles.containerDetailHeading}>
+                  {formatMessage('resourceInfo')}
+                </span>
+              )}
               data={
               [
                 [
                   {
-                    key: '所在节点名称',
+                    key: formatMessage('nodeName'),
                     value: pod?.spec?.nodeName || '',
                   },
                   {
-                    key: '所在节点IP',
+                    key: formatMessage('nodeIP'),
                     value: pod?.status?.hostIP || '',
                   },
                   {
-                    key: '节点标签选择器',
-                    value: <div>
-                      {
-                        Object.keys(pod?.spec?.nodeSelector || {}).map(
-                          (k) => (
-                            <Tag
-                              className={podStyles.annotation}
-                              key={k}
-                            >
-                              {k}
-                              :
-                              {pod!.spec!.nodeSelector![k]}
-                            </Tag>
-                          ),
-                        )
-                      }
-                           </div>,
+                    key: formatMessage('nodeSelector'),
+                    value: (
+                      <div>
+                        {
+                          Object.keys(pod?.spec?.nodeSelector || {}).map(
+                            (k) => (
+                              <Tag
+                                className={podStyles.annotation}
+                                key={k}
+                              >
+                                {k}
+                                :
+                                {pod!.spec!.nodeSelector![k]}
+                              </Tag>
+                            ),
+                          )
+                        }
+                      </div>
+                    ),
                   },
                 ],
                 [
@@ -354,7 +365,7 @@ export default (props: any): React.ReactNode => {
             />
 
             <Card
-              title={<span className={styles.containerDetailHeading}>状态详情</span>}
+              title={<span className={styles.containerDetailHeading}>{formatMessage('statusDetail')}</span>}
               type="inner"
             >
               <Table
@@ -367,32 +378,32 @@ export default (props: any): React.ReactNode => {
               }
                 columns={[
                   {
-                    title: '类别',
+                    title: formatMessage('statusDetail.type'),
                     dataIndex: 'type',
                     key: 'type',
                   },
                   {
-                    title: '状态',
+                    title: formatMessage('statusDetail.status'),
                     dataIndex: 'status',
                     key: 'status',
                   },
                   {
-                    title: '最后检测时间',
+                    title: formatMessage('statusDetail.lastProbeTime'),
                     dataIndex: 'lastProbeTime',
                     key: 'lastProbeTime',
                   },
                   {
-                    title: '最后转变时间',
+                    title: formatMessage('statusDetail.lastTransitionTime'),
                     dataIndex: 'lastTransitionTime',
                     key: 'lastTransitionTime',
                   },
                   {
-                    title: '原因',
+                    title: formatMessage('statusDetail.reason'),
                     dataIndex: 'reason',
                     key: 'reason',
                   },
                   {
-                    title: '信息',
+                    title: formatMessage('statusDetail.message'),
                     dataIndex: 'message',
                     key: 'message',
                   },
@@ -404,7 +415,11 @@ export default (props: any): React.ReactNode => {
             </Card>
 
             <Card
-              title={<span className={styles.containerDetailHeading}>容器列表</span>}
+              title={(
+                <span className={styles.containerDetailHeading}>
+                  {intl.formatMessage({ id: 'pages.cluster.container.list' })}
+                </span>
+              )}
               style={{ marginTop: '20px' }}
               type="inner"
             >
@@ -414,11 +429,11 @@ export default (props: any): React.ReactNode => {
                   const containerHeader: Param[][] = [[]];
                   const cs = containerStatus![container.name];
                   if (cs) {
-                    const stateKey = Object.keys(cs.state);
+                    const stateKey = Object.keys(cs.state!);
                     if (stateKey.length > 0) {
                       containerHeader[0].push(
                         {
-                          key: '状态',
+                          key: intl.formatMessage({ id: 'pages.cluster.container.status' }),
                           value: stateKey[0],
                         },
                       );
@@ -426,29 +441,35 @@ export default (props: any): React.ReactNode => {
                     if (cs.state?.waiting) {
                       containerHeader[0].push(
                         {
-                          key: '原因',
+                          key: intl.formatMessage({ id: 'pages.cluster.container.reason' }),
                           value: cs.state.waiting.reason || '',
                         },
                       );
                     } else if (cs.state?.terminated) {
                       containerHeader[0].push(
                         {
-                          key: '原因',
+                          key: intl.formatMessage({ id: 'pages.cluster.container.reason' }),
                           value: cs.state.terminated.reason || '',
                         },
                         {
-                          key: '信息',
+                          key: intl.formatMessage({ id: 'pages.cluster.container.message' }),
                           value: cs.state.terminated.message || '',
                         },
                       );
                     }
                   }
                   containerHeader[0].push(
-                    { key: '是否就绪', value: containerStatus![container.name]?.ready?.toString() || '未就绪' },
-                    { key: '是否启动', value: containerStatus![container.name]?.started?.toString() || '未启动' },
+                    {
+                      key: intl.formatMessage({ id: 'pages.cluster.container.ready' }),
+                      value: containerStatus![container.name]?.ready?.toString() || 'false',
+                    },
+                    {
+                      key: intl.formatMessage({ id: 'pages.cluster.container.started' }),
+                      value: containerStatus![container.name]?.started?.toString() || 'false',
+                    },
                   );
                   containerHeader.push([
-                    { key: '镜像', value: container?.image },
+                    { key: intl.formatMessage({ id: 'pages.common.image' }), value: container?.image },
                   ]);
 
                   if (container.ports) {
@@ -470,10 +491,10 @@ export default (props: any): React.ReactNode => {
                       header={container.name}
                     >
                       <DetailCard
-                        title={<span className={styles.containerDetailHeading}>基本信息</span>}
+                        title={<span className={styles.containerDetailHeading}>{intl.formatMessage({ id: 'pages.common.basicInfo' })}</span>}
                         data={containerHeader}
                       />
-                      <span className={styles.containerDetailHeading}>环境变量</span>
+                      <span className={styles.containerDetailHeading}>{intl.formatMessage({ id: 'pages.cluster.container.variables' })}</span>
                       <Table
                         className={styles.containerDetailTable}
                         pagination={
@@ -484,12 +505,12 @@ export default (props: any): React.ReactNode => {
                       }
                         columns={[
                           {
-                            title: '名称',
+                            title: intl.formatMessage({ id: 'pages.common.name' }),
                             dataIndex: 'name',
                             key: 'name',
                           },
                           {
-                            title: '值',
+                            title: intl.formatMessage({ id: 'pages.common.value' }),
                             dataIndex: 'value',
                             key: 'value',
                           },
@@ -499,7 +520,9 @@ export default (props: any): React.ReactNode => {
                         ) : []}
                         rowKey={(env) => env.name}
                       />
-                      <span className={styles.containerDetailHeading}>Volume Mount</span>
+                      <span className={styles.containerDetailHeading}>
+                        {intl.formatMessage({ id: 'pages.cluster.container.volumeMount' })}
+                      </span>
                       <Table
                         className={styles.containerDetailTable}
                         pagination={
@@ -510,23 +533,23 @@ export default (props: any): React.ReactNode => {
                       }
                         columns={[
                           {
-                            title: '名称',
+                            title: intl.formatMessage({ id: 'pages.common.name' }),
                             dataIndex: 'name',
                             key: 'name',
                           },
                           {
-                            title: '只读',
+                            title: intl.formatMessage({ id: 'pages.cluster.container.readonly' }),
                             dataIndex: 'readOnly',
                             key: 'readOnly',
                             render: (value: any) => <span>{value?.toString() || 'false'}</span>,
                           },
                           {
-                            title: '挂载路径',
+                            title: intl.formatMessage({ id: 'pages.cluster.container.mountPath' }),
                             dataIndex: 'mountPath',
                             key: 'mountPath',
                           },
                           {
-                            title: '子路径',
+                            title: intl.formatMessage({ id: 'pages.cluster.container.subpath' }),
                             dataIndex: 'subPath',
                             key: 'subPath',
                           },

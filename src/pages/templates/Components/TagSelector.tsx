@@ -1,11 +1,12 @@
 import { Form, Select } from 'antd';
-import { useRequest } from 'umi';
+import { useRequest, useIntl } from 'umi';
 import { listGitRef } from '@/services/code/code';
 
 const { Option } = Select;
 
 const TagSelector = (props: { repository: string, prefix: string[] }) => {
   const { repository, prefix } = props;
+  const intl = useIntl();
   const { data: tags } = useRequest((filter?: string) => listGitRef({
     refType: 'tag',
     giturl: repository,
@@ -19,11 +20,11 @@ const TagSelector = (props: { repository: string, prefix: string[] }) => {
 
   return (
     <Form.Item
-      label="版本"
+      label={intl.formatMessage({ id: 'pages.template.release' })}
       name={prefix.length === 0 ? 'name' : [...prefix, 'name']}
       required
       rules={[{ required: true }]}
-      extra="release对应template的版本"
+      extra={intl.formatMessage({ id: 'pages.message.release.extra' })}
     >
       <Select>
         {tags && tags.map((s) => <Option key={s} value={s}>{s}</Option>)}

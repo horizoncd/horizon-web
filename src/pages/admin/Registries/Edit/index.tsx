@@ -1,18 +1,19 @@
 import { Col, Form, Row } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history, useParams } from 'umi';
+import { history, useParams, useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import { getRegistryByID, updateRegistryByID } from '@/services/registries/registries';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import NotFount from '@/pages/404';
+import NotFound from '@/pages/404';
 import RegistryForm from '@/pages/admin/Registries/Form';
 
 export default () => {
+  const intl = useIntl();
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
   const params = useParams<{ id: string }>();
   if (!params.id || Number.isNaN(parseInt(params.id, 10))) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const registryID = parseInt(params.id, 10);
@@ -35,7 +36,7 @@ export default () => {
                 preheatPolicyID: parseInt(v.preheatPolicyID, 10),
               };
               updateRegistryByID(registryID, data).then(() => {
-                successAlert('Registry 编辑成功');
+                successAlert(intl.formatMessage({ id: 'pages.common.edit.success' }));
                 history.push(`/admin/registries/${registryID}`);
               });
             }}

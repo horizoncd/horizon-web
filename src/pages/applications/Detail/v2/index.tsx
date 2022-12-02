@@ -149,13 +149,13 @@ export default () => {
         pipeline: buildConfig,
       };
       updateApplicationEnvTemplateV2(id, currentEnv, updateData).then(() => {
-        successAlert('模板更新成功');
+        successAlert(intl.formatMessage({ id: 'pages.message.template.update.success' }));
       });
       setTemplateConfigSubmitted(false);
       setBuildSubmitted(false);
     }
-  }, [buildConfig, buildSubmitted, currentEnv, id,
-    successAlert, templateConfig, templateConfigSubmitted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buildConfig, buildSubmitted, templateConfig, templateConfigSubmitted]);
 
   return (
     <PageWithBreadcrumb>
@@ -185,7 +185,7 @@ export default () => {
                   setEditing((prev) => !prev);
                 }}
               >
-                {editing ? '提交' : '编辑'}
+                {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
               </Button>
               {
               editing && (
@@ -198,7 +198,7 @@ export default () => {
                     });
                   }}
                 >
-                  取消
+                  {intl.formatMessage({ id: 'pages.common.cancel' })}
                 </Button>
               )
             }
@@ -213,7 +213,7 @@ export default () => {
                 }}
               >
                 <Option key="default" value="">
-                  默认
+                  {intl.formatMessage({ id: 'pages.common.default' })}
                 </Option>
                 {environments?.map((item) => (
                   <Option key={item.name} value={item.name}>

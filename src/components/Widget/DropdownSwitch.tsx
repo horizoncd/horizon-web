@@ -42,7 +42,7 @@ DropdownSwitch.defaultProps = {
 };
 
 const StyledDropdownSwitch = styled(DropdownSwitch)`
-  font-weight: ${(props: { theme: Theme }) => props.theme.fontWeight};
+  font-weight: ${(props: { theme: Theme }) => props.theme.fontWeight.bold};
   color: ${(props: { theme: Theme }) => props.theme.color.emphasis};
   font-size: ${(props: { theme: Theme }) => props.theme.fontSize.small};
   font-family: ${(props: { theme: Theme }) => props.theme.fontFamily};

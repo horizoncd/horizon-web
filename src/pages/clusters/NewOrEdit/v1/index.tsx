@@ -433,7 +433,7 @@ export default (props: any) => {
                   onClick={onBuildAndDeployButtonOK}
                   type="primary"
                 >
-                  构建发布
+                  {intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
                 </Button>,
               ]}
               onCancel={onDeployButtonCancel}
@@ -456,7 +456,7 @@ export default (props: any) => {
                   onClick={onDeployButtonOK}
                   type="primary"
                 >
-                  直接发布
+                  {intl.formatMessage({ id: 'pages.cluster.action.deploy' })}
                 </Button>,
               ]}
               onCancel={onDeployButtonCancel}

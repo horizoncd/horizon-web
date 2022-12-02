@@ -1,5 +1,4 @@
 import { request } from 'umi';
-import { API } from '../typings';
 
 export enum GitRefType {
   Branch = 'branch',
@@ -8,6 +7,7 @@ export enum GitRefType {
 }
 
 export type GitInfo = {
+  httpURL: string | URL | undefined;
   url: string
   subfolder: string
   branch: string
@@ -40,7 +40,7 @@ export const parseGitRef = (gitInfo: GitInfo) => {
 
 export const gitRefTypeList = [
   {
-    displayName: '分支',
+    displayName: 'Branch',
     key: GitRefType.Branch,
   },
   {
@@ -55,7 +55,7 @@ export const gitRefTypeList = [
 
 export async function listGitRef(params: API.CodeBranchSearchParam) {
   let url = '/apis/front/v1/code/listbranch';
-  if (params.refType == 'tag') {
+  if (params.refType === 'tag') {
     url = '/apis/front/v1/code/listtag';
   }
   return request<{

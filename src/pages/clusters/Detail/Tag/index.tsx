@@ -2,8 +2,9 @@ import {
   Button, Card, Table,
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
-import { useHistory } from 'umi';
-import { CardTitle, BoldText } from '../Widget';
+import { useHistory, useIntl } from 'umi';
+import { CardTitle } from '../Widget';
+import { BoldText } from '@/components/Widget';
 import styles from '../index.less';
 import RBAC from '@/rbac';
 import {
@@ -16,6 +17,7 @@ export default function Tag(props: any) {
   const { clusterID, clusterFullPath } = props;
 
   const history = useHistory();
+  const intl = useIntl();
 
   const { data: tags } = useRequest(() => getClusterTags(clusterID));
 
@@ -25,14 +27,14 @@ export default function Tag(props: any) {
   const manageAdminTagsRoute = `/clusters${clusterFullPath}/-/admintags`;
   const tagColumns = [
     {
-      title: <BoldText>键</BoldText>,
+      title: <BoldText>{intl.formatMessage({ id: 'pages.tags.key' })}</BoldText>,
       dataIndex: 'key',
       key: 'key',
       width: '30%',
       className: styles.tableHeader,
     },
     {
-      title: <BoldText>值</BoldText>,
+      title: <BoldText>{intl.formatMessage({ id: 'pages.tags.value' })}</BoldText>,
       dataIndex: 'value',
       key: 'value',
       width: '70%',
@@ -48,7 +50,7 @@ export default function Tag(props: any) {
       <Card
         title={(
           <div style={{ display: 'flex' }}>
-            <CardTitle>标签</CardTitle>
+            <CardTitle>{intl.formatMessage({ id: 'pages.tags.normal' })}</CardTitle>
             <div style={{ flex: 1 }} />
             <Button
               disabled={!RBAC.Permissions.updateTags.allowed}
@@ -58,7 +60,7 @@ export default function Tag(props: any) {
                   })
                 }
             >
-              管理标签
+              {intl.formatMessage({ id: 'pages.tags.normal.manage' })}
             </Button>
           </div>
         )}
@@ -73,7 +75,7 @@ export default function Tag(props: any) {
       <Card
         title={(
           <div style={{ display: 'flex' }}>
-            <CardTitle>管理员标签</CardTitle>
+            <CardTitle>{intl.formatMessage({ id: 'pages.tags.admin' })}</CardTitle>
             <div style={{ flex: 1 }} />
             <Button
               disabled={!RBAC.Permissions.updateTemplateSchemaTags.allowed}
@@ -83,7 +85,7 @@ export default function Tag(props: any) {
                   })
                 }
             >
-              管理标签
+              {intl.formatMessage({ id: 'pages.tags.admin.manage' })}
             </Button>
           </div>
         )}

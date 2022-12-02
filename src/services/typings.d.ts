@@ -1,5 +1,3 @@
-import type { GitInfo } from '@/services/code/code';
-// @ts-ignore
 declare namespace API {
   interface InitialState {
     settings?: Partial<LayoutSettings>;
@@ -324,11 +322,6 @@ declare namespace API {
     resourceType?: string,
   };
 
-  type SLODashboards = {
-    overview: string;
-    history: string;
-  };
-
   type Tag = {
     key: string,
     value: string,
@@ -393,4 +386,13 @@ declare namespace API {
   interface UpdateIDPParam extends IDP {
     id?: number,
   }
+
+  export type GitInfo = {
+    url: string
+    subfolder: string
+    branch: string
+    tag: string
+    commit: string
+  };
+
 }

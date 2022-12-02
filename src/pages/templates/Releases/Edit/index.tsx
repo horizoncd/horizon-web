@@ -2,7 +2,7 @@ import {
   Button, Col, Form, Input, Row,
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { getRelease, updateRelease } from '@/services/templates/templates';
@@ -14,6 +14,7 @@ import { PageWithInitialState } from '@/components/Enhancement';
 function EditRelease(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
+  const intl = useIntl();
 
   const { initialState: { resource: { id: releaseID, fullName } } } = props;
   const { data: release } = useRequest(() => getRelease(releaseID), {
@@ -33,12 +34,17 @@ function EditRelease(props: { initialState: API.InitialState }) {
             layout="vertical"
             onFinish={(v) => {
               updateRelease(releaseID, v).then(() => {
-                successAlert('Release 更新成功');
+                successAlert(intl.formatMessage({ id: 'pages.message.release.update.success' }));
                 history.push(`/templates/${templatePath}/-/releases/${releasePath}`);
               });
             }}
           >
-            <Form.Item label="版本" name="name" required extra="release对应的tag">
+            <Form.Item
+              label={intl.formatMessage({ id: 'pages.template.release' })}
+              name="name"
+              required
+              extra={intl.formatMessage({ id: 'pages.message.release.extra' })}
+            >
               <Input disabled />
             </Form.Item>
             <ReleaseForm prefix={[]} />
@@ -48,7 +54,7 @@ function EditRelease(props: { initialState: API.InitialState }) {
                 disabled={!rbac.Permissions.updateRelease.allowed}
                 htmlType="submit"
               >
-                Submit
+                {intl.formatMessage({ id: 'pages.common.submit' })}
               </Button>
             </Form.Item>
           </Form>

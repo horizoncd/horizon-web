@@ -30,7 +30,7 @@ export default () => {
     [],
   );
   const groupMap = new Map();
-  const groupsOptions = authedGroups.filter((group) => group.id != parentID)
+  const groupsOptions = authedGroups.filter((group) => group.id !== parentID)
     .map((group) => {
       groupMap.set(group.id, group);
       return <Option key={group.id} value={group.id}>{group.fullName}</Option>;
@@ -41,7 +41,7 @@ export default () => {
     groupID: number
   }) => {
     transferApplication(applicationID, values.groupID).then(() => {
-      successAlert(`Application has Transfer to ${groupMap.get(values.groupID).fullName}`);
+      successAlert(`Application has transfer to ${groupMap.get(values.groupID).fullName}`);
       history.push(`/applications${
         groupMap.get(values.groupID).fullPath}/${applicationName}/-/settings/advance`);
       form.resetFields();
@@ -50,7 +50,7 @@ export default () => {
   };
 
   return (
-    <Card title="Transfer Application">
+    <Card title={intl.formatMessage({ id: 'pages.application.transfer.title' })}>
       <p>
         {intl.formatMessage({ id: 'pages.application.transfer.desc' })}
       </p>

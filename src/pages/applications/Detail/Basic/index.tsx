@@ -74,7 +74,7 @@ export default (props: any) => {
       trigger={['click']}
     >
       <Button>
-        {intl.formatMessage({ id: 'pages.applicationDetail.basic.operate' })}
+        {intl.formatMessage({ id: 'pages.common.more' })}
         <DownOutlined />
       </Button>
     </Dropdown>
@@ -88,16 +88,16 @@ export default (props: any) => {
           <div className={styles.flexColumn}>
             <div className={styles.titleFont}>{applicationName}</div>
             <div className={styles.idFont}>
-              <Tooltip title="单击可复制ID">
+              <Tooltip title={intl.formatMessage({ id: 'pages.message.copyID.tooltip' })}>
                 <Button
                   className={styles.hiddenButton}
                   onClick={() => {
                     copy(String(id));
-                    successAlert('ID复制成功');
+                    successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
                   }}
                 >
-                  Application ID:
-                  {' '}
+                  {intl.formatMessage({ id: 'pages.application.id' })}
+                  {': '}
                   {id}
                 </Button>
               </Tooltip>

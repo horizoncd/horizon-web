@@ -1,6 +1,7 @@
 import { Space } from 'antd';
 import React from 'react';
-import { useModel } from 'umi';
+import { useModel, SelectLang } from 'umi';
+import { MicroApp } from '../Widget';
 import ApiLink from './ApiLink';
 import Avatar from './AvatarDropdown';
 import ContactUs from './ContactUs';
@@ -25,11 +26,12 @@ const GlobalHeaderRight: React.FC = () => {
 
   return (
     <Space className={className}>
+      <MicroApp name="slo" />
       <ApiLink />
       <DocsLink />
       <ContactUs />
+      <SelectLang style={{ padding: '0px' }} />
       <Avatar />
-      {/*<SelectLang className={styles.action}/>*/}
     </Space>
   );
 };

@@ -4,10 +4,14 @@ import DropdownSwitch from './DropdownSwitch';
 import ExactTime from './ExactTime';
 import MaxSpace from './MaxSpace';
 import PopupTime from './PopupTime';
-import { MainText } from './Text';
+import { MainText, BoldText } from './Text';
 import ResourceAvatar from './ResourceAvatar';
 import LocationBox from './LocationBox';
+import StyledDropdownSwitch from './DropdownSwitch';
+import MicroApp from './MicroApp';
 
 export {
-  CenterSpin, DangerMessage, DropdownSwitch, ExactTime, MaxSpace, PopupTime, MainText, ResourceAvatar, LocationBox,
+  BoldText, StyledDropdownSwitch, CenterSpin, DangerMessage,
+  DropdownSwitch, ExactTime, MaxSpace, PopupTime,
+  MainText, ResourceAvatar, LocationBox, MicroApp,
 };

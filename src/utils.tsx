@@ -12,8 +12,15 @@ const getResourcePath = () => {
       return `/${pathArr[1]}/${pathArr[2]}`;
     }
   }
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups'
-    && item !== 'applications' && item !== 'clusters' && item !== 'templates');
+  const filteredPath = pathname
+    .split('/')
+    .filter(
+      (item) => item !== ''
+        && item !== 'groups'
+        && item !== 'applications'
+        && item !== 'clusters'
+        && item !== 'templates',
+    );
   let path = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -83,8 +90,11 @@ const getBreadcrumbs = (fullName: string) => {
   }
 
   const filteredFullName = fullName.split('/').filter((item) => item !== '');
-  const filteredPath = pathname.split('/').filter((item) => item !== '' && item !== 'groups'
-    && item !== 'applications' && item !== 'clusters');
+  const filteredPath = pathname
+    .split('/')
+    .filter(
+      (item) => item !== '' && item !== 'groups' && item !== 'applications' && item !== 'clusters',
+    );
   let currentLink = '';
   for (let i = 0; i < filteredPath.length; i += 1) {
     const item = filteredPath[i];
@@ -133,14 +143,9 @@ function timeFromNow(oldTime: string) {
   return moment(oldTime).local().locale(getLocale()).fromNow();
 }
 
-// 计算出某个时间点是当前多久以前 by en-US
-function timeFromNowEnUS(oldTime: string) {
-  return moment(oldTime).local().locale('en-US').fromNow();
-}
-
 // 计算出两个时间点之间的间隔
 function timeSecondsDuration(startedAt: string, finishedAt: string) {
-  return moment(finishedAt).diff(moment(startedAt), 'seconds');
+  return moment(finishedAt).diff(moment(startedAt), 'seconds', true);
 }
 
 // 将日期转为浏览器当前时区
@@ -148,7 +153,7 @@ function timeToLocal(time: string) {
   return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString();
 }
 
-export const mergeDefaultValue = (value: any, defaultValue: { [x: string]: any; }) => {
+export const mergeDefaultValue = (value: any, defaultValue: { [x: string]: any }) => {
   const result = {
     ...value,
   };
@@ -299,7 +304,7 @@ export const pathnameInStaticRoutes = (): boolean => {
   return false;
 };
 
-export const handleHref = (event: any, link: string) => {
+export const handleHref = (event: any, link: string, type: string = 'window') => {
   const { metaKey, ctrlKey } = event;
 
   // mac 平台 判断 metaKey; 其他平台判断ctrlKey
@@ -313,7 +318,11 @@ export const handleHref = (event: any, link: string) => {
     window.open(link);
     return;
   }
-  window.location.href = link;
+  if (type === 'window') {
+    window.location.href = link;
+  } else {
+    history.push(link);
+  }
 };
 
 // generate oidc authn link
@@ -340,14 +349,13 @@ export function IdpSetState(u: string, link: boolean = false, customRedirect?: s
   return url.toString();
 }
 
-export const tagShouldOmit = (tag: TAG.Tag) => (tag.key.length > 16 || tag.value.length > 16);
+export const tagShouldOmit = (tag: TAG.Tag) => tag.key.length > 16 || tag.value.length > 16;
 
 export default {
   getResourcePath,
   getBreadcrumbs,
   getAvatarColorIndex,
   timeFromNow,
-  timeFromNowEnUS,
   timeToLocal,
   timeSecondsDuration,
   tagShouldOmit,

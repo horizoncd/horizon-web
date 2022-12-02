@@ -56,6 +56,7 @@ export default (props: MemberProps) => {
     onListMembers,
     onUpdateMember,
     onRemoveMember,
+    allowInvite,
   } = props;
   const { initialState, refresh } = useModel('@@initialState');
   const { successAlert } = useModel('alert');
@@ -75,7 +76,7 @@ export default (props: MemberProps) => {
       if (!data.items) {
         data.items = [];
       }
-      for (let i = 0; i < data.items.length; i++) {
+      for (let i = 0; i < data.items.length; i += 1) {
         if (data.items[i].memberNameID === currentUser.id) {
           setNeedAlert(false);
           break;
@@ -86,10 +87,10 @@ export default (props: MemberProps) => {
       } else {
         let cnt = 0;
         let items: API.Member[] = [];
-        for (let i = 0; i < data.items.length; i++) {
+        for (let i = 0; i < data.items.length; i += 1) {
           if (data.items[i].memberName.indexOf(memberFilter) !== -1) {
             items = items.concat(data.items[i]);
-            cnt++;
+            cnt += 1;
           }
         }
         setMembersAfterFilter({ items, total: cnt });
@@ -123,6 +124,7 @@ export default (props: MemberProps) => {
         setUsers(result.data);
       }
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPage]);
 
   // user搜索框过滤事件：查询user列表
@@ -138,7 +140,7 @@ export default (props: MemberProps) => {
   const onScrollUser = (e: any) => {
     const { target } = e;
     if ((users.total > (userPageNumber + 1) * defaultUserPageSize) && (target.scrollTop + target.offsetHeight >= target.scrollHeight)) {
-      userPageNumber++;
+      userPageNumber += 1;
       setUserPage({
         pageNumber: userPageNumber, pageSize: defaultUserPageSize, filter: userPage.filter, isConcat: true,
       });
@@ -181,10 +183,12 @@ export default (props: MemberProps) => {
   const onRemoveClick = (memberID: number, memberName: string) => {
     Modal.confirm({
       title: intl.formatMessage({ id: 'pages.members.remove.confirm.title' }, {
-        member: <span className={styles.bold}>
-          {' '}
-          {memberName}
-                </span>,
+        member: (
+          <span className={styles.bold}>
+            {' '}
+            {memberName}
+          </span>
+        ),
       }),
       icon: <ExclamationCircleOutlined />,
       okText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.ok' }),
@@ -237,14 +241,16 @@ export default (props: MemberProps) => {
   const memberTabList = [
     {
       key: memberListKey,
-      tab: <div>
-        {intl.formatMessage({ id: 'pages.members.list.label' })}
-        <span
-          className={styles.tabNumber}
-        >
-          {membersAfterFilter.total}
-        </span>
-      </div>,
+      tab: (
+        <div>
+          {intl.formatMessage({ id: 'pages.members.list.label' })}
+          <span
+            className={styles.tabNumber}
+          >
+            {membersAfterFilter.total}
+          </span>
+        </div>
+      ),
     },
   ];
 
@@ -286,46 +292,48 @@ export default (props: MemberProps) => {
   ));
 
   const inviteTabsContents = {
-    inviteMember: <Form
-      layout="vertical"
-      onFinish={onInviteClick}
-      form={form}
-    >
-      <Form.Item
-        name="userID"
-        rules={[{ required: true, message: intl.formatMessage({ id: 'pages.members.user.email.message' }) }]}
-        label={searchMemberLabel}
+    inviteMember: (
+      <Form
+        layout="vertical"
+        onFinish={onInviteClick}
+        form={form}
       >
-        <Select
-          showSearch
-          defaultOpen={false}
-          onSearch={onSearchUser}
-          optionFilterProp="filter"
-          optionLabelProp="label"
-          onPopupScroll={onScrollUser}
-          placeholder={intl.formatMessage({ id: 'pages.members.user.email.threshold' })}
+        <Form.Item
+          name="userID"
+          rules={[{ required: true, message: intl.formatMessage({ id: 'pages.members.user.email.message' }) }]}
+          label={searchMemberLabel}
         >
-          {userOptions}
-        </Select>
-      </Form.Item>
-      <Form.Item
-        name="role"
-        label={chooseRoleLabel}
-        rules={[{ required: true, message: intl.formatMessage({ id: 'pages.members.user.role.message' }) }]}
-        tooltip={(
-          <div
-            className={styles.whitespacePreLine}
+          <Select
+            showSearch
+            defaultOpen={false}
+            onSearch={onSearchUser}
+            optionFilterProp="filter"
+            optionLabelProp="label"
+            onPopupScroll={onScrollUser}
+            placeholder={intl.formatMessage({ id: 'pages.members.user.email.threshold' })}
           >
-            {intl.formatMessage({ id: 'pages.members.role.tip' })}
-          </div>
-)}
-      >
-        <Select>
-          {roleOptions}
-        </Select>
-      </Form.Item>
-      <Button type="primary" htmlType="submit">{intl.formatMessage({ id: 'pages.members.user.invite' })}</Button>
-    </Form>,
+            {userOptions}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="role"
+          label={chooseRoleLabel}
+          rules={[{ required: true, message: intl.formatMessage({ id: 'pages.members.user.role.message' }) }]}
+          tooltip={(
+            <div
+              className={styles.whitespacePreLine}
+            >
+              {intl.formatMessage({ id: 'pages.members.role.tip' })}
+            </div>
+          )}
+        >
+          <Select>
+            {roleOptions}
+          </Select>
+        </Form.Item>
+        <Button type="primary" htmlType="submit">{intl.formatMessage({ id: 'pages.members.user.invite' })}</Button>
+      </Form>
+    ),
   };
 
   return (
@@ -340,7 +348,7 @@ export default (props: MemberProps) => {
       />
       )}
       {
-        (currentUser.isAdmin || props.allowInvite) && (
+        (currentUser.isAdmin || allowInvite) && (
         <Card
           tabList={inviteTabList}
           activeTabKey={inviteMemberKey}
@@ -370,7 +378,7 @@ export default (props: MemberProps) => {
             className={styles.searchShortWidth}
             onChange={onMemberChange}
             onSearch={onMemberSearch}
-            placeholder="Search"
+            placeholder={intl.formatMessage({ id: 'pages.common.search' })}
           />
         </div>
         <List
@@ -398,11 +406,11 @@ export default (props: MemberProps) => {
                       hidden={resourceID === item.resourceID}
                     >
                       {intl.formatMessage({ id: 'pages.members.list.sourceFrom' }, {
-                        resourceName: <a
-                          href={`/${item.resourceType}${item.resourcePath}/-/members`}
-                        >
-                          {item.resourceName}
-                        </a>,
+                        resourceName: (
+                          <a href={`/${item.resourceType}${item.resourcePath}/-/members`}>
+                            {item.resourceName}
+                          </a>
+                        ),
                       })}
                     </span>
                     <span>

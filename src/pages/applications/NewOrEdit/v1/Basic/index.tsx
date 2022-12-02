@@ -59,7 +59,7 @@ export default (props: any) => {
     {
       pattern: gitURLRegExp,
       required: true,
-      message: 'Invalid! A right example: ssh://git@g.hz.netease.com:22222/music-cloud-native/horizon/horizon.git',
+      message: formatMessage('url.ruleMessage'),
       max: 128,
     },
   ];
@@ -84,7 +84,7 @@ export default (props: any) => {
         <div>
           {item.name}
           {' '}
-          <span style={{ color: 'red' }}>(推荐)</span>
+          <span style={{ color: 'red' }}>{intl.formatMessage({ id: 'pages.common.recommend' })}</span>
         </div>
       );
     }
@@ -94,7 +94,7 @@ export default (props: any) => {
 
   const gitRefTypeList = [
     {
-      displayName: '分支',
+      displayName: 'Branch',
       key: 'branch',
     },
     {
@@ -129,7 +129,7 @@ export default (props: any) => {
               autoSize={{ minRows: 3 }}
             />
           </Form.Item>
-          <Form.Item label={formatMessage('template', 'template')}>
+          <Form.Item label={formatMessage('template')}>
             <Input disabled value={template?.name} />
           </Form.Item>
           <Form.Item label={formatMessage('release')} name="release" rules={requiredRule}>
@@ -160,7 +160,7 @@ export default (props: any) => {
             />
           </Form.Item>
           <Form.Item
-            label="版本"
+            label={formatMessage('revision')}
             name="refType"
             rules={gitRevisionRules}
           >
@@ -205,7 +205,7 @@ export default (props: any) => {
             </Form.Item>
           </Form.Item>
           <Form.Item label={formatMessage('subfolder')} name="subfolder">
-            <Input disabled={readOnly} placeholder={readOnly ? '' : '非必填，默认为项目根目录'} />
+            <Input disabled={readOnly} placeholder={readOnly ? '' : intl.formatMessage({ id: 'pages.message.subfolder.hint' })} />
           </Form.Item>
         </Card>
       </HForm>

@@ -2,6 +2,7 @@ import { useRequest } from '@@/plugin-request/request';
 import { useModel } from '@@/plugin-model/useModel';
 import { Card, Select, Table } from 'antd';
 import { useState } from 'react';
+import { useIntl } from 'umi';
 import { queryEnvironments } from '@/services/environments/environments';
 import { getApplicationRegions, updateApplicationRegions, queryRegions } from '@/services/applications/applications';
 import SubmitCancelButton from '@/components/SubmitCancelButton';
@@ -9,6 +10,7 @@ import SubmitCancelButton from '@/components/SubmitCancelButton';
 const { Option } = Select;
 
 export default () => {
+  const intl = useIntl();
   const { initialState } = useModel('@@initialState');
   const { id } = initialState!.resource;
   const [defaultRegions, setDefaultRegions] = useState<{
@@ -43,27 +45,27 @@ export default () => {
 
   const { run: updateRegions, loading } = useRequest(() => updateApplicationRegions(id, defaultRegions), {
     onSuccess: () => {
-      successAlert('默认区域更新成功');
+      successAlert(intl.formatMessage({ id: 'pages.message.defaultRegion.success' }));
     },
     manual: true,
   });
 
   return (
     <Card
-      title="Default Regions"
+      title={intl.formatMessage({ id: 'pages.applicationAdvance.defaultRegion' })}
     >
       <div style={{ padding: '10px 0' }}>
-        可以针对不同的环境配置该环境的默认部署区域。在创建对应环境的集群时，区域会自动填充为该环境默认的部署区域。
+        {intl.formatMessage({ id: 'pages.message.defaultRegion.hint' })}
       </div>
       <Table
         pagination={false}
         columns={[
           {
-            title: '环境',
+            title: intl.formatMessage({ id: 'pages.common.env' }),
             dataIndex: 'envDisplayName',
             key: 'envDisplayName',
           }, {
-            title: '区域',
+            title: intl.formatMessage({ id: 'pages.common.region' }),
             dataIndex: 'regionDisplayName',
             key: 'regionDisplayName',
             render: (regionDisplayName: string, record: { environment: string, region: string }, index: number) => (

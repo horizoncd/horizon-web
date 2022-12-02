@@ -9,10 +9,10 @@ import {
   RetweetOutlined,
   StopOutlined,
 } from '@ant-design/icons';
-import { ClusterStatus } from '@/const';
-import { history } from 'umi';
+import { Link, useIntl } from 'umi';
 import './index.less';
 import { Tooltip } from 'antd';
+import { ClusterStatus } from '@/const';
 
 interface StatusProps {
   text?: string
@@ -21,85 +21,100 @@ interface StatusProps {
 }
 
 // state for clusterStatus and pipeline status
-const Succeeded = (props: StatusProps) => {
+const Succeeded = (props: Omit<StatusProps, 'message'>) => {
   const { text, link } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-success">
       <CheckCircleOutlined />
       {' '}
-      {text || 'Succeeded'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.succeeded' })}
     </span>
   );
   return (
     <div>
       {
-      link ? <a onClick={() => history.push(link)} className="ci-status ci-success">{txt}</a> : txt
+      link ? <Link to={link} className="ci-status ci-success">{txt}</Link> : txt
     }
     </div>
   );
 };
 
-const Failed = (props: StatusProps) => {
+const Failed = (props: Omit<StatusProps, 'message'>) => {
   const { text, link } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-failed">
       <CloseCircleOutlined />
       {' '}
-      {text || 'Failed'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.failed' })}
     </span>
   );
   return (
     <div>
       {
-      link ? <a onClick={() => history.push(link)} className="ci-status ci-failed">{txt}</a> : txt
+      link ? <Link to={link} className="ci-status ci-failed">{txt}</Link> : txt
     }
     </div>
   );
 };
 
-const Cancelled = (props: StatusProps) => {
+const Cancelled = (props: Omit<StatusProps, 'message'>) => {
   const { text, link } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-cancelled">
       <StopOutlined />
       {' '}
-      {text || 'Cancelled'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.canceled' })}
     </span>
   );
   return (
     <div>
       {
-      link ? <a onClick={() => history.push(link)} className="ci-status ci-cancelled">{txt}</a> : txt
+      link ? <Link to={link} className="ci-status ci-cancelled">{txt}</Link> : txt
     }
     </div>
   );
 };
 
-const Progressing = (props: StatusProps) => {
+const Progressing = (props: Omit<StatusProps, 'message'>) => {
   const { text, link } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-progressing">
       <LoadingOutlined />
       {' '}
-      {text || 'Progressing'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.progressing' })}
     </span>
   );
   return (
     <div>
       {
-      link ? <a onClick={() => history.push(link)} className="ci-status ci-progressing">{txt}</a> : txt
+      link ? <Link to={link} className="ci-status ci-progressing">{txt}</Link> : txt
     }
     </div>
   );
 };
 
-const Suspended = (props: StatusProps) => {
+const Suspended = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-suspended">
       <HourglassOutlined />
       {' '}
-      {text || 'Suspended'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.suspended' })}
     </span>
   );
   return (
@@ -109,13 +124,16 @@ const Suspended = (props: StatusProps) => {
   );
 };
 
-const NotFount = (props: StatusProps) => {
+const NotFound = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-notfound">
       <QuestionOutlined />
       {' '}
-      {text || 'NotFound'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.notFound' })}
     </span>
   );
   return (
@@ -125,13 +143,16 @@ const NotFount = (props: StatusProps) => {
   );
 };
 
-const Freeing = (props: StatusProps) => {
+const Freeing = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-freeing">
       <RetweetOutlined />
       {' '}
-      {text || 'Freeing'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.freeing' })}
     </span>
   );
   return (
@@ -141,13 +162,16 @@ const Freeing = (props: StatusProps) => {
   );
 };
 
-const Creating = (props: StatusProps) => {
+const Creating = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-creating">
       <LoadingOutlined />
       {' '}
-      {text || 'Creating'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.creating' })}
     </span>
   );
   return (
@@ -157,13 +181,16 @@ const Creating = (props: StatusProps) => {
   );
 };
 
-const Freed = (props: StatusProps) => {
+const Freed = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-freed">
       <DisconnectOutlined />
       {' '}
-      {text || 'Freed'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.freed' })}
     </span>
   );
   return (
@@ -173,13 +200,16 @@ const Freed = (props: StatusProps) => {
   );
 };
 
-const Deleting = (props: StatusProps) => {
+const Deleting = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
+
+  const intl = useIntl();
+
   const txt = (
     <span className="ci-status ci-deleting">
       <DeleteOutlined />
       {' '}
-      {text || 'Deleting'}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.deleting' })}
     </span>
   );
   return (
@@ -190,7 +220,7 @@ const Deleting = (props: StatusProps) => {
 };
 
 // state for pods
-const PodRunning = (props: StatusProps) => {
+const PodRunning = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
   return (
     <span className="badge-color-green badge-content">
@@ -199,7 +229,7 @@ const PodRunning = (props: StatusProps) => {
   );
 };
 
-const PodPending = (props: StatusProps) => {
+const PodPending = (props: Omit<StatusProps, 'link'>) => {
   const { text, message } = props;
   return (
     <Tooltip title={message}>
@@ -210,7 +240,7 @@ const PodPending = (props: StatusProps) => {
   );
 };
 
-const PodError = (props: StatusProps) => {
+const PodError = (props: Omit<StatusProps, 'link'>) => {
   const { text, message } = props;
   return (
     <Tooltip title={message}>
@@ -222,7 +252,7 @@ const PodError = (props: StatusProps) => {
 };
 
 // state for oline status
-const Online = (props: StatusProps) => {
+const Online = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
   return (
     <span className="badge-color-blue badge-content">
@@ -231,7 +261,7 @@ const Online = (props: StatusProps) => {
   );
 };
 
-const Offline = (props: StatusProps) => {
+const Offline = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
   return (
     <span className="badge-color-brown badge-content">
@@ -240,31 +270,33 @@ const Offline = (props: StatusProps) => {
   );
 };
 
-// getStatusComponent returns the status component
-const getStatusComponent = (status: any) => {
+// StatusComponent returns the status component
+const StatusComponent = (props: { status: string }) => {
+  const { status } = props;
+  const intl = useIntl();
   switch (status) {
     case ClusterStatus.CREATING:
-      return <Creating text="创建中" />;
+      return <Creating text={intl.formatMessage({ id: 'pages.cluster.status.creating' })} />;
     case ClusterStatus.PROGRESSING:
-      return <Progressing text="发布中" />;
+      return <Progressing text={intl.formatMessage({ id: 'pages.cluster.status.deploying' })} />;
     case ClusterStatus.HEALTHY:
-      return <Succeeded text="正常" />;
+      return <Succeeded text={intl.formatMessage({ id: 'pages.cluster.status.normal' })} />;
     case ClusterStatus.DEGRADED:
-      return <Failed text="异常" />;
+      return <Failed text={intl.formatMessage({ id: 'pages.cluster.status.abnormal' })} />;
     case ClusterStatus.SUSPENDED:
-      return <Suspended text="批次暂停" />;
+      return <Suspended text={intl.formatMessage({ id: 'pages.cluster.status.stepPaused' })} />;
     case ClusterStatus.FREEING:
-      return <Freeing text="释放中" />;
+      return <Freeing text={intl.formatMessage({ id: 'pages.cluster.status.freeing' })} />;
     case ClusterStatus.FREED:
-      return <Freed text="已释放" />;
+      return <Freed text={intl.formatMessage({ id: 'pages.cluster.status.freed' })} />;
     case ClusterStatus.DELETING:
-      return <Deleting text="删除中" />;
+      return <Deleting text={intl.formatMessage({ id: 'pages.cluster.status.deleting' })} />;
     case ClusterStatus.NOTFOUND:
-      return <NotFount text="未发布" />;
+      return <NotFound text={intl.formatMessage({ id: 'pages.cluster.status.unreleased' })} />;
     case ClusterStatus.MANUALPAUSED:
-      return <Suspended text="人工暂停" />;
+      return <Suspended text={intl.formatMessage({ id: 'pages.cluster.status.manualPaused' })} />;
     default:
-      return <NotFount text="未知" />;
+      return <NotFound text={intl.formatMessage({ id: 'pages.cluster.status.notFound' })} />;
   }
 };
 
@@ -280,12 +312,78 @@ const isRestrictedStatus = (status: string) => {
   }
 };
 
+const defaultValues: StatusProps = {
+  text: '',
+  link: '',
+  message: '',
+};
+
+Succeeded.defaultProps = {
+  ...defaultValues,
+};
+
+Failed.defaultProps = {
+  ...defaultValues,
+};
+
+Progressing.defaultProps = {
+  ...defaultValues,
+};
+
+Suspended.defaultProps = {
+  ...defaultValues,
+};
+
+NotFound.defaultProps = {
+  ...defaultValues,
+};
+
+PodRunning.defaultProps = {
+  ...defaultValues,
+};
+
+Online.defaultProps = {
+  ...defaultValues,
+};
+
+Offline.defaultProps = {
+  ...defaultValues,
+};
+
+PodPending.defaultProps = {
+  ...defaultValues,
+};
+
+Cancelled.defaultProps = {
+  ...defaultValues,
+};
+
+Freeing.defaultProps = {
+  ...defaultValues,
+};
+
+Creating.defaultProps = {
+  ...defaultValues,
+};
+
+Freed.defaultProps = {
+  ...defaultValues,
+};
+
+Deleting.defaultProps = {
+  ...defaultValues,
+};
+
+PodError.defaultProps = {
+  ...defaultValues,
+};
+
 export {
   Succeeded,
   Failed,
   Progressing,
   Suspended,
-  NotFount,
+  NotFound,
   PodRunning,
   Online,
   Offline,
@@ -294,7 +392,7 @@ export {
   Freeing,
   Freed,
   Deleting,
-  getStatusComponent,
+  StatusComponent,
   isRestrictedStatus,
   PodError,
 };

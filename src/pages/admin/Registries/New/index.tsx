@@ -1,6 +1,6 @@
 import { Col, Form, Row } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import { createRegistry } from '@/services/registries/registries';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RegistryForm from '../Form';
@@ -8,6 +8,7 @@ import RegistryForm from '../Form';
 export default () => {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
+  const intl = useIntl();
 
   return (
     <PageWithBreadcrumb>
@@ -22,7 +23,7 @@ export default () => {
                 preheatPolicyID: parseInt(v.preheatPolicyID, 10),
               };
               createRegistry(data).then(({ data: id }) => {
-                successAlert('Registry 创建成功');
+                successAlert(intl.formatMessage({ id: 'pages.common.create.success' }));
                 history.push(`/admin/registries/${id}`);
               });
             }}

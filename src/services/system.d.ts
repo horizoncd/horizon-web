@@ -45,4 +45,9 @@ declare namespace SYSTEM {
     createdAt: string,
     updatedAt: string,
   };
+
+  type MicroApp = {
+    name: string,
+    entry: string,
+  };
 }

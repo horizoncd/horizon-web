@@ -2,17 +2,18 @@ import {
   Col, Form, Input, Row, Button, Select,
 } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 import { PropsWithChildren, useState } from 'react';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { TemplateForm, ReleaseForm } from '../Components/Form';
 import { createTemplate } from '@/services/templates/templates';
 import TagSelector from '../Components/TagSelector';
-import { NotFount } from '@/components/State';
+import { NotFound } from '@/components/State';
 import rbac from '@/rbac';
 
 const Release = (props: PropsWithChildren<{ repository: any }>) => {
   const { repository } = props;
+  const intl = useIntl();
 
   return (
     <>
@@ -21,11 +22,11 @@ const Release = (props: PropsWithChildren<{ repository: any }>) => {
       ? <TagSelector prefix={['release']} repository={repository} />
       : (
         <Form.Item
-          label="版本"
+          label={intl.formatMessage({ id: 'pages.template.release' })}
           name={['release', 'name']}
           required
           rules={[{ required: true }]}
-          extra="release对应template的版本"
+          extra={intl.formatMessage({ id: 'pages.message.release.extra' })}
         >
           <Select />
         </Form.Item>
@@ -41,10 +42,11 @@ export const TemplateCreatePage = () => {
   const [form] = Form.useForm();
   const { successAlert } = useModel('alert');
   const [repo, setRepo] = useState('');
+  const intl = useIntl();
 
   const { initialState } = useModel('@@initialState');
   if (!initialState || !initialState.currentUser) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const { isAdmin } = initialState.currentUser;
@@ -63,6 +65,8 @@ export const TemplateCreatePage = () => {
     }
   };
 
+  const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.template.${suffix}` });
+
   return (
     <PageWithBreadcrumb>
       <Row>
@@ -72,7 +76,7 @@ export const TemplateCreatePage = () => {
             layout="vertical"
             onFinish={(v) => {
               createTemplate(groupID, v).then(({ data: { name } }) => {
-                successAlert('Template 创建成功');
+                successAlert(intl.formatMessage({ id: 'pages.message.template.create.success' }));
                 if (fullName === '') {
                   window.location.href = (`/templates/${name}/-/detail`);
                 } else {
@@ -81,19 +85,19 @@ export const TemplateCreatePage = () => {
               });
             }}
           >
-            <h2>创建Template</h2>
+            <h2>{formatMessage('new')}</h2>
             <Form.Item
-              label="名称"
+              label={formatMessage('name')}
               name="name"
               required
               rules={[{ required: true }]}
-              extra="Templates唯一名称标识"
+              extra={intl.formatMessage({ id: 'pages.message.template.name.hint' })}
             >
               <Input />
             </Form.Item>
             <TemplateForm onRepositoryBlur={updateRepo} />
 
-            <h2>创建Release</h2>
+            <h2>{formatMessage('newRelease')}</h2>
             <Release repository={repo} />
 
             <Form.Item>
@@ -102,7 +106,7 @@ export const TemplateCreatePage = () => {
                 disabled={!isAdmin && !rbac.Permissions.createTemplate.allowed}
                 htmlType="submit"
               >
-                Submit
+                {intl.formatMessage({ id: 'pages.common.submit' })}
               </Button>
             </Form.Item>
           </Form>

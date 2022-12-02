@@ -4,7 +4,8 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 // @ts-ignore
 import routes from './routes';
-const { REACT_APP_ENV } = process.env;
+import { DefinePlugin } from 'webpack';
+const { REACT_APP_ENV, MICRO_APP_LOC } = process.env;
 
 export default defineConfig({
   hash: true,
@@ -59,4 +60,18 @@ export default defineConfig({
   cssLoader: {
     localsConvention: 'camelCase',
   },
+  qiankun: {
+    master:{
+      sandbox: false,
+    }
+  },
+  chainWebpack: config => {
+    config.plugin('env').use(
+      new DefinePlugin(
+        {
+          __MICRO_APP_LOC: JSON.stringify(MICRO_APP_LOC)
+        }
+      )
+    )
+  }
 });

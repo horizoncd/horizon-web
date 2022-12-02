@@ -3,6 +3,7 @@ import { GlFilteredSearch, GlFilteredSearchToken } from '@gitlab/ui';
 import { applyVueInReact } from 'vuereact-combined';
 import '@gitlab/ui/dist/index.css';
 import '@gitlab/ui/dist/utility_classes.css';
+import { useIntl } from 'umi';
 
 const ReactFilteredSearch = applyVueInReact(GlFilteredSearch);
 
@@ -31,10 +32,11 @@ export enum SearchInputType {
   Value = 'value',
 }
 
-export default (props: Props) => {
+const TagSearch = (props: Props) => {
   const {
     defaultValues, tagSelectors, onSearch, onClear,
   } = props;
+  const intl = useIntl();
   const tokens = tagSelectors.map((tag) => {
     const options = tag.values.map((v) => ({
       value: v,
@@ -58,7 +60,7 @@ export default (props: Props) => {
   let values: any[] = [];
   if (defaultValues) {
     values = defaultValues.filter(
-      (defaultValue) => defaultValue && defaultValue.value != '',
+      (defaultValue) => defaultValue && defaultValue.value !== '',
     ).map((defaultValue) => {
       if (defaultValue.key) {
         return {
@@ -76,7 +78,7 @@ export default (props: Props) => {
   return (
     <div style={{ flex: 1, marginBottom: '20px' }}>
       <ReactFilteredSearch
-        placeholder="Search by tags or name"
+        placeholder={intl.formatMessage({ id: 'pages.message.searchByTag.hint' })}
         availableTokens={tokens}
         value={values}
         on={{
@@ -103,3 +105,9 @@ export default (props: Props) => {
     </div>
   );
 };
+
+TagSearch.defaultProps = {
+  defaultValues: [],
+};
+
+export default TagSearch;

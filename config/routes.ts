@@ -25,39 +25,24 @@
     redirect: '/dashboard/clusters',
   },
   {
-    path: '/explore/groups',
+    path: '/dashboard/groups',
     menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Groups',
   },
   {
     path: '/dashboard/applications',
     menuRender: false,
-    component: 'dashboard',
-  },
-  {
-    path: '/explore/applications',
-    menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Applications',
   },
   {
     path: '/dashboard/clusters',
     menuRender: false,
-    component: 'dashboard',
-  },
-  {
-    path: '/explore/clusters',
-    menuRender: false,
-    component: 'dashboard',
+    component: 'dashboard/Clusters',
   },
   {
     path: '/groups/new',
     menuRender: false,
     component: 'groups/NewGroup',
-  },
-  {
-    path: '/slo',
-    menuRender: false,
-    component: 'more/SLO',
   },
   {
     path: '/profile',
@@ -353,6 +338,96 @@ const templateRoutes = [
   },
 ]
 
+const webhookRoutes = [
+  {
+    path: '/admin/webhooks',
+    component: 'webhooks',
+    wrappers: [
+      '@/wrappers/auth',
+    ],
+  },
+  {
+    path: '/admin/webhooks/new',
+    component: 'webhooks/New'
+  },
+  {
+    path: '/admin/webhooks/:id',
+    component: 'webhooks/LogList'
+  },
+  {
+    path: '/admin/webhooks/:id/edit',
+    component: 'webhooks/Edit'
+  },
+  {
+    path: '/admin/webhooks/:webhookID/:id',
+    component: 'webhooks/LogDetail'
+  },
+  {
+    path: '/groups/*/-/settings/webhooks',
+    component: 'webhooks'
+  },
+  {
+    path: '/groups/*/-/settings/newwebhook',
+    component: 'webhooks/New'
+  },
+  {
+    path: '/groups/*/-/settings/webhooks/:id',
+    component: 'webhooks/LogList'
+  },
+  {
+    path: '/groups/*/-/settings/webhooks/:id',
+    component: 'webhooks/LogList'
+  },
+  {
+    path: '/groups/*/-/settings/webhooks/:id/edit',
+    component: 'webhooks/Edit'
+  },
+  {
+    path: '/groups/*/-/settings/webhooks/:webhookID/:id',
+    component: 'webhooks/LogDetail'
+  },
+  {
+    path: '/applications/*/-/settings/webhooks',
+    component: 'webhooks'
+  },
+  {
+    path: '/applications/*/-/settings/newwebhook',
+    component: 'webhooks/New'
+  },
+  {
+    path: '/applications/*/-/settings/webhooks/:id',
+    component: 'webhooks/LogList'
+  },
+  {
+    path: '/applications/*/-/settings/webhooks/:id/edit',
+    component: 'webhooks/Edit'
+  },
+  {
+    path: '/applications/*/-/settings/webhooks/:webhookID/:id',
+    component: 'webhooks/LogDetail'
+  },
+  {
+    path: '/clusters/*/-/settings/webhooks',
+    component: 'webhooks'
+  },
+  {
+    path: '/clusters/*/-/settings/newwebhook',
+    component: 'webhooks/New'
+  },
+  {
+    path: '/clusters/*/-/settings/webhooks/:id',
+    component: 'webhooks/LogList'
+  },
+  {
+    path: '/clusters/*/-/settings/webhooks/:id/edit',
+    component: 'webhooks/Edit'
+  },
+  {
+    path: '/clusters/*/-/settings/webhooks/:webhookID/:id',
+    component: 'webhooks/LogDetail'
+  },
+]
+
 const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
@@ -361,6 +436,7 @@ allRoute.push(...clusterRoutes);
 allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
 allRoute.push(...userRoutes);
+allRoute.push(...webhookRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',

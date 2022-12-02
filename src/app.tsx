@@ -1,7 +1,7 @@
 /* eslint-disable */
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { Menu, notification, Tooltip } from 'antd';
+import { notification, Tooltip } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import {
@@ -11,7 +11,6 @@ import {
   ClusterOutlined,
   ContactsOutlined,
   DatabaseOutlined,
-  DownOutlined,
   EditOutlined,
   EnvironmentOutlined,
   FundOutlined,
@@ -21,14 +20,16 @@ import {
   TagsOutlined,
   UserOutlined,
   ProfileOutlined,
+  NotificationOutlined,
   KeyOutlined
 } from '@ant-design/icons/lib';
 import { stringify } from 'querystring';
 import RBAC from '@/rbac';
 import RightContent from '@/components/RightContent';
+import HeaderContent from '@/components/HeaderContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/login/login';
-import Utils, { pathnameInStaticRoutes } from '@/utils';
+import Utils, { handleHref, pathnameInStaticRoutes } from '@/utils';
 import { queryResource } from '@/services/core';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const';
@@ -38,7 +39,6 @@ import type { API } from './services/typings';
 const loginPath = '/user/login';
 const callbackPath = '/user/login/callback';
 const sessionExpireHeaderKey = 'X-OIDC-Redirect-To';
-const { SubMenu } = Menu;
 
 const IconMap = {
   smile: <SmileOutlined />,
@@ -56,6 +56,7 @@ const IconMap = {
   idp: <ApiOutlined />,
   user: <UserOutlined />,
   profile: <ProfileOutlined />,
+  webhook: <NotificationOutlined />,
   accessToken: <KeyOutlined />
 };
 
@@ -84,7 +85,7 @@ export async function getInitialState(): Promise<API.InitialState> {
     parentID: 0,
   };
 
-  if (history.location.pathname === loginPath
+  if(history.location.pathname === loginPath
     || history.location.pathname === callbackPath) {
     return { resource, accordionCollapse: false };
   }
@@ -101,7 +102,7 @@ export async function getInitialState(): Promise<API.InitialState> {
   try {
     const { data: userData } = await queryCurrentUser();
 
-    if (userData?.id && history.location.pathname.startsWith(loginPath)) {
+    if(userData?.id && history.location.pathname.startsWith(loginPath)) {
       history.replace('/');
     }
 
@@ -112,12 +113,12 @@ export async function getInitialState(): Promise<API.InitialState> {
 
     const { data: rolesData } = await queryRoles();
     roles = rolesData;
-  } catch (e) {
+  } catch(e) {
     currentUser = undefined;
   }
 
   // 资源类型的URL
-  if (!pathnameInStaticRoutes()) {
+  if(!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
       const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/;
@@ -137,23 +138,23 @@ export async function getInitialState(): Promise<API.InitialState> {
 
       let memberData = null;
 
-      if (isRelease) {
+      if(isRelease) {
         const { data: template } = await queryResource(pathArr[1], 'templates');
         ({ data: memberData } = await querySelfMember('template', template.id));
       } else {
         ({ data: memberData } = await querySelfMember(resource.type, resource.id));
       }
-      if (memberData.total > 0) {
+      if(memberData.total > 0) {
         currentUser!.role = memberData.items[0].role;
       } else {
         currentUser!.role = RBAC.AnonymousRole;
       }
-      if (currentUser!.isAdmin) {
+      if(currentUser!.isAdmin) {
         currentUser!.role = RBAC.AdminRole;
       }
 
       RBAC.RefreshPermissions(roles, currentUser!);
-    } catch (e) {
+    } catch(e) {
       settings.menuRender = false;
     }
   }
@@ -170,12 +171,16 @@ export async function getInitialState(): Promise<API.InitialState> {
 export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
+      if (history.location.pathname === '/user/login/callback'
+      || history.location.pathname === '/user/login') {
+        return response;
+      }
       // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
-      if (response.headers.get(sessionExpireHeaderKey)) {
+      if(response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
 
         const redirect = u.searchParams.get('redirect') ?? '';
-        if (redirect === '') {
+        if(redirect === '') {
           u.searchParams.delete('redirect');
         } else {
           u = new URL(redirect);
@@ -200,16 +205,16 @@ export const request: RequestConfig = {
   },
   errorHandler: (error: any) => {
     const { response, data } = error;
-    if (!response) {
+    if(!response) {
       notification.error({
-        message: '网络异常',
-        description: '您的网络发生异常，无法连接服务器',
+        message: 'Network anomaly',
+        description: 'Your network is abnormal and cannot connect to the server',
       });
     }
     if (response.headers.get(sessionExpireHeaderKey)) {
       return
     }
-    if (data.errorCode || data.errorMessage) {
+    if(data.errorCode || data.errorMessage) {
       notification.error({
         message: data.errorCode,
         description: data.errorMessage,
@@ -227,47 +232,11 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => ({
-  headerContentRender: () => (
-    <Menu mode="horizontal" theme="dark" style={{ marginLeft: '10px', color: '#989898' }} selectable={false}>
-      <Menu.Item key="1">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/clusters')}>Clusters</a>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/dashboard/applications')}>Applications</a>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/explore/groups')}>Groups</a>
-      </Menu.Item>
-      <Menu.Item key="7">
-        <a style={{ fontWeight: 'bold' }} onClick={() => history.push('/templates')}>Templates</a>
-      </Menu.Item>
-      <SubMenu
-        key="4"
-        title={(
-          <span style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.65)' }}>
-            More
-            {' '}
-            <DownOutlined style={{ fontSize: 'x-small', color: 'rgba(255, 255, 255, 0.65)' }} />
-          </span>
-        )}
-      >
-        <Menu.Item key="5">
-          <a style={{ fontWeight: 'bold' }} href="/slo">SLO</a>
-        </Menu.Item>
-        {
-          initialState?.currentUser?.isAdmin && (
-            <Menu.Item key="6">
-              <a style={{ fontWeight: 'bold' }} href="/admin">Admin</a>
-            </Menu.Item>
-          )
-        }
-      </SubMenu>
-    </Menu>
-  ),
+  headerContentRender: () => <HeaderContent />,
   rightContentRender: () => <RightContent />,
   footerRender: () => <Footer />,
   onPageChange: () => {
-    if (!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
+    if(!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
       // @ts-ignore
       setInitialState((s) => ({ ...s, settings: { ...s.settings, menuRender: false } }));
     }
@@ -280,17 +249,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
-    if (!accordionCollapse) {
+    if(!accordionCollapse) {
       const titleContent = title.length <= 15 ? title : `${title.substr(0, 12)}...`;
       return (
         <Tooltip title={title}>
           <span
             style={{ alignItems: 'center', lineHeight: '40px' }}
-            onClick={() => {
+            onClick={(e: any) => {
               if (type === ResourceType.TEMPLATE) {
-                window.location.href = `/templates${fullPath}/-/detail`;
+                handleHref(e,`/templates${fullPath}/-/detail`)
               } else {
-                window.location.href = fullPath;
+                handleHref(e, fullPath)
               }
             }}
           >
@@ -312,11 +281,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       <Tooltip title={title}>
         <span
           style={{ alignItems: 'center', lineHeight: '40px' }}
-          onClick={() => {
+          onClick={(e) => {
             if (type === ResourceType.TEMPLATE) {
-              window.location.href = `/templates${fullPath}/-/detail`;
+              handleHref(e, `/templates${fullPath}/-/detail`);
             } else {
-              window.location.href = fullPath;
+              handleHref(e, fullPath);
             }
           }}
         >
@@ -337,7 +306,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       resource: initialState?.resource,
     },
     request: async (params, defaultMenuData) => {
-      if (history.location.pathname.startsWith('/admin/')) {
+      if(history.location.pathname.startsWith('/admin/')) {
         return loopMenuItem([
           ...routes,
           {
@@ -352,6 +321,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             path: '/admin/environments',
             name: 'Environments',
             icon: 'environment',
+          }, {
+            path: '/admin/webhooks',
+            name: 'Webhooks',
+            icon: 'webhook',
           }, {
             path: '/admin/users',
             name: 'Users',
@@ -381,13 +354,13 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ])
       }
 
-      if (pathnameInStaticRoutes() || !initialState) {
+      if(pathnameInStaticRoutes() || !initialState) {
         return defaultMenuData;
       }
 
       // 根据ResourceType决定菜单
       const { type, fullPath } = initialState.resource;
-      switch (type) {
+      switch(type) {
         case ResourceType.GROUP:
           return loopMenuItem(formatGroupMenu(fullPath));
         case ResourceType.APPLICATION:
@@ -413,7 +386,7 @@ function formatTemplateMenu(fullPath: string): MenuDataItem[] {
   return [
     ...routes,
     {
-      name: '模板详细信息',
+      name: 'Template overview',
       icon: 'templates',
       path: `/templates${fullPath}/-/detail`,
     },
@@ -462,13 +435,17 @@ function formatGroupMenu(fullPath: string) {
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps`,
-          name: '开发者设置',
+          name: 'Developer',
         },
         {
           path: `/groups${fullPath}/-/settings/oauthapps/:id`,
           parentKeys: [`/groups${fullPath}/-/settings/oauthapps`],
         },
-        {
+        RBAC.Permissions.listClusterWebhooks.allowed && {
+          path: `/groups${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+        },
+       {
           path: `/groups${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
@@ -556,6 +533,10 @@ function formatApplicationMenu(fullPath: string) {
           path: `/applications${fullPath}/-/settings/advance`,
           name: 'Advance',
         },
+        RBAC.Permissions.listClusterWebhooks.allowed && {
+          path: `/applications${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+        },
         {
           path: `/applications${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
@@ -625,7 +606,21 @@ function formatClusterMenu(fullPath: string) {
           path: `/clusters${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
+        RBAC.Permissions.listClusterWebhooks.allowed && {
+          path: `/clusters${fullPath}/-/settings/webhooks`,
+          name: 'Webhooks',
+        },
       ],
     },
   ];
 }
+
+// 从接口中获取子应用配置，export 出的 qiankun 变量是一个 promise
+// @ts-ignore
+export const qiankun = fetch(__MICRO_APP_LOC)
+.then((res) => res.json())
+.then(({apps}) => ({
+  // 注册子应用信息
+  apps,
+  // 支持更多的其他配置，详细看这里 https://qiankun.umijs.org/zh/api/#start-opts
+})).catch(()=> ({ apps: [] }));

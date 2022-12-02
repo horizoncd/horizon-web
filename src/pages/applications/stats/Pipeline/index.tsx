@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import { useRequest } from '@@/plugin-request/request';
 import { useModel } from '@@/plugin-model/useModel';
+import { useIntl } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { queryPipelineStats } from '@/services/applications/applications';
 import Utils from '@/utils';
@@ -13,6 +14,7 @@ import { queryClusters } from '@/services/clusters/clusters';
 const { Option } = Select;
 
 export default function PipelineStats() {
+  const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [cluster, setCluster] = useState<string>('');
   const { initialState } = useModel('@@initialState');
@@ -51,7 +53,7 @@ export default function PipelineStats() {
 
   const columns = [
     {
-      title: '流水线ID',
+      title: intl.formatMessage({ id: 'pages.statistics.pipeline.id' }),
       key: 'pipelinerunID',
       render: (pipelineStats: API.PipelineStats) => (
         <a href={`/clusters${fullPath}/${pipelineStats.cluster}/-/pipelines/${pipelineStats.pipelinerunID}`}>
@@ -60,12 +62,12 @@ export default function PipelineStats() {
       ),
     },
     {
-      title: '集群',
+      title: intl.formatMessage({ id: 'pages.common.cluster' }),
       dataIndex: 'cluster',
       key: 'cluster',
     },
     {
-      title: '各阶段耗时（单位：秒）',
+      title: intl.formatMessage({ id: 'pages.statistics.pipeline.stepDuration' }),
       Key: 'durations',
       render: (pipelineStats: API.PipelineStats) => {
         const { tasks } = pipelineStats;
@@ -85,12 +87,12 @@ export default function PipelineStats() {
       },
     },
     {
-      title: '总耗时（单位：秒）',
+      title: intl.formatMessage({ id: 'pages.statistics.pipeline.totalDuration' }),
       Key: 'duration',
       dataIndex: 'duration',
     },
     {
-      title: '结果',
+      title: intl.formatMessage({ id: 'pages.common.result' }),
       Key: 'result',
       dataIndex: 'result',
       render: (result: string) => {
@@ -101,7 +103,7 @@ export default function PipelineStats() {
       },
     },
     {
-      title: '触发时间',
+      title: intl.formatMessage({ id: 'pages.statistics.pipeline.startedAt' }),
       dataIndex: 'startedAt',
       Key: 'startedAt',
       render: (time: string) => Utils.timeToLocal(time),
@@ -127,7 +129,8 @@ export default function PipelineStats() {
   return (
     <PageWithBreadcrumb>
       <div style={{ marginBottom: 10 }}>
-        集群：
+        {intl.formatMessage({ id: 'pages.common.cluster' })}
+        {'： '}
         <Select
           showSearch
           allowClear

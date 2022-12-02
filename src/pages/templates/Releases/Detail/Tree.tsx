@@ -1,7 +1,7 @@
 import { BookOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
-import { useRequest } from 'umi';
+import { useIntl, useRequest } from 'umi';
 import type { API } from '@/services/typings';
 import { listClusters } from '@/services/clusters/clusters';
 import { listApplications } from '@/services/applications/applications';
@@ -12,13 +12,13 @@ import { ComponentWithPagination } from '../../../../components/Enhancement';
 
 const { TabPane } = Tabs;
 
-const ApplicationNoData = <NoData title="Applications" desc="展示所有使用该release的应用" />;
+const ApplicationNoData = <NoData titleID="pages.header.applications" descID="pages.noData.release.application.desc" />;
 
 interface AppItem extends API.Application {
   icon?: React.ReactNode;
 }
 
-const ClusterNoData = <NoData title="Clusters" desc="展示所有使用该release的集群" />;
+const ClusterNoData = <NoData titleID="pages.header.clusters" descID="pages.noData.release.cluster.desc" />;
 
 const DTreeWithPagination = ComponentWithPagination(DTree);
 
@@ -93,12 +93,13 @@ const ClusterTree = treeWithPagination(
 
 const ReleaseTab = (props: { template: string; release: string }) => {
   const { template, release } = props;
+  const intl = useIntl();
   return (
     <Tabs>
-      <TabPane key="app" tab="Applications">
+      <TabPane key="app" tab={intl.formatMessage({ id: 'pages.header.applications' })}>
         <AppTree template={template} release={release} />
       </TabPane>
-      <TabPane key="clsuter" tab="Clusters">
+      <TabPane key="clsuter" tab={intl.formatMessage({ id: 'pages.header.clusters' })}>
         <ClusterTree template={template} release={release} />
       </TabPane>
     </Tabs>

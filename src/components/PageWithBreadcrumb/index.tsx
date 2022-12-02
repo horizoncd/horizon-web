@@ -4,10 +4,10 @@ import { Alert, Divider } from 'antd';
 import './index.less';
 import { PropsWithChildren, useEffect } from 'react';
 import { Link } from 'umi';
-import NotFount from '@/pages/404';
 import utils, { pathnameInStaticRoutes } from '../../utils';
-import styles from './index.less';
+import NotFound from '@/pages/404';
 import WithTheme from '@/theme';
+import styles from './index.less';
 
 export default (props: PropsWithChildren<any>) => {
   const { children } = props;
@@ -15,7 +15,7 @@ export default (props: PropsWithChildren<any>) => {
   const { fullName } = initialState!.resource;
   const isStaticRoute = pathnameInStaticRoutes();
   if (!isStaticRoute && !fullName) {
-    return <NotFount />;
+    return <NotFound />;
   }
 
   const { alert, clearAlert } = useModel('alert');

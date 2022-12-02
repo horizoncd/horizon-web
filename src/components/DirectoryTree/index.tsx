@@ -1,11 +1,13 @@
 import {
-  Divider, Space, Tooltip, Tree,
+  Divider, Space, Tree,
 } from 'antd';
 import type { DataNode } from 'rc-tree/lib/interface';
 import React from 'react';
+import { useIntl } from 'umi';
 import styles from './index.less';
-import utils from '@/utils';
+import utils, { handleHref } from '@/utils';
 import NoData from '../NoData';
+import PopupTime from '../Widget/PopupTime';
 
 const { DirectoryTree } = Tree;
 
@@ -41,18 +43,6 @@ export function DTreeAvatar(props: { title: string, size: number }) {
   );
 }
 
-export function DTreeDate(props: { updatedAt: string }) {
-  const { updatedAt } = props;
-
-  return (
-    <Tooltip title={utils.timeToLocal(updatedAt)}>
-      Updated
-      {' '}
-      {utils.timeFromNowEnUS(updatedAt)}
-    </Tooltip>
-  );
-}
-
 export function DTreeTitle(props: { title: string, fullPath: string }) {
   const { title, fullPath } = props;
   return (
@@ -72,6 +62,7 @@ export function DTreeItem(props: DTreeItemProps) {
   const {
     title, fullPath, updatedAt, extra,
   } = props;
+  const intl = useIntl();
   return (
     <div style={
       {
@@ -83,7 +74,7 @@ export function DTreeItem(props: DTreeItemProps) {
       <Space>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          onClick={() => { window.location.href = fullPath; }}
+          onClick={(e: any) => handleHref(e, fullPath)}
         >
           <Space size="large">
             <DTreeAvatar title={title} size={48} />
@@ -101,7 +92,7 @@ export function DTreeItem(props: DTreeItemProps) {
         }
       }
       >
-        <DTreeDate updatedAt={updatedAt} />
+        <PopupTime time={updatedAt} prefix={intl.formatMessage({ id: 'pages.common.updated' })} />
       </div>
     </div>
   );
@@ -127,7 +118,7 @@ export interface DTreeItemProp {
 export function DTree(props: { items: DTreeItemProp[], render?: (node: TreeDataNode) => React.ReactNode }) {
   const { items, render } = props;
   if (items === null || items.length === 0) {
-    return <NoData title="" desc="没有数据" />;
+    return <NoData titleID="pages.noData.default.title" descID="pages.noData.default.desc" />;
   }
   const data = items.map((item: DTreeItemProp) => {
     const treeData = {
