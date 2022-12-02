@@ -746,5 +746,5 @@ export default {
   'pages.webhook.component.table.eventType': '事件类型',
   'pages.webhook.component.search.select.placeholder': '选择事件类型',
   'pages.webhook.component.search.select.all': '全部事件',
-  'pages.webhook.component.search.input.all': '请输入资源名称',
+  'pages.webhook.component.search.input.placeholder': '请输入资源名称',
 };
