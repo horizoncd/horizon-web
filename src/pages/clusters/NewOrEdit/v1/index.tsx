@@ -272,7 +272,7 @@ export default (props: any) => {
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     // query regions when environment selected
-    if (changingFiled[0].name[0] === 'environment') {
+    if ((changingFiled[0].name[0] === 'environment') && !copying) {
       // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value);
     }
