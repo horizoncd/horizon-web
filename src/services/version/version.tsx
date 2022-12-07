@@ -6,7 +6,7 @@ export const pipelineV2 = '0.0.2';
 
 export const isVersion2 = (data: API.GetApplicationResponseV2
 | CLUSTER.ClusterV2 | undefined) => {
-  if (data && data!.manifest && data!.manifest.manifestVersion !== pipelineV1) {
+  if (data && data!.manifest && data!.manifest.manifestVersion === pipelineV2) {
     return true;
   }
   return false;
