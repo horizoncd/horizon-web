@@ -351,6 +351,21 @@ export function IdpSetState(u: string, link: boolean = false, customRedirect?: s
 
 export const tagShouldOmit = (tag: TAG.Tag) => tag.key.length > 16 || tag.value.length > 16;
 
+export const difference = (object: any, other: any) => {
+  const diff = {};
+  Object.keys(object).forEach((key) => {
+    if (typeof object[key] === 'object' && typeof other[key] === 'object' && object[key] && other[key]) {
+      const subDiff = difference(object[key], other[key]);
+      if (Object.keys(subDiff).length !== 0) {
+        diff[key] = subDiff;
+      }
+    } else if (object[key] !== other[key]) {
+      diff[key] = object[key];
+    }
+  });
+  return diff;
+};
+
 export default {
   getResourcePath,
   getBreadcrumbs,

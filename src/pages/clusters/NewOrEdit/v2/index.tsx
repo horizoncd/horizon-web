@@ -17,28 +17,13 @@ import { getApplicationV2 } from '@/services/applications/applications';
 import {
   createClusterV2, updateClusterV2, getClusterV2,
 } from '@/services/clusters/clusters';
-import { CLUSTER } from '@/services/clusters';
 import { parseGitRef } from '@/services/code/code';
 import { PublishType } from '@/const';
 import {
   Step, StepContent, StepAction, ModalTitle, ModalContent,
 } from '../Widget';
 import { ResourceType } from '@/const';
-
-function difference(object: any, other: any) {
-  const diff = {};
-  Object.keys(object).forEach((key) => {
-    if (typeof object[key] === 'object' && typeof other[key] === 'object' && object[key] && other[key]) {
-      const subDiff = difference(object[key], other[key]);
-      if (Object.keys(subDiff).length !== 0) {
-        diff[key] = subDiff;
-      }
-    } else if (object[key] !== other[key]) {
-      diff[key] = object[key];
-    }
-  });
-  return diff;
-}
+import { difference } from '@/utils';
 
 export default (props: any) => {
   const intl = useIntl();
