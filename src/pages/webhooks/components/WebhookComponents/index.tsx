@@ -83,6 +83,7 @@ function WebhookConfig(
   const { onFinish, onCancel, data } = props;
   const { data: eventWithDescs = {} } = useRequest(() => listSupportEvents());
   const [form] = Form.useForm();
+  const [isSSL, setIsSSL] = useState(false);
 
   const [eventsSelectionMode, setEventsSelectionMode] = useState(
     !data || (data?.triggers.length === 1 && data.triggers[0] === '*')
@@ -119,10 +120,10 @@ function WebhookConfig(
         if (onFinish) {
           const req: Webhooks.CreateOrUpdateWebhookReq = {
             url: formData.url,
-            enabled: data?.enabled || true,
+            enabled: data?.enabled ?? true,
             secret: formData.secret,
             description: formData.description,
-            sslVerifyEnabled: formData.sslVerifyEnabled,
+            sslVerifyEnabled: formData.sslVerifyEnabled ?? false,
             triggers: ['*'],
           };
           if (formData.eventsSelectionMode === EventsSelectionMode.part) {
@@ -140,15 +141,25 @@ function WebhookConfig(
         extra={intl.formatMessage({ id: 'pages.webhook.component.form.url' })}
         rules={urlRules}
       >
-        <Input />
+        <Input
+          onChange={
+            (e) => {
+              setIsSSL(e.target.value.startsWith('https://'));
+            }
+          }
+        />
       </Form.Item>
-      <Form.Item
-        name="sslVerifyEnabled"
-        label={intl.formatMessage({ id: 'pages.webhook.component.form.sslVerify' })}
-        valuePropName="checked"
-      >
-        <Switch />
-      </Form.Item>
+      {
+        isSSL && (
+        <Form.Item
+          name="sslVerifyEnabled"
+          label={intl.formatMessage({ id: 'pages.webhook.component.form.sslVerify' })}
+          valuePropName="checked"
+        >
+          <Switch />
+        </Form.Item>
+        )
+      }
       <Form.Item
         label={intl.formatMessage({ id: 'pages.webhook.component.form.desc' })}
         name="description"
