@@ -57,7 +57,7 @@ const groupRoutes = [
   },
   {
     path: '/groups/*/-/settings',
-    component: 'groups/Settings',
+    component: 'groups/config/Basic',
   },
   {
     path: '/groups/*/-/settings/basic',
