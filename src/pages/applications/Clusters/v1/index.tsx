@@ -19,6 +19,8 @@ import TagSearch, { SearchInputType } from '@/components/TagSearch';
 import type { SearchInput, MultiValueTag } from '@/components/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
+import { getClusterV2 } from '@/services/clusters/clusters';
+import { isVersion2 } from '@/services/version/version';
 
 const { TabPane } = Tabs;
 
@@ -37,6 +39,8 @@ export default () => {
 
   const pageSize = 10;
   const newCluster = `/applications${fullPath}/-/newcluster`;
+  const newClusterV2 = `/applications${fullPath}/-/newclusterv2`;
+  const [copyCluster, setCopyCluster] = useState(newCluster);
 
   const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
     if (!ts) {
@@ -200,6 +204,18 @@ export default () => {
     },
   });
 
+  const { data: selectedClusterInfo } = useRequest(() => getClusterV2(selectedCluster?.id), {
+    onSuccess: () => {
+      if (isVersion2(selectedClusterInfo)) {
+        setCopyCluster(newClusterV2);
+      } else {
+        setCopyCluster(newCluster);
+      }
+    },
+    ready: !!selectedCluster,
+    refreshDeps: [selectedCluster?.id],
+  });
+
   const onTagClear = () => {
     setTagSelectorState('');
     setFilterState('');
@@ -269,7 +285,7 @@ export default () => {
         className={styles.createClusterBtn}
         onClick={() => {
           history.push({
-            pathname: newCluster,
+            pathname: copyCluster,
             search: stringify({
               sourceClusterID: selectedCluster?.id,
             }),
@@ -314,7 +330,7 @@ export default () => {
     />,
   };
 
-  const onClusterSelected = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+  const onClusterSelected = (_selectedRowKeys: React.Key[], selectedRows: any[]) => {
     setSelectedCluster(selectedRows[0]);
   };
 

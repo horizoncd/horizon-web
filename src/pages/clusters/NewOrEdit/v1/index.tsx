@@ -18,22 +18,7 @@ import { PublishType } from '@/const';
 import {
   Step, StepContent, StepAction, ModalTitle, ModalContent,
 } from '../Widget';
-import { CLUSTER } from '@/services/clusters';
-
-function difference(object: any, other: any) {
-  const diff = {};
-  Object.keys(object).forEach((key) => {
-    if (typeof object[key] === 'object' && typeof other[key] === 'object' && object[key] && other[key]) {
-      const subDiff = difference(object[key], other[key]);
-      if (Object.keys(subDiff).length !== 0) {
-        diff[key] = subDiff;
-      }
-    } else if (object[key] !== other[key]) {
-      diff[key] = object[key];
-    }
-  });
-  return diff;
-}
+import { difference } from '@/utils';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -272,7 +257,7 @@ export default (props: any) => {
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     // query regions when environment selected
-    if (changingFiled[0].name[0] === 'environment') {
+    if ((changingFiled[0].name[0] === 'environment') && !copying) {
       // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value);
     }
@@ -293,11 +278,11 @@ export default (props: any) => {
   };
 
   const { loading, run: submitCluster } = useRequest((cfg?: any) => {
-    // 触发json schema表单submit事件，更新数据
     const info = {
       name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
       description: form.getFieldValue(description),
       template: {
+        name: template.name,
         release: form.getFieldValue(release),
       },
       git: {

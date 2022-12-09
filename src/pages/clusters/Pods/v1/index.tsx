@@ -257,7 +257,6 @@ const DurationDisplay = (props: { seconds: number }) => {
 };
 
 const pollingInterval = 6000;
-const pendingState = 'pending';
 const runningState = 'running';
 const onlineState = 'online';
 const offlineState = 'offline';
@@ -352,17 +351,13 @@ export default () => {
             const { status, spec, metadata } = podObj;
             const { containers, initContainers } = spec;
             const { namespace, creationTimestamp } = metadata;
-            const { containerStatuses } = status;
-            const state = {
-              state: pendingState,
-              reason: '',
-              message: '',
-            };
+            const {
+              containerStatuses, phase, reason, message,
+            } = status;
+
             let restartCount = 0;
             let onlineStatus = offlineState;
             if (containerStatuses && containerStatuses.length > 0) {
-              Object.assign(state, containerStatuses[0].state);
-
               restartCount = containerStatuses[0].restartCount;
               if (containerStatuses.length === containers.length) {
                 onlineStatus = onlineState;
@@ -378,8 +373,12 @@ export default () => {
 
             const podInTable: CLUSTER.PodInTable = {
               key: podName,
+              state: {
+                state: phase,
+                reason,
+                message,
+              },
               podName,
-              state,
               createTime: Utils.timeToLocal(creationTimestamp),
               ip: status.podIP,
               onlineStatus,
@@ -393,7 +392,7 @@ export default () => {
               // @ts-ignore
               containers: podObj.spec.containers,
             };
-            if (state.state === runningState) {
+            if (phase === runningState) {
               healthyPods.push(podInTable);
             } else {
               notHealthyPods.push(podInTable);

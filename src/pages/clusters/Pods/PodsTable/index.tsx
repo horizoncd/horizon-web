@@ -387,9 +387,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
     if (item.deletionTimestamp) {
       state.state = 'terminated';
-    }
-
-    if (state.state === 'terminated') {
       state.reason = 'terminated';
     }
 
@@ -571,7 +568,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       filters: statusList,
       onHeaderCell: noWrap,
       onCell: noWrap,
-      onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       render: (text: string, record: CLUSTER.PodInTable) => {
         const { message } = record.state;
         let status: JSX.Element;
@@ -592,7 +588,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             status = <PodPending text="Terminated" message={message} />;
             break;
           default:
-            status = <PodPending text="Pending" />;
+            status = <PodPending text={text} message={message} />;
         }
         let lifeCycleButtonStyle = styles.lifecycleButtonBlue;
         record.lifeCycle.forEach((lifeCycleItem) => {

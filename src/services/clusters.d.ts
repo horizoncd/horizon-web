@@ -209,6 +209,8 @@ declare namespace CLUSTER {
       hostIP: string,
       podIP: string
       phase: string
+      reason: string
+      message: string
       containerStatuses: [{
         name: string
         ready: boolean
