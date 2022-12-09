@@ -233,6 +233,26 @@ declare namespace CLUSTER {
     deletionTimestamp: string
   };
 
+  type Revision = {
+    pods: Record<string, PodFromBackend>
+  };
+
+  type Step = {
+    index: number,
+    total: number,
+    replicas: number[],
+    manualPaused: boolean,
+  };
+
+  type ClusterStatusV2 = {
+    workload: string,
+    status: string,
+    step?: Step,
+    revision: string,
+    versions: Record<string, Revision>
+    ttlInSeconds?: number,
+  };
+
   type ClusterStatus = {
     runningTask: {
       task: string,

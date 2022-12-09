@@ -186,6 +186,14 @@ export async function getPipelines(clusterID: number, params: PIPELINES.ListPipe
   });
 }
 
+export async function getClusterStatusV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterStatusV2
+  }>(`/apis/core/v2/clusters/${clusterID}/status`, {
+    method: 'GET',
+  });
+}
+
 export async function getClusterStatus(clusterID: number) {
   return request<{
     data: CLUSTER.ClusterStatus
