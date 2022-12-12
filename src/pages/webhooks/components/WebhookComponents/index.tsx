@@ -19,6 +19,7 @@ import { useIntl } from '@@/plugin-locale/localeExports';
 import { useState } from 'react';
 import { FormProps, Rule } from 'antd/lib/form';
 import styled from 'styled-components';
+import YAML from 'yaml';
 import { resendWebhookLogs, listWebhookLogs } from '@/services/webhooks/webhooks';
 import { Succeeded, Failed, Progressing } from '@/components/State';
 import utils from '@/utils';
@@ -401,6 +402,11 @@ function WebhookLogDetail(props: { webhookLog: Webhooks.Log | undefined }) {
     font-size: 0.8125rem;
   `;
 
+  const parsedHeaders = YAML.parse(webhookLog?.requestHeaders || '{}');
+  // transfer headers from yaml-string to k: v1;v2
+  const headers = Object.keys(parsedHeaders)
+    .map((key: string) => `${key}: ${parsedHeaders[key].join(';')}`).join('\n');
+
   return (
     <Card>
       <BasicInfo>
@@ -420,7 +426,9 @@ function WebhookLogDetail(props: { webhookLog: Webhooks.Log | undefined }) {
       </BasicInfo>
       <Divider />
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestHeader.title' })}</Title>
-      <ContentBlock>{webhookLog?.requestHeaders}</ContentBlock>
+      <ContentBlock>
+        { headers }
+      </ContentBlock>
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestBody.title' })}</Title>
       <ContentBlock>
         {JSON.stringify(JSON.parse(webhookLog?.requestData || '{}'), null, 4)}
