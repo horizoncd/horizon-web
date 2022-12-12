@@ -257,7 +257,7 @@ const DurationDisplay = (props: { seconds: number }) => {
 };
 
 const pollingInterval = 6000;
-const runningState = 'running';
+const runningState = 'Running';
 const onlineState = 'online';
 const offlineState = 'offline';
 
