@@ -1,24 +1,20 @@
 import { RolloutDeployPanel } from '../components';
 
-interface SyncCardProps {
+interface StepCardProps {
+  // eslint-disable-next-line react/require-default-props
+  step?: CLUSTER.Step,
+  refresh: () => void
   clusterStatus: CLUSTER.ClusterStatusV2,
-  refreshStatus: () => void,
 }
 
-const WorkloadRollout = 'argoproj.io/v1alpha1/Rollout';
+function StepCard(props: StepCardProps) {
+  const { step, refresh, clusterStatus } = props;
 
-function SyncCard(props: SyncCardProps) {
-  const { clusterStatus, refreshStatus } = props;
-  const { workload, step } = clusterStatus;
-
-  if (!step) {
+  if (!step || step.total === 0) {
     return <div />;
   }
 
-  if (workload === WorkloadRollout) {
-    return <RolloutDeployPanel refreshStatus={refreshStatus} clusterStatus={clusterStatus} />;
-  }
-  return <div />;
+  return <RolloutDeployPanel step={step} refresh={refresh} clusterStatus={clusterStatus} />;
 }
 
-export default SyncCard;
+export default StepCard;

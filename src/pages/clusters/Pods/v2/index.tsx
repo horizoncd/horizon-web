@@ -504,7 +504,7 @@ export default () => {
     [
       {
         key: intl.formatMessage({ id: 'pages.cluster.basic.status' }),
-        value: <StatusComponent status={clusterStatus} />,
+        value: <StatusComponent clusterStatus={clusterStatus} manualPaused={statusData?.clusterStatus.manualPaused ?? false} />,
         description: intl.formatMessage({ id: 'pages.message.cluster.status.desc' }),
       },
       {

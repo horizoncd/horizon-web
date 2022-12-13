@@ -45,7 +45,7 @@ const Tips = () => {
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.3' })}
         <br />
-    &nbsp;
+        &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.4' })}
         {' '}
         {strongTxt(intl.formatMessage({ id: 'pages.common.more' }))}
@@ -53,27 +53,27 @@ const Tips = () => {
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.5' })}
         {' '}
         <br />
-    &nbsp;&nbsp;
+        &nbsp;&nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.1' })}
         {' '}
         <br />
-    &nbsp;&nbsp;
+        &nbsp;&nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.2' })}
         {' '}
         <br />
-    &nbsp;&nbsp;
+        &nbsp;&nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3' })}
         {' '}
         <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3.1' })}
         {' '}
         <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content1.3.2' })}
         {' '}
         <br />
-    &nbsp;
+        &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.1' })}
         {' '}
         {strongTxt(intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' }))}
@@ -81,7 +81,7 @@ const Tips = () => {
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.2' })}
         {' '}
         <br />
-    &nbsp;
+        &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content3' })}
         {' '}
         <br />
@@ -147,7 +147,7 @@ function DeployStep({
                 {' '}
                 {intl.formatMessage({ id: 'pages.pods.replica' })}
               </span>
-              )}
+            )}
             icon={icon}
           />
         );
@@ -179,36 +179,36 @@ function DeployButtons({
       <DeployStep index={index} total={total} replicas={replicas} statusData={statusData} />
       <div style={{ textAlign: 'center' }}>
         {
-        manualPaused ? (
-          <Button
-            type="primary"
-            disabled={!manualPaused || !RBAC.Permissions.resumeCluster.allowed}
-            style={{ margin: '0 8px' }}
-            onClick={onResume}
-          >
-            {intl.formatMessage({ id: 'pages.pods.unpause' })}
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            disabled={manualPaused
-                            || statusData.status === ClusterStatus.SUSPENDED
-                            || !RBAC.Permissions.pauseCluster.allowed}
-            style={{ margin: '0 8px' }}
-            onClick={onPause}
-          >
-            {intl.formatMessage({ id: 'pages.pods.manualPause' })}
-          </Button>
-        )
-      }
+          manualPaused ? (
+            <Button
+              type="primary"
+              disabled={!manualPaused || !RBAC.Permissions.resumeCluster.allowed}
+              style={{ margin: '0 8px' }}
+              onClick={onResume}
+            >
+              {intl.formatMessage({ id: 'pages.pods.unpause' })}
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              disabled={manualPaused
+                || statusData.status === ClusterStatus.SUSPENDED
+                || !RBAC.Permissions.pauseCluster.allowed}
+              style={{ margin: '0 8px' }}
+              onClick={onPause}
+            >
+              {intl.formatMessage({ id: 'pages.pods.manualPause' })}
+            </Button>
+          )
+        }
 
         <Button
           type="primary"
           disabled={
-          !RBAC.Permissions.deployClusterNext.allowed
-                || statusData.status !== ClusterStatus.SUSPENDED
-                || manualPaused
-        }
+            !RBAC.Permissions.deployClusterNext.allowed
+            || statusData.status !== ClusterStatus.SUSPENDED
+            || manualPaused
+          }
           style={{ margin: '0 8px' }}
           onClick={onNext}
         >
@@ -217,10 +217,10 @@ function DeployButtons({
         <Button
           type="primary"
           disabled={
-          !RBAC.Permissions.promoteCluster.allowed
-                || statusData.status !== ClusterStatus.SUSPENDED
-                || manualPaused
-        }
+            !RBAC.Permissions.promoteCluster.allowed
+            || statusData.status !== ClusterStatus.SUSPENDED
+            || manualPaused
+          }
           style={{ margin: '0 8px' }}
           onClick={onPromote}
         >
@@ -229,9 +229,9 @@ function DeployButtons({
         <Button
           danger
           disabled={
-          !RBAC.Permissions.rollbackCluster.allowed
-                || !RBAC.Permissions.freeCluster.allowed
-        }
+            !RBAC.Permissions.rollbackCluster.allowed
+            || !RBAC.Permissions.freeCluster.allowed
+          }
           style={{ margin: '0 8px' }}
           onClick={onCancelDeploy}
         >
@@ -242,8 +242,17 @@ function DeployButtons({
   );
 }
 
-function RolloutDeployPanel(props: { clusterStatus: CLUSTER.ClusterStatusV2, refreshStatus: () => void, initialState: API.InitialState }) {
-  const { clusterStatus, initialState, refreshStatus } = props;
+interface RolloutDeploPanelProps {
+  clusterStatus: CLUSTER.ClusterStatusV2,
+  refresh: () => void,
+  initialState: API.InitialState,
+  step: CLUSTER.Step
+}
+
+function RolloutDeployPanel(props: RolloutDeploPanelProps) {
+  const {
+    clusterStatus, initialState, refresh, step,
+  } = props;
   const { id, fullPath } = initialState.resource;
 
   const intl = useIntl();
@@ -252,8 +261,6 @@ function RolloutDeployPanel(props: { clusterStatus: CLUSTER.ClusterStatusV2, ref
   if (!clusterStatus) {
     return null;
   }
-
-  const { step } = clusterStatus;
 
   return (
     <div>
@@ -264,145 +271,145 @@ function RolloutDeployPanel(props: { clusterStatus: CLUSTER.ClusterStatusV2, ref
               statusData={clusterStatus}
               step={step}
               onNext={
-                          () => {
-                            next(id).then(() => {
-                              successAlert(
-                                intl.formatMessage(
-                                  { id: 'pages.message.pods.step.deploy' },
-                                  { index: step.index + 1 },
-                                ),
-                              );
-                              refreshStatus();
-                            });
-                          }
-                        }
+                () => {
+                  next(id).then(() => {
+                    successAlert(
+                      intl.formatMessage(
+                        { id: 'pages.message.pods.step.deploy' },
+                        { index: step.index + 1 },
+                      ),
+                    );
+                    refresh();
+                  });
+                }
+              }
               onPause={
-                          () => {
-                            pause(id).then(() => {
-                              successAlert(intl.formatMessage({ id: 'pages.message.cluster.manualPause.success' }));
-                              refreshStatus();
-                            });
-                          }
-                        }
+                () => {
+                  pause(id).then(() => {
+                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.manualPause.success' }));
+                    refresh();
+                  });
+                }
+              }
               onResume={
-                          () => {
-                            resume(id).then(() => {
-                              successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
-                              refreshStatus();
-                            });
-                          }
-                        }
+                () => {
+                  resume(id).then(() => {
+                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
+                    refresh();
+                  });
+                }
+              }
               onPromote={
-                          () => {
-                            Modal.confirm(
-                              {
-                                title: (
-                                  <div className={styles.boldText}>
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.confirm' })}
-                                  </div>
-                                ),
-                                content: (
-                                  <div className={styles.promotePrompt}>
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content1' })}
-                                    <br />
-                                    1.
-                                    {' '}
-                                    <span className={styles.textGreen}>
-                                      {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategySafe' })}
-                                    </span>
-                                    :
-                                    {' '}
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content2' })}
-                                    {' '}
-                                    <br />
-                                    2.
-                                    {' '}
-                                    <span className={styles.textGreen}>
-                                      {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategyRoll' })}
-                                    </span>
-                                    :
-                                    {' '}
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content3' })}
-                                    <br />
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content4' })}
-                                    <br />
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content5' })}
-                                    <br />
-                                    {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content6' })}
-                                  </div>
-                                ),
-                                onOk: () => {
-                                  promote(id).then(() => {
-                                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
-                                    refreshStatus();
-                                  });
-                                },
-                                width: '750px',
-                              },
-                            );
-                          }
-                        }
+                () => {
+                  Modal.confirm(
+                    {
+                      title: (
+                        <div className={styles.boldText}>
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.confirm' })}
+                        </div>
+                      ),
+                      content: (
+                        <div className={styles.promotePrompt}>
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content1' })}
+                          <br />
+                          1.
+                          {' '}
+                          <span className={styles.textGreen}>
+                            {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategySafe' })}
+                          </span>
+                          :
+                          {' '}
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content2' })}
+                          {' '}
+                          <br />
+                          2.
+                          {' '}
+                          <span className={styles.textGreen}>
+                            {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategyRoll' })}
+                          </span>
+                          :
+                          {' '}
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content3' })}
+                          <br />
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content4' })}
+                          <br />
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content5' })}
+                          <br />
+                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content6' })}
+                        </div>
+                      ),
+                      onOk: () => {
+                        promote(id).then(() => {
+                          successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
+                          refresh();
+                        });
+                      },
+                      width: '750px',
+                    },
+                  );
+                }
+              }
               onCancelDeploy={
-                          () => {
-                            // query latest canRollback pipelinerun
-                            getPipelines(id, {
-                              pageNumber: 1, pageSize: 1, canRollback: true,
-                            }).then(({ data }) => {
-                              const { total } = data;
-                              // first deploy, just free cluster
-                              if (total === 0) {
-                                Modal.confirm(
-                                  {
-                                    title: (
-                                      <div className={styles.boldText}>
-                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
-                                      </div>
-                                    ),
-                                    content: (
-                                      <div>
-                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content1' })}
-                                        <strong style={{ color: 'red' }}>
-                                          {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content2' })}
-                                        </strong>
-                                      </div>
-                                    ),
-                                    onOk: () => {
-                                      freeCluster(id).then(() => {
-                                        successAlert(intl.formatMessage(
-                                          { id: 'pages.message.cluster.deployCancel.first.success' },
-                                        ));
-                                      });
-                                    },
-                                    width: '750px',
-                                  },
-                                );
-                              } else {
-                                Modal.confirm(
-                                  {
-                                    title: (
-                                      <div className={styles.boldText}>
-                                        {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
-                                      </div>
-                                    ),
-                                    content: (
-                                      <div>
-                                        <strong style={{ color: 'red' }}>
-                                          {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.content' })}
-                                        </strong>
-                                        <br />
-                                      </div>
-                                    ),
-                                    onOk: () => {
-                                      history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
-                                    },
-                                    okText: intl.formatMessage({ id: 'pages.common.confirm' }),
-                                    width: '750px',
-                                  },
-                                );
-                              }
+                () => {
+                  // query latest canRollback pipelinerun
+                  getPipelines(id, {
+                    pageNumber: 1, pageSize: 1, canRollback: true,
+                  }).then(({ data }) => {
+                    const { total } = data;
+                    // first deploy, just free cluster
+                    if (total === 0) {
+                      Modal.confirm(
+                        {
+                          title: (
+                            <div className={styles.boldText}>
+                              {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
+                            </div>
+                          ),
+                          content: (
+                            <div>
+                              {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content1' })}
+                              <strong style={{ color: 'red' }}>
+                                {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.first.content2' })}
+                              </strong>
+                            </div>
+                          ),
+                          onOk: () => {
+                            freeCluster(id).then(() => {
+                              successAlert(intl.formatMessage(
+                                { id: 'pages.message.cluster.deployCancel.first.success' },
+                              ));
                             });
-                          }
-                        }
+                          },
+                          width: '750px',
+                        },
+                      );
+                    } else {
+                      Modal.confirm(
+                        {
+                          title: (
+                            <div className={styles.boldText}>
+                              {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
+                            </div>
+                          ),
+                          content: (
+                            <div>
+                              <strong style={{ color: 'red' }}>
+                                {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.content' })}
+                              </strong>
+                              <br />
+                            </div>
+                          ),
+                          onOk: () => {
+                            history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
+                          },
+                          okText: intl.formatMessage({ id: 'pages.common.confirm' }),
+                          width: '750px',
+                        },
+                      );
+                    }
+                  });
+                }
+              }
               nextStepString={intl.formatMessage({ id: 'pages.pods.nextStep' })}
             />
             <Tips />

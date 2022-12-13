@@ -5,10 +5,10 @@ import { StatusComponent } from '@/components/State';
 interface ClusterCardProps {
   cluster: CLUSTER.Cluster,
   clusterStatus: CLUSTER.ClusterStatusV2,
+  manualPaused: boolean,
   podsInfo: {
     healthyPods: CLUSTER.PodInTable[],
     notHealthyPods: CLUSTER.PodInTable[],
-    images: Set<string>,
   },
   region2DisplayName: Map<string, string>,
   env2DisplayName: Map<string, string>,
@@ -60,7 +60,7 @@ const DurationDisplay = (props: { seconds: number }) => {
 
 function ClusterCard(props: ClusterCardProps) {
   const {
-    cluster, clusterStatus, podsInfo, region2DisplayName, env2DisplayName,
+    cluster, clusterStatus, podsInfo, region2DisplayName, env2DisplayName, manualPaused,
   } = props;
 
   const intl = useIntl();
@@ -68,7 +68,7 @@ function ClusterCard(props: ClusterCardProps) {
     [
       {
         key: intl.formatMessage({ id: 'pages.cluster.basic.status' }),
-        value: <StatusComponent clusterStatus={clusterStatus} />,
+        value: <StatusComponent clusterStatus={clusterStatus.status} manualPaused={manualPaused} />,
         description: intl.formatMessage({ id: 'pages.message.cluster.status.desc' }),
       },
       {
@@ -89,18 +89,12 @@ function ClusterCard(props: ClusterCardProps) {
         value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : '',
       },
     ],
-    [
-      {
-        key: intl.formatMessage({ id: 'pages.common.images' }),
-        value: Array.from(podsInfo.images),
-      },
-    ],
   ];
 
-  if (clusterStatus.ttlInSeconds) {
+  if (cluster.ttlInSeconds) {
     baseInfo[1].push({
       key: intl.formatMessage({ id: 'pages.cluster.basic.expireIn' }),
-      value: <DurationDisplay seconds={clusterStatus.ttlInSeconds} />,
+      value: <DurationDisplay seconds={cluster.ttlInSeconds} />,
       description: intl.formatMessage({ id: 'pages.message.cluster.ttl.hint' }),
     });
   }

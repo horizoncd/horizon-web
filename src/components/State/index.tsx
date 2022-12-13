@@ -271,13 +271,13 @@ const Offline = (props: Pick<StatusProps, 'text'>) => {
 };
 
 // StatusComponent returns the status component
-const StatusComponent = (props: { clusterStatus: CLUSTER.ClusterStatusV2 }) => {
-  const { clusterStatus: { status, step: { manualPaused } = {} } } = props;
+const StatusComponent = (props: { clusterStatus: string, manualPaused: boolean }) => {
+  const { clusterStatus, manualPaused } = props;
   const intl = useIntl();
   if (manualPaused) {
     return <Suspended text={intl.formatMessage({ id: 'pages.cluster.status.manualPaused' })} />;
   }
-  switch (status) {
+  switch (clusterStatus) {
     case ClusterStatus.CREATING:
       return <Creating text={intl.formatMessage({ id: 'pages.cluster.status.creating' })} />;
     case ClusterStatus.PROGRESSING:

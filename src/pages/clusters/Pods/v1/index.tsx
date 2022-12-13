@@ -2,9 +2,11 @@ import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
 import { useMemo, useState } from 'react';
-import { Tabs } from 'antd';
+import { Popover, Tabs } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import { getCluster, getClusterStatusV2 } from '@/services/clusters/clusters';
+import {
+  getCluster, getClusterStatusV2, getClusterResourceTree, getStepV2,
+} from '@/services/clusters/clusters';
 import { ClusterStatus } from '@/const';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
@@ -12,7 +14,7 @@ import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin } from '@/components/Widget';
 import { refreshPodsInfo } from './util';
 import PodsTable from '../PodsTable';
-import SyncCard from './SyncCard';
+import StepCard from './SyncCard';
 import { ButtonBar, ClusterCard } from '../components';
 
 const { TabPane } = Tabs;
@@ -23,6 +25,14 @@ interface PodsPageProps {
   initialState: API.InitialState,
 }
 
+const getLastPattern = (name: string) => {
+  const matches = /(?:[_\-a-zA-Z0-9]*\/)*([_\-a-zA-Z0-9]*)/.exec(name);
+  if (matches === null || matches.length < 1) {
+    return '/';
+  }
+  return matches[1];
+};
+
 function PodsPage(props: PodsPageProps) {
   const intl = useIntl();
   const { initialState: { resource: { id, parentID: applicationID } } } = props;
@@ -30,6 +40,7 @@ function PodsPage(props: PodsPageProps) {
   const [shouldAlertFreed, setShouldAlertFreed] = useState(true);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
+  const [progressing, setProgressing] = useState<boolean>(false);
 
   const { data: cluster } = useRequest(() => getCluster(id), {});
 
@@ -50,9 +61,14 @@ function PodsPage(props: PodsPageProps) {
     ready: !!cluster,
   });
 
-  const { data: clusterStatus, run: refreshStatus } = useRequest(() => getClusterStatusV2(id), {
+  const { data: clusterStatus, refresh: refreshCluster } = useRequest(() => getClusterStatusV2(id), {
     pollingInterval,
     onSuccess: () => {
+      if (clusterStatus?.status === ClusterStatus.PROGRESSING) {
+        setProgressing(true);
+      } else {
+        setProgressing(false);
+      }
       if (clusterStatus?.status === ClusterStatus.FREED) {
         if (shouldAlertFreed) {
           successAlert(intl.formatMessage({ id: 'pages.message.cluster.free.hint' }));
@@ -62,44 +78,40 @@ function PodsPage(props: PodsPageProps) {
     },
   });
 
-  const podsInfo = useMemo(() => refreshPodsInfo(clusterStatus), [clusterStatus]);
+  const { data: step, refresh: refreshStep } = useRequest(() => getStepV2(id), {
+    ready: progressing,
+    pollingInterval,
+  });
+
+  const { data: resourceTree } = useRequest(() => getClusterResourceTree(id), {
+    ready: !!clusterStatus && (clusterStatus.status !== ClusterStatus.FREED),
+    pollingInterval,
+  });
+
+  const podsInfo = useMemo(() => refreshPodsInfo(resourceTree), [resourceTree]);
 
   if (!clusterStatus || !cluster || !env2DisplayName || !region2DisplayName) {
     return <CenterSpin />;
   }
-
-  const { revision } = clusterStatus;
 
   return (
     <PageWithBreadcrumb>
       <div>
         <ButtonBar cluster={cluster} clusterStatus={clusterStatus} />
         <ClusterCard
+          manualPaused={(step && step.manualPaused) ?? false}
           cluster={cluster}
           clusterStatus={clusterStatus}
           env2DisplayName={env2DisplayName}
           region2DisplayName={region2DisplayName}
           podsInfo={podsInfo}
         />
-        <SyncCard clusterStatus={clusterStatus} refreshStatus={refreshStatus} />
-        <Tabs
-          defaultActiveKey={revision}
-        >
+        <StepCard step={step} refresh={() => { refreshStep(); refreshCluster(); }} clusterStatus={clusterStatus} />
+        <Tabs>
           {
-            podsInfo.currentPods.length > 0 && (
+            podsInfo.sortedKey.map((key) => (
               <TabPane
-                tab={`${revision} (Current)`}
-                key={revision}
-                tabKey={revision}
-              >
-                <PodsTable key={revision} data={podsInfo.currentPods} cluster={cluster} />
-              </TabPane>
-            )
-          }
-          {
-            Object.keys(podsInfo.podsMap).map((key) => (
-              <TabPane
-                tab={key}
+                tab={<Popover content={key}>{getLastPattern(key)}</Popover>}
                 key={key}
                 tabKey={key}
               >

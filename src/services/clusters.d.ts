@@ -78,6 +78,7 @@ declare namespace CLUSTER {
     templateInput: any;
     latestDeployedCommit: string;
     status?: string;
+    ttlInSeconds: number;
     createdAt: string;
     updatedAt: string;
     createdBy: {
@@ -237,6 +238,34 @@ declare namespace CLUSTER {
     pods: Record<string, PodFromBackend>
   };
 
+  type ResourceRef = {
+    group: string,
+    version: string,
+    kind: string,
+    namespace: string,
+    name: string,
+    uid: string,
+  };
+
+  type InfoItem = {
+    name: string,
+    value: string,
+  };
+
+  type ResourceNode = {
+    podDetail?: Kubernetes.Pod,
+    parentRefs: ResourceRef[],
+    info: InfoItem[],
+    resourceVersion:string,
+    images: string[],
+    health: string,
+    createdAt: string,
+  } & ResourceRef;
+
+  type ResourceTree = {
+    nodes: Record<string, ResourceNode>
+  };
+
   type Step = {
     index: number,
     total: number,
@@ -245,12 +274,7 @@ declare namespace CLUSTER {
   };
 
   type ClusterStatusV2 = {
-    workload: string,
     status: string,
-    step?: Step,
-    revision: string,
-    versions: Record<string, Revision>
-    ttlInSeconds?: number,
   };
 
   type ClusterStatus = {
@@ -360,6 +384,7 @@ declare namespace CLUSTER {
     type: string,
     status: string,
     message: string,
+    completeTime?: string,
   };
 
   type PodContainersQuery = {

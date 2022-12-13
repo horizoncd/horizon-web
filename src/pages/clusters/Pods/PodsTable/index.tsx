@@ -40,7 +40,6 @@ import CollapseList from '@/components/CollapseList';
 import styles from './index.less';
 import Utils, { handleHref } from '@/utils';
 import { env2MlogEnv } from '@/const';
-import type { CLUSTER } from '@/services/clusters';
 import { MicroApp } from '@/components/Widget';
 
 const Search = withTrim(Input.Search);
