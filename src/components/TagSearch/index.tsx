@@ -1,11 +1,5 @@
-// @ts-ignore
-import { GlFilteredSearch, GlFilteredSearchToken } from '@gitlab/ui';
-import { applyVueInReact } from 'vuereact-combined';
-import '@gitlab/ui/dist/index.css';
-import '@gitlab/ui/dist/utility_classes.css';
 import { useIntl } from 'umi';
-
-const ReactFilteredSearch = applyVueInReact(GlFilteredSearch);
+import { TagsInput } from '../TagSelector';
 
 interface Props {
   defaultValues?: SearchInput[] | undefined
@@ -45,7 +39,6 @@ const TagSearch = (props: Props) => {
     return {
       type: tag.key,
       title: tag.key,
-      token: GlFilteredSearchToken,
       unique: true,
       operators: [
         {
@@ -77,30 +70,28 @@ const TagSearch = (props: Props) => {
 
   return (
     <div style={{ flex: 1, marginBottom: '20px' }}>
-      <ReactFilteredSearch
-        placeholder={intl.formatMessage({ id: 'pages.message.searchByTag.hint' })}
-        availableTokens={tokens}
-        value={values}
-        on={{
-          clear: onClear,
-          submit: (inputs: any[]) => {
-            const results = inputs.map((input) => {
-              if (typeof (input) === 'string') {
-                return {
-                  type: SearchInputType.Value,
-                  value: input,
-                };
-              }
+      <TagsInput
+        placeHolder={intl.formatMessage({ id: 'pages.message.searchByTag.hint' })}
+        avaliableTokens={tokens}
+        values={values}
+        onSubmit={(inputs: any[]) => {
+          const results = inputs.map((input) => {
+            if (typeof (input) === 'string') {
               return {
-                type: SearchInputType.Tag,
-                key: input.type,
-                operator: input.value.operator,
-                value: input.value.data,
+                type: SearchInputType.Value,
+                value: input,
               };
-            });
-            onSearch(results);
-          },
+            }
+            return {
+              type: SearchInputType.Tag,
+              key: input.type,
+              operator: input.value.operator,
+              value: input.value.data,
+            };
+          });
+          onSearch(results);
         }}
+        onClear={onClear}
       />
     </div>
   );
