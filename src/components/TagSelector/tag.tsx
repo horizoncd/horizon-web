@@ -23,6 +23,7 @@ const BorderlessButton = styled.button`
 
 const CloseButton = styled.span`
   margin-left: 5px;
+  cursor: pointer;
   :hover {
     color: red;
   }

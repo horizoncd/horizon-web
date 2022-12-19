@@ -116,7 +116,8 @@ export const TagsInput = ({
       }
     });
     setSelectedTokens(selected);
-  }, [values, avaliableTokens]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clearAll = () => {
     input.current.value = '';
