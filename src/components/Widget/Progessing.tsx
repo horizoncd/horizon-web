@@ -22,7 +22,7 @@ function Progressing({ title, maxCount = 3, style }: ProgressingProps) {
   return (
     <span
       style={{
-        color: 'red',
+        color: '#ff4d4f',
         width: '70px',
         ...style,
       }}
