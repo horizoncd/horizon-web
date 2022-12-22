@@ -50,6 +50,7 @@ import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import FullscreenModal from '@/components/FullscreenModal';
 import Intl from '@/components/Intl';
+import { CenterSpin } from '@/components/Widget';
 
 const { TabPane } = Tabs;
 const { Step } = Steps;
@@ -765,6 +766,10 @@ export default () => {
   };
 
   const currentTab = userClickedCurrent > -1 ? userClickedCurrent : current;
+
+  if (!cluster) {
+    return <CenterSpin />;
+  }
 
   return (
     <PageWithBreadcrumb>

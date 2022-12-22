@@ -1,3 +1,4 @@
+import { Card } from 'antd';
 import { RolloutDeployPanel } from '../components';
 
 interface StepCardProps {
@@ -14,7 +15,11 @@ function StepCard(props: StepCardProps) {
     return <div />;
   }
 
-  return <RolloutDeployPanel step={step} refresh={refresh} clusterStatus={clusterStatus} />;
+  return (
+    <Card>
+      <RolloutDeployPanel step={step} refresh={refresh} clusterStatus={clusterStatus} />
+    </Card>
+  );
 }
 
 export default StepCard;

@@ -2,7 +2,7 @@ import {
   Button, Input, Menu, Modal, Space, Table, Tooltip,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import './index.less';
 import { useRequest } from '@@/plugin-request/request';
@@ -23,8 +23,6 @@ import copy from 'copy-to-clipboard';
 import FullscreenModal from '@/components/FullscreenModal';
 import {
   deletePods,
-  offline,
-  online,
   queryPodContainers,
   queryPodEvents,
   queryPodStdout,
@@ -127,7 +125,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     },
   });
 
-  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.cluster.podsTable.${suffix}`, defaultMessage: defaultMsg }), [intl]);
 
   const formatConsoleURL = (p: CLUSTER.PodInTable) => {
     const { environment } = cluster?.scope || {};
@@ -262,6 +260,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     setFilter(value);
   };
 
+  const podNames = useMemo(() => selectedPods.map((item) => item.podName), [selectedPods]);
+  const podOperationDisabled = useMemo(() => !selectedPods.length || !RBAC.Permissions.onlineCluster.allowed, [selectedPods]);
+
   const hookAfterBatchOps = (ops: string, res: any) => {
     const succeedList: string[] = [];
     const failedList: {
@@ -330,27 +331,26 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       {/* @ts-ignore */}
       <Search placeholder="Search" onChange={onChange} style={{ width: '300px' }} value={filter} />
       <div style={{ float: 'right' }}>
-        <Button
-          onClick={() => {
-            online(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
-              hookAfterBatchOps('Online', d);
-            });
-          }}
-          disabled={!selectedPods.length || !RBAC.Permissions.onlineCluster.allowed}
-        >
-          {formatMessage('online', '上线')}
-        </Button>
-        <Button
-          style={{ marginLeft: '10px' }}
-          onClick={() => {
-            offline(cluster!.id, selectedPods.map((item) => item.podName)).then(({ data: d }) => {
-              hookAfterBatchOps('Offline', d);
-            });
-          }}
-          disabled={!selectedPods.length || !RBAC.Permissions.offlineCluster.allowed}
-        >
-          {formatMessage('offline', '下线')}
-        </Button>
+        <MicroApp
+          name="podoperation"
+          type="online"
+          errorAlert={errorAlert}
+          successAlert={successAlert}
+          formatMessage={formatMessage}
+          clusterID={cluster!.id}
+          podNames={podNames}
+          disabled={podOperationDisabled}
+        />
+        <MicroApp
+          name="podoperation"
+          type="offline"
+          errorAlert={errorAlert}
+          successAlert={successAlert}
+          formatMessage={formatMessage}
+          clusterID={cluster!.id}
+          podNames={podNames}
+          disabled={podOperationDisabled}
+        />
         <Button
           style={{ marginLeft: '10px' }}
           onClick={() => {

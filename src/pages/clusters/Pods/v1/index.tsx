@@ -5,17 +5,18 @@ import { useMemo, useState } from 'react';
 import { Popover, Tabs } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
-  getCluster, getClusterStatusV2, getClusterResourceTree, getStepV2,
+  getCluster, getClusterStatusV2, getClusterResourceTree, getStepV2, getClusterBuildStatusV2,
 } from '@/services/clusters/clusters';
-import { ClusterStatus } from '@/const';
+import { ClusterStatus, TaskStatus } from '@/const';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin } from '@/components/Widget';
-import { refreshPodsInfo } from './util';
+import { BuildStatus, refreshPodsInfo } from './util';
 import PodsTable from '../PodsTable';
 import StepCard from './SyncCard';
 import { ButtonBar, ClusterCard } from '../components';
+import BuildCard from './BuildCard';
 
 const { TabPane } = Tabs;
 
@@ -41,6 +42,7 @@ function PodsPage(props: PodsPageProps) {
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
   const [progressing, setProgressing] = useState<boolean>(false);
+  const [building, setBuilding] = useState<BuildStatus>(BuildStatus.None);
 
   const { data: cluster } = useRequest(() => getCluster(id), {});
 
@@ -61,11 +63,31 @@ function PodsPage(props: PodsPageProps) {
     ready: !!cluster,
   });
 
+  const { data: clsuterBuildStatus, refresh: refreshBuildStatus } = useRequest(() => getClusterBuildStatusV2(id), {
+    pollingInterval,
+    onSuccess: (status) => {
+      const taskStatus = status.runningTask.taskStatus as TaskStatus;
+      // 2021.12.15 应用迁移到Horizon后，latestPipelinerun为null
+      if (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING) {
+        setBuilding(BuildStatus.Running);
+      } else if (taskStatus === TaskStatus.FAILED) {
+        setBuilding(BuildStatus.Failed);
+      } else {
+        setBuilding(BuildStatus.None);
+      }
+    },
+  });
+
+  const { data: step, run: getStep, refresh: refreshStep } = useRequest(() => getStepV2(id), {
+    manual: true,
+  });
+
   const { data: clusterStatus, refresh: refreshCluster } = useRequest(() => getClusterStatusV2(id), {
     pollingInterval,
     onSuccess: () => {
       if (clusterStatus?.status === ClusterStatus.PROGRESSING) {
         setProgressing(true);
+        getStep();
       } else {
         setProgressing(false);
       }
@@ -76,11 +98,6 @@ function PodsPage(props: PodsPageProps) {
         }
       }
     },
-  });
-
-  const { data: step, refresh: refreshStep } = useRequest(() => getStepV2(id), {
-    ready: progressing,
-    pollingInterval,
   });
 
   const { data: resourceTree } = useRequest(() => getClusterResourceTree(id), {
@@ -97,7 +114,7 @@ function PodsPage(props: PodsPageProps) {
   return (
     <PageWithBreadcrumb>
       <div>
-        <ButtonBar cluster={cluster} clusterStatus={clusterStatus} />
+        <ButtonBar cluster={cluster} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
         <ClusterCard
           manualPaused={(step && step.manualPaused) ?? false}
           cluster={cluster}
@@ -106,9 +123,30 @@ function PodsPage(props: PodsPageProps) {
           region2DisplayName={region2DisplayName}
           podsInfo={podsInfo}
         />
-        <StepCard step={step} refresh={() => { refreshStep(); refreshCluster(); }} clusterStatus={clusterStatus} />
-        <Tabs>
-          {
+        {
+          (clsuterBuildStatus && clsuterBuildStatus.latestPipelinerun
+            && (building === BuildStatus.Failed || (!progressing && building === BuildStatus.Running))) && (
+            <BuildCard
+              pipelinerunID={clsuterBuildStatus.latestPipelinerun.id}
+              runningTask={clsuterBuildStatus.runningTask}
+            />
+          )
+        }
+        {
+          (progressing && building !== BuildStatus.Failed && step && step.index !== step.total) && (
+            <StepCard
+              step={step}
+              refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
+              clusterStatus={clusterStatus}
+            />
+          )
+        }
+        {
+          podsInfo.sortedKey.length >= 1 && (
+          <Tabs
+            defaultActiveKey={podsInfo.sortedKey[0]}
+          >
+            {
             podsInfo.sortedKey.map((key) => (
               <TabPane
                 tab={<Popover content={key}>{getLastPattern(key)}</Popover>}
@@ -119,7 +157,9 @@ function PodsPage(props: PodsPageProps) {
               </TabPane>
             ))
           }
-        </Tabs>
+          </Tabs>
+          )
+        }
       </div>
     </PageWithBreadcrumb>
   );

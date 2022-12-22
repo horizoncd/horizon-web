@@ -12,12 +12,13 @@ import { deleteCluster, freeCluster, restart } from '@/services/clusters/cluster
 interface ButtonBarProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
   cluster: CLUSTER.Cluster,
+  manualPaused: boolean,
 }
 
 function ButtonBar(props: ButtonBarProps) {
-  const { clusterStatus, cluster } = props;
+  const { clusterStatus, cluster, manualPaused } = props;
   const { id, fullPath } = cluster;
-  const { status, step: { manualPaused } = {} } = clusterStatus;
+  const { status } = clusterStatus;
   const intl = useIntl();
   const { successAlert } = useModel('alert');
 

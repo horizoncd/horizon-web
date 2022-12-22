@@ -14,6 +14,10 @@ const smile = <SmileOutlined />;
 const loading = <LoadingOutlined />;
 const frown = <FrownOutlined />;
 
+export enum BuildStatus {
+  None, Failed, Running,
+}
+
 export const taskStatus2Entity = new Map<TaskStatus, {
   icon: JSX.Element,
   buildTitle: ReactNode,
@@ -370,7 +374,7 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
     const revisionA = getRevision(a.node);
     const revisionB = getRevision(b.node);
     if (revisionA !== '' && revisionB !== '') {
-      return revisionA.localeCompare(revisionB);
+      return -revisionA.localeCompare(revisionB);
     }
     if (revisionA !== '') {
       return 1;

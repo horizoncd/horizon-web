@@ -210,6 +210,14 @@ export async function getClusterStatusV2(clusterID: number) {
   });
 }
 
+export async function getClusterBuildStatusV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterBuildStatusV2,
+  }>(`/apis/core/v2/clusters/${clusterID}/buildstatus`, {
+    method: 'GET',
+  });
+}
+
 export async function getClusterStatus(clusterID: number) {
   return request<{
     data: CLUSTER.ClusterStatus

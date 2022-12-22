@@ -277,15 +277,27 @@ declare namespace CLUSTER {
     status: string,
   };
 
-  type ClusterStatus = {
-    runningTask: {
-      task: string,
-      taskStatus: string,
-    }
+  type RunningTask = {
+    task: string,
+    taskStatus?: string,
+  };
+
+  type LatestPipelinerun = {
+    id: number,
+    action: string
+  };
+
+  type ClusterBuildStatusV2 = {
+    runningTask: RunningTask,
     latestPipelinerun?: {
       id: number,
       action: string
     }
+  };
+
+  type ClusterStatus = {
+    runningTask: RunningTask,
+    latestPipelinerun?: LatestPipelinerun,
     clusterStatus: {
       manualPaused: boolean,
       status: string,
