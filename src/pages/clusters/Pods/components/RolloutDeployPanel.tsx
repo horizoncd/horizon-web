@@ -14,16 +14,17 @@ import {
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
 import styles from '../index.less';
+import { BoldText } from '@/components/Widget';
 
 const { Step } = Steps;
 const smile = <SmileOutlined />;
 const loading = <LoadingOutlined />;
 const waiting = <HourglassOutlined />;
 
-const strongTxt = (txt: string) => (
-  <span style={{ color: 'green' }}>
+const StrongTxt = ({ txt }:{ txt: string }) => (
+  <BoldText style={{ color: 'green' }}>
     {txt}
-  </span>
+  </BoldText>
 );
 
 const Tips = () => {
@@ -33,13 +34,13 @@ const Tips = () => {
       <div style={{ display: 'inline-block', textAlign: 'left' }}>
         【
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip1' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.message.pods.tip1' })} />
         {' '}
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.1' })}
         【
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip.notRunning' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.message.pods.tip.notRunning' })} />
         {' '}
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
@@ -48,7 +49,7 @@ const Tips = () => {
         &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.4' })}
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.common.more' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.common.more' })} />
         {' '}
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.5' })}
         {' '}
@@ -76,7 +77,7 @@ const Tips = () => {
         &nbsp;
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.1' })}
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.cluster.podsTable.monitor' })} />
         {' '}
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content2.2' })}
         {' '}
@@ -89,19 +90,19 @@ const Tips = () => {
         <br />
         【
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.message.pods.tip2' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.message.pods.tip2' })} />
         {' '}
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip2.content1' })}
         【
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.pods.manualPause' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.pods.manualPause' })} />
         {' '}
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
         {intl.formatMessage({ id: 'pages.message.pods.tip2.content2' })}
         {' '}
-        {strongTxt(intl.formatMessage({ id: 'pages.pods.unpause' }))}
+        <StrongTxt txt={intl.formatMessage({ id: 'pages.pods.unpause' })} />
         {' '}
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip2.content3' })}
@@ -242,14 +243,14 @@ function DeployButtons({
   );
 }
 
-interface RolloutDeploPanelProps {
+interface RolloutDeployPanelProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
   refresh: () => void,
   initialState: API.InitialState,
   step: CLUSTER.Step
 }
 
-function RolloutDeployPanel(props: RolloutDeploPanelProps) {
+function RolloutDeployPanel(props: RolloutDeployPanelProps) {
   const {
     clusterStatus, initialState, refresh, step,
   } = props;
