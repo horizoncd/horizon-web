@@ -186,6 +186,38 @@ export async function getPipelines(clusterID: number, params: PIPELINES.ListPipe
   });
 }
 
+export async function getClusterResourceTree(clusterID: number) {
+  return request<{
+    data: CLUSTER.ResourceTree
+  }>(`/apis/core/v2/clusters/${clusterID}/resourcetree`, {
+    method: 'GET',
+  });
+}
+
+export async function getStepV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.Step
+  }>(`/apis/core/v2/clusters/${clusterID}/step`, {
+    method: 'GET',
+  });
+}
+
+export async function getClusterStatusV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterStatusV2
+  }>(`/apis/core/v2/clusters/${clusterID}/status`, {
+    method: 'GET',
+  });
+}
+
+export async function getClusterBuildStatusV2(clusterID: number) {
+  return request<{
+    data: CLUSTER.ClusterBuildStatusV2,
+  }>(`/apis/core/v2/clusters/${clusterID}/buildstatus`, {
+    method: 'GET',
+  });
+}
+
 export async function getClusterStatus(clusterID: number) {
   return request<{
     data: CLUSTER.ClusterStatus

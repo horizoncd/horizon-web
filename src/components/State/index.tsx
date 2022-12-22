@@ -271,10 +271,13 @@ const Offline = (props: Pick<StatusProps, 'text'>) => {
 };
 
 // StatusComponent returns the status component
-const StatusComponent = (props: { status: string }) => {
-  const { status } = props;
+const StatusComponent = (props: { clusterStatus: string, manualPaused: boolean }) => {
+  const { clusterStatus, manualPaused } = props;
   const intl = useIntl();
-  switch (status) {
+  if (manualPaused) {
+    return <Suspended text={intl.formatMessage({ id: 'pages.cluster.status.manualPaused' })} />;
+  }
+  switch (clusterStatus) {
     case ClusterStatus.CREATING:
       return <Creating text={intl.formatMessage({ id: 'pages.cluster.status.creating' })} />;
     case ClusterStatus.PROGRESSING:
@@ -293,8 +296,6 @@ const StatusComponent = (props: { status: string }) => {
       return <Deleting text={intl.formatMessage({ id: 'pages.cluster.status.deleting' })} />;
     case ClusterStatus.NOTFOUND:
       return <NotFound text={intl.formatMessage({ id: 'pages.cluster.status.unreleased' })} />;
-    case ClusterStatus.MANUALPAUSED:
-      return <Suspended text={intl.formatMessage({ id: 'pages.cluster.status.manualPaused' })} />;
     default:
       return <NotFound text={intl.formatMessage({ id: 'pages.cluster.status.notFound' })} />;
   }

@@ -34,7 +34,6 @@ import { queryResource } from '@/services/core';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const';
 import { queryRoles, querySelfMember } from '@/services/members/members';
-import type { API } from './services/typings';
 
 const loginPath = '/user/login';
 const callbackPath = '/user/login/callback';
@@ -617,7 +616,7 @@ function formatClusterMenu(fullPath: string) {
 
 // 从接口中获取子应用配置，export 出的 qiankun 变量是一个 promise
 // @ts-ignore
-export const qiankun = fetch(__MICRO_APP_LOC)
+export const qiankun = fetch("//localhost:3010/config.json")
 .then((res) => res.json())
 .then(({apps}) => ({
   // 注册子应用信息

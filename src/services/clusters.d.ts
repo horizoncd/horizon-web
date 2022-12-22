@@ -78,6 +78,7 @@ declare namespace CLUSTER {
     templateInput: any;
     latestDeployedCommit: string;
     status?: string;
+    ttlInSeconds: number;
     createdAt: string;
     updatedAt: string;
     createdBy: {
@@ -233,15 +234,70 @@ declare namespace CLUSTER {
     deletionTimestamp: string
   };
 
-  type ClusterStatus = {
-    runningTask: {
-      task: string,
-      taskStatus: string,
-    }
+  type Revision = {
+    pods: Record<string, PodFromBackend>
+  };
+
+  type ResourceRef = {
+    group: string,
+    version: string,
+    kind: string,
+    namespace: string,
+    name: string,
+    uid: string,
+  };
+
+  type InfoItem = {
+    name: string,
+    value: string,
+  };
+
+  type ResourceNode = {
+    podDetail?: Kubernetes.Pod,
+    parentRefs: ResourceRef[],
+    info: InfoItem[],
+    resourceVersion:string,
+    images: string[],
+    health: string,
+    createdAt: string,
+  } & ResourceRef;
+
+  type ResourceTree = {
+    nodes: Record<string, ResourceNode>
+  };
+
+  type Step = {
+    index: number,
+    total: number,
+    replicas: number[],
+    manualPaused: boolean,
+  };
+
+  type ClusterStatusV2 = {
+    status: string,
+  };
+
+  type RunningTask = {
+    task: string,
+    taskStatus?: string,
+  };
+
+  type LatestPipelinerun = {
+    id: number,
+    action: string
+  };
+
+  type ClusterBuildStatusV2 = {
+    runningTask: RunningTask,
     latestPipelinerun?: {
       id: number,
       action: string
     }
+  };
+
+  type ClusterStatus = {
+    runningTask: RunningTask,
+    latestPipelinerun?: LatestPipelinerun,
     clusterStatus: {
       manualPaused: boolean,
       status: string,
@@ -340,6 +396,7 @@ declare namespace CLUSTER {
     type: string,
     status: string,
     message: string,
+    completeTime?: string,
   };
 
   type PodContainersQuery = {

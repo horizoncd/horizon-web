@@ -50,6 +50,7 @@ import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import FullscreenModal from '@/components/FullscreenModal';
 import Intl from '@/components/Intl';
+import { CenterSpin } from '@/components/Widget';
 
 const { TabPane } = Tabs;
 const { Step } = Steps;
@@ -504,7 +505,7 @@ export default () => {
     [
       {
         key: intl.formatMessage({ id: 'pages.cluster.basic.status' }),
-        value: <StatusComponent status={clusterStatus} />,
+        value: <StatusComponent clusterStatus={clusterStatus} manualPaused={statusData?.clusterStatus.manualPaused ?? false} />,
         description: intl.formatMessage({ id: 'pages.message.cluster.status.desc' }),
       },
       {
@@ -765,6 +766,10 @@ export default () => {
   };
 
   const currentTab = userClickedCurrent > -1 ? userClickedCurrent : current;
+
+  if (!cluster) {
+    return <CenterSpin />;
+  }
 
   return (
     <PageWithBreadcrumb>
