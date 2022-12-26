@@ -105,7 +105,11 @@ function PodsPage(props: PodsPageProps) {
   });
 
   const { data: resourceTree } = useRequest(() => getClusterResourceTree(id), {
-    ready: !!clusterStatus && (clusterStatus.status !== ClusterStatus.FREED),
+    ready: !!clusterStatus
+      && (
+        clusterStatus.status !== ClusterStatus.FREED
+        && clusterStatus.status !== ClusterStatus.NOTFOUND
+      ),
     pollingInterval,
   });
 
