@@ -85,7 +85,11 @@ function PodsPage(props: PodsPageProps) {
   const { data: clusterStatus, refresh: refreshCluster } = useRequest(() => getClusterStatusV2(id), {
     pollingInterval,
     onSuccess: () => {
-      if (clusterStatus?.status === ClusterStatus.PROGRESSING) {
+      if (clusterStatus?.status === ClusterStatus.PROGRESSING
+        || clusterStatus?.status === ClusterStatus.MANUALPAUSED
+        || clusterStatus?.status === ClusterStatus.SUSPENDED
+        || clusterStatus?.status === ClusterStatus.NOTHEALTHY
+        || clusterStatus?.status === ClusterStatus.DEGRADED) {
         setProgressing(true);
         getStep();
       } else {
@@ -143,21 +147,21 @@ function PodsPage(props: PodsPageProps) {
         }
         {
           podsInfo.sortedKey.length >= 1 && (
-          <Tabs
-            defaultActiveKey={podsInfo.sortedKey[0]}
-          >
-            {
-            podsInfo.sortedKey.map((key) => (
-              <TabPane
-                tab={<Popover content={key}>{getLastPattern(key)}</Popover>}
-                key={key}
-                tabKey={key}
-              >
-                <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} />
-              </TabPane>
-            ))
-          }
-          </Tabs>
+            <Tabs
+              defaultActiveKey={podsInfo.sortedKey[0]}
+            >
+              {
+                podsInfo.sortedKey.map((key) => (
+                  <TabPane
+                    tab={<Popover content={key}>{getLastPattern(key)}</Popover>}
+                    key={key}
+                    tabKey={key}
+                  >
+                    <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} />
+                  </TabPane>
+                ))
+              }
+            </Tabs>
           )
         }
       </div>
