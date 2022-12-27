@@ -41,7 +41,6 @@ function PodsPage(props: PodsPageProps) {
   const [shouldAlertFreed, setShouldAlertFreed] = useState(true);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
-  const [progressing, setProgressing] = useState<boolean>(false);
   const [building, setBuilding] = useState<BuildStatus>(BuildStatus.None);
 
   const { data: cluster } = useRequest(() => getCluster(id), {});
@@ -90,10 +89,7 @@ function PodsPage(props: PodsPageProps) {
         || clusterStatus?.status === ClusterStatus.SUSPENDED
         || clusterStatus?.status === ClusterStatus.NOTHEALTHY
         || clusterStatus?.status === ClusterStatus.DEGRADED) {
-        setProgressing(true);
         getStep();
-      } else {
-        setProgressing(false);
       }
       if (clusterStatus?.status === ClusterStatus.FREED) {
         if (shouldAlertFreed) {
@@ -133,7 +129,7 @@ function PodsPage(props: PodsPageProps) {
         />
         {
           (clsuterBuildStatus && clsuterBuildStatus.latestPipelinerun
-            && (building === BuildStatus.Failed || (!progressing && building === BuildStatus.Running))) && (
+            && (building !== BuildStatus.None)) && (
             <BuildCard
               pipelinerunID={clsuterBuildStatus.latestPipelinerun.id}
               runningTask={clsuterBuildStatus.runningTask}
@@ -141,7 +137,7 @@ function PodsPage(props: PodsPageProps) {
           )
         }
         {
-          (progressing && building !== BuildStatus.Failed && step && step.index !== step.total) && (
+          (building === BuildStatus.None && step && step.index !== step.total) && (
             <StepCard
               step={step}
               refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
@@ -155,9 +151,9 @@ function PodsPage(props: PodsPageProps) {
               defaultActiveKey={podsInfo.sortedKey[0]}
             >
               {
-                podsInfo.sortedKey.map((key) => (
+                podsInfo.sortedKey.map((key, index) => (
                   <TabPane
-                    tab={<Popover content={key}>{getLastPattern(key)}</Popover>}
+                    tab={<Popover content={key}>{`${getLastPattern(key)}${index === 0 ? ' (current)' : ''}`}</Popover>}
                     key={key}
                     tabKey={key}
                   >
