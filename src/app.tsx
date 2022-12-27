@@ -206,7 +206,7 @@ export const request: RequestConfig = {
     const { response, data } = error;
     if(!response) {
       notification.error({
-        message: 'Network anomaly',
+        message: 'Network abnomaly',
         description: 'Your network is abnormal and cannot connect to the server',
       });
     }
