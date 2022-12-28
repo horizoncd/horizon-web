@@ -122,6 +122,7 @@ declare namespace CLUSTER {
     updatedBy: {
       name: string,
     }
+    ttlInSeconds?: number,
   };
 
   type NewCluster = {

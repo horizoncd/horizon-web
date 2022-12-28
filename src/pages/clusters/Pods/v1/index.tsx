@@ -12,11 +12,11 @@ import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin } from '@/components/Widget';
-import { BuildStatus, refreshPodsInfo } from './util';
+import { BuildStatus, refreshPodsInfo } from '../util';
 import PodsTable from '../PodsTable';
-import StepCard from './SyncCard';
+import StepCard from '../components/SyncCard';
 import { ButtonBar, ClusterCard } from '../components';
-import BuildCard from './BuildCard';
+import BuildCard from '../components/BuildCard';
 
 const { TabPane } = Tabs;
 
@@ -42,6 +42,7 @@ function PodsPage(props: PodsPageProps) {
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
   const [building, setBuilding] = useState<BuildStatus>(BuildStatus.None);
+  const [progressing, setProgressing] = useState(false);
 
   const { data: cluster } = useRequest(() => getCluster(id), {});
 
@@ -81,32 +82,36 @@ function PodsPage(props: PodsPageProps) {
     manual: true,
   });
 
+  const { data: resourceTree, run: getResourceTree } = useRequest(() => getClusterResourceTree(id), {
+    manual: true,
+  });
+
   const { data: clusterStatus, refresh: refreshCluster } = useRequest(() => getClusterStatusV2(id), {
     pollingInterval,
-    onSuccess: () => {
-      if (clusterStatus?.status === ClusterStatus.PROGRESSING
-        || clusterStatus?.status === ClusterStatus.MANUALPAUSED
-        || clusterStatus?.status === ClusterStatus.SUSPENDED
-        || clusterStatus?.status === ClusterStatus.NOTHEALTHY
-        || clusterStatus?.status === ClusterStatus.DEGRADED) {
+    onSuccess: (status) => {
+      if (status.status === ClusterStatus.PROGRESSING
+        || status.status === ClusterStatus.MANUALPAUSED
+        || status.status === ClusterStatus.SUSPENDED
+        || status.status === ClusterStatus.NOTHEALTHY
+        || status.status === ClusterStatus.DEGRADED) {
+        setProgressing(true);
         getStep();
+      } else {
+        setProgressing(false);
       }
-      if (clusterStatus?.status === ClusterStatus.FREED) {
+
+      if (status.status !== ClusterStatus.FREED
+        && status.status !== ClusterStatus.NOTFOUND) {
+        getResourceTree();
+      }
+
+      if (status?.status === ClusterStatus.FREED) {
         if (shouldAlertFreed) {
           successAlert(intl.formatMessage({ id: 'pages.message.cluster.free.hint' }));
           setShouldAlertFreed(false);
         }
       }
     },
-  });
-
-  const { data: resourceTree } = useRequest(() => getClusterResourceTree(id), {
-    ready: !!clusterStatus
-      && (
-        clusterStatus.status !== ClusterStatus.FREED
-        && clusterStatus.status !== ClusterStatus.NOTFOUND
-      ),
-    pollingInterval,
   });
 
   const podsInfo = useMemo(() => refreshPodsInfo(resourceTree), [resourceTree]);
@@ -137,7 +142,7 @@ function PodsPage(props: PodsPageProps) {
           )
         }
         {
-          (building === BuildStatus.None && step && step.index !== step.total) && (
+          (building === BuildStatus.None && progressing && step && step.index !== step.total) && (
             <StepCard
               step={step}
               refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
@@ -146,7 +151,10 @@ function PodsPage(props: PodsPageProps) {
           )
         }
         {
-          podsInfo.sortedKey.length >= 1 && (
+          podsInfo.sortedKey.length >= 1
+          && clusterStatus.status !== ClusterStatus.FREED
+          && clusterStatus.status !== ClusterStatus.NOTFOUND
+          && (
             <Tabs
               defaultActiveKey={podsInfo.sortedKey[0]}
             >
