@@ -1,5 +1,5 @@
 import { Card } from 'antd';
-import { RolloutDeployPanel } from '../components';
+import RolloutDeployPanel from './RolloutDeployPanel';
 
 interface StepCardProps {
   // eslint-disable-next-line react/require-default-props
