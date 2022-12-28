@@ -12,7 +12,7 @@ import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin } from '@/components/Widget';
-import { BuildStatus, refreshPodsInfo } from './util';
+import { BuildStatus, refreshPodsInfo } from '../util';
 import PodsTable from '../PodsTable';
 import { StepCard, BuildCard } from '../components';
 import ButtonBar from './ButtonBar';
