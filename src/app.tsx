@@ -34,7 +34,6 @@ import { queryResource } from '@/services/core';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const';
 import { queryRoles, querySelfMember } from '@/services/members/members';
-import type { API } from './services/typings';
 
 const loginPath = '/user/login';
 const callbackPath = '/user/login/callback';
@@ -207,7 +206,7 @@ export const request: RequestConfig = {
     const { response, data } = error;
     if(!response) {
       notification.error({
-        message: 'Network anomaly',
+        message: 'Network abnomaly',
         description: 'Your network is abnormal and cannot connect to the server',
       });
     }

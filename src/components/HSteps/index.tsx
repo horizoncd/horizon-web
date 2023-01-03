@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
 const { Step } = Steps;
 
-export default (props: StepsProps & { steps: { title: ReactNode, disabled?: boolean, icon?: JSX.Element }[], content?: any }) => {
+export default (props: StepsProps & { steps: { title: ReactNode, disabled?: boolean, icon?: JSX.Element }[] }) => {
   const intl = useIntl();
 
   const { current, onChange, steps } = props;

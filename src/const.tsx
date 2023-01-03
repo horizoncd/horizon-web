@@ -39,7 +39,7 @@ export enum ClusterStatus {
   SUSPENDED = 'Suspended',
   MANUALPAUSED = 'ManualPaused',
   DEGRADED = 'Degraded',
-  NOT_HEALTHY = 'NotHealthy', // equals to Degraded
+  NOTHEALTHY = 'NotHealthy', // equals to Degraded
   NOTFOUND = 'NotFound',
   FREEING = 'Freeing',
   FREED = 'Freed',
