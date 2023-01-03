@@ -373,7 +373,12 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
   const sortedKey = parents.sort((a, b) => {
     const revisionA = getRevision(a.node);
     const revisionB = getRevision(b.node);
+    // order by revision desc
     if (revisionA !== '' && revisionB !== '') {
+      if (revisionA === revisionB) {
+        // order by name desc
+        return -a.node.name.localeCompare(b.node.name);
+      }
       return -revisionA.localeCompare(revisionB);
     }
     if (revisionA !== '') {
@@ -382,7 +387,8 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
     if (revisionB !== '') {
       return -1;
     }
-    return a.node.name.localeCompare(b.node.name);
+    // order by name desc
+    return -a.node.name.localeCompare(b.node.name);
   }).map((n) => getPrefix(n.node.uid));
 
   return {
