@@ -15,7 +15,7 @@ import { CenterSpin } from '@/components/Widget';
 import { BuildStatus, refreshPodsInfo } from '../util';
 import PodsTable from '../PodsTable';
 import StepCard from '../components/SyncCard';
-import { ButtonBar, ClusterCard } from '../components';
+import { ButtonBar, ClusterCard, CountCircle } from '../components';
 import BuildCard from '../components/BuildCard';
 
 const { TabPane } = Tabs;
@@ -161,7 +161,15 @@ function PodsPage(props: PodsPageProps) {
               {
                 podsInfo.sortedKey.map((key, index) => (
                   <TabPane
-                    tab={<Popover content={key}>{`${getLastPattern(key)}${index === 0 ? ' (current)' : ''}`}</Popover>}
+                    tab={(
+                      <Popover content={key}>
+                        {
+                        `${getLastPattern(key)}`
+                        }
+                        <CountCircle count={podsInfo.podsMap[key].length} />
+                        {index === 0 ? ' (current)' : ''}
+                      </Popover>
+                    )}
                     key={key}
                     tabKey={key}
                   >
