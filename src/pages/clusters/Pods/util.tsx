@@ -242,7 +242,10 @@ function genTree(data: CLUSTER.ResourceTree) {
 
       if (preNode !== undefined) {
         preNode.parent = root;
-        root.children.push(preNode);
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        if (root.children.filter((n) => n.node.uid === preNode?.node.uid).length === 0) {
+          root.children.push(preNode);
+        }
       }
 
       if (root.node.parentRefs && root.node.parentRefs.length !== 0) {
