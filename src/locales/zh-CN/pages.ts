@@ -6,7 +6,6 @@ export default {
   'pages.header.clusters': '集群',
   'pages.header.groups': '分组',
   'pages.header.templates': '模板',
-  'pages.header.slo': 'SLO',
   'pages.header.admin': '管理员',
 
   'pages.dashboard.title.your.clusters': '我的集群',
@@ -500,22 +499,6 @@ export default {
   'pages.tags.add': '添加标签',
 
   'pages.oauth.title': 'OAuth apps',
-
-  'pages.slo.overview': '概览',
-  'pages.slo.env': '环境',
-  'pages.slo.env.test': '测试',
-  'pages.slo.env.online': '线上',
-  'pages.slo.history': '历史',
-  'pages.slo.time': '时间',
-  'pages.slo.last.1h': '最近1小时',
-  'pages.slo.last.3h': '最近3小时',
-  'pages.slo.last.6h': '最近6小时',
-  'pages.slo.last.12h': '最近12小时',
-  'pages.slo.last.1d': '最近1天',
-  'pages.slo.last.3d': '最近3天',
-  'pages.slo.last.1w': '最近一周',
-  'pages.slo.last.1mon': '最近一月',
-  'pages.slo.custom': '自定义',
 
   'pages.message.path.hint': '路径是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
   'pages.message.name.hint': '名称是必填项，最长64字符',

@@ -10,6 +10,7 @@ import styles from '@/pages/applications/NewOrEdit/index.less';
 import { listGitRef, GitRefType } from '@/services/code/code';
 import HForm from '@/components/HForm';
 import type { API } from '@/services/typings';
+import { gitURLRegExp } from '@/const';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -54,7 +55,6 @@ export default (props: any) => {
     },
   ];
 
-  const gitURLRegExp = /^ssh:\/\/.+[.]git$/;
   const gitURLRules: Rule[] = [
     {
       pattern: gitURLRegExp,
