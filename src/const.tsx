@@ -73,3 +73,5 @@ export {
 
 export const RedirectURL = `${window.location.protocol}//${window.location.host}/user/login/callback`;
 export const IndexURL = `${window.location.protocol}//${window.location.host}`;
+
+export const gitURLRegExp = /^(?:git|ssh|https?|git@[-\w.]+):(\/\/)?(.*?)(\.git)(\/?|#[-\d\w._]+?)$/;
