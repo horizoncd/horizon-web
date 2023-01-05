@@ -15,6 +15,7 @@ import { queryRegions } from '@/services/applications/applications';
 import { ClusterStatus } from '@/const';
 import { API } from '@/services/typings';
 import { MaxSpace } from '@/components/Widget';
+import { gitURLRegExp } from '@/const';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -91,7 +92,7 @@ export default (props: any) => {
 
   const urlRules: Rule[] = [
     {
-      pattern: /^ssh:\/\/.+[.]git$/,
+      pattern: gitURLRegExp,
       required: true,
       message: formatMessage('url.ruleMessage'),
       max: 128,
