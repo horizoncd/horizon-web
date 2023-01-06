@@ -28,6 +28,7 @@ const GlobalHeaderRight: React.FC = () => {
       <MicroApp name="slo" />
       <ApiLink />
       <DocsLink />
+      <MicroApp name="contact" />
       <SelectLang style={{ padding: '0px' }} />
       <Avatar />
     </Space>
