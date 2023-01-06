@@ -44,7 +44,6 @@ export default function Basic(props: any) {
       regions!.forEach((item) => e.set(item.name, item.displayName));
       setRegion2DisplayName(e);
     },
-    // getClusterV2接口返回了regionDisplayName
     ready: version !== pipelineV2 && !!cluster.scope.environment,
   });
 

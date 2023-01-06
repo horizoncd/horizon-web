@@ -14,9 +14,6 @@ export type GlobalHeaderRightProps = {
   menu?: boolean;
 };
 
-/**
- * 退出登录，并且将当前的 url 保存
- */
 const logout = async () => {
   await outLogin();
   const { query = {}, pathname } = history.location;

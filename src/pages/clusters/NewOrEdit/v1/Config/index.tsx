@@ -18,7 +18,6 @@ export default forwardRef((props: any, ref) => {
     ref,
     () => ({
       submit: () => {
-        // 触发整个rjsf表单组的提交事件
         formRefs.current.forEach((formRef) => {
           formRef.submit();
         });
@@ -41,55 +40,55 @@ export default forwardRef((props: any, ref) => {
 
   const titlePrefix = 'pages.applicationNew.config';
   const [totalFormData, setTotalFormData] = useState({});
-  // 所有表单提交完成后，才会调用最终的onSubmit
+
   useEffect(() => {
     if (!loading && (Object.keys(totalFormData).length
-    >= Object.keys(data).length)) {
+      >= Object.keys(data).length)) {
       props.onSubmit(totalFormData);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalFormData]);
 
   return (
     <div>
       {data
-      && Object.keys(data).map((item, i) => {
-        const currentFormData = props.config[item] || {};
+        && Object.keys(data).map((item, i) => {
+          const currentFormData = props.config[item] || {};
 
-        const onChange = ({ formData, errors }: any) => {
-          if (readOnly) {
-            return;
-          }
-          props.setConfig((config: any) => ({ ...config, [item]: formData }));
-          props.setConfigErrors((configErrors: any) => ({ ...configErrors, [item]: errors }));
-        };
+          const onChange = ({ formData, errors }: any) => {
+            if (readOnly) {
+              return;
+            }
+            props.setConfig((config: any) => ({ ...config, [item]: formData }));
+            props.setConfigErrors((configErrors: any) => ({ ...configErrors, [item]: errors }));
+          };
 
-        const { jsonSchema, uiSchema } = data[item];
+          const { jsonSchema, uiSchema } = data[item];
 
-        return (
-          <Card
-            className={styles.gapBetweenCards}
-            key={item}
-            title={intl.formatMessage({ id: `${titlePrefix}.${item}` })}
-          >
-            <JsonSchemaForm
-              ref={(dom) => {
-                formRefs.current[i] = dom;
-              }}
-              disabled={readOnly}
-              formData={currentFormData}
-              jsonSchema={jsonSchema}
-              onChange={onChange}
-              onSubmit={(schema: any) => {
-                setTotalFormData((fdts) => ({ ...fdts, [item]: schema.formData }));
-              }}
-              uiSchema={uiSchema}
-              liveValidate
-              showErrorList={false}
-            />
-          </Card>
-        );
-      })}
+          return (
+            <Card
+              className={styles.gapBetweenCards}
+              key={item}
+              title={intl.formatMessage({ id: `${titlePrefix}.${item}` })}
+            >
+              <JsonSchemaForm
+                ref={(dom) => {
+                  formRefs.current[i] = dom;
+                }}
+                disabled={readOnly}
+                formData={currentFormData}
+                jsonSchema={jsonSchema}
+                onChange={onChange}
+                onSubmit={(schema: any) => {
+                  setTotalFormData((fdts) => ({ ...fdts, [item]: schema.formData }));
+                }}
+                uiSchema={uiSchema}
+                liveValidate
+                showErrorList={false}
+              />
+            </Card>
+          );
+        })}
     </div>
   );
 });

@@ -38,7 +38,6 @@ class WebSocket {
       this.socket.onclose = this.onclose;
       this.socket.onerror = this.onerror;
     } catch (e) {
-      console.log(e, '初始化wb时重连');
       this.reconnect();
     }
   };
@@ -51,7 +50,7 @@ class WebSocket {
 
   onmessage = (msg) => {
     const { socketMessage } = this.param;
-    // 当返回的信息满足和后端约定的心跳上报返回值时，重置心跳
+
     // heartBeat.reset(this.socket);
     return socketMessage && this.socket && socketMessage(msg);
   };
@@ -63,7 +62,6 @@ class WebSocket {
     this.reconnect();
   };
 
-  // 关闭连接触发， close()时会被触发
   onclose = (e) => {
     const { socketClose } = this.param;
     if (socketClose) socketClose(e);

@@ -1,4 +1,3 @@
-// DynamicTagForm 返回一个标签表单，标签格式为key-value，支持动态增删
 import { useModel } from '@@/plugin-model/useModel';
 import {
   Button, Col, Form, Input, Row, Select,
@@ -13,11 +12,9 @@ export enum ValueType {
 }
 
 interface Props {
-  // tag查询接口
   queryTags: () => Promise<any>;
-  // tag更新接口
   updateTags: (param: any) => Promise<any>;
-  // 标签value的类型，如果是multiple，则用select组件，否则用input
+
   valueType: ValueType
   // callback func after update
   callback?: () => void
@@ -167,7 +164,7 @@ const DynamicTagForm = (props: Props) => {
 };
 
 DynamicTagForm.defaultProps = {
-  callback: () => {},
+  callback: () => { },
   disabled: false,
 };
 

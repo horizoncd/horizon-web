@@ -101,18 +101,15 @@ export default (props: any) => {
     );
   };
 
-  // 搜索框输入值监听
   const onChange = (e: any) => {
     const { value } = e.target;
     setSearchValue(value);
   };
 
-  // 搜索框按enter
   const onPressEnter = () => {
     setQuery((prev) => prev + 1);
   };
 
-  // 按搜索按钮
   const onSearch = () => {
     setQuery((prev) => prev + 1);
   };
@@ -131,7 +128,6 @@ export default (props: any) => {
     return items;
   };
 
-  // 选择一行
   const onSelect = (
     selectedKeys: Key[],
     info: {
@@ -143,9 +139,8 @@ export default (props: any) => {
     const {
       key, expanded, childrenCount,
     } = node;
-    // 如果存在子节点，则展开/折叠该group，不然直接跳转
+
     if (childrenCount) {
-      // title变为了element对象，需要注意下
       if (!expanded) {
         setExpandedKeys([...expandedKeys, key]);
       } else {
@@ -185,7 +180,6 @@ export default (props: any) => {
     expanded: boolean;
     nativeEvent: MouseEvent;
   }) => {
-    // 如果是展开并且node下的children为空，则进行查询
     if (info.expanded && !info.node.children) {
       const pid = info.node.key as number;
       queryFunc(pid, 1, pageSize).then(({ data }) => {

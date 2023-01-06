@@ -191,7 +191,6 @@ export default (props: any) => {
           setTemplateBasic(basicTemplateInfo);
           setReleaseName(data!.templateInfo!.release);
           setTemplateConfig(data!.templateConfig);
-          // buildConfig 和 templateConfig 根据env参数从 git repo 获取，如果存在，则采用。
           refreshAppEnvTemplate(envFromQuery);
         } else {
           // query source cluster if copying
@@ -518,5 +517,3 @@ export default (props: any) => {
     </PageWithBreadcrumb>
   );
 };
-
-// todo: create 勉强改完，测测其他

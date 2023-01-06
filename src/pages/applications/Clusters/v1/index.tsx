@@ -173,7 +173,7 @@ export default () => {
     refreshDeps: [filter, environment, pageNumber, tagSelector],
     debounceInterval: 200,
   });
-  // 查询应用下的集群标签列表
+
   const { data: tagsResp } = useRequest(() => querySubresourceTags('applications', id), {
     onSuccess: () => {
       const tMap = new Map<string, string[]>();

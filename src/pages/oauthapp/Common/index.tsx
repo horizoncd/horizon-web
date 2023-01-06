@@ -1,16 +1,18 @@
 import { Form, Input } from 'antd';
 import { Rule } from 'rc-field-form/lib/interface';
+import { useIntl } from 'umi';
 
 const { TextArea } = Input;
 
 export default () => {
+  const intl = useIntl();
   const formatLabel = (labelName: string) => <strong>{labelName}</strong>;
   const appNameLabel = formatLabel('Application Name');
   const appDescLabel = formatLabel('Application Description');
   const appHomeURLLabel = formatLabel('HomePage URL');
   const appRedirectURL = formatLabel('Authorization callback URL');
 
-  const urlRegx = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
+  const urlRegx = /[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)?/gi;
   const nameRules: Rule[] = [
     {
       required: true,
@@ -23,7 +25,7 @@ export default () => {
     {
       required: true,
       pattern: urlRegx,
-      message: 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
+      message: intl.formatMessage({ id: 'pages.oatuh.urlrules.message' }),
     },
   ];
 

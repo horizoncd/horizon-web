@@ -91,6 +91,8 @@ export default {
   'pages.groups.edit': '编辑',
   'pages.groups.linkK8s': '关联kubernetes',
   'pages.groups.delete': '删除分组',
+  'pages.groups.idcopy.message': '单击可复制ID',
+  'pages.groups.idcopy.success': 'ID复制成功',
 
   'pages.application.id': '应用ID',
   'pages.applicationNew.config.application': '部署配置',
@@ -389,6 +391,15 @@ export default {
   'pages.template.release.operation': '操作',
   'pages.template.release.sync': '同步',
   'pages.template.release.failReason': '失败原因',
+  'pages.template.create.ci': 'ci情况',
+  'pages.template.create.ci.no': '不包含ci',
+  'pages.template.create.ci.yes': '包含ci',
+  'pages.template.create.ci.message': '模板是否包含CI',
+
+  'pages.admin.update.message': '确定更新用户admin权限',
+  'pages.admin.update.success': '用户权限更新成功',
+  'pages.admin.banned': '用户已禁止登录',
+  'pages.admin.unban': '用户已解除禁止登录',
 
   // v2
   'pages.newV2.step.basic': '基础信息',
@@ -500,6 +511,7 @@ export default {
   'pages.tags.add': '添加标签',
 
   'pages.oauth.title': 'OAuth apps',
+  'pages.oatuh.urlrules.message': 'URL是必填项，只支持小写字母、数字和中划线的组合，且必须以字母开头',
 
   'pages.slo.overview': '概览',
   'pages.slo.env': '环境',
@@ -698,6 +710,8 @@ export default {
   'pages.noData.release.application.desc': '展示所有使用该版本的应用',
   'pages.noData.release.cluster.desc': '展示所有使用该版本的集群',
 
+  'pages.webhook.header.edit': '编辑Webhook',
+  '': 'Webhook更新成功',
   'pages.webhook.list.desc': '您可以使用webhook将特定事件发送给外部系统，配置使用的secret，会放在请求头： X-Horizon-Webhook-Secret 中',
   'pages.webhook.list.title.created': '已添加',
   'pages.webhook.list.action.create': '创建',
