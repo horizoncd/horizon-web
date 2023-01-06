@@ -22,25 +22,24 @@ const memberListKey = 'Existing shares';
 const defaultPageNumber = 0;
 let userPageNumber = 0;
 
-// member组件入参
 interface MemberProps {
-  // 标题
+
   title: string,
-  // 关联资源类型，group/application
+
   resourceType: string,
-  // 关联资源id
+
   resourceID: number,
-  // 关联资源名称
+
   resourceName: string
-  // 新增member
+
   onInviteMember: (member: API.NewMember) => Promise<any>;
-  // 查询member列表
+
   onListMembers: (resourceID: number) => Promise<any>;
-  // 更新member
+
   onUpdateMember: (id: number, member: API.UpdateMember) => Promise<any>;
-  // 移除member
+
   onRemoveMember: (id: number) => Promise<any>;
-  // 是否显示添加member功能
+
   allowInvite: boolean
 }
 
@@ -64,7 +63,6 @@ export default (props: MemberProps) => {
   // const roles = initialState?.;
   const [memberFilter, setMemberFilter] = useState<string>('');
 
-  // member翻页监听：重新获取member列表
   const defaultMemberPageSize = 10;
   const [membersAfterFilter, setMembersAfterFilter] = useState<API.PageResult<API.Member>>({ items: [], total: 0 });
   const { roleRank, roleList } = RBAC.GetRoleList();
@@ -98,7 +96,6 @@ export default (props: MemberProps) => {
     },
   });
 
-  // user翻页监听：重新获取user列表
   const defaultUserPageSize = 20;
   const [users, setUsers] = useState<API.PageResult<API.User>>({ total: 0, items: [] });
   const [userPage, setUserPage] = useState<API.PageParam>({
@@ -108,7 +105,6 @@ export default (props: MemberProps) => {
 
   const pageOnMount = useRef(true);
   useEffect(() => {
-    // 第一次（即页面刷新时）不执行
     if (pageOnMount.current) {
       pageOnMount.current = false;
       return;
@@ -124,10 +120,9 @@ export default (props: MemberProps) => {
         setUsers(result.data);
       }
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPage]);
 
-  // user搜索框过滤事件：查询user列表
   const onSearchUser = (filter: string) => {
     if (filter.length < 3) {
       setUsers({ total: 0, items: [] });
@@ -136,7 +131,6 @@ export default (props: MemberProps) => {
     setUserPage({ pageNumber: defaultPageNumber, pageSize: defaultUserPageSize, filter });
   };
 
-  // user搜索框滚动事件：分页查询user列表
   const onScrollUser = (e: any) => {
     const { target } = e;
     if ((users.total > (userPageNumber + 1) * defaultUserPageSize) && (target.scrollTop + target.offsetHeight >= target.scrollHeight)) {
@@ -147,7 +141,6 @@ export default (props: MemberProps) => {
     }
   };
 
-  // invite member按钮点击事件：添加member
   const onInviteClick = (values: {
     role: string,
     userID: number,
@@ -166,20 +159,17 @@ export default (props: MemberProps) => {
     });
   };
 
-  // member搜索
   const onMemberSearch = (filter: string) => {
     setMemberFilter(filter);
     refreshMembers().then();
   };
 
-  // member搜索条件变化事件：清空则重置搜索条件
   const onMemberChange = (e: any) => {
     if (e.target.value === '') {
       setMemberFilter(e.target.value);
     }
   };
 
-  // 移除按钮点击事件：删除member
   const onRemoveClick = (memberID: number, memberName: string) => {
     Modal.confirm({
       title: intl.formatMessage({ id: 'pages.members.remove.confirm.title' }, {
@@ -202,7 +192,6 @@ export default (props: MemberProps) => {
     });
   };
 
-  // 退出按钮点击事件：删除member
   const onLeaveClick = (memberID: number) => {
     Modal.confirm({
       title: intl.formatMessage({ id: 'pages.members.leave.confirm.title' }),
@@ -211,7 +200,6 @@ export default (props: MemberProps) => {
       cancelText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.cancel' }),
       onOk: () => {
         onRemoveMember(memberID).then(() => {
-          // 因为自身member发生改变，需要刷新initState以获取最新的member信息
           refresh().then();
           successAlert(intl.formatMessage({ id: 'pages.members.leave.success' }));
           refreshMembers().then();
@@ -220,7 +208,6 @@ export default (props: MemberProps) => {
     });
   };
 
-  // 选择角色事件：更新member
   const onRoleSelect = (role: string, memberID: number) => {
     onUpdateMember(memberID, {
       id: memberID,
@@ -341,20 +328,20 @@ export default (props: MemberProps) => {
       <h1>{title}</h1>
       <Divider />
       {!loadingMembers && needAlert && (
-      <Alert
-        className={styles.alert}
-        message={(
-          <span className={styles.alertSpan}>{intl.formatMessage({ id: 'pages.members.user.anonymous.alert' })}</span>)}
-      />
+        <Alert
+          className={styles.alert}
+          message={(
+            <span className={styles.alertSpan}>{intl.formatMessage({ id: 'pages.members.user.anonymous.alert' })}</span>)}
+        />
       )}
       {
         (currentUser.isAdmin || allowInvite) && (
-        <Card
-          tabList={inviteTabList}
-          activeTabKey={inviteMemberKey}
-        >
-          {inviteTabsContents[inviteMemberKey]}
-        </Card>
+          <Card
+            tabList={inviteTabList}
+            activeTabKey={inviteMemberKey}
+          >
+            {inviteTabsContents[inviteMemberKey]}
+          </Card>
         )
       }
       <Card
@@ -398,7 +385,7 @@ export default (props: MemberProps) => {
                     {(currentUser.id === item.memberNameID)
                       ? <span className={styles.textSelfAnnotation}>It&apos;s you</span> : null}
                   </span>
-)}
+                )}
                 className={styles.memberListPadding}
                 description={(
                   <div>
@@ -423,7 +410,7 @@ export default (props: MemberProps) => {
                 )}
               />
               {currentUser.id !== item.memberNameID && roleRank.get(currentUser.role) <= roleRank.get(item.role)
-              && item.resourceID === resourceID
+                && item.resourceID === resourceID
                 ? (
                   <Select
                     dropdownMatchSelectWidth={false}
@@ -442,25 +429,25 @@ export default (props: MemberProps) => {
                   </span>
                 )}
               {currentUser.id === item.memberNameID
-              && item.resourceID === resourceID ? (
-                <Button
-                  type="primary"
-                  danger
-                  className={styles.buttonRightSide}
-                  size="small"
-                  onClick={() => {
-                    onLeaveClick(item.id);
-                  }}
-                  value={item.id}
-                  icon={
-                    <ExportOutlined />
-}
-                >
-                  {intl.formatMessage({ id: 'pages.members.list.leave' })}
-                </Button>
+                && item.resourceID === resourceID ? (
+                  <Button
+                    type="primary"
+                    danger
+                    className={styles.buttonRightSide}
+                    size="small"
+                    onClick={() => {
+                      onLeaveClick(item.id);
+                    }}
+                    value={item.id}
+                    icon={
+                      <ExportOutlined />
+                  }
+                  >
+                    {intl.formatMessage({ id: 'pages.members.list.leave' })}
+                  </Button>
                 ) : null}
               {currentUser.id !== item.memberNameID && roleRank.get(currentUser.role) <= roleRank.get(item.role)
-              && item.resourceID === resourceID
+                && item.resourceID === resourceID
                 ? (
                   <Button
                     type="primary"

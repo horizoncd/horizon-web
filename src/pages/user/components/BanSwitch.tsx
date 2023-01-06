@@ -1,8 +1,9 @@
 import { Switch } from 'antd';
-import { useModel } from 'umi';
+import { useIntl, useModel } from 'umi';
 import { updateUserByID } from '@/services/users/users';
 
 export default function BanSwitch(props: { id: number, isBanned: boolean, onSwith: (checked: boolean) => void }) {
+  const intl = useIntl();
   const { id, isBanned, onSwith } = props;
   const { successAlert } = useModel('alert');
   const onChange = (newPermission: boolean) => {
@@ -10,8 +11,8 @@ export default function BanSwitch(props: { id: number, isBanned: boolean, onSwit
       onSwith(newPermission);
       successAlert(
         newPermission
-          ? '用户已禁止登录'
-          : '用户已解除禁止登录',
+          ? intl.formatMessage({ id: 'pages.admin.banned' })
+          : intl.formatMessage({ id: 'pages.admin.unban' }),
       );
     });
   };

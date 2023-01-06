@@ -4,7 +4,6 @@ import { useModel, SelectLang } from 'umi';
 import { MicroApp } from '../Widget';
 import ApiLink from './ApiLink';
 import Avatar from './AvatarDropdown';
-import ContactUs from './ContactUs';
 import DocsLink from './DocsLink';
 import styles from './index.less';
 
@@ -29,7 +28,7 @@ const GlobalHeaderRight: React.FC = () => {
       <MicroApp name="slo" />
       <ApiLink />
       <DocsLink />
-      <ContactUs />
+      <MicroApp name="contact" />
       <SelectLang style={{ padding: '0px' }} />
       <Avatar />
     </Space>

@@ -15,21 +15,21 @@ module.exports = {
       2,
       'always',
       [
-        'feat', // 新功能
-        'fix', // 修复bug
-        'style', // 修改格式，删除代码空格、缩进等
-        'docs', // 文档、注释修改
-        'refactor', // 代码重构，没有功能修改
-        'merge', // 代码合并
-        'revert', // 版本回滚
-        'chore', // 构建过程或辅助工具的变动
-        'test', // 测试变更
-        'perf', // 性能
-        'build', // 构建
-        'ci', // 集成测试
-        'revert', // 重做
+        'feat',
+        'fix',
+        'style',
+        'docs',
+        'refactor',
+        'merge',
+        'revert',
+        'chore',
+        'test',
+        'perf',
+        'build',
+        'ci',
+        'revert',
         'wip', // working in progress
-        'workflow', // 工作流
+        'workflow',
         'types',
         'release',
       ],

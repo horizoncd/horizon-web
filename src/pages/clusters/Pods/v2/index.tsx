@@ -67,7 +67,6 @@ function PodsPage(props: PodsPageProps) {
     pollingInterval,
     onSuccess: (status) => {
       const taskStatus = status.runningTask.taskStatus as TaskStatus;
-      // 2021.12.15 应用迁移到Horizon后，latestPipelinerun为null
       if (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING) {
         setBuilding(BuildStatus.Running);
       } else if (taskStatus === TaskStatus.FAILED) {

@@ -1,5 +1,5 @@
 import {
-  useModel, useParams, useRequest, history,
+  useModel, useParams, useRequest, history, useIntl,
 } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -7,6 +7,7 @@ import { getWebhook, updateWebhook } from '@/services/webhooks/webhooks';
 import { WebhookConfig } from '../components/WebhookComponents';
 
 function EditWebhook(props: { initialState: API.InitialState }) {
+  const intl = useIntl();
   const { successAlert } = useModel('alert');
   const { initialState } = props;
   const {
@@ -25,14 +26,14 @@ function EditWebhook(props: { initialState: API.InitialState }) {
 
   const onFinish = (data: Webhooks.CreateOrUpdateWebhookReq) => {
     updateWebhook(id, data).then(() => {
-      successAlert('webhook更新成功');
+      successAlert(intl.formatMessage({ id: 'pages.webhook.edit.success' }));
       history.push(listWebhooksURL);
     });
   };
 
   return (
     <PageWithBreadcrumb>
-      <h1>编辑Webhook</h1>
+      <h1>{intl.formatMessage({ id: 'pages.webhook.header.edit' })}</h1>
       <div style={{ padding: '20px' }}>
         {webhook && (
           <WebhookConfig

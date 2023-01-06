@@ -205,10 +205,10 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           <Button
             type="link"
             onClick={
-            (e) => {
-              handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
+              (e) => {
+                handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
+              }
             }
-          }
           >
             {beforeStr}
             <span style={{ color: '#f50' }}>{filter}</span>
@@ -230,20 +230,20 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         className={styles.podnameClass}
       >
         {
-        type === 'podName' ? (
-          <Button
-            type="link"
-            className={styles.podnameButtonClass}
-            onClick={
-            (e) => {
-              handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
-            }
-          }
-          >
-            <span>{text}</span>
-          </Button>
-        ) : <span className={styles.ipClass}>{text}</span>
-      }
+          type === 'podName' ? (
+            <Button
+              type="link"
+              className={styles.podnameButtonClass}
+              onClick={
+                (e) => {
+                  handleHref(e, `/clusters${cluster!.fullPath}/-/pods/${text}`, 'history');
+                }
+              }
+            >
+              <span>{text}</span>
+            </Button>
+          ) : <span className={styles.ipClass}>{text}</span>
+        }
         <Button
           className={styles.copyButtonClass}
           onClick={() => onCopyClick(text)}
@@ -375,7 +375,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     </div>
   );
 
-  // 预处理下数据结构
   const postStartHookError = 'PostStartHookError';
   const filteredData = data.filter((item: CLUSTER.PodInTable) => !filter
     || item.podName.indexOf(filter) > -1 || (item.ip && item.ip.indexOf(filter) > -1)).map((item) => {
@@ -725,7 +724,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
           type: 'checkbox',
           onChange: onPodSelected,
         }}
-      // @ts-ignore
+        // @ts-ignore
         columns={columns}
         scroll={{ x: '0px' }}
         dataSource={filteredData}
@@ -748,94 +747,94 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             return (
               <Table
                 columns={
-              [
-                {
-                  title: formatMessage('containerName'),
-                  dataIndex: 'name',
-                  width: '15%',
-                  key: 'name',
-                  render: (text: string) => <span>{text}</span>,
-                },
-                {
-                  title: intl.formatMessage({ id: 'pages.common.image' }),
-                  dataIndex: 'image',
-                  key: 'image',
-                  width: '50%',
-                },
-                {
-                  title: formatMessage('containerStatus'),
-                  dataIndex: 'status',
-                  key: 'status',
-                  width: '5%',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    if (!container.status) {
-                      return <div />;
-                    }
-                    const stateKey = Object.keys(container.status.state);
-                    if (stateKey.length === 0) {
-                      return <div />;
-                    }
-                    switch (stateKey[0]) {
-                      case 'running':
-                        return <PodRunning text="Running" />;
-                      case 'terminated':
-                        return <PodError text="Terminated" />;
-                      default:
-                        return <PodPending text="Waiting" />;
-                    }
-                  },
-                },
-                {
-                  title: formatMessage('onlineStatus'),
-                  dataIndex: 'onlineStatus',
-                  key: 'onlineStatus',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    if (container?.status?.ready) {
-                      return status2StateNode.get('online');
-                    }
-                    return status2StateNode.get('offline');
-                  },
-                },
-                {
-                  title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount')}</div>,
-                  dataIndex: 'restartCount',
-                  key: 'restartCount',
-                  width: '10%',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    let cnt = 0;
-                    if (container.status) {
-                      cnt = container.status.restartCount;
-                    }
-                    return <div>{cnt}</div>;
-                  },
-                },
-                {
-                  title: formatMessage('createdAt'),
-                  dataIndex: 'startedAt',
-                  key: 'startedAt',
-                  width: '20%',
-                  render: (text: string, container: CLUSTER.ContainerDetail) => {
-                    if (!container.status) {
-                      return <div />;
-                    }
+                  [
+                    {
+                      title: formatMessage('containerName'),
+                      dataIndex: 'name',
+                      width: '15%',
+                      key: 'name',
+                      render: (text: string) => <span>{text}</span>,
+                    },
+                    {
+                      title: intl.formatMessage({ id: 'pages.common.image' }),
+                      dataIndex: 'image',
+                      key: 'image',
+                      width: '50%',
+                    },
+                    {
+                      title: formatMessage('containerStatus'),
+                      dataIndex: 'status',
+                      key: 'status',
+                      width: '5%',
+                      render: (text: string, container: CLUSTER.ContainerDetail) => {
+                        if (!container.status) {
+                          return <div />;
+                        }
+                        const stateKey = Object.keys(container.status.state);
+                        if (stateKey.length === 0) {
+                          return <div />;
+                        }
+                        switch (stateKey[0]) {
+                          case 'running':
+                            return <PodRunning text="Running" />;
+                          case 'terminated':
+                            return <PodError text="Terminated" />;
+                          default:
+                            return <PodPending text="Waiting" />;
+                        }
+                      },
+                    },
+                    {
+                      title: formatMessage('onlineStatus'),
+                      dataIndex: 'onlineStatus',
+                      key: 'onlineStatus',
+                      render: (text: string, container: CLUSTER.ContainerDetail) => {
+                        if (container?.status?.ready) {
+                          return status2StateNode.get('online');
+                        }
+                        return status2StateNode.get('offline');
+                      },
+                    },
+                    {
+                      title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount')}</div>,
+                      dataIndex: 'restartCount',
+                      key: 'restartCount',
+                      width: '10%',
+                      render: (text: string, container: CLUSTER.ContainerDetail) => {
+                        let cnt = 0;
+                        if (container.status) {
+                          cnt = container.status.restartCount;
+                        }
+                        return <div>{cnt}</div>;
+                      },
+                    },
+                    {
+                      title: formatMessage('createdAt'),
+                      dataIndex: 'startedAt',
+                      key: 'startedAt',
+                      width: '20%',
+                      render: (text: string, container: CLUSTER.ContainerDetail) => {
+                        if (!container.status) {
+                          return <div />;
+                        }
 
-                    if (container.status.state.running) {
-                      return <div>{Utils.timeToLocal(container.status.state.running.startedAt)}</div>;
-                    } if (container.status.state.terminated) {
-                      return <div>{Utils.timeToLocal(container.status.state.terminated.startedAt)}</div>;
-                    }
-                    return <div />;
-                  },
-                },
-                {
-                  title: intl.formatMessage({ id: 'pages.common.actions' }),
-                  key: 'action',
-                  render: (text: any, container: CLUSTER.ContainerDetail) => (
-                    <Link to={formatContainerMonitorURL(record.podName, container.name)}>{formatMessage('monitor')}</Link>
-                  ),
-                },
-              ]
-            }
+                        if (container.status.state.running) {
+                          return <div>{Utils.timeToLocal(container.status.state.running.startedAt)}</div>;
+                        } if (container.status.state.terminated) {
+                          return <div>{Utils.timeToLocal(container.status.state.terminated.startedAt)}</div>;
+                        }
+                        return <div />;
+                      },
+                    },
+                    {
+                      title: intl.formatMessage({ id: 'pages.common.actions' }),
+                      key: 'action',
+                      render: (text: any, container: CLUSTER.ContainerDetail) => (
+                        <Link to={formatContainerMonitorURL(record.podName, container.name)}>{formatMessage('monitor')}</Link>
+                      ),
+                    },
+                  ]
+                }
                 pagination={{
                   hideOnSinglePage: true,
                 }}
@@ -926,7 +925,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       >
         <div>
           <Table
-          // @ts-ignore
+            // @ts-ignore
             columns={lifeCycleColumns}
             dataSource={podLifeCycle}
           />

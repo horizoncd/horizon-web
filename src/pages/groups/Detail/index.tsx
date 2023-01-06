@@ -74,11 +74,11 @@ export default () => {
         <div className={styles.flexColumn}>
           <div className={styles.titleFont}>{groupName}</div>
           <div className={styles.idFont}>
-            <Tooltip title="单击可复制ID">
+            <Tooltip title={intl.formatMessage({ id: 'pages.groups.idcopy.message' })}>
               {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
               <span onClick={() => {
                 copy(String(groupID));
-                successAlert('ID复制成功');
+                successAlert(intl.formatMessage({ id: 'pages.groups.idcopy.success' }));
               }}
               >
                 {intl.formatMessage({ id: 'pages.groups.id' })}

@@ -49,7 +49,6 @@ export default defineConfig({
   manifest: {
     basePath: '/',
   },
-  // Fast Refresh 热更新
   fastRefresh: {},
   nodeModulesTransform: {
     type: 'none',

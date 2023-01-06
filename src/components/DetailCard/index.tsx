@@ -1,4 +1,3 @@
-// 一个用于展示多列数据的卡片
 import { Card, Tooltip } from 'antd';
 import * as React from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -12,9 +11,9 @@ enum ValueType {
 }
 
 interface Props {
-  // 标题
+
   title: React.ReactNode;
-  // 数据[列][行]
+
   data: Param[][];
   // extra
   extra?: React.ReactNode;
@@ -52,15 +51,16 @@ export default (props: Props) => {
             let col2 = 0;
             const itemContents: any = [];
             if (React.isValidElement(param.value)) {
-              itemContents.push(<div key={col2++}>
-                {
-                param.value
-              }
-                                </div>);
+              itemContents.push((
+                <div key={col2++}>
+                  {
+                  param.value
+                }
+                </div>
+              ));
             } else {
-              // 获取参数类型，string/array/object
               const valueType = getType(param.value);
-              // 根据参数类型返回不同的格式
+
               if (valueType === ValueType.String || valueType === ValueType.Number) {
                 itemContents.push(<div key={col2++} className={styles.textValue}>{param.value}</div>);
               } else if (valueType === ValueType.Array) {
@@ -83,7 +83,7 @@ export default (props: Props) => {
                     :
                     {' '}
                     <span
-                    // @ts-ignore
+                      // @ts-ignore
                       className={styles.textValueValue}
                     >
                       {param.value[i]}
@@ -97,25 +97,25 @@ export default (props: Props) => {
               <div key={param.key} className={styles.dataColumnItem}>
                 <div className={styles.textKey}>{param.key}</div>
                 {
-                param.description
-                && (
-                <Tooltip
-                  overlayStyle={{ maxWidth: '1000px' }}
-                  placement="right"
-                  className={styles.textDescription}
-                  title={(
-                    <span style={{
-                      whiteSpace: 'pre-line',
-                    }}
+                  param.description
+                  && (
+                    <Tooltip
+                      overlayStyle={{ maxWidth: '1000px' }}
+                      placement="right"
+                      className={styles.textDescription}
+                      title={(
+                        <span style={{
+                          whiteSpace: 'pre-line',
+                        }}
+                        >
+                          {param.description}
+                        </span>
+                      )}
                     >
-                      {param.description}
-                    </span>
-)}
-                >
-                  <QuestionCircleOutlined />
-                </Tooltip>
-                )
-              }
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  )
+                }
                 {itemContents}
               </div>
             );
