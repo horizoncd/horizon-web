@@ -138,17 +138,14 @@ const getAvatarColorIndex = (title: string) => {
   return (count % 7) + 1;
 };
 
-// 计算出某个时间点是当前多久以前
 function timeFromNow(oldTime: string) {
   return moment(oldTime).local().locale(getLocale()).fromNow();
 }
 
-// 计算出两个时间点之间的间隔
 function timeSecondsDuration(startedAt: string, finishedAt: string) {
   return moment(finishedAt).diff(moment(startedAt), 'seconds', true);
 }
 
-// 将日期转为浏览器当前时区
 function timeToLocal(time: string) {
   return moment(time).local().format('YYYY-MM-DD HH:mm:ss').toString();
 }
@@ -182,13 +179,6 @@ export const mergeDefaultValue = (value: any, defaultValue: { [x: string]: any }
   return result;
 };
 
-/**
- * 格式化参数
- *
- * @param {any} data - 需格式化的值
- * @param {string|function} type - 格式化类型
- * @returns {any} 格式化后的值
- */
 // @ts-ignore
 const formatValue = (data, type) => {
   if (data === undefined) {
@@ -249,13 +239,6 @@ const formatValue = (data, type) => {
   return data;
 };
 
-/**
- * 格式化表单数据
- *
- * @param {object} data - 原始数据
- * @param {object} [options={}] - 格式化参数
- * @returns {object} 格式化后数据
- */
 // @ts-ignore
 export const formatQueryParam = (data, options) => {
   const result = { ...data };
@@ -307,9 +290,8 @@ export const pathnameInStaticRoutes = (): boolean => {
 export const handleHref = (event: any, link: string, type: string = 'window') => {
   const { metaKey, ctrlKey } = event;
 
-  // mac 平台 判断 metaKey; 其他平台判断ctrlKey
+  // metaKey for macOS; ctrlKey for others
   // https://developer.mozilla.org/en-US/docs/web/api/navigator/platform#browser_compatibility
-  // mozilla 建议换成 navigator.userAgentData.platform 但浏览器兼容性不足 后续看情况再调整
   if (navigator.platform.indexOf('Mac') > -1 && metaKey) {
     window.open(link);
     return;

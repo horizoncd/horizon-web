@@ -2,7 +2,6 @@ import { Col, Row } from 'antd';
 import { useIntl } from 'umi';
 
 export default (props: { titleID: string, descID: string }) => {
-  // id 为 useIntl() hook 需要的 id
   const { titleID, descID } = props;
   const intl = useIntl();
   return (

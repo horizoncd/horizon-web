@@ -90,7 +90,7 @@ export default () => {
         key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
         value: `${application.template.name}-${application.template.release}`,
       },
-      // 仅当推荐版本与当前版本不一致时显示推荐信息
+
       {
         key: intl.formatMessage({ id: 'pages.applicationNew.basic.recommendedRelease' }),
         value: `${application.template.name}-${application.template.recommendedRelease}`,
@@ -135,7 +135,7 @@ export default () => {
   };
 
   const [totalFormData, setTotalFormData] = useState({});
-  // 所有表单提交完成后，才会调用最终的onSubmit
+
   useEffect(() => {
     const cfgLength = Object.keys(templateInput).length;
     if (cfgLength > 0 && (Object.keys(totalFormData).length >= cfgLength)) {
@@ -147,7 +147,7 @@ export default () => {
         successAlert(intl.formatMessage({ id: 'pages.message.template.update.success' }));
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalFormData]);
 
   const onEditClick = () => {
@@ -176,9 +176,7 @@ export default () => {
               type={editing ? 'primary' : 'default'}
               disabled={editing && templateInputHasError()}
               onClick={() => {
-                // 提交模版
                 if (editing) {
-                  // 触发整个rjsf表单组的事件
                   formRefs.current.forEach((formRef) => {
                     formRef.submit();
                   });
@@ -189,26 +187,25 @@ export default () => {
               {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
             </Button>
             {
-            editing && (
-            <Button
-              style={{ marginLeft: '10px' }}
-              onClick={() => {
-                setEditing(false);
-                setTemplateInputError([]);
-                getApplicationEnvTemplate(id, currentEnv).then(({ data }) => {
-                  setTemplateInput(data);
-                });
-              }}
-            >
-              {intl.formatMessage({ id: 'pages.common.cancel' })}
-            </Button>
-            )
-          }
+              editing && (
+                <Button
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => {
+                    setEditing(false);
+                    setTemplateInputError([]);
+                    getApplicationEnvTemplate(id, currentEnv).then(({ data }) => {
+                      setTemplateInput(data);
+                    });
+                  }}
+                >
+                  {intl.formatMessage({ id: 'pages.common.cancel' })}
+                </Button>
+              )
+            }
             <Select
               style={{ minWidth: '100px', marginLeft: '10px' }}
               value={currentEnv}
               onSelect={(val: string) => {
-                // 查询环境对应的模版
                 getApplicationEnvTemplate(id, val).then(({ data }) => {
                   setTemplateInput(data);
                 });
@@ -225,7 +222,7 @@ export default () => {
               ))}
             </Select>
           </div>
-      )}
+        )}
       >
         {
           template && Object.keys(template).map((item, i) => (

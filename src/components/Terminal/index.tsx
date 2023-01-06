@@ -29,7 +29,6 @@ const Index: React.FC<IProps> = ({
   const terminalRef = useRef<Terminal | undefined>(undefined);
   const socketRef = useRef<WebSocket | undefined>(undefined);
 
-  // 初始化terminal
   useEffect(() => {
     if (terminalRef) {
       terminalRef?.current?.dispose();
@@ -52,7 +51,7 @@ const Index: React.FC<IProps> = ({
       'The web terminal has been initialized successfully!',
     );
     terminalRef.current.loadAddon(fitAddon);
-    // 前端terminal适应屏幕尺寸
+
     fitAddon.fit();
     terminalRef.current.onData(
       (event) => socketRef.current
@@ -81,7 +80,6 @@ const Index: React.FC<IProps> = ({
     }
   }, 100);
 
-  // 初始化websocket连接
   useEffect(() => {
     socketRef.current = new WebSocket({
       socketUrl: url,
@@ -95,7 +93,7 @@ const Index: React.FC<IProps> = ({
             '*********************************** The websocket connection is established ****************************************',
           );
         }
-        // 后端terminal适应屏幕尺寸
+
         resize();
         if (onSocketOpen) {
           onSocketOpen(socketRef);
@@ -110,8 +108,7 @@ const Index: React.FC<IProps> = ({
       },
       socketClose: (e: { code: any; reason: any; }) => terminalRef.current
         && terminalRef.current.writeln(
-          `The connection is being closed，with the error code ${
-            e?.code
+          `The connection is being closed，with the error code ${e?.code
           }, the reason ${e?.reason || undefined}, reconnecting...`,
         ),
       socketError: () => terminalRef.current
@@ -122,7 +119,6 @@ const Index: React.FC<IProps> = ({
     socketRef.current.createWebSocket();
   }, [url]);
 
-  // 窗口大小变化时的回调
   useEffect(() => {
     window.addEventListener('resize', resize);
     return () => {

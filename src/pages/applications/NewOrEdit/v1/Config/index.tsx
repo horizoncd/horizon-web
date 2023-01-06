@@ -29,7 +29,6 @@ export default forwardRef((props: any, ref) => {
     ref,
     () => ({
       submit: () => {
-        // 触发整个rjsf表单组的提交事件
         formRefs.current.forEach((formRef) => {
           formRef.submit();
         });
@@ -38,7 +37,7 @@ export default forwardRef((props: any, ref) => {
   );
 
   const [totalFormData, setTotalFormData] = useState({});
-  // 所有表单提交完成后，才会调用最终的onSubmit
+
   useEffect(
     () => {
       if (!loading && (Object.keys(totalFormData).length

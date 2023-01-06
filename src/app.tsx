@@ -65,7 +65,6 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ ico
   children: children && loopMenuItem(children),
 }));
 
-/** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
   loading: <PageLoading />,
 };
@@ -116,7 +115,6 @@ export async function getInitialState(): Promise<API.InitialState> {
     currentUser = undefined;
   }
 
-  // 资源类型的URL
   if(!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
@@ -174,7 +172,6 @@ export const request: RequestConfig = {
       || history.location.pathname === '/user/login') {
         return response;
       }
-      // 我们认为只有查询用户接口的响应带上了session过期的头，才跳转到登陆页
       if(response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
 
@@ -228,7 +225,6 @@ export const request: RequestConfig = {
   },
 };
 
-// ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => ({
   headerContentRender: () => <HeaderContent />,
@@ -300,7 +296,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     );
   },
   menu: {
-    // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
     params: {
       resource: initialState?.resource,
     },
@@ -357,7 +352,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         return defaultMenuData;
       }
 
-      // 根据ResourceType决定菜单
       const { type, fullPath } = initialState.resource;
       switch(type) {
         case ResourceType.GROUP:
@@ -614,12 +608,9 @@ function formatClusterMenu(fullPath: string) {
   ];
 }
 
-// 从接口中获取子应用配置，export 出的 qiankun 变量是一个 promise
 // @ts-ignore
 export const qiankun = fetch(__MICRO_APP_LOC)
 .then((res) => res.json())
 .then(({apps}) => ({
-  // 注册子应用信息
   apps,
-  // 支持更多的其他配置，详细看这里 https://qiankun.umijs.org/zh/api/#start-opts
 })).catch(()=> ({ apps: [] }));

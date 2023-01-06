@@ -108,7 +108,6 @@ function Groups(props: GroupProps) {
       <span
         style={{ padding: '10px 0', lineHeight: '48px' }}
         onClick={(nativeEvent) => {
-          // group点击名字进入主页 点击其他部位是展开
           handleHref(nativeEvent, fullPath);
         }}
       >
@@ -168,9 +167,8 @@ function Groups(props: GroupProps) {
     const {
       key, expanded, childrenCount,
     } = node;
-    // 如果存在子节点，则展开/折叠该group，不然直接跳转
+
     if (childrenCount) {
-      // title变为了element对象，需要注意下
       if (!expanded) {
         setExpandedKeys([...expandedKeys, key]);
       } else {
@@ -222,7 +220,6 @@ function Groups(props: GroupProps) {
     expanded: boolean;
     nativeEvent: MouseEvent;
   }) => {
-    // 如果是展开并且node下的children为空，则进行查询
     if (info.expanded && !info.node.children) {
       const pid = info.node.key as number;
       querySubGroups(pid, 1, pageSize).then(({ data }) => {

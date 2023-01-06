@@ -258,7 +258,6 @@ export default (props: any) => {
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     // query regions when environment selected
     if ((changingFiled[0].name[0] === 'environment') && !copying) {
-      // 如果修改了环境，查询该应用在该环境下的模版
       refreshAppEnvTemplate(changingFiled[0].value);
     }
     setBasic(allFields);
@@ -308,13 +307,6 @@ export default (props: any) => {
       const appPart = 'application';
       const pipelinePart = 'pipeline';
       const configDiff = difference(config, originConfig);
-      // 创建时：
-      //    1.构建配置不为空则提示构建发布
-      //    2.构建配置为空则提示直接发布
-      // 更新时：
-      //    1.构建配置被修改则提示构建发布
-      //    2.构建配置未被修改，部署配置被修改则提示直接发布
-      //    3.构建配置、部署配置均未被修改则无提示，直接跳转
       if (creating) {
         if (Object.keys(config[pipelinePart]).length > 0) {
           setShowBuildDeployModal(true);
@@ -350,43 +342,43 @@ export default (props: any) => {
             {
               current === 0
               && (
-              <Basic
-                form={form}
-                applicationName={applicationName}
-                formData={basic}
-                setFormData={setBasicFormData}
-                editing={editing}
-                template={template}
-                status={cluster?.status}
-              />
+                <Basic
+                  form={form}
+                  applicationName={applicationName}
+                  formData={basic}
+                  setFormData={setBasicFormData}
+                  editing={editing}
+                  template={template}
+                  status={cluster?.status}
+                />
               )
             }
             {
               current === 1 && (
-              <Config
-                template={template}
-                release={form.getFieldValue(release)}
-                config={config}
-                setConfig={setConfig}
-                setConfigErrors={setConfigErrors}
-                clusterID={cluster?.id}
-              />
+                <Config
+                  template={template}
+                  release={form.getFieldValue(release)}
+                  config={config}
+                  setConfig={setConfig}
+                  setConfigErrors={setConfigErrors}
+                  clusterID={cluster?.id}
+                />
               )
             }
             {
               current === 2
               && (
-              <Audit
-                template={template}
-                editing={editing}
-                form={form}
-                applicationName={applicationName}
-                release={form.getFieldValue(release)}
-                config={config}
-                clusterID={cluster?.id}
-                formRef={configRef}
-                onSubmit={onSubmit}
-              />
+                <Audit
+                  template={template}
+                  editing={editing}
+                  form={form}
+                  applicationName={applicationName}
+                  release={form.getFieldValue(release)}
+                  config={config}
+                  clusterID={cluster?.id}
+                  formRef={configRef}
+                  onSubmit={onSubmit}
+                />
               )
             }
           </StepContent>
@@ -411,7 +403,7 @@ export default (props: any) => {
                 <ModalTitle>
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.title' })}
                 </ModalTitle>
-)}
+              )}
               visible={showBuildDeployModal}
               footer={[
                 <Button
@@ -434,7 +426,7 @@ export default (props: any) => {
                 <ModalTitle>
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.title' })}
                 </ModalTitle>
-)}
+              )}
               visible={showDeployModal}
               footer={[
                 <Button

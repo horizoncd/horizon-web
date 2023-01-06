@@ -11,12 +11,11 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
   const items: JSX.Element[] = [];
   const ks = Object.keys(data);
   Object.keys(data).forEach((k) => {
-    // 折叠状态下，只显示前两个
     if (!showAll && items.length >= defaultCount) {
       return;
     }
     let annotationStyle = styles.annotation;
-    // 列表最后一个无需margin bottom
+
     if (k === ks[ks.length - 1]) {
       annotationStyle = styles.annotationWithoutMargin;
     }
@@ -32,29 +31,29 @@ export default (props: { data: Record<string, string>, defaultCount: number }) =
     <div>
       {items}
       {
-      !showAll && ks.length > defaultCount && (
-      <ButtonWithoutPadding
-        type="link"
-        onClick={() => {
-          setShowAll(true);
-        }}
-      >
-        {intl.formatMessage({ id: 'components.collapseList.showAll' })}
-      </ButtonWithoutPadding>
-      )
-    }
+        !showAll && ks.length > defaultCount && (
+          <ButtonWithoutPadding
+            type="link"
+            onClick={() => {
+              setShowAll(true);
+            }}
+          >
+            {intl.formatMessage({ id: 'components.collapseList.showAll' })}
+          </ButtonWithoutPadding>
+        )
+      }
       {
-      showAll && ks.length > defaultCount && (
-      <ButtonWithoutPadding
-        type="link"
-        onClick={() => {
-          setShowAll(false);
-        }}
-      >
-        {intl.formatMessage({ id: 'components.collapseList.collapse' })}
-      </ButtonWithoutPadding>
-      )
-    }
+        showAll && ks.length > defaultCount && (
+          <ButtonWithoutPadding
+            type="link"
+            onClick={() => {
+              setShowAll(false);
+            }}
+          >
+            {intl.formatMessage({ id: 'components.collapseList.collapse' })}
+          </ButtonWithoutPadding>
+        )
+      }
     </div>
   );
 };

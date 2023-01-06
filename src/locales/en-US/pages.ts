@@ -90,6 +90,8 @@ export default {
   'pages.groups.edit': 'Edit',
   'pages.groups.linkK8s': 'Link kubernetes',
   'pages.groups.delete': 'Delete group',
+  'pages.groups.idcopy.message': 'hit to copy ID',
+  'pages.groups.idcopy.success': 'copy success',
 
   'pages.application.id': 'Application ID',
   'pages.applicationNew.config.application': 'Deploy config',
@@ -269,7 +271,7 @@ export default {
   'pages.cluster.podsTable.lifeCycle.healthCheck': 'Health check',
   'pages.cluster.podsTable.lifeCycle.preStop': 'Service offline',
 
-  'pages.cluster.pod.jsonView': 'JSON view',
+  'pages.cluster.pod.yamlView': 'YAML view',
   'pages.cluster.pod.normalView': 'Normal view',
   'pages.cluster.pod.name': 'Name',
   'pages.cluster.pod.labels': 'Labels',
@@ -388,6 +390,15 @@ export default {
   'pages.template.release.operation': 'Operation',
   'pages.template.release.sync': 'Sync',
   'pages.template.release.failReason': 'Failure reason',
+  'pages.template.create.ci': 'Without CI',
+  'pages.template.create.ci.no': 'Not Exist',
+  'pages.template.create.ci.yes': 'Exist',
+  'pages.template.create.ci.message': 'Whether there\'s the CI existing in template',
+
+  'pages.admin.update.message': 'Please confirm updating user admin privileges.',
+  'pages.admin.update.success': 'User privileges update was successful',
+  'pages.admin.banned': 'User has been banned from logging in',
+  'pages.admin.unban': 'User ban on login has been lifted.',
 
   // v2
   'pages.newV2.step.basic': 'Basic',
@@ -499,6 +510,7 @@ export default {
   'pages.tags.add': 'Add tags',
 
   'pages.oauth.title': 'OAuth apps',
+  'pages.oatuh.urlrules.message': 'URLs are required and only combinations of lowercase letters, numbers and underscores are supported and must start with a letter',
 
   'pages.message.path.hint': 'URL is required, only supports the combination of lowercase letters, numbers and dashes, and must start with a letter',
   'pages.message.name.hint': 'Name is required, max length is 64',
@@ -681,6 +693,8 @@ export default {
   'pages.noData.release.application.desc': 'Show all applications using this release',
   'pages.noData.release.cluster.desc': 'Show all clusters using this release',
 
+  'pages.webhook.header.edit': 'Edit Webhook',
+  'pages.webhook.edit.success': 'Webhook update successful',
   'pages.webhook.list.desc': 'You can use webhook to send specific events to external systems. The configured secret will be placed in the request header: X-Horizon Webhook Secret',
   'pages.webhook.list.title.created': 'Existed',
   'pages.webhook.list.action.create': 'Create',

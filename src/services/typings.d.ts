@@ -287,8 +287,6 @@ declare namespace API {
     pageNumber: number,
     pageSize: number,
     filter?: string,
-    // isConcat为true表示保留上一页列表（如下拉列表滚动翻页），为false表示直接翻页。
-    // todo:看下有没有其他实现方法
     isConcat?: boolean,
     environment?: string,
     template?: string,
