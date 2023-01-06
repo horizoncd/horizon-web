@@ -9,9 +9,12 @@ import {
   Button, Card, Collapse, Table, Tag,
 } from 'antd';
 import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
+// import { yaml } from '@codemirror/lang-yaml';
+import { StreamLanguage } from '@codemirror/language';
+import { yaml as YamlMode } from '@codemirror/legacy-modes/mode/yaml';
 import { history } from '@@/core/history';
 import copy from 'copy-to-clipboard';
+import yaml from 'js-yaml';
 import podStyles from './index.less';
 import styles from '@/pages/clusters/Pods/PodsTable/index.less';
 import DetailCard from '@/components/DetailCard';
@@ -29,7 +32,7 @@ export default (props: any): React.ReactNode => {
   const { id: clusterID } = initialState!.resource;
 
   const { query: q } = location;
-  const { jsonMode = false } = q;
+  const { yamlMode = false } = q;
 
   const [containerStatus, setContainerStatus] = useState<Record<string, V1ContainerStatus>>({});
   const { successAlert, errorAlert } = useModel('alert');
@@ -165,7 +168,7 @@ export default (props: any): React.ReactNode => {
   };
 
   const onCopyClick = () => {
-    if (copy(JSON.stringify(pod, null, 2))) {
+    if (copy(yaml.dump(pod))) {
       successAlert(intl.formatMessage({ id: 'pages.message.copy.success' }));
     } else {
       errorAlert(intl.formatMessage({ id: 'pages.message.copy.fail' }));
@@ -176,7 +179,7 @@ export default (props: any): React.ReactNode => {
     <Detail>
       <div style={{ marginBottom: '5px', textAlign: 'right' }}>
         {
-          jsonMode && (
+          yamlMode && (
           <Button
             style={{ marginRight: '10px' }}
             onClick={onCopyClick}
@@ -186,14 +189,13 @@ export default (props: any): React.ReactNode => {
           )
         }
         {
-          jsonMode ? (
+          yamlMode ? (
             <Button
               type="primary"
               onClick={() => {
                 history.replace({
-                  // pathname: `${fullPath}`,
                   query: {
-                    jsonMode: false,
+                    yamlMode: false,
                   },
                 });
               }}
@@ -206,26 +208,26 @@ export default (props: any): React.ReactNode => {
               type="primary"
               onClick={() => {
                 history.replace({
-                  // pathname: `${fullPath}`,
                   query: {
-                    jsonMode: true,
+                    yamlMode: true,
                   },
                 });
               }}
               style={{ marginRight: '10px' }}
             >
-              {formatMessage('jsonView')}
+              {formatMessage('yamlView')}
             </Button>
           )
         }
       </div>
       {
-        jsonMode ? (
+        yamlMode ? (
           <CodeMirror
-            value={JSON.stringify(pod, null, 2)}
+            value={yaml.dump(pod)}
             theme="dark"
             readOnly
-            extensions={[json()]}
+            // mode="yaml"
+            extensions={[StreamLanguage.define(YamlMode)]}
           />
         ) : (
           <div>

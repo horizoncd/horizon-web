@@ -271,7 +271,7 @@ export default {
   'pages.cluster.podsTable.lifeCycle.healthCheck': 'Health check',
   'pages.cluster.podsTable.lifeCycle.preStop': 'Service offline',
 
-  'pages.cluster.pod.jsonView': 'JSON view',
+  'pages.cluster.pod.yamlView': 'YAML view',
   'pages.cluster.pod.normalView': 'Normal view',
   'pages.cluster.pod.name': 'Name',
   'pages.cluster.pod.labels': 'Labels',

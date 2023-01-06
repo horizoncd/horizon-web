@@ -271,7 +271,7 @@ export default {
   'pages.cluster.podsTable.lifeCycle.healthCheck': '健康检查',
   'pages.cluster.podsTable.lifeCycle.preStop': '应用下线',
 
-  'pages.cluster.pod.jsonView': 'JSON视图',
+  'pages.cluster.pod.yamlView': 'YAML视图',
   'pages.cluster.pod.normalView': '普通视图',
   'pages.cluster.pod.name': '名称',
   'pages.cluster.pod.labels': '标签',
