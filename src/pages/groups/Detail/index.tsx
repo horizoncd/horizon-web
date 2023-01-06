@@ -11,6 +11,7 @@ import GroupTree from '@/components/GroupTree';
 import styles from '@/pages/applications/Detail/index.less';
 import utils from '../../../utils';
 import './index.less';
+import { MicroApp } from '@/components/Widget';
 
 export default () => {
   const intl = useIntl();
@@ -18,7 +19,7 @@ export default () => {
   const { initialState } = useModel('@@initialState');
   const { id: groupID, name: groupName, fullPath } = initialState!.resource;
   const newGroup = `/groups${fullPath}/-/newsubgroup`;
-  const newApplication = `/groups${fullPath}/-/newapplicationv1`;
+  const newApplication = `/groups${fullPath}/-/newapplicationv2`;
   // const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
 
   const { successAlert } = useModel('alert');
@@ -34,18 +35,28 @@ export default () => {
       >
         {intl.formatMessage({ id: 'pages.groups.New subgroup' })}
       </Button>
-      <Button
-        style={{ marginRight: 15 }}
-        type="primary"
+      <MicroApp
+        name="createApplication"
+        fullPath={fullPath}
+        title={intl.formatMessage({ id: 'pages.groups.New application' })}
         disabled={!RBAC.Permissions.createApplication.allowed}
-        onClick={() => {
-          history.push({
-            pathname: newApplication,
-          });
-        }}
+        defaultNode={(
+          <Button
+            style={{ marginRight: 15 }}
+            type="primary"
+            disabled={!RBAC.Permissions.createApplication.allowed}
+            onClick={() => {
+              history.push({
+                pathname: newApplication,
+              });
+            }}
+          >
+            {intl.formatMessage({ id: 'pages.groups.New application' })}
+          </Button>
+        )}
       >
         {intl.formatMessage({ id: 'pages.groups.New application' })}
-      </Button>
+      </MicroApp>
       {/* <Button
         disabled={!RBAC.Permissions.createApplication.allowed}
         onClick={() => {
