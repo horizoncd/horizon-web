@@ -402,10 +402,11 @@ function WebhookLogDetail(props: { webhookLog: Webhooks.Log | undefined }) {
     font-size: 0.8125rem;
   `;
 
-  const parsedHeaders = YAML.parse(webhookLog?.requestHeaders || '{}');
-  // transfer headers from yaml-string to k: v1;v2
-  const headers = Object.keys(parsedHeaders)
-    .map((key: string) => `${key}: ${parsedHeaders[key].join(';')}`).join('\n');
+  const formatHeaders = (headers: string | undefined) => {
+    const parsedHeaders = YAML.parse(headers || '{}');
+    return Object.keys(parsedHeaders)
+      .map((key: string) => `${key}: ${parsedHeaders[key].join(';')}`).join('\n');
+  };
 
   return (
     <Card>
@@ -427,14 +428,16 @@ function WebhookLogDetail(props: { webhookLog: Webhooks.Log | undefined }) {
       <Divider />
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestHeader.title' })}</Title>
       <ContentBlock>
-        { headers }
+        { formatHeaders(webhookLog?.requestHeaders) }
       </ContentBlock>
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestBody.title' })}</Title>
       <ContentBlock>
         {JSON.stringify(JSON.parse(webhookLog?.requestData || '{}'), null, 4)}
       </ContentBlock>
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseHeader.title' })}</Title>
-      <ContentBlock>{webhookLog?.responseHeaders}</ContentBlock>
+      <ContentBlock>
+        { formatHeaders(webhookLog?.responseHeaders) }
+      </ContentBlock>
       <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseBody.title' })}</Title>
       <ContentBlock>{webhookLog?.responseBody}</ContentBlock>
     </Card>
