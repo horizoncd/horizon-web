@@ -391,8 +391,8 @@ export default {
   'pages.template.release.sync': '同步',
   'pages.template.release.failReason': '失败原因',
   'pages.template.create.ci': 'ci情况',
-  'pages.template.create.ci.no': '不包含ci',
-  'pages.template.create.ci.yes': '包含ci',
+  'pages.template.create.ci.no': '包含ci',
+  'pages.template.create.ci.yes': '不包含ci',
   'pages.template.create.ci.message': '模板是否包含CI',
 
   'pages.admin.update.message': '确定更新用户admin权限',

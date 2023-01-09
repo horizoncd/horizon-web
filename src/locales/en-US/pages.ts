@@ -391,9 +391,9 @@ export default {
   'pages.template.release.sync': 'Sync',
   'pages.template.release.failReason': 'Failure reason',
   'pages.template.create.ci': 'Without CI',
-  'pages.template.create.ci.no': 'Not Exist',
-  'pages.template.create.ci.yes': 'Exist',
-  'pages.template.create.ci.message': 'Whether there\'s the CI existing in template',
+  'pages.template.create.ci.no': 'No',
+  'pages.template.create.ci.yes': 'Yes',
+  'pages.template.create.ci.message': 'Whether there\'s no CI in template',
 
   'pages.admin.update.message': 'Please confirm updating user admin privileges.',
   'pages.admin.update.success': 'User privileges update was successful',
