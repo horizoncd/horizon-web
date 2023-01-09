@@ -70,8 +70,8 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
       >
         <Select>
           {/*eslint-disable-next-line react/jsx-boolean-value*/}
-          <Option key="true" value={true}>{intl.formatMessage({ id: 'pages.template.create.ci.no' })}</Option>
-          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.template.create.ci.yes' })}</Option>
+          <Option key="true" value={true}>{intl.formatMessage({ id: 'pages.template.create.ci.yes' })}</Option>
+          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.template.create.ci.no' })}</Option>
         </Select>
       </Form.Item>
     </div>
