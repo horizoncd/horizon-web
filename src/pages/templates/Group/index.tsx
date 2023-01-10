@@ -2,9 +2,8 @@ import { Button, Table, Tabs } from 'antd';
 import { history, useIntl, useRequest } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import RBAC from '@/rbac';
-import { getTemplates } from '@/services/templates/templates';
+import { listTemplatesV2 } from '@/services/templates/templates';
 import { TemplateTab, TemplateTableColumns, TemplateTableLocale } from '..';
-import { API } from '@/services/typings';
 import { PageWithInitialState } from '@/components/Enhancement';
 
 const { TabPane } = Tabs;
@@ -15,7 +14,7 @@ interface GroupTemplateTableProps {
 
 const GroupTemplateTable: React.FC<GroupTemplateTableProps> = (props: GroupTemplateTableProps) => {
   const { groupID } = props;
-  const { data: templates } = useRequest(() => getTemplates(groupID, true), {});
+  const { data: templates } = useRequest(() => listTemplatesV2({ fullpath: true, groupID }), {});
 
   return (
     <Table

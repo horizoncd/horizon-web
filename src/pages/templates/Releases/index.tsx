@@ -101,7 +101,7 @@ export const ReleasesTable = (props: { fullName: string, releases: Templates.Rel
 
   const locale = {
     emptyText: <NoData
-      titleID="pages.common.release"
+      titleID="pages.applicationDetail.basic.release"
       descID="pages.noData.release.desc"
     />,
   };

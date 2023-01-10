@@ -20,8 +20,7 @@ import {
 } from '@/services/applications/applications';
 import { pipelineV2 } from '@/services/version/version';
 import Config from '@/pages/applications/NewOrEdit/v2/Config';
-import Template from '@/pages/applications/NewOrEdit/v1/Template';
-import { API } from '@/services/typings';
+import Template from '@/pages/applications/NewOrEdit/v2/Template';
 import { parseGitRef } from '@/services/code/code';
 import { MaxSpace } from '@/components/Widget';
 

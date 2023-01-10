@@ -49,7 +49,7 @@ interface GroupTemplateProps extends TemplateProps {
 const AllTemplateCards = (props: TemplateProps) => {
   const { template, resetTemplate } = props;
   const { data } = useRequest(
-    () => listTemplatesV2({ fullpath: false, groupID: 0, withoutCI: false }),
+    () => listTemplatesV2({ fullpath: false, groupID: 0, withoutCI: true }),
   );
 
   if (!data) {
@@ -69,7 +69,7 @@ const GroupCards = (props: GroupTemplateProps) => {
   const {
     groupID, template, resetTemplate,
   } = props;
-  const { data } = useRequest(() => listTemplatesV2({ fullpath: false, groupIDRecursive: groupID, withoutCI: false }));
+  const { data } = useRequest(() => listTemplatesV2({ fullpath: false, groupIDRecursive: groupID, withoutCI: true }));
   if (!data) {
     return null;
   }

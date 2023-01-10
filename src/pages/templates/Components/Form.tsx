@@ -24,6 +24,7 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
       <Form.Item
         label={formatMessage('onlyOwner')}
         name="onlyOwner"
+        initialValue={false}
         required
         rules={[{ required: true }]}
         extra={intl.formatMessage({ id: 'pages.message.template.onlyOwner.extra' })}
@@ -58,21 +59,6 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
           disabled={!editRepository}
           onBlur={(i) => onRepositoryBlur(i.target.value)}
         />
-      </Form.Item>
-      <Form.Item
-        label={intl.formatMessage({ id: 'pages.template.create.ci' })}
-        name="withoutCI"
-        required
-        rules={[{ required: true }]}
-        extra={intl.formatMessage({ id: 'pages.template.create.ci.message' })}
-        // eslint-disable-next-line react/jsx-boolean-value
-        initialValue={true}
-      >
-        <Select>
-          {/*eslint-disable-next-line react/jsx-boolean-value*/}
-          <Option key="true" value={true}>{intl.formatMessage({ id: 'pages.template.create.ci.yes' })}</Option>
-          <Option key="false" value={false}>{intl.formatMessage({ id: 'pages.template.create.ci.no' })}</Option>
-        </Select>
       </Form.Item>
     </div>
   );
