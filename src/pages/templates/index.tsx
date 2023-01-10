@@ -7,13 +7,12 @@ import React, { useState } from 'react';
 import type { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'umi';
 import NoData from '@/components/NoData';
-import { getRootTemplates, getTemplatesByUser } from '@/services/templates/templates';
+import { listTemplatesV2 } from '@/services/templates/templates';
 import { handleHref } from '@/utils';
 import { getGroupByID } from '@/services/groups/groups';
 import {
-  DTree, DTreeItem, DTreeItemProp, TreeDataNode,
+  DTree, DTreeItem, TreeDataNode,
 } from '@/components/DirectoryTree';
-import { API } from '@/services/typings';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { ComponentWithPagination } from '../../components/Enhancement';
 import PopupTime from '@/components/Widget/PopupTime';
@@ -133,49 +132,6 @@ TemplateTab.defaultProps = {
   onSelect: () => { },
 };
 
-const RootAllTemplateTable = () => {
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  let { data: templates } = useRequest(() => getRootTemplates(true), {
-    onSuccess: () => {
-      if (!templates) {
-        return;
-      }
-      templates = templates.map((item) => {
-        const t = item;
-        if (t.fullPath) {
-          t.fullName = t.fullPath.substring(1);
-          t.fullPath = `/templates${t.fullPath}/-/detail`;
-        }
-        return t;
-      });
-      setTotal(templates.length);
-    },
-  });
-
-  const onPageChange = (pg: number, pz: number) => {
-    if (pg) {
-      setPage(pg);
-    }
-    if (pz) {
-      setPageSize(pz);
-    }
-  };
-
-  return (
-    <DTreeWithPagination
-      // @ts-ignore
-      items={templates ? templates.slice((page - 1) * pageSize, page * pageSize) : [] as DTreeItemProp[]}
-      onPageChange={onPageChange}
-      page={page}
-      pageSize={pageSize}
-      total={total}
-    />
-  );
-};
-
 const render = (node: TreeDataNode): React.ReactNode => {
   const {
     title, fullPath, updatedAt, group,
@@ -184,9 +140,17 @@ const render = (node: TreeDataNode): React.ReactNode => {
   return <DTreeItem title={title} extra={group !== 0 && <GroupSource groupID={group || 0} />} fullPath={fullPath} updatedAt={updatedAt} />;
 };
 
-const RootMyTemplateTable = () => {
+const TemplateTable = (props: { userID: number }) => {
+  const { userID } = props;
   const [templates, setTemplates] = useState([] as API.Template[]);
-  useRequest(() => getTemplatesByUser(true), {
+  useRequest(() => Promise.all([
+    listTemplatesV2({ fullpath: true, userID }),
+    listTemplatesV2({ fullpath: true, groupID: 0 }),
+  ]).then((v) => ({ data: v[0].data.concat(v[1].data) }))
+    .then((v) => {
+      const m = {};
+      return { data: v.data.filter((i) => { const res = !(i.id in m); m[i.id] = true; return res; }) };
+    }), {
     onSuccess: (items) => {
       const tpls = items.map((item) => {
         const t = item;
@@ -207,11 +171,12 @@ const RootMyTemplateTable = () => {
 
 function TemplateList(props: { initialState: API.InitialState }) {
   const { initialState: { currentUser } } = props;
-  const [selectedTab, setSelectedTab] = useState('1');
   const intl = useIntl();
   if (!currentUser) {
     return null;
   }
+
+  const { id: userID } = currentUser;
 
   const queryInput = (
     <Button
@@ -230,14 +195,10 @@ function TemplateList(props: { initialState: API.InitialState }) {
       <Col span={4} />
       <Col span={16}>
         <TemplateTab
-          createButton={currentUser.isAdmin && selectedTab === '2' && queryInput}
-          onSelect={(key: string) => { setSelectedTab(key); }}
+          createButton={currentUser.isAdmin && queryInput}
         >
-          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.your.templates' })} key="1">
-            <RootMyTemplateTable />
-          </TabPane>
-          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.public.templates' })} key="2">
-            <RootAllTemplateTable />
+          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.templates' })} key="1">
+            <TemplateTable userID={userID} />
           </TabPane>
         </TemplateTab>
       </Col>

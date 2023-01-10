@@ -13,8 +13,7 @@ export default {
   'pages.dashboard.title.your.applications': 'Your applications',
   'pages.dashboard.title.all.applications': 'All applications',
   'pages.dashboard.title.all.groups': 'All groups',
-  'pages.dashboard.title.your.templates': 'Your templates',
-  'pages.dashboard.title.public.templates': 'Public templates',
+  'pages.dashboard.title.templates': 'Templates',
 
   'pages.dashboard.search.filterBy.env': 'Filter by env',
   'pages.dashboard.search.filterBy.template': 'Filter by template',
@@ -414,8 +413,6 @@ export default {
   'pages.environment.name': 'Name',
   'pages.environment.displayName': 'Display name',
   'pages.environment.autoFree': 'Auto free',
-  'pages.environment.autoFree.on': 'On',
-  'pages.environment.autoFree.off': 'Off',
   'pages.environment.createdAt': 'Created at',
   'pages.environment.updatedAt': 'Updated at',
   'pages.environment.k8s': 'Kubernetes',

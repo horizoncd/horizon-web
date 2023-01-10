@@ -54,12 +54,6 @@ export default () => {
     ],
     [
       {
-        key: formatMessage('autoFree'),
-        value: environment?.autoFree ? formatMessage('autoFree.on') : formatMessage('autoFree.off'),
-      },
-    ],
-    [
-      {
         key: formatMessage('createdAt'),
         value: Utils.timeToLocal(environment?.createdAt || ''),
       },

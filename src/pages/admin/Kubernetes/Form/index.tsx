@@ -44,7 +44,7 @@ export default () => {
       <Form.Item
         label={formatMessage('ingress')}
         name="ingressDomain"
-        rules={common.formRules.domain}
+        rules={common.formRules.noRequiredDomain}
         extra={intl.formatMessage({ id: 'pages.message.k8s.ingress.extra' })}
       >
         <Input />

@@ -9,7 +9,6 @@ import { queryReleases } from '@/services/templates/templates';
 import styles from '@/pages/applications/NewOrEdit/index.less';
 import { GitRefType, listGitRef } from '@/services/code/code';
 import { pipelineV2 } from '@/services/version/version';
-import { API } from '@/services/typings';
 import { gitURLRegExp } from '@/const';
 
 import HForm from '@/components/HForm';

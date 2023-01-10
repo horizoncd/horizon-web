@@ -13,8 +13,7 @@ export default {
   'pages.dashboard.title.your.applications': '我的应用',
   'pages.dashboard.title.all.applications': '所有应用',
   'pages.dashboard.title.all.groups': '所有分组',
-  'pages.dashboard.title.your.templates': '我的模板',
-  'pages.dashboard.title.public.templates': '公共模板',
+  'pages.dashboard.title.templates': '模板',
 
   'pages.dashboard.search.filterBy.env': '过滤环境',
   'pages.dashboard.search.filterBy.template': '过滤模板',
@@ -413,8 +412,6 @@ export default {
   'pages.environment.new': '创建环境',
   'pages.environment.name': '名称',
   'pages.environment.displayName': '展示名',
-  'pages.environment.autoFree': '自动释放',
-  'pages.environment.autoFree.on': '已开启',
   'pages.environment.autoFree.off': '已关闭',
   'pages.environment.createdAt': '创建时间',
   'pages.environment.updatedAt': '更新时间',
