@@ -412,8 +412,6 @@ export default {
   'pages.environment.new': '创建环境',
   'pages.environment.name': '名称',
   'pages.environment.displayName': '展示名',
-  'pages.environment.autoFree': '自动释放',
-  'pages.environment.autoFree.on': '已开启',
   'pages.environment.autoFree.off': '已关闭',
   'pages.environment.createdAt': '创建时间',
   'pages.environment.updatedAt': '更新时间',

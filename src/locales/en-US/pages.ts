@@ -413,8 +413,6 @@ export default {
   'pages.environment.name': 'Name',
   'pages.environment.displayName': 'Display name',
   'pages.environment.autoFree': 'Auto free',
-  'pages.environment.autoFree.on': 'On',
-  'pages.environment.autoFree.off': 'Off',
   'pages.environment.createdAt': 'Created at',
   'pages.environment.updatedAt': 'Updated at',
   'pages.environment.k8s': 'Kubernetes',
