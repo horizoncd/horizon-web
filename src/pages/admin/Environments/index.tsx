@@ -38,11 +38,6 @@ export default () => {
       render: (text: any) => text,
     },
     {
-      title: formatMessage('autoFree'),
-      dataIndex: 'autoFree',
-      render: (text: boolean) => (text ? formatMessage('autoFree.on') : formatMessage('autoFree.off')),
-    },
-    {
       title: formatMessage('createdAt'),
       dataIndex: 'createdAt',
       render: (v: string) => Utils.timeToLocal(v),

@@ -13,8 +13,7 @@ export default {
   'pages.dashboard.title.your.applications': '我的应用',
   'pages.dashboard.title.all.applications': '所有应用',
   'pages.dashboard.title.all.groups': '所有分组',
-  'pages.dashboard.title.your.templates': '我的模板',
-  'pages.dashboard.title.public.templates': '公共模板',
+  'pages.dashboard.title.templates': '模板',
 
   'pages.dashboard.search.filterBy.env': '过滤环境',
   'pages.dashboard.search.filterBy.template': '过滤模板',

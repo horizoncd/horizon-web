@@ -1,26 +1,19 @@
 import { useState } from 'react';
 import { useRequest } from 'umi';
 import { DTree } from '@/components/DirectoryTree';
-import { ComponentWithPagination } from '@/components/Enhancement';
 import { listTemplatesV2 } from '@/services/templates/templates';
-
-const DTreeWithPagination = ComponentWithPagination(DTree);
 
 function TemplateList(props: { userID: number }) {
   const { userID } = props;
 
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [items, setItems] = useState([] as Templates.Template[]);
-  const [total, setTotal] = useState(0);
   useRequest(
     () => listTemplatesV2({
-      fullpath: true, pageNumber, pageSize, userID,
+      fullpath: true, userID,
     }),
     {
       onSuccess: (data) => {
-        const { items: templateItems, total: appTotal } = data;
-        const tpls = templateItems.map((item) => {
+        const tpls = data.map((item) => {
           const t = item;
           if (t.fullPath) {
             t.fullName = t.fullPath.substring(1);
@@ -29,29 +22,13 @@ function TemplateList(props: { userID: number }) {
           return t;
         });
         setItems(tpls);
-        setTotal(appTotal);
       },
-      refreshDeps: [pageNumber, pageSize, userID],
+      refreshDeps: [userID],
     },
   );
 
-  const onPageChange = (pn: number, pz: number) => {
-    if (pn) {
-      setPageNumber(pn);
-    }
-    if (pz) {
-      setPageSize(pz);
-    }
-  };
-
   return (
-    <DTreeWithPagination
-      items={items}
-      total={total}
-      page={pageNumber}
-      pageSize={pageSize}
-      onPageChange={onPageChange}
-    />
+    <DTree items={items} />
   );
 }
 

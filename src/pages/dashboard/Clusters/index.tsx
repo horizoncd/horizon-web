@@ -15,8 +15,7 @@ import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
 import withTrim from '@/components/WithTrim';
 import { queryEnvironments } from '@/services/environments/environments';
-import { queryReleases, listTemplates } from '@/services/templates/templates';
-import type { CLUSTER } from '@/services/clusters';
+import { queryReleases, listTemplatesV2 } from '@/services/templates/templates';
 import { GitInfo } from '@/services/code/code';
 import TitleWithCount from '../components/TitleWithCount';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
@@ -174,7 +173,7 @@ function Clusters(props: ClustersProps) {
     },
   });
 
-  useRequest(() => listTemplates({ fullpath: false }), {
+  useRequest(() => listTemplatesV2({ fullpath: false }), {
     onSuccess: (items) => {
       const t: CLUSTER.TemplateOptions[] = [];
       items.forEach((item) => {
@@ -216,6 +215,18 @@ function Clusters(props: ClustersProps) {
     const { value } = e.target;
     setFilter(value);
   };
+
+  const templateDefault = useMemo(() => {
+    const v = [];
+    if (tpl !== '') {
+      v.push(tpl);
+      if (tplRelease !== '') {
+        v.push(tplRelease);
+      }
+    }
+    return v;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clusterQueryInput = useMemo(() => {
     const onCascadeChange = (e: any) => {
@@ -261,6 +272,7 @@ function Clusters(props: ClustersProps) {
             style={{ maxWidth: '150px' }}
             placeholder={intl.formatMessage({ id: 'pages.dashboard.search.filterBy.template' })}
             options={templateOptions}
+            defaultValue={templateDefault}
             // @ts-ignore
             onClear={() => { setTpl(''); setTplRelease(''); }}
             //@ts-ignore
@@ -278,6 +290,7 @@ function Clusters(props: ClustersProps) {
             style={{ maxWidth: '150px', marginLeft: '5px' }}
             placeholder={intl.formatMessage({ id: 'pages.dashboard.search.filterBy.env' })}
             onSelect={setEnvironment}
+            defaultValue={environment}
             onClear={() => setEnvironment('')}
           >
             {envs?.map((item) => (
@@ -299,7 +312,7 @@ function Clusters(props: ClustersProps) {
       }
       </div>
     );
-  }, [envs, filter, intl, templateOptions, tpl]);
+  }, [environment, envs, filter, intl, templateDefault, templateOptions, tpl]);
 
   const clusterList = useMemo(() => (
     clusters && clusters.map((item: CLUSTER.Cluster) => {

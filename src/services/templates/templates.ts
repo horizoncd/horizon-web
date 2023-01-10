@@ -1,20 +1,10 @@
 import { request } from 'umi';
-import type { API } from '../typings';
 
 export enum StatusCode {
   StatusSucceed = 1,
   StatusUnknown,
   StatusFailed,
   StatusOutOfSync,
-}
-
-export async function listTemplates(params: { fullpath: boolean, selfOnly?: boolean }) {
-  return request<{
-    data: Templates.Template[];
-  }>('/apis/core/v1/templates', {
-    method: 'GET',
-    params,
-  });
 }
 
 export async function queryReleases(template: string | number) {
@@ -44,10 +34,6 @@ export async function queryTemplate(template: string | number, withReleases: boo
     },
   };
   return request<{ data: Templates.Template }>(path, config);
-}
-
-export async function getTemplatesByUser(fullpath: boolean = false) {
-  return listTemplates({ fullpath, selfOnly: true });
 }
 
 export async function updateTemplate(template: string | number, data: Templates.UpdateTemplateRequest) {
@@ -95,10 +81,12 @@ export async function createTemplate(group: number, data: Templates.CreateTempla
 }
 
 export async function listTemplatesV2(
-  params: API.PageParam & {
+  params: {
     fullpath: boolean,
     groupIDRecursive?: number,
+    groupID?: number,
     filter?: string,
+    withoutCI?: boolean,
     userID?: number },
 ) {
   const path = '/apis/core/v2/templates';
@@ -106,22 +94,7 @@ export async function listTemplatesV2(
     method: 'GET',
     params,
   };
-  return request<{ data: API.PageResult<Templates.Template> }>(path, config);
-}
-
-export async function getTemplates(group: number, fullpath: boolean = false, recursive: boolean = false, apiVersion: string = 'v1') {
-  const path = `/apis/core/${apiVersion}/groups/${group}/templates`;
-  const config = {
-    method: 'GET',
-    params: {
-      fullpath, recursive,
-    },
-  };
   return request<{ data: Templates.Template[] }>(path, config);
-}
-
-export async function getRootTemplates(fullpath: boolean = false, recursive: boolean = false, apiVersion: string = 'v1') {
-  return getTemplates(0, fullpath, recursive, apiVersion);
 }
 
 export async function getSchema(release: number) {

@@ -13,8 +13,7 @@ export default {
   'pages.dashboard.title.your.applications': 'Your applications',
   'pages.dashboard.title.all.applications': 'All applications',
   'pages.dashboard.title.all.groups': 'All groups',
-  'pages.dashboard.title.your.templates': 'Your templates',
-  'pages.dashboard.title.public.templates': 'Public templates',
+  'pages.dashboard.title.templates': 'Templates',
 
   'pages.dashboard.search.filterBy.env': 'Filter by env',
   'pages.dashboard.search.filterBy.template': 'Filter by template',
