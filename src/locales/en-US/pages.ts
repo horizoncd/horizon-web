@@ -232,6 +232,8 @@ export default {
   'pages.cluster.basic.status': 'Status',
   'pages.cluster.basic.expireIn': 'Expires in',
 
+  'pages.cluster.podsTable.nodata.title': 'No Pod',
+  'pages.cluster.podsTable.nodata.desc': 'No Pod found, possibly due to replica count being scaled down to 0 or the Cluster not being deployed, please check replica count in cluster configuration and cluster status.',
   'pages.cluster.podsTable.events': 'Events',
   'pages.cluster.podsTable.events.type': 'Type',
   'pages.cluster.podsTable.events.reason': 'Reason',
