@@ -232,6 +232,8 @@ export default {
   'pages.cluster.basic.status': '集群状态',
   'pages.cluster.basic.expireIn': '剩余时长',
 
+  'pages.cluster.podsTable.nodata.title': '没有Pod',
+  'pages.cluster.podsTable.nodata.desc': '没有找到Pod，可能是因为副本数缩容到0，或者Cluster未发布，请注意集群配置中的副本数和集群状态',
   'pages.cluster.podsTable.events': '事件',
   'pages.cluster.podsTable.events.type': '类型',
   'pages.cluster.podsTable.events.reason': '原因',
