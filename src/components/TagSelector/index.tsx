@@ -12,6 +12,7 @@ import Tag from './tag';
 import Suggestions from './suggestions';
 
 const InputBox = styled.div`
+    display: flex;
     align-items: center;
     background: #fff;
     border: 1px solid #ccc;
@@ -338,7 +339,6 @@ export const TagsInput = ({
   return (
     <div>
       <InputBox
-        style={{ display: 'flex' }}
         aria-labelledby={name}
         onBlur={() => { setIsModifying(false); setExpand(false); if (onBlur) onBlur(); }}
       >
