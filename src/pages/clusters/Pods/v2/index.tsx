@@ -17,6 +17,7 @@ import PodsTable from '../PodsTable';
 import { StepCard, BuildCard, CountCircle } from '../components';
 import ButtonBar from './ButtonBar';
 import ClusterCard from './ClusterCard';
+import NoData from '@/components/NoData';
 
 const { TabPane } = Tabs;
 
@@ -153,11 +154,11 @@ function PodsPage(props: PodsPageProps) {
           podsInfo.sortedKey.length >= 1
           && clusterStatus.status !== ClusterStatus.FREED
           && clusterStatus.status !== ClusterStatus.NOTFOUND
-          && (
-            <Tabs
-              defaultActiveKey={podsInfo.sortedKey[0]}
-            >
-              {
+            ? (
+              <Tabs
+                defaultActiveKey={podsInfo.sortedKey[0]}
+              >
+                {
                 podsInfo.sortedKey.map((key, index) => (
                   <TabPane
                     tab={(
@@ -176,8 +177,9 @@ function PodsPage(props: PodsPageProps) {
                   </TabPane>
                 ))
               }
-            </Tabs>
-          )
+              </Tabs>
+            )
+            : <NoData titleID="pages.cluster.podsTable.nodata.title" descID="pages.cluster.podsTable.nodata.desc" />
         }
       </div>
     </PageWithBreadcrumb>

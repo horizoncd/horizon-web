@@ -260,6 +260,19 @@ function genTree(data: CLUSTER.ResourceTree) {
   return visited;
 }
 
+function getVersion(revision: string) {
+  const pattern = /Rev:([0-9]+)/;
+  const matches = pattern.exec(revision);
+  if (matches === null || matches.length < 2) {
+    return -1;
+  }
+  const version = parseInt(matches[1], 10);
+  if (isNaN(version)) {
+    return -1;
+  }
+  return version;
+}
+
 export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
   const podsMap: Record<string, CLUSTER.PodInTable[]> = {};
   const currentPods: CLUSTER.PodInTable[] = [];
@@ -382,7 +395,9 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
         // order by name desc
         return -a.node.name.localeCompare(b.node.name);
       }
-      return -revisionA.localeCompare(revisionB);
+      const versionA = getVersion(revisionA);
+      const versionB = getVersion(revisionB);
+      return versionB - versionA;
     }
     if (revisionA !== '') {
       return 1;
