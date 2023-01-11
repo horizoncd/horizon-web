@@ -290,7 +290,7 @@ function Clusters(props: ClustersProps) {
             style={{ maxWidth: '150px', marginLeft: '5px' }}
             placeholder={intl.formatMessage({ id: 'pages.dashboard.search.filterBy.env' })}
             onSelect={setEnvironment}
-            defaultValue={environment}
+            defaultValue={environment === '' ? undefined : environment}
             onClear={() => setEnvironment('')}
           >
             {envs?.map((item) => (
