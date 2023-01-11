@@ -1,7 +1,7 @@
 import {
   Button, Table, Tabs, Tooltip,
 } from 'antd';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { history } from '@@/core/history';
 import { stringify } from 'querystring';
 import { useIntl } from '@@/plugin-locale/localeExports';
@@ -200,7 +200,7 @@ export default () => {
     },
   });
 
-  const onTagClear = () => {
+  const onTagClear = useCallback(() => {
     setTagSelectorState('');
     setFilterState('');
     history.replace({
@@ -211,9 +211,9 @@ export default () => {
         tagSelector: '',
       },
     });
-  };
+  }, [environment, fullPath]);
 
-  const onTagSearch = (values: SearchInput[]) => {
+  const onTagSearch = useCallback((values: SearchInput[]) => {
     const ts: TAG.TagSelector[] = [];
     let ft = '';
     values.forEach((v) => {
@@ -243,7 +243,7 @@ export default () => {
         tagSelector: tsEncode,
       },
     });
-  };
+  }, [environment, fullPath]);
 
   const queryInput = (
     // @ts-ignore
@@ -352,7 +352,7 @@ export default () => {
     });
   };
 
-  const tagSearch = (
+  const tagSearch = useMemo(() => (
     <div style={{ display: 'flex', alignItems: 'baseline' }}>
       <TagSearch
         defaultValues={[
@@ -371,7 +371,8 @@ export default () => {
         </Tooltip>
       </div>
     </div>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [onTagClear, onTagSearch, tags]);
 
   return (
     <PageWithBreadcrumb>

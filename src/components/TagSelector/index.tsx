@@ -1,6 +1,6 @@
 import './styles.css';
 import {
-  forwardRef, KeyboardEventHandler, PropsWithChildren, useCallback, useEffect, useImperativeHandle, useRef, useState,
+  forwardRef, KeyboardEventHandler, PropsWithChildren, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState,
 } from 'react';
 import { Portal } from 'react-portal';
 import { CloseCircleOutlined } from '@ant-design/icons/lib';
@@ -117,7 +117,7 @@ export const TagsInput = ({
     });
     setSelectedTokens(selected);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [values, avaliableTokens]);
 
   const clearAll = () => {
     input.current.value = '';
@@ -333,8 +333,10 @@ export const TagsInput = ({
     setIsModifying(false);
   };
 
+  const divID = useMemo(() => `portal-${Math.random()}`, []);
+
   return (
-    <>
+    <div>
       <InputBox
         style={{ display: 'flex' }}
         aria-labelledby={name}
@@ -386,13 +388,13 @@ export const TagsInput = ({
           onKeyDown={handleOnKeyDown}
           disabled={disabled}
         />
-        <Portal node={document && document.getElementById('portal')}>
+        <Portal node={document && document.getElementById(divID)}>
           <SuggestionWithRef expand={expand} id="sug" query={query} options={sgConfigs} ref={sgRef} />
         </Portal>
         <CloseButton onClick={clearAll} />
       </InputBox>
-      <div id="portal" />
-    </>
+      <div id={divID} />
+    </div>
   );
 };
 
