@@ -146,7 +146,13 @@ const TemplateTable = (props: { userID: number }) => {
   useRequest(() => Promise.all([
     listTemplatesV2({ fullpath: true, userID }),
     listTemplatesV2({ fullpath: true, groupID: 0 }),
-  ]).then((v) => ({ data: v[0].data.concat(v[1].data) }))
+  ]).then((v) => {
+    const data: Templates.Template[] = [];
+    if (v[0] && v[0].data !== null && v[0].data !== undefined) data.push(...v[0].data);
+    if (v[1] && v[1].data !== null && v[1].data !== undefined) data.push(...v[1].data);
+    return { data };
+  })
+    .then((v) => ({ data: v.data.filter((value) => value !== undefined && value !== null) }))
     .then((v) => {
       const m = {};
       return { data: v.data.filter((i) => { const res = !(i.id in m); m[i.id] = true; return res; }) };
