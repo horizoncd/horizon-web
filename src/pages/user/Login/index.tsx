@@ -13,7 +13,6 @@ import Footer from '@/components/Footer';
 import { getAuthEndpoints, loginByPasswd } from '@/services/login/login';
 import styles from './index.less';
 import './index.less';
-import { API } from '@/services/typings';
 import { BoldText } from '@/components/Widget';
 import WithTheme from '@/theme';
 
@@ -51,24 +50,6 @@ const RightBottom = styled.div`
 
 const PaddingBox = styled.div`
   padding: 30px;
-`;
-
-const Title = styled.h1`
-  margin-top: 10px;
-  margin-bottom: 20px;
-`;
-
-const CircleAvatar = styled.div`
-  width: 60px;
-  height: 60px;
-  font-size: 50px;
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  color: white;
-  background-color: black;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 interface OidcLoginProps {
@@ -224,8 +205,8 @@ function Login(props: LoginProps) {
 
   return (
     <FullScreen>
-      <CircleAvatar>H</CircleAvatar>
-      <Title>Sign in to Horizon</Title>
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+      <img src="/horizon.svg" style={{ marginBottom: '30px' }} />
       <Card>
         {button}
         {method === LoginMethod.oidc && <OidcLogin endpoints={endpoints!} />}
