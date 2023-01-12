@@ -419,7 +419,7 @@ export default {
   'pages.environment.updatedAt': 'Updated at',
   'pages.environment.k8s': 'Kubernetes',
   'pages.environment.k8s.associated': 'Associated kubernetes',
-  'pages.environment.k8s.add': 'Add kubernetes',
+  'pages.environment.k8s.add': 'Link kubernetes',
   'pages.environment.k8s.default': 'Default',
   'pages.environment.k8s.status': 'Status',
   'pages.environment.k8s.status.on': 'In use',
@@ -427,7 +427,7 @@ export default {
   'pages.environment.k8s.operation': 'Operation',
   'pages.environment.k8s.setDefault': 'Set default',
 
-  'pages.kubernetes.new': 'New kubernetes',
+  'pages.kubernetes.new': 'Add kubernetes',
   'pages.kubernetes.name': 'Name',
   'pages.kubernetes.displayName': 'Display name',
   'pages.kubernetes.domain': 'Domain',
@@ -443,7 +443,7 @@ export default {
   'pages.kubernetes.updatedAt': 'Updated at',
   'pages.kubernetes.disabled': 'Disabled',
 
-  'pages.registry.new': 'New registry',
+  'pages.registry.new': 'Add registry',
   'pages.registry.name': 'Name',
   'pages.registry.path': 'Path',
   'pages.registry.tls': 'Skip TLS',
