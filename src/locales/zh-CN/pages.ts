@@ -418,8 +418,8 @@ export default {
   'pages.environment.createdAt': '创建时间',
   'pages.environment.updatedAt': '更新时间',
   'pages.environment.k8s': 'Kubernetes',
-  'pages.environment.k8s.associated': '关联的kubernetes',
-  'pages.environment.k8s.add': '添加kubernetes',
+  'pages.environment.k8s.associated': '已关联的kubernetes',
+  'pages.environment.k8s.add': '关联kubernetes',
   'pages.environment.k8s.default': '默认',
   'pages.environment.k8s.status': '启用状态',
   'pages.environment.k8s.status.on': '启用中',
@@ -427,7 +427,7 @@ export default {
   'pages.environment.k8s.operation': '操作',
   'pages.environment.k8s.setDefault': '设为默认',
 
-  'pages.kubernetes.new': '创建区域',
+  'pages.kubernetes.new': '添加区域',
   'pages.kubernetes.name': '名称',
   'pages.kubernetes.displayName': '展示名',
   'pages.kubernetes.domain': '域名',
@@ -443,7 +443,7 @@ export default {
   'pages.kubernetes.updatedAt': '更新时间',
   'pages.kubernetes.disabled': '禁用',
 
-  'pages.registry.new': '创建镜像仓库',
+  'pages.registry.new': '添加镜像仓库',
   'pages.registry.name': '名称',
   'pages.registry.path': '路径',
   'pages.registry.tls': '跳过TLS认证',
