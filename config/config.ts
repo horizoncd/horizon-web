@@ -68,7 +68,7 @@ export default defineConfig({
     config.plugin('env').use(
       new DefinePlugin(
         {
-          __MICRO_APP_LOC: JSON.stringify(MICRO_APP_LOC)
+          __MICRO_APP_LOC: JSON.stringify(MICRO_APP_LOC)? JSON.stringify(MICRO_APP_LOC) : '/horizon-web-microapps/',
         }
       )
     )

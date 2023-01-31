@@ -7,7 +7,7 @@ export default (props: FooterProps) => {
   const intl = useIntl();
   const defaultMessage = intl.formatMessage({
     id: 'app.copyright.produced',
-    defaultMessage: '2022 HORIZON @2021~2025 Horizon CloudNative Group',
+    defaultMessage: `${new Date().getFullYear()}HORIZON @2021~2025 Horizon CloudNative Group`,
   });
 
   return <DefaultFooter className={className} copyright={defaultMessage} links={[]} />;
