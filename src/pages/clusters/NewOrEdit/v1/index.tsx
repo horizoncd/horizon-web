@@ -278,7 +278,7 @@ export default (props: any) => {
 
   const { loading, run: submitCluster } = useRequest((cfg?: any) => {
     const info = {
-      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
+      name: form.getFieldValue(name),
       description: form.getFieldValue(description),
       template: {
         name: template.name,
