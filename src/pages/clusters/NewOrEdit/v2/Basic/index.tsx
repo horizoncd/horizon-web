@@ -99,14 +99,17 @@ export default (props: any) => {
     },
   ];
 
-  const name = editing ? <Input disabled />
-    : (
-      <Input
-        addonBefore={`${applicationName}-`}
-        placeholder={formatMessage('name.ruleMessage')}
-        disabled={readOnly}
-      />
-    );
+  const name = (
+    editing ? <Input disabled />
+      : (
+        <Input
+          key={applicationName}
+          defaultValue={`${applicationName}-`}
+          placeholder={formatMessage('name.ruleMessage')}
+          disabled={readOnly}
+        />
+      )
+  );
 
   // provide expiryDay from 1 to 7 days, and 14 days for special test clusters.
   const expireTimeOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 14];

@@ -301,7 +301,7 @@ export default (props: any) => {
 
   const { loading, run: submitCluster } = useRequest(() => {
     const info = {
-      name: creating ? `${applicationName}-${form.getFieldValue(name)}` : form.getFieldValue(name),
+      name: form.getFieldValue(name),
       description: form.getFieldValue(description),
       expireTime: form.getFieldValue(expireTimeStr),
       git: {
