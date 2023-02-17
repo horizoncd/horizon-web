@@ -8,10 +8,12 @@ export default {
   'pages.header.templates': 'Templates',
   'pages.header.admin': 'Admin',
 
-  'pages.dashboard.title.your.clusters': 'Your clusters',
-  'pages.dashboard.title.all.clusters': 'All clusters',
-  'pages.dashboard.title.your.applications': 'Your applications',
-  'pages.dashboard.title.all.applications': 'All applications',
+  'pages.dashboard.filter': 'Filter',
+  'pages.dashboard.filter.your.collections': 'Your Collections',
+  'pages.dashboard.filter.your.clusters': 'Your clusters',
+  'pages.dashboard.filter.all.clusters': 'All clusters',
+  'pages.dashboard.filter.your.applications': 'Your applications',
+  'pages.dashboard.filter.all.applications': 'All applications',
   'pages.dashboard.title.all.groups': 'All groups',
   'pages.dashboard.title.templates': 'Templates',
 
