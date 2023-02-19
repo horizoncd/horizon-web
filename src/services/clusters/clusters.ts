@@ -83,6 +83,12 @@ export async function updateClusterV2(clusterID: number, data: CLUSTER.UpdateClu
   });
 }
 
+export async function upgradeCluster(clusterID: number) {
+  return request(`/apis/core/v2/clusters/${clusterID}/upgrade`, {
+    method: 'POST',
+  });
+}
+
 export async function buildDeploy(clusterID: number, data: CLUSTER.ClusterBuildDeploy) {
   return request<{
     data: {

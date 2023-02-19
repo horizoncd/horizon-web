@@ -112,6 +112,11 @@ const Permissions = {
     action: Action.update,
     allowed: false,
   },
+  upgradeCluster: {
+    resource: Resource.cluster,
+    action: Action.update,
+    allowed: false,
+  },
   freeCluster: {
     resource: `${Resource.cluster}/${Resource.free}`,
     action: Action.create,

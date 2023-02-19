@@ -201,6 +201,7 @@ export default {
   'pages.clusterDelete.confirm.ok': 'OK',
   'pages.clusterDelete.confirm.cancel': 'Cancel',
   'pages.clusterDetail.basic.edit': 'Edit',
+  'pages.clusterDetail.basic.upgrade': 'Upgrade',
   'pages.clusterDetail.basic.operate': 'Operate',
   'pages.clusterDetail.basic.delete': 'Delete',
 
@@ -609,6 +610,10 @@ export default {
   'pages.message.cluster.deployAll.content4': 'Note that: ',
   'pages.message.cluster.deployAll.content5': '1. If the number of instances is too large, please pay attention to the pressure on the environment',
   'pages.message.cluster.deployAll.content6': '2. In addition to the pre and online environments, the maximum number of replicas in the deploy process is 200% for efficiency.',
+  'pages.message.cluster.upgrade.tooltip': 'Upgrade to version 2.0 for new features such as JDK17 and generalized templates',
+  'pages.message.cluster.upgrade.confirm': 'Are you sure to upgrade the cluster to version 2.0 ?',
+  'pages.message.cluster.upgrade.content': 'This operation is regarded as a regular configuration change, which can be revert by 【Rollback】.',
+  'pages.message.cluster.upgrade.success': 'The cluster is upgraded successfully and the page will be refreshed soon...',
 
   'pages.message.pods.step.deploy': 'The step {index} starts to deploy',
   'pages.message.pods.tip1': 'Tip 1',

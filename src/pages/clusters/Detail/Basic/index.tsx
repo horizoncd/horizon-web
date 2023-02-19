@@ -1,4 +1,4 @@
-import { Button, Tooltip } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import { useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
@@ -12,6 +12,7 @@ import type { Param } from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
+import { upgradeCluster } from '@/services/clusters/clusters';
 import { pipelineV2 } from '@/services/version/version';
 import { parseGitRef } from '@/services/code/code';
 import {
@@ -111,6 +112,21 @@ export default function Basic(props: any) {
     successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
   };
 
+  const onClickUpgrade = () => {
+    Modal.confirm({
+      title: intl.formatMessage({ id: 'pages.message.cluster.upgrade.confirm' }),
+      content: intl.formatMessage({ id: 'pages.message.cluster.upgrade.content' }),
+      onOk() {
+        upgradeCluster(cluster.id).then(() => {
+          successAlert(intl.formatMessage({ id: 'pages.message.cluster.upgrade.success' }));
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+        });
+      },
+    });
+  };
+
   return (
     <div>
       <AvatarBlock>
@@ -146,6 +162,19 @@ export default function Basic(props: any) {
         >
           {intl.formatMessage({ id: 'pages.clusterDetail.basic.edit' })}
         </Button>
+        {
+          version === pipelineV2 || (
+            <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.upgrade.tooltip' })}>
+              <Button
+                className={styles.button}
+                disabled={!RBAC.Permissions.upgradeCluster.allowed}
+                onClick={() => onClickUpgrade()}
+              >
+                {intl.formatMessage({ id: 'pages.clusterDetail.basic.upgrade' })}
+              </Button>
+            </Tooltip>
+          )
+        }
       </AvatarBlock>
       <DividerWithMargin />
       <DetailCard
