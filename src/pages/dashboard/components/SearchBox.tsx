@@ -13,40 +13,41 @@ import BaseAutoCompleteHandler from '@/components/FilterBox/BaseAutoCompleteHand
 import { TagsFilter } from '@/components/FilterBox/TagFilter';
 import Expression from '@/components/FilterBox/Expression';
 
-function DropdownHistory(props: { sch?: Expression[][], onClickHistory?: (e: Expression[]) => void, showCollection?: boolean }) {
+function DropdownHistory(props: { sch?: Expression[][], onClickHistory?: (e: Expression[]) => void, isCluster?: boolean }) {
   const intl = useIntl();
-  const { sch = [], onClickHistory = (() => { }), showCollection } = props;
+  const { sch = [], onClickHistory = (() => { }), isCluster } = props;
   const history = useHistory();
-  let items: MenuProps['items'] = [
-    {
-      label: intl.formatMessage({ id: 'pages.dashboard.filter.your.clusters' }),
-      key: 'yourcluster',
-    },
-    {
-      label: intl.formatMessage({ id: 'pages.dashboard.filter.your.applications' }),
-      key: 'yourapp',
-    },
-    {
-      label: intl.formatMessage({ id: 'pages.dashboard.filter.all.clusters' }),
-      key: 'allcluster',
-    },
-    {
-      label: intl.formatMessage({ id: 'pages.dashboard.filter.all.applications' }),
-      key: 'allapp',
-    },
-    {
-      type: 'divider',
-    },
-  ];
-
-  if (showCollection) {
-    items = [
+  const items = isCluster
+    ? [
       {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.your.collections' }),
+        label: intl.formatMessage({ id: 'pages.dashboard.filter.cluster.collections' }),
         key: 'collection',
-      }, ...items,
+      },
+      {
+        label: intl.formatMessage({ id: 'pages.dashboard.filter.your.clusters' }),
+        key: 'yourcluster',
+      },
+      {
+        label: intl.formatMessage({ id: 'pages.dashboard.filter.all.clusters' }),
+        key: 'allcluster',
+      },
+      {
+        type: 'divider',
+      },
+    ]
+    : [
+      {
+        label: intl.formatMessage({ id: 'pages.dashboard.filter.your.applications' }),
+        key: 'yourapp',
+      },
+      {
+        label: intl.formatMessage({ id: 'pages.dashboard.filter.all.applications' }),
+        key: 'allapp',
+      },
+      {
+        type: 'divider',
+      },
     ];
-  }
 
   sch.forEach((exprs, index) => {
     const expression = exprs.map(
@@ -97,19 +98,24 @@ const SearchBox = (props: {
   defaultValue: Expression[],
   onInputChange?: ((exprs: Expression[]) => void),
   onSubmmit: ((exprs: Expression[]) => void),
-  showCollection?: boolean,
+  isCluster?: boolean,
 }) => {
   const {
-    hKey, autoCompleteHandler, defaultValue, onSubmmit, onInputChange, showCollection,
+    hKey, autoCompleteHandler, defaultValue, onSubmmit, onInputChange, isCluster,
   } = props;
 
   const inputRef = useRef();
 
   const saveHistory = useCallback((result: Expression[]) => {
+    // eslint-disable-next-line no-param-reassign
+    result = result.filter((o) => (o.category && o.operator && o.value) || o.search);
     const history = store.get(hKey) as Expression[][];
     if (history === null) {
       store.set(hKey, [result]);
     } else {
+      if (result.length === 0) {
+        return;
+      }
       history.push(result);
       let newHistory: Expression[][] = [result, ...history];
       const m: Record<string, null> = {};
@@ -132,7 +138,7 @@ const SearchBox = (props: {
       <DropdownHistory
         sch={(store.get(hKey) ?? []) as Expression[][]}
         onClickHistory={(e) => { if (inputRef.current) inputRef.current.setQuery(e); }}
-        showCollection={showCollection}
+        isCluster={isCluster}
       />
       <div className="main-container" style={{ flexGrow: '1' }}>
         <TagsFilter

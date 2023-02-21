@@ -168,6 +168,7 @@ const QueryFavorite = 'isFavorite';
 function Clusters(props: ClustersProps) {
   const { initialState, location } = props;
 
+  const intl = useIntl();
   const [filter, setFilter] = useState('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -205,17 +206,17 @@ function Clusters(props: ClustersProps) {
     if (mode !== '') {
       exprs.push({ category: 'user', operator: '=', value: mode });
     }
-    if (tpl !== '') {
-      exprs.push({ category: 'template', operator: '=', value: tpl });
-    }
-    if (tplRelease !== '') {
-      exprs.push({ category: 'release', operator: '=', value: tplRelease });
-    }
     if (environment !== '') {
       exprs.push({ category: 'env', operator: '=', value: environment });
     }
     if (isFavorite !== '') {
       exprs.push({ category: 'isFavorite', operator: '=', value: isFavorite });
+    }
+    if (tpl !== '') {
+      exprs.push({ category: 'template', operator: '=', value: tpl });
+    }
+    if (tplRelease !== '') {
+      exprs.push({ category: 'release', operator: '=', value: tplRelease });
     }
     if (filter !== '') {
       exprs.push({ search: filter });
@@ -430,10 +431,12 @@ function Clusters(props: ClustersProps) {
         autoCompleteHandler={handler}
         defaultValue={defaultValue}
         onSubmmit={onSubmit}
-        showCollection
+        isCluster
       // onInputChange={(exprs) => { exprs.forEach((e) => { if (e.category === 'template' && e.value && e.value !== '') { setTplTmp(e.value); } }); }}
       />
-      <Card>
+      <Card
+        title={intl.formatMessage({ id: 'pages.dashboard.filter.clusters' })}
+      >
         {clusterList}
       </Card>
       <br />

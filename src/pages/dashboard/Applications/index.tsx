@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { BookOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
-import { Location } from 'umi';
+import { Location, useIntl } from 'umi';
 import { Card } from 'antd';
 import { listApplications } from '@/services/applications/applications';
 import '@/components/GroupTree/index.less';
@@ -33,6 +33,7 @@ interface MyApplicationsProps
 function Applications(props: MyApplicationsProps) {
   const { initialState, location } = props;
 
+  const intl = useIntl();
   const [filter, setFilter] = useState<string>();
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -143,7 +144,9 @@ function Applications(props: MyApplicationsProps) {
         defaultValue={defaultValue}
         onSubmmit={onSubmit}
       />
-      <Card>
+      <Card
+        title={intl.formatMessage({ id: 'pages.dashboard.filter.applications' })}
+      >
         {appList}
       </Card>
     </>

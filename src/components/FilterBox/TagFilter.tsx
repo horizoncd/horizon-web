@@ -285,7 +285,7 @@ export const TagsFilter = React.forwardRef((props: TagsFilterProps, ref) => {
           ))
         }
         <input
-          defaultValue={query}
+          value={query}
           style={{ flex: '1' }}
           ref={inputRef}
           autoComplete="off"

@@ -9,7 +9,9 @@ export default {
   'pages.header.admin': '管理员',
 
   'pages.dashboard.filter': '过滤',
-  'pages.dashboard.filter.your.collections': '我的收藏',
+  'pages.dashboard.filter.cluster.collections': '集群收藏',
+  'pages.dashboard.filter.clusters': '集群',
+  'pages.dashboard.filter.applications': '应用',
   'pages.dashboard.filter.your.clusters': '我的集群',
   'pages.dashboard.filter.all.clusters': '所有集群',
   'pages.dashboard.filter.your.applications': '我的应用',

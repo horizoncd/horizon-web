@@ -9,7 +9,9 @@ export default {
   'pages.header.admin': 'Admin',
 
   'pages.dashboard.filter': 'Filter',
-  'pages.dashboard.filter.your.collections': 'Your Collections',
+  'pages.dashboard.filter.cluster.collections': 'Cluster Collections',
+  'pages.dashboard.filter.clusters': 'Clusters',
+  'pages.dashboard.filter.applications': 'Applications',
   'pages.dashboard.filter.your.clusters': 'Your clusters',
   'pages.dashboard.filter.all.clusters': 'All clusters',
   'pages.dashboard.filter.your.applications': 'Your applications',
