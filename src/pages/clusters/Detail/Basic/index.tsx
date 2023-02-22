@@ -1,5 +1,5 @@
-import { Button, Modal, Tooltip } from 'antd';
-import { useState } from 'react';
+import { Button, Tooltip } from 'antd';
+import { useCallback, useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useHistory, useIntl } from 'umi';
@@ -12,20 +12,20 @@ import type { Param } from '@/components/DetailCard';
 import DetailCard from '@/components/DetailCard';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
-import { upgradeCluster } from '@/services/clusters/clusters';
 import { pipelineV2 } from '@/services/version/version';
 import { parseGitRef } from '@/services/code/code';
 import {
   AvatarBlock, FlexColumn, TitleText, IDText, NoPaddingButton, DividerWithMargin, CardTitle,
 } from '../Widget';
 import ResourceAvatar from '@/components/Widget/ResourceAvatar';
+import { MicroApp } from '@/components/Widget';
 
 export default function Basic(props: any) {
   const {
     applicationID, clusterFullPath, cluster, refreshCluster, version,
   } = props;
 
-  const { successAlert } = useModel('alert');
+  const { successAlert, errorAlert } = useModel('alert');
   const intl = useIntl();
   const history = useHistory();
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
@@ -112,20 +112,7 @@ export default function Basic(props: any) {
     successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
   };
 
-  const onClickUpgrade = () => {
-    Modal.confirm({
-      title: intl.formatMessage({ id: 'pages.message.cluster.upgrade.confirm' }),
-      content: intl.formatMessage({ id: 'pages.message.cluster.upgrade.content' }),
-      onOk() {
-        upgradeCluster(cluster.id).then(() => {
-          successAlert(intl.formatMessage({ id: 'pages.message.cluster.upgrade.success' }));
-          setTimeout(() => {
-            location.reload();
-          }, 3000);
-        });
-      },
-    });
-  };
+  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.${suffix}`, defaultMessage: defaultMsg }), [intl]);
 
   return (
     <div>
@@ -164,15 +151,14 @@ export default function Basic(props: any) {
         </Button>
         {
           version === pipelineV2 || (
-            <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.upgrade.tooltip' })}>
-              <Button
-                className={styles.button}
-                disabled={!RBAC.Permissions.upgradeCluster.allowed}
-                onClick={() => onClickUpgrade()}
-              >
-                {intl.formatMessage({ id: 'pages.clusterDetail.basic.upgrade' })}
-              </Button>
-            </Tooltip>
+            <MicroApp
+              name="upgrade"
+              clusterID={cluster.id}
+              disabled={!RBAC.Permissions.upgradeCluster.allowed}
+              successAlert={successAlert}
+              errorAlert={errorAlert}
+              formatMessage={formatMessage}
+            />
           )
         }
       </AvatarBlock>
