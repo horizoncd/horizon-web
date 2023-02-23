@@ -1,4 +1,4 @@
-import { Button, Tooltip } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import { useCallback, useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
@@ -158,6 +158,7 @@ export default function Basic(props: any) {
               successAlert={successAlert}
               errorAlert={errorAlert}
               formatMessage={formatMessage}
+              modalConfirm={Modal.confirm}
             />
           )
         }
