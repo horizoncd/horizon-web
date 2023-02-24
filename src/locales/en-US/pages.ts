@@ -612,7 +612,8 @@ export default {
   'pages.message.cluster.deployAll.content6': '2. In addition to the pre and online environments, the maximum number of replicas in the deploy process is 200% for efficiency.',
   'pages.message.cluster.upgrade.tooltip': 'Upgrade to version 2.0 for new features such as JDK17 and powerful templates',
   'pages.message.cluster.upgrade.confirm': 'Are you sure to upgrade the cluster to version 2.0 ?',
-  'pages.message.cluster.upgrade.content': 'This operation is regarded as a regular configuration change, which can be revert by 【Rollback】.',
+  'pages.message.cluster.upgrade.content': `This operation is regarded as a regular configuration change, which can be revert by 【Rollback】.
+    Please note that rollback is only available after re-deploy due to configuration structure changes.`,
   'pages.message.cluster.upgrade.success': 'The cluster is upgraded successfully and the page will be refreshed soon...',
 
   'pages.message.pods.step.deploy': 'The step {index} starts to deploy',

@@ -612,7 +612,8 @@ export default {
   'pages.message.cluster.deployAll.content6': '2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%',
   'pages.message.cluster.upgrade.tooltip': '升级至v2版本，体验JDK17、通用化模板等新特性',
   'pages.message.cluster.upgrade.confirm': '确定升级当前集群吗？',
-  'pages.message.cluster.upgrade.content': '该操作可看作一次配置变更，【构建发布】可使其生效，【回滚】可回退升级。',
+  'pages.message.cluster.upgrade.content': `该操作可看作一次配置变更，【构建发布】可使其生效，【回滚】可回退升级。
+    集群升级涉及配置结构变更，升级后需重新发布一次才能回滚到之前版本。请合理评估后谨慎升级。`,
   'pages.message.cluster.upgrade.success': '集群升级成功，页面将会自动刷新...',
 
   'pages.message.pods.step.deploy': '第{index}批次开始发布',
