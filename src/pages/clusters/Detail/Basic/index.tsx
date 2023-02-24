@@ -1,5 +1,5 @@
-import { Button, Tooltip } from 'antd';
-import { useState } from 'react';
+import { Button, Modal, Tooltip } from 'antd';
+import { useCallback, useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useHistory, useIntl } from 'umi';
@@ -18,13 +18,14 @@ import {
   AvatarBlock, FlexColumn, TitleText, IDText, NoPaddingButton, DividerWithMargin, CardTitle,
 } from '../Widget';
 import ResourceAvatar from '@/components/Widget/ResourceAvatar';
+import { MicroApp } from '@/components/Widget';
 
 export default function Basic(props: any) {
   const {
     applicationID, clusterFullPath, cluster, refreshCluster, version,
   } = props;
 
-  const { successAlert } = useModel('alert');
+  const { successAlert, errorAlert } = useModel('alert');
   const intl = useIntl();
   const history = useHistory();
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
@@ -111,6 +112,8 @@ export default function Basic(props: any) {
     successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
   };
 
+  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.${suffix}`, defaultMessage: defaultMsg }), [intl]);
+
   return (
     <div>
       <AvatarBlock>
@@ -146,6 +149,19 @@ export default function Basic(props: any) {
         >
           {intl.formatMessage({ id: 'pages.clusterDetail.basic.edit' })}
         </Button>
+        {
+          version === pipelineV2 || (
+            <MicroApp
+              name="upgrade"
+              clusterID={cluster.id}
+              disabled={!RBAC.Permissions.upgradeCluster.allowed}
+              successAlert={successAlert}
+              errorAlert={errorAlert}
+              formatMessage={formatMessage}
+              modalConfirm={Modal.confirm}
+            />
+          )
+        }
       </AvatarBlock>
       <DividerWithMargin />
       <DetailCard
