@@ -262,7 +262,7 @@ const Unknown = () => (
 const Online = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
   return (
-    <span className="badge-color-blue badge-content">
+    <span style={{ whiteSpace: 'nowrap' }} className="badge-color-blue badge-content">
       {text || 'Online'}
     </span>
   );
