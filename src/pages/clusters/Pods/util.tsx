@@ -8,6 +8,7 @@ import utils from '@/utils';
 
 const runningState = 'Running';
 const onlineState = 'online';
+const unknownState = 'unknown';
 const offlineState = 'offline';
 
 const smile = <SmileOutlined />;
@@ -74,22 +75,22 @@ const PodInitialized = 'Initialized';
 const PodConditionTrue = 'True';
 
 // allContainersStarted determine if all containers have been started
-function allContainersStarted(containerStatuses: Kubernetes.ContainerStatus[]):boolean {
+function allContainersStarted(containerStatuses: Kubernetes.ContainerStatus[]): boolean {
   return containerStatuses.filter((item) => !item.started).length === 0;
 }
 
 // allContainersRunning determine if all containers running
-function allContainersRunning(containerStatuses: Kubernetes.ContainerStatus[]):boolean {
+function allContainersRunning(containerStatuses: Kubernetes.ContainerStatus[]): boolean {
   return containerStatuses.filter((item) => !item.state.running).length === 0;
 }
 
 // allContainersReady determine if all containers ready
-function allContainersReady(containerStatuses: Kubernetes.ContainerStatus[]):boolean {
+function allContainersReady(containerStatuses: Kubernetes.ContainerStatus[]): boolean {
   return containerStatuses.filter((item) => !item.ready).length === 0;
 }
 
 // oneOfContainersCrash determine if one of containers crash
-function oneOfContainersCrash(containerStatuses: Kubernetes.ContainerStatus[]):boolean {
+function oneOfContainersCrash(containerStatuses: Kubernetes.ContainerStatus[]): boolean {
   return containerStatuses.filter((item) => item.state.waiting && item.state.waiting.reason === PodErrCrashLoopBackOff).length !== 0;
 }
 
@@ -214,7 +215,7 @@ function getRevision(n: CLUSTER.ResourceNode) {
 
 type Tree = {
   parent?: Tree,
-  node : CLUSTER.ResourceNode,
+  node: CLUSTER.ResourceNode,
   children: Tree[],
 };
 
@@ -338,16 +339,23 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
           containerStatuses, phase, reason, message,
         } = status;
 
+        let readyCount = 0;
         let restartCount = 0;
         let onlineStatus = offlineState;
         if (containerStatuses && containerStatuses.length > 0) {
           restartCount = containerStatuses[0].restartCount;
           if (containerStatuses.length === containers.length) {
             onlineStatus = onlineState;
+            if (containers.map((c) => c.readinessProbe)
+              .filter((p) => p !== undefined && p !== null).length === 0) {
+              onlineStatus = unknownState;
+            }
             containerStatuses.forEach(
               (containerStatus: any) => {
                 if (!containerStatus.ready) {
                   onlineStatus = offlineState;
+                } else {
+                  readyCount += 1;
                 }
               },
             );
@@ -365,6 +373,7 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
           createTime: utils.timeToLocal(creationTimestamp),
           ip: status.podIP,
           onlineStatus,
+          readyCount,
           lifeCycle: parsePodLifeCycle(pod.podDetail!),
           restartCount,
           containerName: containers[0].name,

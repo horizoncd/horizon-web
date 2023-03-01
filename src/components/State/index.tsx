@@ -252,6 +252,13 @@ const PodError = (props: Omit<StatusProps, 'link'>) => {
 };
 
 // state for oline status
+const Unknown = () => (
+  <span className="badge-color-grey badge-content">
+    Unknown
+  </span>
+);
+
+// state for oline status
 const Online = (props: Pick<StatusProps, 'text'>) => {
   const { text } = props;
   return (
@@ -386,6 +393,7 @@ export {
   Suspended,
   NotFound,
   PodRunning,
+  Unknown,
   Online,
   Offline,
   PodPending,

@@ -18,6 +18,7 @@ import {
   MinusSquareTwoTone,
   PauseCircleOutlined,
   PlusSquareTwoTone,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
 import FullscreenModal from '@/components/FullscreenModal';
@@ -30,7 +31,7 @@ import {
 import CodeEditor from '@/components/CodeEditor';
 import NoData from '@/components/NoData';
 import {
-  Offline, Online, PodError, PodPending, PodRunning,
+  Offline, Online, PodError, PodPending, PodRunning, Unknown,
 } from '@/components/State';
 import RBAC from '@/rbac';
 import withTrim from '@/components/WithTrim';
@@ -45,6 +46,7 @@ const pollingInterval = 5000;
 
 const status2StateNode = new Map(
   [
+    ['unknown', <Unknown />],
     ['online', <Online />],
     ['offline', <Offline />],
   ],
@@ -623,7 +625,24 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       title: formatMessage('onlineStatus'),
       dataIndex: 'onlineStatus',
       key: 'onlineStatus',
-      render: (text: string) => status2StateNode.get(text),
+      render: (text: string) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {status2StateNode.get(text)}
+          {
+          text === 'unknown' && (
+          <Tooltip title={formatMessage('ready.unknown.description')}>
+            <QuestionCircleOutlined style={{ marginLeft: '6px' }} />
+          </Tooltip>
+          )
+          }
+        </div>
+      ),
+    },
+    {
+      title: formatMessage('ready'),
+      dataIndex: 'readyCount',
+      key: 'readyCount',
+      render: (readyCount: number, podInTable: CLUSTER.PodInTable) => `${readyCount}/${podInTable.containers.length}`,
     },
     {
       title: <div style={{ whiteSpace: 'nowrap' }}>{formatMessage('restartCount')}</div>,
@@ -731,8 +750,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
         locale={locale}
         pagination={{
           position: ['bottomCenter'],
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50, 100, 500],
           current: pageNumber,
-          hideOnSinglePage: true,
           total: data.length,
           onChange: (page) => setPageNumber(page),
         }}
@@ -785,14 +805,14 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
                       },
                     },
                     {
-                      title: formatMessage('onlineStatus'),
-                      dataIndex: 'onlineStatus',
-                      key: 'onlineStatus',
+                      title: formatMessage('ready'),
+                      dataIndex: 'ready',
+                      key: 'ready',
                       render: (text: string, container: CLUSTER.ContainerDetail) => {
                         if (container?.status?.ready) {
-                          return status2StateNode.get('online');
+                          return <Online text={formatMessage('container.ready')} />;
                         }
-                        return status2StateNode.get('offline');
+                        return <Offline text={formatMessage('ready.notready')} />;
                       },
                     },
                     {

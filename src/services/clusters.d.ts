@@ -336,6 +336,7 @@ declare namespace CLUSTER {
     ip: string
     onlineStatus: string
     createTime: string
+    readyCount: number
     restartCount?: number
     containerName?: string
     namespace?: string
@@ -349,6 +350,7 @@ declare namespace CLUSTER {
   type ContainerDetail = {
     name: string,
     image: string,
+    readinessProbe?: any,
     env: Env[],
     command: string[],
     args: string[],

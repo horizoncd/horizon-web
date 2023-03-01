@@ -68,6 +68,7 @@ declare namespace Kubernetes {
   interface Container {
     name: string;
     image: string;
+    readinessProbe?: any;
     // command: string[];
     // args: string[];
     // resources: IResources;
