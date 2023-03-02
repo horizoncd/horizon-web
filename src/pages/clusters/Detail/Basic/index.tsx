@@ -1,5 +1,5 @@
 import { Button, Modal, Tooltip } from 'antd';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useHistory, useIntl } from 'umi';
@@ -112,8 +112,6 @@ export default function Basic(props: any) {
     successAlert(intl.formatMessage({ id: 'pages.message.copyID.success' }));
   };
 
-  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.${suffix}`, defaultMessage: defaultMsg }), [intl]);
-
   return (
     <div>
       <AvatarBlock>
@@ -150,14 +148,14 @@ export default function Basic(props: any) {
           {intl.formatMessage({ id: 'pages.clusterDetail.basic.edit' })}
         </Button>
         {
-          version === pipelineV2 || (
+          (version !== pipelineV2 && cluster.template.name) && (
             <MicroApp
               name="upgrade"
               clusterID={cluster.id}
+              template={cluster.template.name}
               disabled={!RBAC.Permissions.upgradeCluster.allowed}
               successAlert={successAlert}
               errorAlert={errorAlert}
-              formatMessage={formatMessage}
               modalConfirm={Modal.confirm}
             />
           )
