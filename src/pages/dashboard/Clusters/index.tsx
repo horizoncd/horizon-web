@@ -15,7 +15,7 @@ import {
   FundOutlined, GitlabOutlined, RocketTwoTone, StarFilled, StarTwoTone,
 } from '@ant-design/icons/lib';
 import { Location, useIntl } from 'umi';
-import { listClusters, setFavorite } from '@/services/clusters/clusters';
+import { listClusters, addFavorite, deleteFavorite } from '@/services/clusters/clusters';
 import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
@@ -63,7 +63,7 @@ function Title(props: {
   );
   const firstLetter = name.substring(0, 1).toUpperCase();
 
-  const { run: updateFavorite } = useRequest(() => setFavorite(id, !isFavorite), {
+  const { run: updateFavorite } = useRequest((favorite: boolean) => (favorite ? addFavorite(id) : deleteFavorite(id)), {
     onSuccess: () => {
       if (onStarClickInner) {
         onStarClickInner();
@@ -102,8 +102,8 @@ function Title(props: {
         <div style={{ display: 'flex', alignItems: 'center', fontSize: 'larger' }}>
           {
             isFavorite
-              ? <StarFilled onClick={updateFavorite} style={{ color: '#F4D03F' }} />
-              : <StarTwoTone onClick={updateFavorite} twoToneColor="#F4D03F" />
+              ? <StarFilled onClick={() => updateFavorite(false)} style={{ color: '#F4D03F' }} />
+              : <StarTwoTone onClick={() => updateFavorite(true)} twoToneColor="#F4D03F" />
           }
           <Tooltip title={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}>
             <a

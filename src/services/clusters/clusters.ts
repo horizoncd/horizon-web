@@ -277,11 +277,14 @@ export async function updateClusterTemplateSchemaTags(clusterID: number, data: A
   });
 }
 
-export async function setFavorite(clusterID: number, isFavorite: boolean) {
+export async function addFavorite(clusterID: number) {
   return request(`/apis/core/v2/clusters/${clusterID}/favorite`, {
     method: 'POST',
-    data: {
-      isFavorite,
-    },
+  });
+}
+
+export async function deleteFavorite(clusterID: number) {
+  return request(`/apis/core/v2/clusters/${clusterID}/favorite`, {
+    method: 'DELETE',
   });
 }
