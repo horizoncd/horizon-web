@@ -206,7 +206,8 @@ export default (props: any) => {
             </Form.Item>
             <Form.Item
               label={formatMessage('revision')}
-              rules={[{ required: true }]}
+              name="revision"
+              rules={requiredRule}
             >
               <Input.Group compact>
                 <Form.Item
