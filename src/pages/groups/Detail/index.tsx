@@ -22,10 +22,15 @@ export default () => {
   const newApplication = `/groups${fullPath}/-/newapplicationv2`;
   // const newApplicationV2 = `/groups${fullPath}/-/newapplicationv2`;
 
-  const { successAlert } = useModel('alert');
+  const { successAlert, errorAlert } = useModel('alert');
 
   const header = () => (
     <div>
+      <MicroApp
+        groupID={groupID}
+        errorAlert={errorAlert}
+        name="insight"
+      />
       <Button
         disabled={!RBAC.Permissions.createGroup.allowed}
         style={{ marginRight: 15 }}
