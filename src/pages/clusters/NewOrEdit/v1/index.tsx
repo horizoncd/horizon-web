@@ -1,5 +1,5 @@
 import {
-  Button, Col, Form, Modal, Row,
+  Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
 import { useRef, useState } from 'react';
 import { useRequest } from 'umi';
@@ -334,7 +334,9 @@ export default (props: any) => {
       <Row>
         <Col span={4}>
           <Step>
-            <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+            <Affix offsetTop={50}>
+              <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+            </Affix>
           </Step>
         </Col>
         <Col span={20}>

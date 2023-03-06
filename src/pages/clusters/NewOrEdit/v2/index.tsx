@@ -1,5 +1,5 @@
 import {
-  Button, Col, Form, Modal, Row,
+  Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
 import { useRequest } from 'umi';
 import { useEffect, useRef, useState } from 'react';
@@ -428,9 +428,11 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Row>
         <Col span={4}>
-          <Step>
-            <HSteps current={current} onChange={onCurrentChange} steps={steps} />
-          </Step>
+          <Affix offsetTop={50}>
+            <Step>
+              <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+            </Step>
+          </Affix>
         </Col>
         <Col span={20}>
           <StepContent>

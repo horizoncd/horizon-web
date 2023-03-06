@@ -1,6 +1,6 @@
 import { useIntl } from '@@/plugin-locale/localeExports';
 import {
-  Button, Col, Form, Row,
+  Affix, Button, Col, Form, Row,
 } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useRequest } from '@@/plugin-request/request';
@@ -235,8 +235,10 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Row>
         <Col span={4}>
-          <div className={styles.step} />
-          <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+          <Affix offsetTop={50}>
+            <div className={styles.step} />
+            <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+          </Affix>
         </Col>
         <Col span={20}>
           <div className={styles.stepsContent}>
