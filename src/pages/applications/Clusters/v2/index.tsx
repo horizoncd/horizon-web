@@ -19,6 +19,7 @@ import TagSearch, { SearchInputType } from '@/components/TagSearch';
 import type { SearchInput, MultiValueTag } from '@/components/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
+import { MicroApp } from '@/components/Widget';
 
 const { TabPane } = Tabs;
 
@@ -248,6 +249,10 @@ export default () => {
   const queryInput = (
     // @ts-ignore
     <div style={{ display: 'flex' }}>
+      <MicroApp
+        name="insight"
+        applicationName={application}
+      />
       <Button
         type="primary"
         disabled={!RBAC.Permissions.createCluster.allowedEnv(environment)}
