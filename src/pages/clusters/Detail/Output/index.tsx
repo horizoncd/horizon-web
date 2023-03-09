@@ -21,11 +21,11 @@ export default function Output(props: any) {
     refreshDeps: [clusterID],
     onSuccess: (items) => {
       let outputs: any = [];
-      Object.keys(items).forEach((name: string) => {
+      Object.keys(items).forEach((key) => {
         outputs = outputs.concat({
-          key: name,
-          description: items.name.description,
-          value: items.name.value,
+          key,
+          description: items[key].description,
+          value: items[key].value,
         });
       });
       setClusterOutputArray(outputs);
