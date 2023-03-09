@@ -138,6 +138,7 @@ export default function Basic(props: any) {
           </IDText>
         </FlexColumn>
         <div className={styles.flex} />
+        <MicroApp name="clustercopy" clusterName={cluster.name} />
         <Button className={styles.button} onClick={refreshCluster}><ReloadOutlined /></Button>
         <Button
           type="primary"

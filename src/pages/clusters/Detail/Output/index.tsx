@@ -17,15 +17,15 @@ export default function Output(props: any) {
 
   const [clusterOutputArray, setClusterOutputArray] = useState();
 
-  const { data: clusterOutputs } = useRequest(() => getClusterOutputs(clusterID), {
+  useRequest(() => getClusterOutputs(clusterID), {
     refreshDeps: [clusterID],
-    onSuccess: () => {
+    onSuccess: (items) => {
       let outputs: any = [];
-      Object.keys(clusterOutputs!).forEach((name: string) => {
+      Object.keys(items).forEach((name: string) => {
         outputs = outputs.concat({
           key: name,
-          description: clusterOutputs![name].description,
-          value: clusterOutputs![name].value,
+          description: items.name.description,
+          value: items.name.value,
         });
       });
       setClusterOutputArray(outputs);
