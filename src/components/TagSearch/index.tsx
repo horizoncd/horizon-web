@@ -1,5 +1,7 @@
 import { useIntl } from 'umi';
-import { TagsInput } from '../TagSelector';
+import Expression from '../FilterBox/Expression';
+import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../FilterBox/HorizonAutoCompleteHandler';
+import { TagsFilter } from '../FilterBox/TagFilter';
 
 interface Props {
   defaultValues?: SearchInput[] | undefined
@@ -31,49 +33,39 @@ const TagSearch = (props: Props) => {
     defaultValues, tagSelectors, onSearch, onClear,
   } = props;
   const intl = useIntl();
-  const tokens = tagSelectors.map((tag) => {
-    const options = tag.values.map((v) => ({
-      value: v,
-      title: v,
-    }));
-    return {
-      type: tag.key,
-      title: tag.key,
-      unique: true,
-      operators: [
-        {
-          value: '=',
-          description: '=',
-        },
-      ],
-      options,
-    };
-  });
+  const tokens: AutoCompleteOption[] = tagSelectors.map((tag) => ({
+    key: tag.key,
+    type: 'selection',
+    values: [
+      {
+        operator: '=',
+        possiableValues: tag.values,
+      },
+    ],
+  }));
 
-  let values: any[] = [];
+  let values: Expression[] = [];
   if (defaultValues) {
     values = defaultValues.filter(
       (defaultValue) => defaultValue && defaultValue.value !== '',
     ).map((defaultValue) => {
       if (defaultValue.key) {
         return {
-          type: defaultValue.key,
-          value: {
-            data: defaultValue.value,
-            operator: defaultValue.operator,
-          },
+          category: defaultValue.key,
+          operator: defaultValue.operator,
+          value: defaultValue.value,
         };
       }
-      return defaultValue.value;
+      return { search: defaultValue.value };
     });
   }
 
   return (
     <div style={{ flex: 1, marginBottom: '20px' }}>
-      <TagsInput
+      <TagsFilter
+        autoCompleteHandler={new HorizonAutoCompleteHandler(tokens)}
         placeHolder={intl.formatMessage({ id: 'pages.message.searchByTag.hint' })}
-        avaliableTokens={tokens}
-        values={values}
+        defaultExprs={values}
         onSubmit={(inputs: any[]) => {
           const results = inputs.map((input) => {
             if (typeof (input) === 'string') {

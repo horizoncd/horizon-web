@@ -1,5 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
 import QueryBoldSpan from '../Widget/QueryBoldSpan';
 import { SuggestionProps } from './types';
@@ -11,7 +11,7 @@ const FloatBox = styled.div`
   border: 1px solid lightgray;
   border-radius: 5px;
   margin-top: 5px;
-  width: 100%;
+  width: 90%;
   z-index: 1;
 `;
 
@@ -30,10 +30,16 @@ const SuggestionItem = styled.li`
   }
 `;
 
-function Suggestions(props: PropsWithChildren<SuggestionProps>) {
-  const { query = '', expand = true } = props;
-  const options = props.options.map((item, index) => {
-    const key = `${props.id}-${index}`;
+const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>, ref) => {
+  const { query = '', expand = true, options: sgOptionsProps } = props;
+  const [sgOptions, setSgOptions] = useState(sgOptionsProps);
+
+  useImperativeHandle(ref, () => ({
+    setSgOptions: (options: any) => setSgOptions(options),
+  }), [setSgOptions]);
+
+  const options = sgOptions.map((item, index) => {
+    const key = `${item.key}-${item.name}`;
     const classNames: string[] = [];
 
     if (item.disabled) {
@@ -42,14 +48,13 @@ function Suggestions(props: PropsWithChildren<SuggestionProps>) {
 
     return (
       <SuggestionItem
-        id={key}
         key={key}
-                // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
+        // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
         role="option"
         className={classNames.join(' ')}
         aria-disabled={Boolean(item.disabled)}
         onMouseDown={(e) => e.preventDefault()}
-        onClick={() => props.onClick(item)}
+        onClick={() => props.onItemClick(item, index)}
       >
         {item.prefix
           ? (
@@ -64,7 +69,7 @@ function Suggestions(props: PropsWithChildren<SuggestionProps>) {
     );
   });
 
-  if (!expand) {
+  if (!expand || options.length === 0) {
     return null;
   }
 
@@ -75,6 +80,6 @@ function Suggestions(props: PropsWithChildren<SuggestionProps>) {
       </FloatBox>
     )
   );
-}
+});
 
 export default Suggestions;

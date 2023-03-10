@@ -8,10 +8,14 @@ export default {
   'pages.header.templates': '模板',
   'pages.header.admin': '管理员',
 
-  'pages.dashboard.title.your.clusters': '我的集群',
-  'pages.dashboard.title.all.clusters': '所有集群',
-  'pages.dashboard.title.your.applications': '我的应用',
-  'pages.dashboard.title.all.applications': '所有应用',
+  'pages.dashboard.filter': '过滤',
+  'pages.dashboard.filter.cluster.collections': '集群收藏',
+  'pages.dashboard.filter.clusters': '集群',
+  'pages.dashboard.filter.applications': '应用',
+  'pages.dashboard.filter.your.clusters': '我的集群',
+  'pages.dashboard.filter.all.clusters': '所有集群',
+  'pages.dashboard.filter.your.applications': '我的应用',
+  'pages.dashboard.filter.all.applications': '所有应用',
   'pages.dashboard.title.all.groups': '所有分组',
   'pages.dashboard.title.templates': '模板',
 

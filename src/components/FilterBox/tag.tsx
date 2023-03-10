@@ -10,6 +10,11 @@ const BorderlessButton = styled.button`
     justify-content: center;
     padding: 0.15rem 0.25rem;
     margin-right: 3px;
+    
+    &:hover {
+      cursor: pointer;
+      background-color: #b0afaa;
+    }
 
     button {
       background: none;
@@ -30,8 +35,8 @@ const CloseButton = styled.span`
 `;
 
 interface TagProps {
-  text: string;
-  remove?: any;
+  text: string,
+  remove?: any,
   onClick?: () => void,
   onBlur?: () => void,
 }

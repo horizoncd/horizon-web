@@ -32,7 +32,7 @@ interface Item {
 interface SuggestionProps {
   // classNames: Record<string, string>,
   query?: string,
-  onClick: (i: Item) => void,
+  onItemClick: (i: Item, index: number) => void,
   // index: number,
   id: string,
   options: Item[],
