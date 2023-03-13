@@ -249,7 +249,7 @@ function genTree(data: CLUSTER.ResourceTree) {
         }
       }
 
-      if (root.node.parentRefs && root.node.parentRefs.length !== 0) {
+      if (root.node && root.node.parentRefs && root.node.parentRefs.length !== 0) {
         key = root.node.parentRefs[0].uid;
         preNode = root;
       } else {
