@@ -1,5 +1,5 @@
 import {
-  Button, Col, Form, Modal, Row,
+  Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
 import { useRequest } from 'umi';
 import { useEffect, useRef, useState } from 'react';
@@ -34,12 +34,14 @@ export default (props: any) => {
   const region = 'region';
   const expireTimeStr = 'expireTime';
   const url = 'url';
+  const refType = 'refType';
+  const refValue = 'refValue';
   const subfolder = 'subfolder';
   const buildConfigKey = 'buildConfig';
   const templateBasicKey = 'templateBasic';
   const templateConfigKey = 'templateConfig';
   const basicFieldsToValidate = [
-    name, environment, url,
+    name, environment, url, refValue,
   ];
 
   const { initialState } = useModel('@@initialState');
@@ -177,8 +179,8 @@ export default (props: any) => {
             { name: environment, value: envFromQuery },
             { name: url, value: git.url },
             { name: subfolder, value: git.subfolder },
-            { name: 'refType', value: gitRefType },
-            { name: 'refValue', value: gitRef },
+            { name: refType, value: gitRefType },
+            { name: refValue, value: gitRef },
           ]);
 
           // basicTemplateInfo
@@ -218,8 +220,8 @@ export default (props: any) => {
                 { name: expireTimeStr, value: expireTime },
                 { name: url, value: u },
                 { name: subfolder, value: s },
-                { name: 'refType', value: gitRefType },
-                { name: 'refValue', value: gitRef },
+                { name: refType, value: gitRefType },
+                { name: refValue, value: gitRef },
               ]);
               setBuildConfig(bc);
               setTemplateBasic(ti);
@@ -261,8 +263,8 @@ export default (props: any) => {
           { name: expireTimeStr, value: expireTime },
           { name: url, value: u },
           { name: subfolder, value: s },
-          { name: 'refType', value: gitRefType },
-          { name: 'refValue', value: gitRef },
+          { name: refType, value: gitRefType },
+          { name: refValue, value: gitRef },
         ]);
         setOriginConfig({
           buildConfig: bc,
@@ -307,7 +309,7 @@ export default (props: any) => {
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',
-        [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
+        [form.getFieldValue(refType)]: form.getFieldValue(refValue),
       },
       buildConfig,
       templateInfo: {
@@ -426,9 +428,11 @@ export default (props: any) => {
     <PageWithBreadcrumb>
       <Row>
         <Col span={4}>
-          <Step>
-            <HSteps current={current} onChange={onCurrentChange} steps={steps} />
-          </Step>
+          <Affix offsetTop={50}>
+            <Step>
+              <HSteps current={current} onChange={onCurrentChange} steps={steps} />
+            </Step>
+          </Affix>
         </Col>
         <Col span={20}>
           <StepContent>
