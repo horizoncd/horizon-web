@@ -4,7 +4,8 @@ on:
   push:
     tags:
       - v*
-
+    branches:
+      - main
 jobs:
   release:
     runs-on: ubuntu-18.04
@@ -25,7 +26,18 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: build
-
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          flavor: |
+            latest=false
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/horizon-web
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIREGISTRY_NAMESPACE }}/horizon-web
+          tags: |
+            type=sha,prefix={{branch}}-,enable=${{ github.ref_type == 'branch' }}
+            type=ref,event=tag
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -48,7 +60,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/horizon-web:${{ github.ref_name }}
-            registry.cn-hangzhou.aliyuncs.com/horizoncd/horizon-web:${{ github.ref_name }}
-
+          tags: ${{ steps.meta.outputs.tags }}
