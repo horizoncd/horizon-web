@@ -65,7 +65,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || currentUser.fullName === undefined) {
+  if (!currentUser || (currentUser.fullName === undefined && currentUser.name === undefined)) {
     return loading;
   }
 
@@ -94,7 +94,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
-        <span className={`${styles.name} anticon`}>{currentUser.fullName}</span>
+        <span className={`${styles.name} anticon`}>{currentUser.fullName ?? currentUser.name}</span>
       </span>
     </HeaderDropdown>
   );
