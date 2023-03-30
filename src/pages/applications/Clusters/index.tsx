@@ -5,14 +5,12 @@ import ClusterV2 from './v2';
 
 import { getApplicationV2 } from '@/services/applications/applications';
 import { isVersion2 } from '@/services/version/version';
-import { CenterSpin } from '@/components/Widget';
 
 export default () => {
   const { initialState } = useModel('@@initialState');
   const { id: applicationID } = initialState!.resource;
   const { data } = useRequest(() => getApplicationV2(applicationID));
   return (
-    // eslint-disable-next-line no-nested-ternary
-    data ? (isVersion2(data) ? <ClusterV2 /> : <ClusterV1 />) : <CenterSpin />
+    isVersion2(data) ? <ClusterV2 /> : <ClusterV1 />
   );
 };

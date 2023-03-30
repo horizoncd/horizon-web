@@ -44,7 +44,6 @@ function PodsPage(props: PodsPageProps) {
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
   const [building, setBuilding] = useState<BuildStatus>(BuildStatus.None);
   const [progressing, setProgressing] = useState(false);
-  const [hideLog, setHideLog] = useState(false);
 
   const { data: cluster } = useRequest(() => getClusterV2(id), {});
 
@@ -101,13 +100,6 @@ function PodsPage(props: PodsPageProps) {
         setProgressing(false);
       }
 
-      if (status.status === ClusterStatus.FREED
-        || (step && step.manualPaused)) {
-        setHideLog(true);
-      } else {
-        setHideLog(false);
-      }
-
       if (status.status !== ClusterStatus.FREED
         && status.status !== ClusterStatus.NOTFOUND) {
         getResourceTree();
@@ -142,7 +134,7 @@ function PodsPage(props: PodsPageProps) {
         />
         {
           (clusterBuildStatus && clusterBuildStatus.latestPipelinerun
-            && (building !== BuildStatus.None) && !hideLog) && (
+            && (building !== BuildStatus.None)) && (
             <BuildCard
               pipelinerunID={clusterBuildStatus.latestPipelinerun.id}
               runningTask={clusterBuildStatus.runningTask}
@@ -150,7 +142,7 @@ function PodsPage(props: PodsPageProps) {
           )
         }
         {
-          ((building === BuildStatus.None || hideLog) && progressing && step && step.index !== step.total) && (
+          (building === BuildStatus.None && progressing && step && step.index !== step.total) && (
             <StepCard
               step={step}
               refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
