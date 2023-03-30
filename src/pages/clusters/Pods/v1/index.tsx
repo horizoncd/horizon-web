@@ -65,7 +65,7 @@ function PodsPage(props: PodsPageProps) {
     ready: !!cluster,
   });
 
-  const { data: clsuterBuildStatus, refresh: refreshBuildStatus } = useRequest(() => getClusterBuildStatusV2(id), {
+  const { data: clusterBuildStatus, refresh: refreshBuildStatus } = useRequest(() => getClusterBuildStatusV2(id), {
     pollingInterval,
     onSuccess: (status) => {
       const taskStatus = status.runningTask.taskStatus as TaskStatus;
@@ -141,11 +141,11 @@ function PodsPage(props: PodsPageProps) {
           podsInfo={podsInfo}
         />
         {
-          (clsuterBuildStatus && clsuterBuildStatus.latestPipelinerun
+          (clusterBuildStatus && clusterBuildStatus.latestPipelinerun
             && (building !== BuildStatus.None) && !hideLog) && (
             <BuildCard
-              pipelinerunID={clsuterBuildStatus.latestPipelinerun.id}
-              runningTask={clsuterBuildStatus.runningTask}
+              pipelinerunID={clusterBuildStatus.latestPipelinerun.id}
+              runningTask={clusterBuildStatus.runningTask}
             />
           )
         }
