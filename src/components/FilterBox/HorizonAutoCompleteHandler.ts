@@ -37,8 +37,8 @@ export default class HorizonAutoCompleteHandler extends BaseAutoCompleteHandler 
       return [];
     }
     const category = cates[0];
-    if (category.generator) {
-      return category.generator(parsedOperator, trace);
+    if (category.callback) {
+      return category.callback(parsedOperator, trace);
     }
 
     const values = cates.flatMap((o) => o.values)
@@ -51,7 +51,7 @@ export interface AutoCompleteOption {
   key: string,
   values: Value[],
   type: 'text' | 'selection';
-  generator?: (operator: string, trace: ParseTrace) => string[]
+  callback?: (operator: string, trace: ParseTrace) => string[]
 }
 
 export interface Value {

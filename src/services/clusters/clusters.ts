@@ -226,7 +226,7 @@ export async function getClusterStatus(clusterID: number) {
   });
 }
 
-export async function listClusters(params: API.PageParam & { userID?: number, isFavorite?: boolean, withFavorite?: boolean }) {
+export async function listClusters(params: API.PageParam & { userID?: number, region?: string, isFavorite?: boolean, withFavorite?: boolean }) {
   return request<{
     data: API.PageResult<CLUSTER.Cluster>;
   }>('/apis/core/v2/clusters', {

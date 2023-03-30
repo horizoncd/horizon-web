@@ -29,6 +29,7 @@ import './index.less';
 import Expression from '@/components/FilterBox/Expression';
 import SearchBox from '../components/SearchBox';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
+import { queryRegions } from '@/services/regions/regions';
 
 function Title(props: {
   id: number,
@@ -164,6 +165,7 @@ const QueryRelease = 'release';
 const QueryEnv = 'env';
 const QueryMode = 'mode';
 const QueryFavorite = 'isFavorite';
+const QueryRegion = 'region';
 
 function Clusters(props: ClustersProps) {
   const { initialState, location } = props;
@@ -175,10 +177,12 @@ function Clusters(props: ClustersProps) {
   const [pageSize, setPageSize] = useState(10);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [displayName2Region, setDisplayName2Region] = useState<Map<string, string>>(new Map());
   const [environment, setEnvironment] = useState('');
   const [tpl, setTpl] = useState('');
   const [tplRelease, setTplRelease] = useState('');
   const [isFavorite, setIsFavorite] = useState('');
+  const [region, setRegion] = useState('');
   const [templateOptions, setTemplateOptions] = useState<CLUSTER.TemplateOptions[]>([]);
   const [defaultValue, setDefaultValue] = useState<Expression[]>([]);
   const [mode, setMode] = useState<string>('');
@@ -191,6 +195,7 @@ function Clusters(props: ClustersProps) {
       [QueryTemplate]: qTemplate = '',
       [QueryMode]: qMode = Mode.Own,
       [QueryFavorite]: qFavorite = '',
+      [QueryRegion]: qRegion = '',
     } = location.query ?? {};
 
     setMode(qMode as string);
@@ -199,7 +204,12 @@ function Clusters(props: ClustersProps) {
     setEnvironment(qEnv as string);
     setFilter(qName as string);
     setIsFavorite(qFavorite as string);
+    setRegion(qRegion as string);
   }, [location.query]);
+
+  useEffect(() => {
+    setIsFavorite('true');
+  }, []);
 
   useEffect(() => {
     const exprs: Expression[] = [];
@@ -212,6 +222,9 @@ function Clusters(props: ClustersProps) {
     if (isFavorite !== '') {
       exprs.push({ category: 'isFavorite', operator: '=', value: isFavorite });
     }
+    if (region !== '') {
+      exprs.push({ category: 'region', operator: '=', value: region });
+    }
     if (tpl !== '') {
       exprs.push({ category: 'template', operator: '=', value: tpl });
     }
@@ -222,13 +235,22 @@ function Clusters(props: ClustersProps) {
       exprs.push({ search: filter });
     }
     setDefaultValue([...exprs, {}]);
-  }, [environment, filter, mode, tpl, tplRelease, isFavorite]);
+  }, [environment, filter, mode, tpl, tplRelease, isFavorite, region]);
 
   const { data: envs } = useRequest(queryEnvironments, {
     onSuccess: () => {
       const e = new Map<string, string>();
       envs!.forEach((item) => e.set(item.name, item.displayName));
       setEnv2DisplayName(e);
+    },
+  });
+
+  const { data: regions } = useRequest(queryRegions, {
+    onSuccess: (items) => {
+      items.forEach((item) => {
+        displayName2Region?.set(item.displayName, item.name);
+      });
+      setDisplayName2Region(displayName2Region);
     },
   });
 
@@ -250,12 +272,13 @@ function Clusters(props: ClustersProps) {
     pageSize,
     pageNumber,
     environment,
+    region: displayName2Region?.get(region),
     template: tpl,
     templateRelease: tplRelease,
     isFavorite: (() => { if (isFavorite === 'true') return true; if (isFavorite === 'false') return false; return undefined; })(),
     withFavorite: true,
   }), {
-    refreshDeps: [filter, pageNumber, pageSize, environment, tpl, tplRelease, mode, isFavorite],
+    refreshDeps: [filter, pageNumber, pageSize, environment, tpl, tplRelease, mode, isFavorite, region],
     debounceInterval: 500,
     onSuccess: (data) => {
       const { items, total: t } = data!;
@@ -268,6 +291,7 @@ function Clusters(props: ClustersProps) {
         [QueryTemplate]: tpl,
         [QueryMode]: mode,
         [QueryFavorite]: isFavorite,
+        [QueryRegion]: region,
       });
     },
   });
@@ -305,6 +329,7 @@ function Clusters(props: ClustersProps) {
     setEnvironment('');
     setMode(Mode.All);
     setTpl('');
+    setRegion('');
     setTplRelease('');
     setIsFavorite('');
     result.forEach((expr) => {
@@ -324,6 +349,9 @@ function Clusters(props: ClustersProps) {
             break;
           case 'release':
             setTplRelease(expr.value);
+            break;
+          case 'region':
+            setRegion(expr.value);
             break;
           case 'isFavorite':
             setIsFavorite(expr.value);
@@ -359,6 +387,16 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
+        key: 'region',
+        type: 'selection',
+        values: [
+          {
+            operator: '=',
+            possiableValues: (regions ?? []).map((r) => r.displayName),
+          },
+        ],
+      },
+      {
         key: 'user',
         type: 'selection',
         values: [
@@ -387,7 +425,7 @@ function Clusters(props: ClustersProps) {
             possiableValues: [],
           },
         ],
-        generator: (operator, trace) => {
+        callback: (operator, trace) => {
           for (let i = 0; i < trace.arr.length; i += 1) {
             if (trace.arr[i].type === 'category' && trace.arr[i].value === 'template') {
               const j = i + 2;
@@ -422,7 +460,7 @@ function Clusters(props: ClustersProps) {
     ];
 
     return new HorizonAutoCompleteHandler(options);
-  }, [envs, templateOptions]);
+  }, [envs, templateOptions, regions]);
 
   return (
     <>
@@ -432,7 +470,6 @@ function Clusters(props: ClustersProps) {
         defaultValue={defaultValue}
         onSubmmit={onSubmit}
         isCluster
-      // onInputChange={(exprs) => { exprs.forEach((e) => { if (e.category === 'template' && e.value && e.value !== '') { setTplTmp(e.value); } }); }}
       />
       <Card
         title={intl.formatMessage({ id: 'pages.dashboard.filter.clusters' })}
