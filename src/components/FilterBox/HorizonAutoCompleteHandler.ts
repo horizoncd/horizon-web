@@ -42,7 +42,7 @@ export default class HorizonAutoCompleteHandler extends BaseAutoCompleteHandler 
     }
 
     const values = cates.flatMap((o) => o.values)
-      .filter((v) => v.operator === parsedOperator).flatMap((v) => v.possiableValues);
+      .filter((v) => v.operator === parsedOperator).flatMap((v) => v.possibleValues);
     return values;
   }
 }
@@ -56,5 +56,5 @@ export interface AutoCompleteOption {
 
 export interface Value {
   operator: string
-  possiableValues: string[]
+  possibleValues: string[]
 }

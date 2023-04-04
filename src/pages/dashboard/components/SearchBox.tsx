@@ -97,11 +97,11 @@ const SearchBox = (props: {
   autoCompleteHandler: BaseAutoCompleteHandler,
   defaultValue: Expression[],
   onInputChange?: ((exprs: Expression[]) => void),
-  onSubmmit: ((exprs: Expression[]) => void),
+  onSubmit: ((exprs: Expression[]) => void),
   isCluster?: boolean,
 }) => {
   const {
-    hKey, autoCompleteHandler, defaultValue, onSubmmit, onInputChange, isCluster,
+    hKey, autoCompleteHandler, defaultValue, onSubmit, onInputChange, isCluster,
   } = props;
 
   const inputRef = useRef();
@@ -119,7 +119,13 @@ const SearchBox = (props: {
       history.push(result);
       let newHistory: Expression[][] = [result, ...history];
       const m: Record<string, null> = {};
-      newHistory = newHistory.filter((item) => { const h = hash(item); if (h in m) { return false; } m[h] = null; return true; });
+      newHistory = newHistory.filter((item) => {
+        const h = hash(item);
+        if (h in m) {
+          return false;
+        } m[h] = null;
+        return true;
+      });
       if (newHistory.length > 5) {
         newHistory = newHistory.slice(0, 5);
       }
@@ -146,7 +152,7 @@ const SearchBox = (props: {
           ref={inputRef}
           autoCompleteHandler={autoCompleteHandler}
           defaultExprs={defaultValue}
-          onSubmit={(exprs) => { saveHistory(exprs); onSubmmit(exprs); }}
+          onSubmit={(exprs) => { saveHistory(exprs); onSubmit(exprs); }}
         />
       </div>
     </div>

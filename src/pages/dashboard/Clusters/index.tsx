@@ -275,7 +275,11 @@ function Clusters(props: ClustersProps) {
     region: displayName2Region?.get(region),
     template: tpl,
     templateRelease: tplRelease,
-    isFavorite: (() => { if (isFavorite === 'true') return true; if (isFavorite === 'false') return false; return undefined; })(),
+    isFavorite: (() => {
+      if (isFavorite === 'true') return true;
+      if (isFavorite === 'false') return false;
+      return undefined;
+    })(),
     withFavorite: true,
   }), {
     refreshDeps: [filter, pageNumber, pageSize, environment, tpl, tplRelease, mode, isFavorite, region],
@@ -371,7 +375,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: envs ? envs.map((e) => e.name) : [],
+            possibleValues: envs ? envs.map((e) => e.name) : [],
           },
         ],
 
@@ -382,7 +386,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: templateOptions ? templateOptions.map((t) => t.value) : [],
+            possibleValues: templateOptions ? templateOptions.map((t) => t.value) : [],
           },
         ],
       },
@@ -392,7 +396,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: (regions ?? []).map((r) => r.displayName),
+            possibleValues: (regions ?? []).map((r) => r.displayName),
           },
         ],
       },
@@ -402,7 +406,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: ['all', 'own'],
+            possibleValues: ['all', 'own'],
           },
         ],
       },
@@ -412,7 +416,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: ['true', 'false'],
+            possibleValues: ['true', 'false'],
           },
         ],
       },
@@ -422,7 +426,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possiableValues: [],
+            possibleValues: [],
           },
         ],
         callback: (operator, trace) => {
@@ -468,7 +472,7 @@ function Clusters(props: ClustersProps) {
         hKey="cluster"
         autoCompleteHandler={handler}
         defaultValue={defaultValue}
-        onSubmmit={onSubmit}
+        onSubmit={onSubmit}
         isCluster
       />
       <Card

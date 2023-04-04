@@ -12,7 +12,7 @@ import { DTree } from '@/components/DirectoryTree';
 import { ComponentWithPagination, PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import WithContainer from '../components/WithContainer';
 import { setQuery } from '../utils';
-import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
+import HorizonAutoCompleteHandler, { AutoCompleteOption } from '@/components/FilterBox/HorizonAutoCompleteHandler';
 import SearchBox from '../components/SearchBox';
 import Expression from '@/components/FilterBox/Expression';
 
@@ -34,7 +34,7 @@ function Applications(props: MyApplicationsProps) {
   const { initialState, location } = props;
 
   const intl = useIntl();
-  const [filter, setFilter] = useState<string>();
+  const [filter, setFilter] = useState<string>('');
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -98,7 +98,7 @@ function Applications(props: MyApplicationsProps) {
         values: [
           {
             operator: '=',
-            possiableValues: ['all', 'own'],
+            possibleValues: ['all', 'own'],
           },
         ],
       },
@@ -142,7 +142,7 @@ function Applications(props: MyApplicationsProps) {
         hKey="application"
         autoCompleteHandler={handler}
         defaultValue={defaultValue}
-        onSubmmit={onSubmit}
+        onSubmit={onSubmit}
       />
       <Card
         title={intl.formatMessage({ id: 'pages.dashboard.filter.applications' })}
