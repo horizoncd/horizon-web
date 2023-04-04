@@ -78,6 +78,7 @@ declare namespace CLUSTER {
     templateInput: any;
     latestDeployedCommit: string;
     status?: string;
+    isFavorite: boolean;
     ttlInSeconds: number;
     createdAt: string;
     updatedAt: string;

@@ -226,10 +226,10 @@ export async function getClusterStatus(clusterID: number) {
   });
 }
 
-export async function listClusters(params: API.PageParam & { userID?: number }) {
+export async function listClusters(params: API.PageParam & { userID?: number, region?: string, isFavorite?: boolean, withFavorite?: boolean }) {
   return request<{
     data: API.PageResult<CLUSTER.Cluster>;
-  }>('/apis/core/v1/clusters', {
+  }>('/apis/core/v2/clusters', {
     method: 'GET',
     params,
   });
@@ -274,5 +274,17 @@ export async function updateClusterTemplateSchemaTags(clusterID: number, data: A
   }>(`/apis/core/v1/clusters/${clusterID}/templateschematags`, {
     method: 'POST',
     data,
+  });
+}
+
+export async function addFavorite(clusterID: number) {
+  return request(`/apis/core/v2/clusters/${clusterID}/favorite`, {
+    method: 'POST',
+  });
+}
+
+export async function deleteFavorite(clusterID: number) {
+  return request(`/apis/core/v2/clusters/${clusterID}/favorite`, {
+    method: 'DELETE',
   });
 }
