@@ -18,6 +18,8 @@ import Expression from '@/components/FilterBox/Expression';
 
 const DTreeWithPagination = ComponentWithPagination(DTree);
 
+const KeySearchUser = 'User';
+
 enum Mode {
   Own = 'own', All = 'all',
 }
@@ -55,7 +57,7 @@ function Applications(props: MyApplicationsProps) {
   useEffect(() => {
     const exprs: Expression[] = [];
     if (mode !== '') {
-      exprs.push({ category: 'user', operator: '=', value: mode });
+      exprs.push({ category: KeySearchUser, operator: '=', value: mode });
     }
     if (filter !== '') {
       exprs.push({ search: filter });
@@ -93,7 +95,7 @@ function Applications(props: MyApplicationsProps) {
   const handler = useMemo(() => {
     const options: AutoCompleteOption[] = [
       {
-        key: 'user',
+        key: KeySearchUser,
         type: 'selection',
         values: [
           {
@@ -114,7 +116,7 @@ function Applications(props: MyApplicationsProps) {
         setFilter(expr.search);
       }
       if (expr.category && expr.value) {
-        if (expr.category === 'user') {
+        if (expr.category === KeySearchUser) {
           setMode(expr.value);
         }
       }

@@ -30,6 +30,7 @@ import Expression from '@/components/FilterBox/Expression';
 import SearchBox from '../components/SearchBox';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
+import { getLastReview, setLastReview } from './history';
 
 function Title(props: {
   id: number,
@@ -150,6 +151,13 @@ Title.defaultProps = {
   env: '', fullPath: '', description: '', isFavorite: false, onStarClick: () => { },
 };
 
+const SearchKeyUser = 'User';
+const SearchKeyEnv = 'Environment';
+const SearchKeyTemplate = 'Template';
+const SearchKeyRelease = 'TemplateRelease';
+const SearchKeyRegion = 'Region';
+const SearchKeyFavorite = 'Favorite';
+
 enum Mode {
   Own = 'own', All = 'all',
 }
@@ -207,35 +215,76 @@ function Clusters(props: ClustersProps) {
     setRegion(qRegion as string);
   }, [location.query]);
 
+  const onSubmit = useCallback((result: Expression[]) => {
+    setFilter('');
+    setEnvironment('');
+    setMode(Mode.All);
+    setTpl('');
+    setRegion('');
+    setTplRelease('');
+    setIsFavorite('');
+    result.forEach((expr) => {
+      if (expr.search) {
+        setFilter(expr.search);
+      }
+      if (expr.category && expr.value) {
+        switch (expr.category) {
+          case SearchKeyEnv:
+            setEnvironment(expr.value);
+            break;
+          case SearchKeyTemplate:
+            setTpl(expr.value);
+            break;
+          case SearchKeyUser:
+            setMode(expr.value);
+            break;
+          case SearchKeyRelease:
+            setTplRelease(expr.value);
+            break;
+          case SearchKeyRegion:
+            setRegion(expr.value);
+            break;
+          case SearchKeyFavorite:
+            setIsFavorite(expr.value);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }, []);
+
   useEffect(() => {
-    setIsFavorite('true');
+    const exprs = getLastReview();
+    onSubmit(exprs);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const exprs: Expression[] = [];
     if (mode !== '') {
-      exprs.push({ category: 'user', operator: '=', value: mode });
+      exprs.push({ category: SearchKeyUser, operator: '=', value: mode });
     }
     if (environment !== '') {
-      exprs.push({ category: 'env', operator: '=', value: environment });
+      exprs.push({ category: SearchKeyEnv, operator: '=', value: environment });
     }
     if (isFavorite !== '') {
-      exprs.push({ category: 'isFavorite', operator: '=', value: isFavorite });
+      exprs.push({ category: SearchKeyFavorite, operator: '=', value: isFavorite });
     }
     if (region !== '') {
-      exprs.push({ category: 'region', operator: '=', value: region });
+      exprs.push({ category: SearchKeyRegion, operator: '=', value: region });
     }
     if (tpl !== '') {
-      exprs.push({ category: 'template', operator: '=', value: tpl });
+      exprs.push({ category: SearchKeyTemplate, operator: '=', value: tpl });
     }
     if (tplRelease !== '') {
-      exprs.push({ category: 'release', operator: '=', value: tplRelease });
+      exprs.push({ category: SearchKeyRelease, operator: '=', value: tplRelease });
     }
     if (filter !== '') {
       exprs.push({ search: filter });
     }
     setDefaultValue([...exprs, {}]);
-  }, [environment, filter, mode, tpl, tplRelease, isFavorite, region]);
+  }, [environment, filter, mode, tpl, tplRelease, isFavorite, region, intl]);
 
   const { data: envs } = useRequest(queryEnvironments, {
     onSuccess: () => {
@@ -286,6 +335,7 @@ function Clusters(props: ClustersProps) {
     debounceInterval: 500,
     onSuccess: (data) => {
       const { items, total: t } = data!;
+      setLastReview(defaultValue);
       setClusters(items);
       setTotal(t);
       setQuery({
@@ -328,49 +378,10 @@ function Clusters(props: ClustersProps) {
     })
   ), [clusters, env2DisplayName, filter, refreshCluster]);
 
-  const onSubmit = useCallback((result: Expression[]) => {
-    setFilter('');
-    setEnvironment('');
-    setMode(Mode.All);
-    setTpl('');
-    setRegion('');
-    setTplRelease('');
-    setIsFavorite('');
-    result.forEach((expr) => {
-      if (expr.search) {
-        setFilter(expr.search);
-      }
-      if (expr.category && expr.value) {
-        switch (expr.category) {
-          case 'env':
-            setEnvironment(expr.value);
-            break;
-          case 'template':
-            setTpl(expr.value);
-            break;
-          case 'user':
-            setMode(expr.value);
-            break;
-          case 'release':
-            setTplRelease(expr.value);
-            break;
-          case 'region':
-            setRegion(expr.value);
-            break;
-          case 'isFavorite':
-            setIsFavorite(expr.value);
-            break;
-          default:
-            break;
-        }
-      }
-    });
-  }, []);
-
   const handler = useMemo(() => {
     const options: AutoCompleteOption[] = [
       {
-        key: 'env',
+        key: SearchKeyEnv,
         type: 'selection',
         values: [
           {
@@ -381,7 +392,7 @@ function Clusters(props: ClustersProps) {
 
       },
       {
-        key: 'template',
+        key: SearchKeyTemplate,
         type: 'selection',
         values: [
           {
@@ -391,7 +402,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'region',
+        key: SearchKeyRegion,
         type: 'selection',
         values: [
           {
@@ -401,7 +412,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'user',
+        key: SearchKeyUser,
         type: 'selection',
         values: [
           {
@@ -411,7 +422,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'isFavorite',
+        key: SearchKeyFavorite,
         type: 'selection',
         values: [
           {
@@ -421,7 +432,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'release',
+        key: SearchKeyRelease,
         type: 'selection',
         values: [
           {

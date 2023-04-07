@@ -19,8 +19,12 @@ export default {
   'pages.dashboard.title.all.groups': 'All groups',
   'pages.dashboard.title.templates': 'Templates',
 
-  'pages.dashboard.search.filterBy.env': 'Filter by env',
-  'pages.dashboard.search.filterBy.template': 'Filter by template',
+  'pages.dashboard.search.filterBy.env': 'Environment',
+  'pages.dashboard.search.filterBy.template': 'Template',
+  'pages.dashboard.search.filterBy.release': 'TemplateRelease',
+  'pages.dashboard.search.filterBy.region': 'Region',
+  'pages.dashboard.search.filterBy.favorite': 'Favorite',
+  'pages.dashboard.search.filterBy.user': 'User',
 
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',

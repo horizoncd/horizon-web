@@ -19,8 +19,12 @@ export default {
   'pages.dashboard.title.all.groups': '所有分组',
   'pages.dashboard.title.templates': '模板',
 
-  'pages.dashboard.search.filterBy.env': '过滤环境',
-  'pages.dashboard.search.filterBy.template': '过滤模板',
+  'pages.dashboard.search.filterBy.env': '环境',
+  'pages.dashboard.search.filterBy.template': '模板',
+  'pages.dashboard.search.filterBy.release': '模板版本',
+  'pages.dashboard.search.filterBy.region': '区域',
+  'pages.dashboard.search.filterBy.favorite': '收藏',
+  'pages.dashboard.search.filterBy.user': '用户',
 
   'pages.common.yes': '是',
   'pages.common.no': '否',
