@@ -5,12 +5,14 @@ import ClusterV2 from './v2';
 
 import { getApplicationV2 } from '@/services/applications/applications';
 import { isVersion2 } from '@/services/version/version';
+import { CenterSpin } from '@/components/Widget';
 
 export default () => {
   const { initialState } = useModel('@@initialState');
   const { id: applicationID } = initialState!.resource;
   const { data } = useRequest(() => getApplicationV2(applicationID));
-  return (
-    isVersion2(data) ? <ClusterV2 /> : <ClusterV1 />
-  );
+  if (data) {
+    return (isVersion2(data) ? <ClusterV2 /> : <ClusterV1 />);
+  }
+  return <CenterSpin />;
 };

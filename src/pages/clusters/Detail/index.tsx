@@ -5,6 +5,7 @@ import { ResourceType } from '@/const';
 import DetailV1 from './v1';
 import DetailV2 from './v2';
 import { isVersion2 } from '@/services/version/version';
+import { CenterSpin } from '@/components/Widget';
 
 export default () => {
   const { initialState } = useModel('@@initialState');
@@ -18,7 +19,10 @@ export default () => {
     refreshDeps: [clusterID],
   });
 
-  return (
-    isVersion2(result) ? <DetailV2 /> : <DetailV1 />
-  );
+  if (result) {
+    return (
+      isVersion2(result) ? <DetailV2 /> : <DetailV1 />
+    );
+  }
+  return <CenterSpin />;
 };
