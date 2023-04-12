@@ -20,7 +20,7 @@ const InputBox = styled.div`
     align-items: center;
     background: #fff;
     border: 1px solid #ccc;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
     line-height: 1.8; 

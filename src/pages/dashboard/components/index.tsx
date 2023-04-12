@@ -1,3 +1,4 @@
-import TitleWithCount from './TitleWithCount';
+import SearchBox from './SearchBox';
+import WithContainer from './WithContainer';
 
-export default { TitleWithCount };
+export { SearchBox, WithContainer };

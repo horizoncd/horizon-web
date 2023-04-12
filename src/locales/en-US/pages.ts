@@ -8,7 +8,7 @@ export default {
   'pages.header.templates': 'Templates',
   'pages.header.admin': 'Admin',
 
-  'pages.dashboard.filter': 'Filter',
+  'pages.dashboard.history': 'History',
   'pages.dashboard.filter.cluster.collections': 'Cluster Collections',
   'pages.dashboard.filter.clusters': 'Clusters',
   'pages.dashboard.filter.applications': 'Applications',
@@ -25,6 +25,12 @@ export default {
   'pages.dashboard.search.filterBy.region': 'Region',
   'pages.dashboard.search.filterBy.favorite': 'Favorite',
   'pages.dashboard.search.filterBy.user': 'User',
+
+  'pages.dashboard.title.all.clusters': 'All',
+  'pages.dashboard.title.favorite.clusters': 'Favorite',
+  'pages.dashboard.title.your.clusters': 'Yours',
+  'pages.dashboard.title.your.applications': 'Yours',
+  'pages.dashboard.title.all.applications': 'All',
 
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',

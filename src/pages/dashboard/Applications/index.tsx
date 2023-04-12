@@ -5,15 +5,15 @@ import {
 import { BookOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
 import { Location, useIntl } from 'umi';
-import { Card } from 'antd';
+import { Tabs } from 'antd';
+import TabPane from 'antd/lib/tabs/TabPane';
 import { listApplications } from '@/services/applications/applications';
 import '@/components/GroupTree/index.less';
 import { DTree } from '@/components/DirectoryTree';
 import { ComponentWithPagination, PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
-import WithContainer from '../components/WithContainer';
+import { WithContainer, SearchBox } from '../components';
 import { setQuery } from '../utils';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '@/components/FilterBox/HorizonAutoCompleteHandler';
-import SearchBox from '../components/SearchBox';
 import Expression from '@/components/FilterBox/Expression';
 
 const DTreeWithPagination = ComponentWithPagination(DTree);
@@ -56,14 +56,11 @@ function Applications(props: MyApplicationsProps) {
 
   useEffect(() => {
     const exprs: Expression[] = [];
-    if (mode !== '') {
-      exprs.push({ category: KeySearchUser, operator: '=', value: mode });
-    }
     if (filter !== '') {
       exprs.push({ search: filter });
     }
     setDefaultValue([...exprs, {}]);
-  }, [filter, mode]);
+  }, [filter]);
 
   // search your applications
   useRequest(() => listApplications({
@@ -93,19 +90,7 @@ function Applications(props: MyApplicationsProps) {
   };
 
   const handler = useMemo(() => {
-    const options: AutoCompleteOption[] = [
-      {
-        key: KeySearchUser,
-        type: 'selection',
-        values: [
-          {
-            operator: '=',
-            possibleValues: ['all', 'own'],
-          },
-        ],
-      },
-    ];
-
+    const options: AutoCompleteOption[] = [];
     return new HorizonAutoCompleteHandler(options);
   }, []);
 
@@ -123,34 +108,49 @@ function Applications(props: MyApplicationsProps) {
     });
   }, []);
 
+  const searchBox = useMemo(() => (
+    <SearchBox
+      historyKey="application"
+      autoCompleteHandler={handler}
+      defaultValue={defaultValue}
+      onSubmit={onSubmit}
+      onClear={() => { setFilter(''); }}
+    />
+  ), [defaultValue, handler, onSubmit]);
+
   const appList = useMemo(() => (
     <DTreeWithPagination
       pageSize={pageSize}
       page={pageNumber}
       total={total}
       onPageChange={onPageChange}
-      items={
-        applications.map((item) => ({
-          icon: <BookOutlined />,
-          ...item,
-        }))
-      }
+      items={applications.map((item) => ({
+        icon: <BookOutlined />,
+        ...item,
+      }))}
     />
   ), [applications, pageNumber, pageSize, total]);
 
   return (
     <>
-      <SearchBox
-        hKey="application"
-        autoCompleteHandler={handler}
-        defaultValue={defaultValue}
-        onSubmit={onSubmit}
-      />
-      <Card
-        title={intl.formatMessage({ id: 'pages.dashboard.filter.applications' })}
+      <Tabs
+        size="large"
+        animated={false}
+        defaultActiveKey={mode}
+        onChange={(key) => { setMode(key as Mode); }}
+        style={{ marginTop: '15px' }}
       >
-        {appList}
-      </Card>
+        <TabPane
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.all.applications' })}
+          key={Mode.All}
+        />
+        <TabPane
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.your.applications' })}
+          key={Mode.Own}
+        />
+      </Tabs>
+      {searchBox}
+      {appList}
     </>
   );
 }

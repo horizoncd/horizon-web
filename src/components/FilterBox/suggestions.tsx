@@ -64,7 +64,7 @@ const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>,
             </span>
           )
           : null}
-        <QueryBoldSpan query={query}>{item.name}</QueryBoldSpan>
+        <QueryBoldSpan query={query}>{item.name ?? ''}</QueryBoldSpan>
       </SuggestionItem>
     );
   });
