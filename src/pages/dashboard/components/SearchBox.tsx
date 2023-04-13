@@ -88,6 +88,8 @@ const SearchBox = (props: {
 
   const saveHistory = useCallback((result: Expression[]) => {
     // eslint-disable-next-line no-param-reassign
+    result.forEach((o) => { if (o.search) o.search = o.search.trim(); });
+    // eslint-disable-next-line no-param-reassign
     result = result.filter((o) => (o.category && o.operator && o.value) || o.search);
     const history = store.get(historyKey) as Expression[][];
     if (history === null) {

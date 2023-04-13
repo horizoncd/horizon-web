@@ -44,6 +44,10 @@ function Applications(props: MyApplicationsProps) {
   const [mode, setMode] = useState<string>('');
   const [defaultValue, setDefaultValue] = useState<Expression[]>([]);
 
+  const setFilterTrim = useCallback((value: string) => {
+    setFilter(value.trim());
+  }, []);
+
   useEffect(() => {
     const {
       [QueryName]: qName = '',
@@ -51,8 +55,8 @@ function Applications(props: MyApplicationsProps) {
     } = location.query ?? {};
 
     setMode(qMode as string);
-    setFilter(qName as string);
-  }, [location.query]);
+    setFilterTrim(qName as string);
+  }, [location.query, setFilterTrim]);
 
   useEffect(() => {
     const exprs: Expression[] = [];
@@ -98,7 +102,7 @@ function Applications(props: MyApplicationsProps) {
     setFilter('');
     result.forEach((expr) => {
       if (expr.search) {
-        setFilter(expr.search);
+        setFilterTrim(expr.search);
       }
       if (expr.category && expr.value) {
         if (expr.category === KeySearchUser) {
@@ -106,7 +110,7 @@ function Applications(props: MyApplicationsProps) {
         }
       }
     });
-  }, []);
+  }, [setFilterTrim]);
 
   const searchBox = useMemo(() => (
     <SearchBox
