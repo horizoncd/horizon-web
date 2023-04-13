@@ -35,6 +35,7 @@ const CloseButton = styled.span`
 `;
 
 interface TagProps {
+  style: any,
   text: string,
   remove?: any,
   onClick?: () => void,
@@ -42,7 +43,7 @@ interface TagProps {
 }
 
 export default function Tag({
-  text, remove, onClick, onBlur,
+  text, remove, onClick, onBlur, style,
 }: TagProps) {
   const handleOnRemove: MouseEventHandler = (e) => {
     e.stopPropagation();
@@ -51,6 +52,7 @@ export default function Tag({
 
   return (
     <BorderlessButton
+      style={style ?? {}}
       onBlur={onBlur}
       type="button"
     >

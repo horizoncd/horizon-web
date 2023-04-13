@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import {
-  useCallback, useRef,
+  useCallback, useEffect, useRef, useState,
 } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import hash from 'object-hash';
@@ -8,7 +8,7 @@ import {
   MenuProps, Dropdown, Space, Button,
 } from 'antd';
 import store from 'store2';
-import { useHistory, useIntl } from 'umi';
+import { useIntl } from 'umi';
 import BaseAutoCompleteHandler from '@/components/FilterBox/BaseAutoCompleteHandler';
 import { TagsFilter } from '@/components/FilterBox/TagFilter';
 import Expression from '@/components/FilterBox/Expression';
@@ -18,10 +18,13 @@ interface HistoryItem {
   key: string;
 }
 
-function DropdownHistory(props: { searchHistory?: Expression[][], onClickHistory?: (e: Expression[]) => void }) {
+function DropdownHistory(props: {
+  searchHistory?: Expression[][],
+  onClickHistory?: (e: Expression[]) => void,
+  clearHistory?: () => void,
+}) {
   const intl = useIntl();
-  const { searchHistory = [], onClickHistory = (() => { }) } = props;
-  const history = useHistory();
+  const { searchHistory = [], onClickHistory = (() => {}), clearHistory = (() => {}) } = props;
   const items: HistoryItem[] = [];
 
   searchHistory.forEach((exprs, index) => {
@@ -35,25 +38,30 @@ function DropdownHistory(props: { searchHistory?: Expression[][], onClickHistory
   const onClick: MenuProps['onClick'] = ({ key }) => {
     // eslint-disable-next-line default-case
     switch (key) {
-      case 'collection':
-        history.push(`${history.location.pathname}?isFavorite=true`);
+      case 'clear':
+        clearHistory();
         break;
-      case 'yourapp':
-        history.push('/dashboard/applications?mode=own');
-        break;
-      case 'allapp':
-        history.push('/dashboard/applications?mode=all');
+      case 'nodata':
         break;
       default:
         onClickHistory(searchHistory[parseInt(key, 10)]);
     }
   };
 
+  if (items.length === 0) {
+    items.push({ label: intl.formatMessage({ id: 'pages.dashboard.search.history.notfound' }), key: 'nodata' });
+  } else {
+    items.push(
+      { type: 'divider' },
+      { label: intl.formatMessage({ id: 'pages.dashboard.search.history.clear' }), key: 'clear' },
+    );
+  }
+
   return (
     <Dropdown menu={{ items, onClick }}>
       <Button style={{ height: '37.784px' }}>
         <Space>
-          {intl.formatMessage({ id: 'pages.dashboard.history' })}
+          {intl.formatMessage({ id: 'pages.dashboard.search.history' })}
           <DownOutlined />
         </Space>
       </Button>
@@ -72,6 +80,9 @@ const SearchBox = (props: {
   const {
     historyKey, autoCompleteHandler, defaultValue, onSubmit, onInputChange, onClear,
   } = props;
+  const [historyItems, setHistoryItems] = useState<Expression[][]>([]);
+
+  useEffect(() => setHistoryItems((store.get(historyKey) ?? []) as Expression[][]), [historyKey]);
 
   const inputRef = useRef();
 
@@ -81,6 +92,7 @@ const SearchBox = (props: {
     const history = store.get(historyKey) as Expression[][];
     if (history === null) {
       store.set(historyKey, [result]);
+      setHistoryItems([result]);
     } else {
       if (result.length === 0) {
         return;
@@ -99,7 +111,13 @@ const SearchBox = (props: {
         newHistory = newHistory.slice(0, 5);
       }
       store.set(historyKey, newHistory);
+      setHistoryItems(newHistory);
     }
+  }, [historyKey]);
+
+  const clearHistory = useCallback(() => {
+    store.remove(historyKey);
+    setHistoryItems([]);
   }, [historyKey]);
 
   return (
@@ -111,8 +129,9 @@ const SearchBox = (props: {
     }}
     >
       <DropdownHistory
-        searchHistory={(store.get(historyKey) ?? []) as Expression[][]}
+        searchHistory={historyItems}
         onClickHistory={(e) => { if (inputRef.current) inputRef.current.setQuery(e); }}
+        clearHistory={clearHistory}
       />
       <div className="main-container" style={{ flexGrow: '1' }}>
         <TagsFilter
