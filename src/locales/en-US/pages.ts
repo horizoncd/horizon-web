@@ -28,11 +28,11 @@ export default {
   'pages.dashboard.search.history.notfound': 'History not found',
   'pages.dashboard.search.history': 'Recent searches',
 
-  'pages.dashboard.title.all.clusters': 'All',
-  'pages.dashboard.title.favorite.clusters': 'Favorite',
-  'pages.dashboard.title.your.clusters': 'Yours',
-  'pages.dashboard.title.your.applications': 'Yours',
-  'pages.dashboard.title.all.applications': 'All',
+  'pages.dashboard.title.all.clusters': 'All Clusters',
+  'pages.dashboard.title.favorite.clusters': 'Your Collections',
+  'pages.dashboard.title.your.clusters': 'Your Clusters',
+  'pages.dashboard.title.your.applications': 'Your Applications',
+  'pages.dashboard.title.all.applications': 'All Applications',
 
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',
