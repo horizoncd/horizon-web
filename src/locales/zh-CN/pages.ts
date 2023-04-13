@@ -8,8 +8,7 @@ export default {
   'pages.header.templates': '模板',
   'pages.header.admin': '管理员',
 
-  'pages.dashboard.filter': '过滤',
-  'pages.dashboard.filter.cluster.collections': '集群收藏',
+  'pages.dashboard.filter.cluster.collections': '我的收藏',
   'pages.dashboard.filter.clusters': '集群',
   'pages.dashboard.filter.applications': '应用',
   'pages.dashboard.filter.your.clusters': '我的集群',
@@ -19,8 +18,21 @@ export default {
   'pages.dashboard.title.all.groups': '所有分组',
   'pages.dashboard.title.templates': '模板',
 
-  'pages.dashboard.search.filterBy.env': '过滤环境',
-  'pages.dashboard.search.filterBy.template': '过滤模板',
+  'pages.dashboard.search.filterBy.env': '环境',
+  'pages.dashboard.search.filterBy.template': '模板',
+  'pages.dashboard.search.filterBy.release': '模板版本',
+  'pages.dashboard.search.filterBy.region': '区域',
+  'pages.dashboard.search.filterBy.favorite': '收藏',
+  'pages.dashboard.search.filterBy.user': '用户',
+  'pages.dashboard.search.history.clear': '清除历史记录',
+  'pages.dashboard.search.history.notfound': '没有找到历史记录',
+  'pages.dashboard.search.history': '最近搜索',
+
+  'pages.dashboard.title.all.clusters': '所有集群',
+  'pages.dashboard.title.favorite.clusters': '集群收藏',
+  'pages.dashboard.title.your.clusters': '我的集群',
+  'pages.dashboard.title.your.applications': '我的应用',
+  'pages.dashboard.title.all.applications': '所有应用',
 
   'pages.common.yes': '是',
   'pages.common.no': '否',

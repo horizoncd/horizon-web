@@ -39,7 +39,7 @@ const TagSearch = (props: Props) => {
     values: [
       {
         operator: '=',
-        possiableValues: tag.values,
+        possibleValues: tag.values,
       },
     ],
   }));

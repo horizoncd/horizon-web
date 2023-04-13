@@ -8,8 +8,7 @@ export default {
   'pages.header.templates': 'Templates',
   'pages.header.admin': 'Admin',
 
-  'pages.dashboard.filter': 'Filter',
-  'pages.dashboard.filter.cluster.collections': 'Cluster Collections',
+  'pages.dashboard.filter.cluster.collections': 'Your Collections',
   'pages.dashboard.filter.clusters': 'Clusters',
   'pages.dashboard.filter.applications': 'Applications',
   'pages.dashboard.filter.your.clusters': 'Your clusters',
@@ -19,8 +18,21 @@ export default {
   'pages.dashboard.title.all.groups': 'All groups',
   'pages.dashboard.title.templates': 'Templates',
 
-  'pages.dashboard.search.filterBy.env': 'Filter by env',
-  'pages.dashboard.search.filterBy.template': 'Filter by template',
+  'pages.dashboard.search.filterBy.env': 'Environment',
+  'pages.dashboard.search.filterBy.template': 'Template',
+  'pages.dashboard.search.filterBy.release': 'TemplateRelease',
+  'pages.dashboard.search.filterBy.region': 'Region',
+  'pages.dashboard.search.filterBy.favorite': 'Favorite',
+  'pages.dashboard.search.filterBy.user': 'User',
+  'pages.dashboard.search.history.clear': 'Clear history',
+  'pages.dashboard.search.history.notfound': 'History not found',
+  'pages.dashboard.search.history': 'Recent searches',
+
+  'pages.dashboard.title.all.clusters': 'All',
+  'pages.dashboard.title.favorite.clusters': 'Favorite',
+  'pages.dashboard.title.your.clusters': 'Yours',
+  'pages.dashboard.title.your.applications': 'Yours',
+  'pages.dashboard.title.all.applications': 'All',
 
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',

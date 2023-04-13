@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import {
-  Card,
-  Divider, Pagination, Tooltip,
+  Divider, Pagination, Tabs, Tooltip,
 } from 'antd';
 import '../index.less';
 import {
@@ -15,6 +14,7 @@ import {
   FundOutlined, GitlabOutlined, RocketTwoTone, StarFilled, StarTwoTone,
 } from '@ant-design/icons/lib';
 import { Location, useIntl } from 'umi';
+import TabPane from 'antd/lib/tabs/TabPane';
 import { listClusters, addFavorite, deleteFavorite } from '@/services/clusters/clusters';
 import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
@@ -23,11 +23,10 @@ import { listTemplatesV2 } from '@/services/templates/templates';
 import { GitInfo } from '@/services/code/code';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { setQuery } from '../utils';
-import WithContainer from '../components/WithContainer';
+import { WithContainer, SearchBox } from '../components';
 import { PopupTime } from '@/components/Widget';
 import './index.less';
 import Expression from '@/components/FilterBox/Expression';
-import SearchBox from '../components/SearchBox';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
 
@@ -43,11 +42,16 @@ function Title(props: {
   git: GitInfo,
   description?: string,
   isFavorite?: boolean,
+  setTemplate: (s: string) => void,
+  setTemplateRelease: (s: string) => void,
+  setEnv: (s: string) => void,
+  setRegion: (s: string) => void,
   onStarClick?: () => void,
 }) {
   const {
     id, updatedAt, scope, template, name, fullPath, git,
     description, filter, env = '', isFavorite = false, onStarClick: onStarClickInner,
+    setTemplate, setTemplateRelease, setEnv, setRegion,
   } = props;
   const intl = useIntl();
   const index = name.indexOf(filter);
@@ -86,9 +90,9 @@ function Title(props: {
           {firstLetter}
         </span>
         <span style={{ marginLeft: 60 }}>{tmp}</span>
-        <span className="user-access-role">{env}</span>
-        <span className="user-access-role">{scope.regionDisplayName}</span>
-        <span className="user-access-role">
+        <span className="user-access-role" onClick={() => setEnv(scope.environment)}>{env}</span>
+        <span className="user-access-role" onClick={() => setRegion(scope.region)}>{scope.regionDisplayName}</span>
+        <span className="user-access-role" onClick={() => { setTemplate(template.name); setTemplateRelease(template.release); }}>
           {template.name}
           -
           {template.release}
@@ -150,8 +154,13 @@ Title.defaultProps = {
   env: '', fullPath: '', description: '', isFavorite: false, onStarClick: () => { },
 };
 
+const SearchKeyEnv = 'Environment';
+const SearchKeyTemplate = 'Template';
+const SearchKeyRelease = 'TemplateRelease';
+const SearchKeyRegion = 'Region';
+
 enum Mode {
-  Own = 'own', All = 'all',
+  Own = 'own', All = 'all', Favorite = 'favorite',
 }
 
 interface ClustersProps
@@ -164,7 +173,6 @@ const QueryTemplate = 'template';
 const QueryRelease = 'release';
 const QueryEnv = 'env';
 const QueryMode = 'mode';
-const QueryFavorite = 'isFavorite';
 const QueryRegion = 'region';
 
 function Clusters(props: ClustersProps) {
@@ -181,7 +189,6 @@ function Clusters(props: ClustersProps) {
   const [environment, setEnvironment] = useState('');
   const [tpl, setTpl] = useState('');
   const [tplRelease, setTplRelease] = useState('');
-  const [isFavorite, setIsFavorite] = useState('');
   const [region, setRegion] = useState('');
   const [templateOptions, setTemplateOptions] = useState<CLUSTER.TemplateOptions[]>([]);
   const [defaultValue, setDefaultValue] = useState<Expression[]>([]);
@@ -194,7 +201,6 @@ function Clusters(props: ClustersProps) {
       [QueryRelease]: qRelease = '',
       [QueryTemplate]: qTemplate = '',
       [QueryMode]: qMode = Mode.Own,
-      [QueryFavorite]: qFavorite = '',
       [QueryRegion]: qRegion = '',
     } = location.query ?? {};
 
@@ -203,47 +209,39 @@ function Clusters(props: ClustersProps) {
     setTpl(qTemplate as string);
     setEnvironment(qEnv as string);
     setFilter(qName as string);
-    setIsFavorite(qFavorite as string);
     setRegion(qRegion as string);
   }, [location.query]);
 
-  useEffect(() => {
-    setIsFavorite('true');
-  }, []);
-
-  useEffect(() => {
-    const exprs: Expression[] = [];
-    if (mode !== '') {
-      exprs.push({ category: 'user', operator: '=', value: mode });
-    }
-    if (environment !== '') {
-      exprs.push({ category: 'env', operator: '=', value: environment });
-    }
-    if (isFavorite !== '') {
-      exprs.push({ category: 'isFavorite', operator: '=', value: isFavorite });
-    }
-    if (region !== '') {
-      exprs.push({ category: 'region', operator: '=', value: region });
-    }
-    if (tpl !== '') {
-      exprs.push({ category: 'template', operator: '=', value: tpl });
-    }
-    if (tplRelease !== '') {
-      exprs.push({ category: 'release', operator: '=', value: tplRelease });
-    }
-    if (filter !== '') {
-      exprs.push({ search: filter });
-    }
-    setDefaultValue([...exprs, {}]);
-  }, [environment, filter, mode, tpl, tplRelease, isFavorite, region]);
-
-  const { data: envs } = useRequest(queryEnvironments, {
-    onSuccess: () => {
-      const e = new Map<string, string>();
-      envs!.forEach((item) => e.set(item.name, item.displayName));
-      setEnv2DisplayName(e);
-    },
-  });
+  const onSubmit = useCallback((result: Expression[]) => {
+    setFilter('');
+    setEnvironment('');
+    setTpl('');
+    setRegion('');
+    setTplRelease('');
+    result.forEach((expr) => {
+      if (expr.search) {
+        setFilter(expr.search);
+      }
+      if (expr.category && expr.value) {
+        switch (expr.category) {
+          case SearchKeyEnv:
+            setEnvironment(expr.value);
+            break;
+          case SearchKeyTemplate:
+            setTpl(expr.value);
+            break;
+          case SearchKeyRelease:
+            setTplRelease(expr.value);
+            break;
+          case SearchKeyRegion:
+            setRegion(displayName2Region?.get(expr.value) ?? '');
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }, [displayName2Region]);
 
   const { data: regions } = useRequest(queryRegions, {
     onSuccess: (items) => {
@@ -251,6 +249,34 @@ function Clusters(props: ClustersProps) {
         displayName2Region?.set(item.displayName, item.name);
       });
       setDisplayName2Region(displayName2Region);
+    },
+  });
+
+  useEffect(() => {
+    const exprs: Expression[] = [];
+    if (environment !== '') {
+      exprs.push({ category: SearchKeyEnv, operator: '=', value: environment });
+    }
+    if (region !== '') {
+      exprs.push({ category: SearchKeyRegion, operator: '=', value: (regions ?? []).find((r) => r.name === region)?.displayName ?? '' });
+    }
+    if (tpl !== '') {
+      exprs.push({ category: SearchKeyTemplate, operator: '=', value: tpl });
+    }
+    if (tplRelease !== '') {
+      exprs.push({ category: SearchKeyRelease, operator: '=', value: tplRelease });
+    }
+    if (filter !== '') {
+      exprs.push({ search: filter });
+    }
+    setDefaultValue([...exprs, {}]);
+  }, [environment, filter, tpl, tplRelease, region, regions]);
+
+  const { data: envs } = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      envs!.forEach((item) => e.set(item.name, item.displayName));
+      setEnv2DisplayName(e);
     },
   });
 
@@ -272,17 +298,16 @@ function Clusters(props: ClustersProps) {
     pageSize,
     pageNumber,
     environment,
-    region: displayName2Region?.get(region),
+    region,
     template: tpl,
     templateRelease: tplRelease,
     isFavorite: (() => {
-      if (isFavorite === 'true') return true;
-      if (isFavorite === 'false') return false;
+      if (mode === Mode.Favorite) return true;
       return undefined;
     })(),
     withFavorite: true,
   }), {
-    refreshDeps: [filter, pageNumber, pageSize, environment, tpl, tplRelease, mode, isFavorite, region],
+    refreshDeps: [filter, pageNumber, pageSize, environment, mode, tpl, tplRelease, region],
     debounceInterval: 500,
     onSuccess: (data) => {
       const { items, total: t } = data!;
@@ -294,83 +319,15 @@ function Clusters(props: ClustersProps) {
         [QueryRelease]: tplRelease,
         [QueryTemplate]: tpl,
         [QueryMode]: mode,
-        [QueryFavorite]: isFavorite,
         [QueryRegion]: region,
       });
     },
   });
 
-  const clusterList = useMemo(() => (
-    clusters && clusters.map((item: CLUSTER.Cluster) => {
-      const treeData = {
-        title: item.fullName?.split('/').join('  /  '),
-        ...item,
-      };
-      return (
-        <div key={item.id}>
-          <Title
-            id={treeData.id}
-            updatedAt={treeData.updatedAt}
-            filter={filter}
-            scope={treeData.scope}
-            env={env2DisplayName?.get(treeData.scope.environment)}
-            template={treeData.template}
-            name={treeData.name}
-            fullPath={treeData.fullPath}
-            git={treeData.git}
-            isFavorite={treeData.isFavorite}
-            description={treeData.description}
-            onStarClick={refreshCluster}
-          />
-          <Divider style={{ margin: '5px 0 5px 0' }} />
-        </div>
-      );
-    })
-  ), [clusters, env2DisplayName, filter, refreshCluster]);
-
-  const onSubmit = useCallback((result: Expression[]) => {
-    setFilter('');
-    setEnvironment('');
-    setMode(Mode.All);
-    setTpl('');
-    setRegion('');
-    setTplRelease('');
-    setIsFavorite('');
-    result.forEach((expr) => {
-      if (expr.search) {
-        setFilter(expr.search);
-      }
-      if (expr.category && expr.value) {
-        switch (expr.category) {
-          case 'env':
-            setEnvironment(expr.value);
-            break;
-          case 'template':
-            setTpl(expr.value);
-            break;
-          case 'user':
-            setMode(expr.value);
-            break;
-          case 'release':
-            setTplRelease(expr.value);
-            break;
-          case 'region':
-            setRegion(expr.value);
-            break;
-          case 'isFavorite':
-            setIsFavorite(expr.value);
-            break;
-          default:
-            break;
-        }
-      }
-    });
-  }, []);
-
   const handler = useMemo(() => {
     const options: AutoCompleteOption[] = [
       {
-        key: 'env',
+        key: SearchKeyEnv,
         type: 'selection',
         values: [
           {
@@ -381,7 +338,7 @@ function Clusters(props: ClustersProps) {
 
       },
       {
-        key: 'template',
+        key: SearchKeyTemplate,
         type: 'selection',
         values: [
           {
@@ -391,7 +348,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'region',
+        key: SearchKeyRegion,
         type: 'selection',
         values: [
           {
@@ -401,27 +358,7 @@ function Clusters(props: ClustersProps) {
         ],
       },
       {
-        key: 'user',
-        type: 'selection',
-        values: [
-          {
-            operator: '=',
-            possibleValues: ['all', 'own'],
-          },
-        ],
-      },
-      {
-        key: 'isFavorite',
-        type: 'selection',
-        values: [
-          {
-            operator: '=',
-            possibleValues: ['true', 'false'],
-          },
-        ],
-      },
-      {
-        key: 'release',
+        key: SearchKeyRelease,
         type: 'selection',
         values: [
           {
@@ -431,7 +368,7 @@ function Clusters(props: ClustersProps) {
         ],
         callback: (operator, trace) => {
           for (let i = 0; i < trace.arr.length; i += 1) {
-            if (trace.arr[i].type === 'category' && trace.arr[i].value === 'template') {
+            if (trace.arr[i].type === 'category' && trace.arr[i].value === SearchKeyTemplate) {
               const j = i + 2;
               if (j < trace.arr.length && trace.arr[j].type === 'value') {
                 const template = templateOptions.filter((t) => t.value === trace.arr[j].value)[0];
@@ -466,20 +403,80 @@ function Clusters(props: ClustersProps) {
     return new HorizonAutoCompleteHandler(options);
   }, [envs, templateOptions, regions]);
 
+  const clear = useCallback(async () => {
+    setFilter('');
+    setEnvironment('');
+    setTpl('');
+    setTplRelease('');
+    setRegion('');
+  }, []);
+
+  const searchBox = useMemo(() => (
+    <SearchBox
+      historyKey="cluster"
+      autoCompleteHandler={handler}
+      defaultValue={defaultValue}
+      onSubmit={onSubmit}
+      onClear={clear}
+    />
+  ), [clear, defaultValue, handler, onSubmit]);
+
+  const clusterList = useMemo(() => (
+    clusters && clusters.map((item: CLUSTER.Cluster) => {
+      const treeData = {
+        title: item.fullName?.split('/').join('  /  '),
+        ...item,
+      };
+      return (
+        <div key={item.id}>
+          <Title
+            setTemplate={(t) => { clear(); setTpl(t); }}
+            setTemplateRelease={(s) => { setTplRelease(s); }}
+            setEnv={(s) => { clear(); setEnvironment(s); }}
+            setRegion={(r) => { clear(); setRegion(r); }}
+            id={treeData.id}
+            updatedAt={treeData.updatedAt}
+            filter={filter}
+            scope={treeData.scope}
+            env={env2DisplayName?.get(treeData.scope.environment)}
+            template={treeData.template}
+            name={treeData.name}
+            fullPath={treeData.fullPath}
+            git={treeData.git}
+            isFavorite={treeData.isFavorite}
+            description={treeData.description}
+            onStarClick={refreshCluster}
+          />
+          <Divider style={{ margin: '5px 0 5px 0' }} />
+        </div>
+      );
+    })
+  ), [clear, clusters, env2DisplayName, filter, refreshCluster]);
+
   return (
     <>
-      <SearchBox
-        hKey="cluster"
-        autoCompleteHandler={handler}
-        defaultValue={defaultValue}
-        onSubmit={onSubmit}
-        isCluster
-      />
-      <Card
-        title={intl.formatMessage({ id: 'pages.dashboard.filter.clusters' })}
+      <Tabs
+        size="large"
+        onChange={(key) => { setMode(key as Mode); }}
+        defaultActiveKey={mode}
+        animated={false}
+        style={{ marginTop: '15px' }}
       >
-        {clusterList}
-      </Card>
+        <TabPane
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.all.clusters' })}
+          key={Mode.All}
+        />
+        <TabPane
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.favorite.clusters' })}
+          key={Mode.Favorite}
+        />
+        <TabPane
+          tab={intl.formatMessage({ id: 'pages.dashboard.title.your.clusters' })}
+          key={Mode.Own}
+        />
+      </Tabs>
+      {searchBox}
+      {clusterList}
       <br />
       <div style={{ textAlign: 'center' }}>
         <Pagination

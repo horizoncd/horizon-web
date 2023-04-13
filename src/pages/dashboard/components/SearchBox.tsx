@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import {
-  useCallback, useRef,
+  useCallback, useEffect, useRef, useState,
 } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import hash from 'object-hash';
@@ -8,48 +8,26 @@ import {
   MenuProps, Dropdown, Space, Button,
 } from 'antd';
 import store from 'store2';
-import { useHistory, useIntl } from 'umi';
+import { useIntl } from 'umi';
 import BaseAutoCompleteHandler from '@/components/FilterBox/BaseAutoCompleteHandler';
 import { TagsFilter } from '@/components/FilterBox/TagFilter';
 import Expression from '@/components/FilterBox/Expression';
 
-function DropdownHistory(props: { sch?: Expression[][], onClickHistory?: (e: Expression[]) => void, isCluster?: boolean }) {
-  const intl = useIntl();
-  const { sch = [], onClickHistory = (() => { }), isCluster } = props;
-  const history = useHistory();
-  const items = isCluster
-    ? [
-      {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.cluster.collections' }),
-        key: 'collection',
-      },
-      {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.your.clusters' }),
-        key: 'yourcluster',
-      },
-      {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.all.clusters' }),
-        key: 'allcluster',
-      },
-      {
-        type: 'divider',
-      },
-    ]
-    : [
-      {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.your.applications' }),
-        key: 'yourapp',
-      },
-      {
-        label: intl.formatMessage({ id: 'pages.dashboard.filter.all.applications' }),
-        key: 'allapp',
-      },
-      {
-        type: 'divider',
-      },
-    ];
+interface HistoryItem {
+  label: string;
+  key: string;
+}
 
-  sch.forEach((exprs, index) => {
+function DropdownHistory(props: {
+  searchHistory?: Expression[][],
+  onClickHistory?: (e: Expression[]) => void,
+  clearHistory?: () => void,
+}) {
+  const intl = useIntl();
+  const { searchHistory = [], onClickHistory = (() => {}), clearHistory = (() => {}) } = props;
+  const items: HistoryItem[] = [];
+
+  searchHistory.forEach((exprs, index) => {
     const expression = exprs.map(
       (e, i) => (i === exprs.length - 1 && e.search && e.search !== '' ? e.search : `${e.category} ${e.operator} ${e.value}`),
     );
@@ -60,31 +38,30 @@ function DropdownHistory(props: { sch?: Expression[][], onClickHistory?: (e: Exp
   const onClick: MenuProps['onClick'] = ({ key }) => {
     // eslint-disable-next-line default-case
     switch (key) {
-      case 'collection':
-        history.push(`${history.location.pathname}?isFavorite=true`);
+      case 'clear':
+        clearHistory();
         break;
-      case 'yourcluster':
-        history.push('/dashboard/clusters?mode=own');
-        break;
-      case 'allcluster':
-        history.push('/dashboard/clusters?mode=all');
-        break;
-      case 'yourapp':
-        history.push('/dashboard/applications?mode=own');
-        break;
-      case 'allapp':
-        history.push('/dashboard/applications?mode=all');
+      case 'nodata':
         break;
       default:
-        onClickHistory(sch[parseInt(key, 10)]);
+        onClickHistory(searchHistory[parseInt(key, 10)]);
     }
   };
+
+  if (items.length === 0) {
+    items.push({ label: intl.formatMessage({ id: 'pages.dashboard.search.history.notfound' }), key: 'nodata' });
+  } else {
+    items.push(
+      { type: 'divider' },
+      { label: intl.formatMessage({ id: 'pages.dashboard.search.history.clear' }), key: 'clear' },
+    );
+  }
 
   return (
     <Dropdown menu={{ items, onClick }}>
       <Button style={{ height: '37.784px' }}>
         <Space>
-          {intl.formatMessage({ id: 'pages.dashboard.filter' })}
+          {intl.formatMessage({ id: 'pages.dashboard.search.history' })}
           <DownOutlined />
         </Space>
       </Button>
@@ -93,25 +70,29 @@ function DropdownHistory(props: { sch?: Expression[][], onClickHistory?: (e: Exp
 }
 
 const SearchBox = (props: {
-  hKey: string,
+  historyKey: string,
   autoCompleteHandler: BaseAutoCompleteHandler,
   defaultValue: Expression[],
   onInputChange?: ((exprs: Expression[]) => void),
   onSubmit: ((exprs: Expression[]) => void),
-  isCluster?: boolean,
+  onClear: () => void,
 }) => {
   const {
-    hKey, autoCompleteHandler, defaultValue, onSubmit, onInputChange, isCluster,
+    historyKey, autoCompleteHandler, defaultValue, onSubmit, onInputChange, onClear,
   } = props;
+  const [historyItems, setHistoryItems] = useState<Expression[][]>([]);
+
+  useEffect(() => setHistoryItems((store.get(historyKey) ?? []) as Expression[][]), [historyKey]);
 
   const inputRef = useRef();
 
   const saveHistory = useCallback((result: Expression[]) => {
     // eslint-disable-next-line no-param-reassign
     result = result.filter((o) => (o.category && o.operator && o.value) || o.search);
-    const history = store.get(hKey) as Expression[][];
+    const history = store.get(historyKey) as Expression[][];
     if (history === null) {
-      store.set(hKey, [result]);
+      store.set(historyKey, [result]);
+      setHistoryItems([result]);
     } else {
       if (result.length === 0) {
         return;
@@ -129,22 +110,28 @@ const SearchBox = (props: {
       if (newHistory.length > 5) {
         newHistory = newHistory.slice(0, 5);
       }
-      store.set(hKey, newHistory);
+      store.set(historyKey, newHistory);
+      setHistoryItems(newHistory);
     }
-  }, [hKey]);
+  }, [historyKey]);
+
+  const clearHistory = useCallback(() => {
+    store.remove(historyKey);
+    setHistoryItems([]);
+  }, [historyKey]);
 
   return (
     <div style={{
-      marginTop: '30px',
+      marginTop: '10px',
       marginBottom: '25px',
       display: 'flex',
       alignItems: 'center',
     }}
     >
       <DropdownHistory
-        sch={(store.get(hKey) ?? []) as Expression[][]}
+        searchHistory={historyItems}
         onClickHistory={(e) => { if (inputRef.current) inputRef.current.setQuery(e); }}
-        isCluster={isCluster}
+        clearHistory={clearHistory}
       />
       <div className="main-container" style={{ flexGrow: '1' }}>
         <TagsFilter
@@ -152,6 +139,7 @@ const SearchBox = (props: {
           ref={inputRef}
           autoCompleteHandler={autoCompleteHandler}
           defaultExprs={defaultValue}
+          onClear={onClear}
           onSubmit={(exprs) => { saveHistory(exprs); onSubmit(exprs); }}
         />
       </div>

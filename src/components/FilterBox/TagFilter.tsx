@@ -20,7 +20,7 @@ const InputBox = styled.div`
     align-items: center;
     background: #fff;
     border: 1px solid #ccc;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
     line-height: 1.8; 
@@ -37,6 +37,59 @@ const InputBox = styled.div`
       /* transition: all 0.2s ease; */
   }
 `;
+
+const TagsGroup = (props: {
+  expr: Expression,
+  id: number
+  onCategoryClick: () => void,
+  onOperatorClick: () => void,
+  onValueClick: () => void,
+  onTagBlur: () => void,
+  onClear: () => void,
+}) => {
+  const {
+    expr, id, onTagBlur, onCategoryClick, onOperatorClick, onValueClick, onClear,
+  } = props;
+  const [styles, setStyles] = useState({});
+  return (
+    <div
+      style={{ display: 'inline-block', marginRight: '6px' }}
+      onMouseEnter={() => setStyles({ backgroundColor: '#b0afaa' })}
+      onMouseLeave={() => setStyles({})}
+    >
+      <Tag
+        key={`category-${id}`}
+        style={styles}
+        onClick={onCategoryClick}
+        text={expr.category!}
+        onBlur={onTagBlur}
+      />
+      {
+                  expr.operator && (
+                    <Tag
+                      style={styles}
+                      key={`operator-${id}-op`}
+                      text={expr.operator}
+                      onClick={onOperatorClick}
+                      onBlur={onTagBlur}
+                    />
+                  )
+                }
+      {
+                  expr.value && (
+                    <Tag
+                      key={`operator-${id}-value`}
+                      text={expr.value}
+                      style={styles}
+                      remove={onClear}
+                      onClick={onValueClick}
+                      onBlur={onTagBlur}
+                    />
+                  )
+                }
+    </div>
+  );
+};
 
 const CloseButton = ({ onClick }: { onClick: () => void }) => (
   // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -238,6 +291,18 @@ export const TagsFilter = React.forwardRef((props: TagsFilterProps, ref) => {
     }
   }, [getSuggestions, mIndex, mType, query, selected, autoCompleteHandler]);
 
+  const tags = useMemo(() => selected.map((expr, i) => (
+    <TagsGroup
+      expr={expr}
+      id={i}
+      onCategoryClick={() => onItemClickToChange('category', i)}
+      onOperatorClick={() => onItemClickToChange('operator', i)}
+      onValueClick={() => onItemClickToChange('value', i)}
+      onTagBlur={onTagBlur}
+      onClear={() => { selected.splice(i, 1); setExpand(false); setSelected([...selected]); }}
+    />
+  )), [onItemClickToChange, selected]);
+
   return (
     <div>
       <InputBox
@@ -251,39 +316,7 @@ export const TagsFilter = React.forwardRef((props: TagsFilterProps, ref) => {
           if (onBlur) onBlur();
         }}
       >
-        {
-          selected.map((expr, i) => (
-            <>
-              <Tag
-                key={`category-${i}`}
-                onClick={() => { onItemClickToChange('category', i); }}
-                text={expr.category!}
-                onBlur={onTagBlur}
-              />
-              {
-                  expr.operator && (
-                    <Tag
-                      key={`operator-${i}-op`}
-                      text={expr.operator}
-                      onClick={() => { onItemClickToChange('operator', i); }}
-                      onBlur={onTagBlur}
-                    />
-                  )
-                }
-              {
-                  expr.value && (
-                    <Tag
-                      key={`operator-${i}-value`}
-                      text={expr.value}
-                      remove={() => { selected.splice(i, 1); setExpand(false); setSelected([...selected]); }}
-                      onClick={() => { onItemClickToChange('value', i); }}
-                      onBlur={onTagBlur}
-                    />
-                  )
-                }
-            </>
-          ))
-        }
+        { tags }
         <input
           value={query}
           style={{ flex: '1' }}

@@ -24,6 +24,9 @@ padding-left: 0px;
 
 const SuggestionItem = styled.li`
   width: 100%;
+  height: 28px;
+  display: flex;
+  align-items: center;
   padding-left: 20px;
   :hover {
     background-color: lightgrey;
@@ -64,7 +67,7 @@ const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>,
             </span>
           )
           : null}
-        <QueryBoldSpan query={query}>{item.name}</QueryBoldSpan>
+        <QueryBoldSpan query={query}>{item.name ?? ''}</QueryBoldSpan>
       </SuggestionItem>
     );
   });
