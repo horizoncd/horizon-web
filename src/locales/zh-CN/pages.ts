@@ -8,7 +8,6 @@ export default {
   'pages.header.templates': '模板',
   'pages.header.admin': '管理员',
 
-  'pages.dashboard.filter.cluster.collections': '我的收藏',
   'pages.dashboard.filter.clusters': '集群',
   'pages.dashboard.filter.applications': '应用',
   'pages.dashboard.filter.your.clusters': '我的集群',
@@ -29,7 +28,7 @@ export default {
   'pages.dashboard.search.history': '最近搜索',
 
   'pages.dashboard.title.all.clusters': '所有集群',
-  'pages.dashboard.title.favorite.clusters': '集群收藏',
+  'pages.dashboard.title.favorite.clusters': '我的收藏',
   'pages.dashboard.title.your.clusters': '我的集群',
   'pages.dashboard.title.your.applications': '我的应用',
   'pages.dashboard.title.all.applications': '所有应用',
