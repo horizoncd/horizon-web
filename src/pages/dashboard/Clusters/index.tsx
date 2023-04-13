@@ -194,6 +194,10 @@ function Clusters(props: ClustersProps) {
   const [defaultValue, setDefaultValue] = useState<Expression[]>([]);
   const [mode, setMode] = useState<string>('');
 
+  const setFilterTrim = useCallback((s: string) => {
+    setFilter(s.trim());
+  }, []);
+
   useEffect(() => {
     const {
       [QueryName]: qName = '',
@@ -208,9 +212,43 @@ function Clusters(props: ClustersProps) {
     setTplRelease(qRelease as string);
     setTpl(qTemplate as string);
     setEnvironment(qEnv as string);
-    setFilter(qName as string);
+    setFilterTrim(qName as string);
     setRegion(qRegion as string);
-  }, [location.query]);
+  }, [location.query, setFilterTrim]);
+
+  const { refresh: refreshCluster } = useRequest(() => listClusters({
+    userID: mode === Mode.Own
+      ? initialState?.currentUser?.id
+      : undefined,
+    filter,
+    pageSize,
+    pageNumber,
+    environment,
+    region,
+    template: tpl,
+    templateRelease: tplRelease,
+    isFavorite: (() => {
+      if (mode === Mode.Favorite) return true;
+      return undefined;
+    })(),
+    withFavorite: true,
+  }), {
+    refreshDeps: [filter, pageNumber, pageSize, environment, mode, tpl, tplRelease, region],
+    debounceInterval: 500,
+    onSuccess: (data) => {
+      const { items, total: t } = data!;
+      setClusters(items);
+      setTotal(t);
+      setQuery({
+        [QueryName]: filter,
+        [QueryEnv]: environment,
+        [QueryRelease]: tplRelease,
+        [QueryTemplate]: tpl,
+        [QueryMode]: mode,
+        [QueryRegion]: region,
+      });
+    },
+  });
 
   const onSubmit = useCallback((result: Expression[]) => {
     setFilter('');
@@ -220,7 +258,7 @@ function Clusters(props: ClustersProps) {
     setTplRelease('');
     result.forEach((expr) => {
       if (expr.search) {
-        setFilter(expr.search);
+        setFilterTrim(expr.search);
       }
       if (expr.category && expr.value) {
         switch (expr.category) {
@@ -241,7 +279,8 @@ function Clusters(props: ClustersProps) {
         }
       }
     });
-  }, [displayName2Region]);
+    refreshCluster();
+  }, [displayName2Region, setFilterTrim, refreshCluster]);
 
   const { data: regions } = useRequest(queryRegions, {
     onSuccess: (items) => {
@@ -287,40 +326,6 @@ function Clusters(props: ClustersProps) {
         t.push({ label: item.name, value: item.name, isLeaf: false });
       });
       setTemplateOptions(t);
-    },
-  });
-
-  const { refresh: refreshCluster } = useRequest(() => listClusters({
-    userID: mode === Mode.Own
-      ? initialState?.currentUser?.id
-      : undefined,
-    filter,
-    pageSize,
-    pageNumber,
-    environment,
-    region,
-    template: tpl,
-    templateRelease: tplRelease,
-    isFavorite: (() => {
-      if (mode === Mode.Favorite) return true;
-      return undefined;
-    })(),
-    withFavorite: true,
-  }), {
-    refreshDeps: [filter, pageNumber, pageSize, environment, mode, tpl, tplRelease, region],
-    debounceInterval: 500,
-    onSuccess: (data) => {
-      const { items, total: t } = data!;
-      setClusters(items);
-      setTotal(t);
-      setQuery({
-        [QueryName]: filter,
-        [QueryEnv]: environment,
-        [QueryRelease]: tplRelease,
-        [QueryTemplate]: tpl,
-        [QueryMode]: mode,
-        [QueryRegion]: region,
-      });
     },
   });
 
