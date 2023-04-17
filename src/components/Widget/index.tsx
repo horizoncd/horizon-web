@@ -10,9 +10,10 @@ import LocationBox from './LocationBox';
 import StyledDropdownSwitch from './DropdownSwitch';
 import MicroApp from './MicroApp';
 import Progressing from './Progessing';
+import FavoriteStar from './FavoriteStar';
 
 export {
   BoldText, StyledDropdownSwitch, CenterSpin, DangerMessage,
   DropdownSwitch, ExactTime, MaxSpace, PopupTime,
-  MainText, ResourceAvatar, LocationBox, MicroApp, Progressing,
+  MainText, ResourceAvatar, LocationBox, MicroApp, Progressing, FavoriteStar,
 };
