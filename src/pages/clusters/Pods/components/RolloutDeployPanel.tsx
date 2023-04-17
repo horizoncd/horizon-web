@@ -9,7 +9,7 @@ import {
   ClusterStatus,
 } from '@/const';
 import {
-  next, pause, resume, promote, getPipelines, freeCluster,
+  next, pause, resume, promote, getPipelines, freeCluster, autoPromote,
 } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -163,13 +163,14 @@ interface DeployPageProps {
   onPromote: () => void,
   onPause: () => void,
   onResume: () => void,
+  onAutoPromote: () => void,
   onCancelDeploy: () => void,
   statusData: CLUSTER.ClusterStatusV2,
   nextStepString: string
 }
 
 function DeployButtons({
-  step, onNext, onPause, onResume, onPromote, onCancelDeploy, statusData, nextStepString,
+  step, onNext, onPause, onResume, onPromote, onAutoPromote, onCancelDeploy, statusData, nextStepString,
 }: DeployPageProps) {
   const intl = useIntl();
   const {
@@ -226,6 +227,18 @@ function DeployButtons({
           onClick={onPromote}
         >
           {intl.formatMessage({ id: 'pages.pods.deployAll' })}
+        </Button>
+        <Button
+          type="primary"
+          disabled={
+            !RBAC.Permissions.executeAction.allowed
+            || statusData.status !== ClusterStatus.SUSPENDED
+            || manualPaused
+          }
+          style={{ margin: '0 8px' }}
+          onClick={onAutoPromote}
+        >
+          {intl.formatMessage({ id: 'pages.pods.autodeploy' })}
         </Button>
         <Button
           danger
@@ -296,6 +309,14 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                 () => {
                   resume(id).then(() => {
                     successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
+                    refresh();
+                  });
+                }
+              }
+              onAutoPromote={
+                () => {
+                  autoPromote(id).then(() => {
+                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.autoDeploy.success' }));
                     refresh();
                   });
                 }

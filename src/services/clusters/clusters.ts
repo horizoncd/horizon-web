@@ -136,27 +136,56 @@ export async function freeCluster(clusterID: number) {
   });
 }
 
-export async function next(clusterID: number) {
-  return request(`/apis/core/v1/clusters/${clusterID}/next`, {
+export async function action(clusterID: number, data: {
+  action: string,
+  group: string,
+  version: string,
+  resource: string,
+}) {
+  return request(`/apis/core/v2/clusters/${clusterID}/action`, {
     method: 'POST',
+    data,
+  });
+}
+
+const rolloutGVR = {
+  group: 'argoproj.io',
+  version: 'v1alpha1',
+  resource: 'rollouts',
+};
+
+export async function next(clusterID: number) {
+  await action(clusterID, {
+    action: 'promote',
+    ...rolloutGVR,
   });
 }
 
 export async function pause(clusterID: number) {
-  return request(`/apis/core/v1/clusters/${clusterID}/pause`, {
-    method: 'POST',
+  await action(clusterID, {
+    action: 'pause',
+    ...rolloutGVR,
   });
 }
 
 export async function resume(clusterID: number) {
-  return request(`/apis/core/v1/clusters/${clusterID}/resume`, {
-    method: 'POST',
+  await action(clusterID, {
+    action: 'resume',
+    ...rolloutGVR,
   });
 }
 
 export async function promote(clusterID: number) {
-  return request(`/apis/core/v1/clusters/${clusterID}/promote`, {
-    method: 'POST',
+  await action(clusterID, {
+    action: 'promote-full',
+    ...rolloutGVR,
+  });
+}
+
+export async function autoPromote(clusterID: number) {
+  await action(clusterID, {
+    action: 'auto-promote',
+    ...rolloutGVR,
   });
 }
 

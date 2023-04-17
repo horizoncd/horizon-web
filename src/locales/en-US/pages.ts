@@ -90,6 +90,7 @@ export default {
   'pages.pods.deployStep': 'Deploy Step',
   'pages.pods.manualPause': 'Manual pause',
   'pages.pods.deployAll': 'Deploy all',
+  'pages.pods.autodeploy': 'Deploy automatically',
   'pages.pods.deployCancel': 'Cancel',
   'pages.pods.unpause': 'Unpause',
   'pages.pods.buildLog': 'Build log',
