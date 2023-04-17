@@ -11,11 +11,11 @@ import {
 } from 'react';
 import { useRequest } from '@@/plugin-request/request';
 import {
-  FundOutlined, GitlabOutlined, RocketTwoTone, StarFilled, StarTwoTone,
+  FundOutlined, GitlabOutlined, RocketTwoTone,
 } from '@ant-design/icons/lib';
 import { Location, useIntl } from 'umi';
 import TabPane from 'antd/lib/tabs/TabPane';
-import { listClusters, addFavorite, deleteFavorite } from '@/services/clusters/clusters';
+import { listClusters } from '@/services/clusters/clusters';
 import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
@@ -24,7 +24,7 @@ import { GitInfo } from '@/services/code/code';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { setQuery } from '../utils';
 import { WithContainer, SearchBox } from '../components';
-import { PopupTime } from '@/components/Widget';
+import { FavoriteStar, PopupTime } from '@/components/Widget';
 import './index.less';
 import Expression from '@/components/FilterBox/Expression';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
@@ -50,7 +50,7 @@ function Title(props: {
 }) {
   const {
     id, updatedAt, scope, template, name, fullPath, git,
-    description, filter, env = '', isFavorite = false, onStarClick: onStarClickInner,
+    description, filter, env = '', isFavorite = false, onStarClick,
     setTemplate, setTemplateRelease, setEnv, setRegion,
   } = props;
   const intl = useIntl();
@@ -67,17 +67,6 @@ function Title(props: {
     <a onClick={(e) => handleHref(e, `${fullPath}`)} className="group-title">{name}</a>
   );
   const firstLetter = name.substring(0, 1).toUpperCase();
-
-  const { run: updateFavorite } = useRequest((favorite: boolean) => (favorite ? addFavorite(id) : deleteFavorite(id)), {
-    onSuccess: () => {
-      if (onStarClickInner) {
-        onStarClickInner();
-      }
-    },
-    refreshDeps: [id, isFavorite],
-    manual: true,
-    throttleInterval: 500,
-  });
 
   const cssForDesc = !description ? {
     height: '48px',
@@ -105,11 +94,7 @@ function Title(props: {
       }}
       >
         <div style={{ display: 'flex', alignItems: 'center', fontSize: 'larger' }}>
-          {
-            isFavorite
-              ? <StarFilled onClick={() => updateFavorite(false)} style={{ color: '#F4D03F' }} />
-              : <StarTwoTone onClick={() => updateFavorite(true)} twoToneColor="#F4D03F" />
-          }
+          <FavoriteStar isFavorite={isFavorite} clusterID={id} onStarClick={onStarClick} />
           <Tooltip title={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}>
             <a
               aria-label={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
@@ -204,7 +189,7 @@ function Clusters(props: ClustersProps) {
       [QueryEnv]: qEnv = '',
       [QueryRelease]: qRelease = '',
       [QueryTemplate]: qTemplate = '',
-      [QueryMode]: qMode = Mode.Own,
+      [QueryMode]: qMode = Mode.Favorite,
       [QueryRegion]: qRegion = '',
     } = location.query ?? {};
 
@@ -463,7 +448,7 @@ function Clusters(props: ClustersProps) {
       <Tabs
         size="large"
         onChange={(key) => { setMode(key as Mode); }}
-        defaultActiveKey={mode}
+        activeKey={mode}
         animated={false}
         style={{ marginTop: '15px' }}
       >

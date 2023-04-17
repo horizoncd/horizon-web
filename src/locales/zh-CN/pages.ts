@@ -24,7 +24,7 @@ export default {
   'pages.dashboard.search.filterBy.favorite': '收藏',
   'pages.dashboard.search.filterBy.user': '用户',
   'pages.dashboard.search.history.clear': '清除历史记录',
-  'pages.dashboard.search.history.notfound': '没有找到历史记录',
+  'pages.dashboard.search.history.notfound': '没有找到搜索记录',
   'pages.dashboard.search.history': '最近搜索',
 
   'pages.dashboard.title.all.clusters': '所有集群',

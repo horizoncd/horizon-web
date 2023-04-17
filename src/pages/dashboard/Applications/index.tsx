@@ -51,7 +51,7 @@ function Applications(props: MyApplicationsProps) {
   useEffect(() => {
     const {
       [QueryName]: qName = '',
-      [QueryMode]: qMode = Mode.Own,
+      [QueryMode]: qMode = Mode.All,
     } = location.query ?? {};
 
     setMode(qMode as string);
@@ -140,7 +140,7 @@ function Applications(props: MyApplicationsProps) {
       <Tabs
         size="large"
         animated={false}
-        defaultActiveKey={mode}
+        activeKey={mode}
         onChange={(key) => { setMode(key as Mode); }}
         style={{ marginTop: '15px' }}
       >
