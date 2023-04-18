@@ -189,7 +189,7 @@ function Clusters(props: ClustersProps) {
       [QueryEnv]: qEnv = '',
       [QueryRelease]: qRelease = '',
       [QueryTemplate]: qTemplate = '',
-      [QueryMode]: qMode = Mode.Own,
+      [QueryMode]: qMode = Mode.All,
       [QueryRegion]: qRegion = '',
     } = location.query ?? {};
 
