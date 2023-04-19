@@ -175,13 +175,6 @@ export async function resume(clusterID: number) {
   });
 }
 
-export async function promote(clusterID: number) {
-  await action(clusterID, {
-    action: 'promote-full',
-    ...rolloutGVR,
-  });
-}
-
 export async function autoPromote(clusterID: number) {
   await action(clusterID, {
     action: 'auto-promote',

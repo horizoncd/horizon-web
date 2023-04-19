@@ -9,7 +9,7 @@ import {
   ClusterStatus,
 } from '@/const';
 import {
-  next, pause, resume, promote, getPipelines, freeCluster, autoPromote,
+  next, pause, resume, getPipelines, freeCluster, autoPromote,
 } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -160,7 +160,6 @@ function DeployStep({
 interface DeployPageProps {
   step: CLUSTER.Step,
   onNext: () => void,
-  onPromote: () => void,
   onPause: () => void,
   onResume: () => void,
   onAutoPromote: () => void,
@@ -170,7 +169,7 @@ interface DeployPageProps {
 }
 
 function DeployButtons({
-  step, onNext, onPause, onResume, onPromote, onAutoPromote, onCancelDeploy, statusData, nextStepString,
+  step, onNext, onPause, onResume, onAutoPromote, onCancelDeploy, statusData, nextStepString,
 }: DeployPageProps) {
   const intl = useIntl();
   const {
@@ -219,20 +218,7 @@ function DeployButtons({
         <Button
           type="primary"
           disabled={
-            !RBAC.Permissions.promoteCluster.allowed
-            || statusData.status !== ClusterStatus.SUSPENDED
-            || manualPaused
-          }
-          style={{ margin: '0 8px' }}
-          onClick={onPromote}
-        >
-          {intl.formatMessage({ id: 'pages.pods.deployAll' })}
-        </Button>
-        <Button
-          type="primary"
-          disabled={
             !RBAC.Permissions.executeAction.allowed
-            || statusData.status !== ClusterStatus.SUSPENDED
             || manualPaused
           }
           style={{ margin: '0 8px' }}
@@ -319,56 +305,6 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                     successAlert(intl.formatMessage({ id: 'pages.message.cluster.autoDeploy.success' }));
                     refresh();
                   });
-                }
-              }
-              onPromote={
-                () => {
-                  Modal.confirm(
-                    {
-                      title: (
-                        <div className={styles.boldText}>
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.confirm' })}
-                        </div>
-                      ),
-                      content: (
-                        <div className={styles.promotePrompt}>
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content1' })}
-                          <br />
-                          1.
-                          {' '}
-                          <span className={styles.textGreen}>
-                            {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategySafe' })}
-                          </span>
-                          :
-                          {' '}
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content2' })}
-                          {' '}
-                          <br />
-                          2.
-                          {' '}
-                          <span className={styles.textGreen}>
-                            {intl.formatMessage({ id: 'pages.message.cluster.deployAll.strategyRoll' })}
-                          </span>
-                          :
-                          {' '}
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content3' })}
-                          <br />
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content4' })}
-                          <br />
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content5' })}
-                          <br />
-                          {intl.formatMessage({ id: 'pages.message.cluster.deployAll.content6' })}
-                        </div>
-                      ),
-                      onOk: () => {
-                        promote(id).then(() => {
-                          successAlert(intl.formatMessage({ id: 'pages.message.cluster.unpause.success' }));
-                          refresh();
-                        });
-                      },
-                      width: '750px',
-                    },
-                  );
                 }
               }
               onCancelDeploy={

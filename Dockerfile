@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN yarn && yarn build
+RUN yarn install && yarn umi build
 
 FROM horizoncd/horizon-web-base:v1.0.0
 

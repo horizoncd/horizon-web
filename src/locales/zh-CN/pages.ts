@@ -89,10 +89,11 @@ export default {
   'pages.pods.deployStep': '发布阶段',
   'pages.pods.manualPause': '人工暂停',
   'pages.pods.deployAll': '全部发布',
-  'pages.pods.autodeploy': '自动发布',
+  'pages.pods.autodeploy': '自动分批发布',
   'pages.pods.deployCancel': '取消发布',
   'pages.pods.unpause': '取消暂停',
   'pages.pods.buildLog': '构建日志',
+  'pages.message.cluster.autoDeploy.success': '配置自动发布成功',
 
   'pages.groups.id': '分组ID',
   'pages.groups.groupsAndApplications': '子分组和应用',
