@@ -1,4 +1,6 @@
-import { Button, Modal, Steps } from 'antd';
+import {
+  Button, Modal, Steps, Tooltip,
+} from 'antd';
 import {
   history, useIntl, useModel,
 } from 'umi';
@@ -9,7 +11,7 @@ import {
   ClusterStatus,
 } from '@/const';
 import {
-  next, pause, resume, getPipelines, freeCluster, autoPromote,
+  next, pause, resume, getPipelines, freeCluster, autoPromote, cancelAutoPromote,
 } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -163,17 +165,18 @@ interface DeployPageProps {
   onPause: () => void,
   onResume: () => void,
   onAutoPromote: () => void,
+  onAutoPromoteCancel: () => void,
   onCancelDeploy: () => void,
   statusData: CLUSTER.ClusterStatusV2,
   nextStepString: string
 }
 
 function DeployButtons({
-  step, onNext, onPause, onResume, onAutoPromote, onCancelDeploy, statusData, nextStepString,
+  step, onNext, onPause, onResume, onAutoPromote, onAutoPromoteCancel, onCancelDeploy, statusData, nextStepString,
 }: DeployPageProps) {
   const intl = useIntl();
   const {
-    index, total, replicas, manualPaused,
+    index, total, replicas, manualPaused, autoPromote: ifAutoPromote,
   } = step;
   return (
     <div title={intl.formatMessage({ id: 'pages.pods.deployStep' })}>
@@ -215,17 +218,31 @@ function DeployButtons({
         >
           {nextStepString}
         </Button>
-        <Button
-          type="primary"
-          disabled={
-            !RBAC.Permissions.executeAction.allowed
-            || manualPaused
-          }
-          style={{ margin: '0 8px' }}
-          onClick={onAutoPromote}
-        >
-          {intl.formatMessage({ id: 'pages.pods.autodeploy' })}
-        </Button>
+        {
+          ifAutoPromote ? (
+            <Button
+              danger
+              onClick={onAutoPromoteCancel}
+            >
+              {intl.formatMessage({ id: 'pages.pods.cancelAutoDeploy' })}
+            </Button>
+          )
+            : (
+              <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.autoDeploy.description' })}>
+                <Button
+                  type="primary"
+                  disabled={
+                    !RBAC.Permissions.executeAction.allowed
+                    || manualPaused
+                  }
+                  style={{ margin: '0 8px' }}
+                  onClick={onAutoPromote}
+                >
+                  {intl.formatMessage({ id: 'pages.pods.autoDeploy' })}
+                </Button>
+              </Tooltip>
+            )
+        }
         <Button
           danger
           disabled={
@@ -303,6 +320,14 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                 () => {
                   autoPromote(id).then(() => {
                     successAlert(intl.formatMessage({ id: 'pages.message.cluster.autoDeploy.success' }));
+                    refresh();
+                  });
+                }
+              }
+              onAutoPromoteCancel={
+                () => {
+                  cancelAutoPromote(id).then(() => {
+                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.autoDeployCancel.success' }));
                     refresh();
                   });
                 }

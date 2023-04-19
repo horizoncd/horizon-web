@@ -182,6 +182,13 @@ export async function autoPromote(clusterID: number) {
   });
 }
 
+export async function cancelAutoPromote(clusterID: number) {
+  await action(clusterID, {
+    action: 'cancel-auto-promote',
+    ...rolloutGVR,
+  });
+}
+
 export async function diffsOfCode(clusterID: number, refType: string, targetRef: string) {
   const params : Record<string, string> = {};
   if (refType === GitRefType.Tag) {
