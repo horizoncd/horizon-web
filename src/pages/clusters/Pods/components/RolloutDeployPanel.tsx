@@ -222,6 +222,10 @@ function DeployButtons({
           ifAutoPromote ? (
             <Button
               danger
+              disabled={
+                !RBAC.Permissions.executeAction.allowed
+                || manualPaused
+              }
               onClick={onAutoPromoteCancel}
             >
               {intl.formatMessage({ id: 'pages.pods.cancelAutoDeploy' })}
