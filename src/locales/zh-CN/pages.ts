@@ -94,7 +94,7 @@ export default {
   'pages.pods.deployCancel': '取消发布',
   'pages.pods.unpause': '取消暂停',
   'pages.pods.buildLog': '构建日志',
-  'pages.message.cluster.autoDeploy.success': '配置自动发布',
+  'pages.message.cluster.autoDeploy.success': '配置自动发布成功',
   'pages.message.cluster.autoDeployCancel.success': '成功取消自动发布',
   'pages.message.cluster.autoDeploy.description': '自动分批发布，按照批次配置自动发布下一批，开启后可关闭',
 

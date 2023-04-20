@@ -1,10 +1,10 @@
-FROM node:14.21-alpine as build
+FROM node:18.16.0-alpine3.17 as build
 
 WORKDIR /app
 
 COPY . /app/
 
-RUN yarn install && yarn umi build
+RUN yarn install && yarn build
 
 FROM horizoncd/horizon-web-base:v1.0.0
 
