@@ -273,6 +273,7 @@ declare namespace CLUSTER {
     total: number,
     replicas: number[],
     manualPaused: boolean,
+    autoPromote: boolean,
   };
 
   type ClusterStatusV2 = {

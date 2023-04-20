@@ -28,6 +28,7 @@ const Resource = {
   shell: 'shell',
   events: 'events',
   pause: 'pause',
+  action: 'action',
   resume: 'resume',
   promote: 'promote',
   transfer: 'transfer',
@@ -208,6 +209,11 @@ const Permissions = {
   getEvents: {
     resource: `${Resource.cluster}/${Resource.events}`,
     action: Action.get,
+    allowed: false,
+  },
+  executeAction: {
+    resource: `${Resource.cluster}/${Resource.action}`,
+    action: Action.create,
     allowed: false,
   },
   pauseCluster: {
