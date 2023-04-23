@@ -1,5 +1,3 @@
-import { request } from 'umi';
-
 export enum GitRefType {
   Branch = 'branch',
   Tag = 'tag',
@@ -58,10 +56,9 @@ export async function listGitRef(params: API.CodeBranchSearchParam) {
   if (params.refType === 'tag') {
     url = '/apis/front/v1/code/listtag';
   }
-  return request<{
-    data: string[];
-  }>(url, {
-    method: 'GET',
-    params,
-  });
+
+  const query = new URLSearchParams({ ...params, pageNumber: `${params.pageNumber}`, pageSize: `${params.pageSize}` });
+  url = `/apis/front/v1/code/listbranch?${query.toString()}`;
+
+  return fetch(url).then((res) => res.json());
 }

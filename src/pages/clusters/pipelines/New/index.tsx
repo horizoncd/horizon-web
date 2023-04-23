@@ -1,4 +1,5 @@
 import {
+  AutoComplete,
   Card, Form, Input, Select,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
@@ -42,6 +43,7 @@ export default (props: any) => {
   const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
 
   const { data, run: refreshDiff } = useRequest((gitRef) => diffsOfCode(id!, form.getFieldValue('refType'), gitRef), {
+    debounceInterval: 200,
     manual: true,
   });
 
@@ -180,20 +182,21 @@ export default (props: any) => {
                         }}
                       />
                     ) : (
-                      <Select
+                      <AutoComplete
                         allowClear
-                        onSelect={(key: any) => {
+                        onChange={(key: any) => {
                           refreshDiff(key);
                         }}
                         showSearch
-                        onSearch={(item) => {
-                          refreshGitRefList(item);
-                        }}
+                        // onSearch={(item) => {
+                        //   console.log("onSearch")
+                        //   refreshGitRefList(item);
+                        // }}
                       >
                         {
-                        gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
-                      }
-                      </Select>
+                          gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
+                        }
+                      </AutoComplete>
                     )
                   }
                 </Form.Item>

@@ -1,4 +1,5 @@
 import {
+  AutoComplete,
   Card, Form, Input, Select,
 } from 'antd';
 import type { FieldData, Rule } from 'rc-field-form/lib/interface';
@@ -202,7 +203,7 @@ export default (props: any) => {
               {
                 form.getFieldValue('refType') === GitRefType.Commit
                   ? <Input /> : (
-                    <Select
+                    <AutoComplete
                       disabled={readOnly}
                       showSearch
                       onSearch={(item) => {
@@ -210,9 +211,9 @@ export default (props: any) => {
                       }}
                     >
                       {
-                        gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
+                        gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
                       }
-                    </Select>
+                    </AutoComplete>
                   )
               }
             </Form.Item>

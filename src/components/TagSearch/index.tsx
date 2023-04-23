@@ -68,17 +68,17 @@ const TagSearch = (props: Props) => {
         defaultExprs={values}
         onSubmit={(inputs: any[]) => {
           const results = inputs.map((input) => {
-            if (typeof (input) === 'string') {
+            if (input.search && input.search !== '') {
               return {
                 type: SearchInputType.Value,
-                value: input,
+                value: input.search,
               };
             }
             return {
               type: SearchInputType.Tag,
-              key: input.type,
-              operator: input.value.operator,
-              value: input.value.data,
+              key: input.category,
+              operator: input.operator,
+              value: input.value,
             };
           });
           onSearch(results);
