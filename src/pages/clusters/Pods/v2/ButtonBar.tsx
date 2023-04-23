@@ -4,6 +4,8 @@ import {
 } from 'antd';
 import { history, useIntl, useModel } from 'umi';
 import { stringify } from 'query-string';
+import { useState } from 'react';
+import RebuilddeployModal from '@/components/RebuilddeployModal';
 import RBAC from '@/rbac';
 import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';
@@ -21,16 +23,12 @@ function ButtonBar(props: ButtonBarProps) {
   const { status } = clusterStatus;
   const intl = useIntl();
   const { successAlert } = useModel('alert');
+  const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
 
   const onClickOperation = ({ key }: { key: string }) => {
     switch (key) {
       case 'builddeploy':
-        history.push({
-          pathname: `/clusters${fullPath}/-/pipelines/new`,
-          search: stringify({
-            type: PublishType.BUILD_DEPLOY,
-          }),
-        });
+        setEnableRebuilddeployModal(true);
         break;
       case 'deploy':
         history.push({
@@ -177,6 +175,15 @@ function ButtonBar(props: ButtonBarProps) {
           <DownOutlined />
         </Button>
       </Dropdown>
+      {enableRebuilddeployModal && (
+        <RebuilddeployModal
+          onCancel={() => {
+            setEnableRebuilddeployModal(false);
+          }}
+          clusterID={id}
+          clusterFullPath={fullPath}
+        />
+      )}
     </div>
   );
 }

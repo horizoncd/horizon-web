@@ -29,6 +29,7 @@ import './index.less';
 import Expression from '@/components/FilterBox/Expression';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
+import RebuilddeployModal from '@/components/RebuilddeployModal';
 
 function Title(props: {
   id: number,
@@ -54,6 +55,7 @@ function Title(props: {
     setTemplate, setTemplateRelease, setEnv, setRegion,
   } = props;
   const intl = useIntl();
+  const [showRebuilddeployModal, setShowRebuilddeployModal] = useState(false);
   const index = name.indexOf(filter);
   const beforeStr = name.substring(0, index);
   const afterStr = name.substring(index + filter.length);
@@ -98,7 +100,9 @@ function Title(props: {
           <Tooltip title={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}>
             <a
               aria-label={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
-              href={`/clusters${fullPath}/-/pipelines/new?type=builddeploy`}
+              onClick={() => {
+                setShowRebuilddeployModal(true);
+              }}
             >
               <RocketTwoTone style={{ marginLeft: '1rem' }} />
             </a>
@@ -130,6 +134,15 @@ function Title(props: {
             <PopupTime time={updatedAt} prefix={intl.formatMessage({ id: 'pages.common.updated' })} />
           </Tooltip>
         </div>
+        {showRebuilddeployModal && (
+          <RebuilddeployModal
+            clusterID={id}
+            clusterFullPath={fullPath!}
+            onCancel={() => {
+              setShowRebuilddeployModal(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );

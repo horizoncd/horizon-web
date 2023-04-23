@@ -19,6 +19,7 @@ import {
   Step, StepContent, StepAction, ModalTitle, ModalContent,
 } from '../Widget';
 import { difference } from '@/utils';
+import RebuilddeployModal from '@/components/RebuilddeployModal';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -60,6 +61,7 @@ export default (props: any) => {
   const [cluster, setCluster] = useState<CLUSTER.Cluster>();
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
 
   const { run: refreshAppEnvTemplate } = useRequest((env) => getApplicationEnvTemplate(id, env), {
     onSuccess: (data) => {
@@ -264,14 +266,15 @@ export default (props: any) => {
   };
 
   const onBuildAndDeployButtonOK = () => {
-    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+    setShowBuildDeployModal(false);
+    setEnableRebuilddeployModal(true);
   };
 
   const onDeployButtonOK = () => {
     window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`;
   };
 
-  const onDeployButtonCancel = () => {
+  const onButtonCancel = () => {
     // jump to cluster's home page
     window.location.href = cluster!.fullPath;
   };
@@ -319,7 +322,7 @@ export default (props: any) => {
         } else if (Object.keys(configDiff).includes(appPart)) {
           setShowDeployModal(true);
         } else {
-          onDeployButtonCancel();
+          onButtonCancel();
         }
       }
     },
@@ -406,7 +409,7 @@ export default (props: any) => {
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.title' })}
                 </ModalTitle>
               )}
-              visible={showBuildDeployModal}
+              open={showBuildDeployModal}
               footer={[
                 <Button
                   onClick={onBuildAndDeployButtonOK}
@@ -415,7 +418,7 @@ export default (props: any) => {
                   {intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
                 </Button>,
               ]}
-              onCancel={onDeployButtonCancel}
+              onCancel={onButtonCancel}
             >
               <ModalContent>
                 {creating
@@ -429,7 +432,7 @@ export default (props: any) => {
                   {intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.title' })}
                 </ModalTitle>
               )}
-              visible={showDeployModal}
+              open={showDeployModal}
               footer={[
                 <Button
                   onClick={onDeployButtonOK}
@@ -438,7 +441,7 @@ export default (props: any) => {
                   {intl.formatMessage({ id: 'pages.cluster.action.deploy' })}
                 </Button>,
               ]}
-              onCancel={onDeployButtonCancel}
+              onCancel={onButtonCancel}
             >
               <ModalContent>
                 {creating
@@ -446,6 +449,15 @@ export default (props: any) => {
                   : intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.edit.content' })}
               </ModalContent>
             </Modal>
+            {enableRebuilddeployModal && (
+              <RebuilddeployModal
+                onCancel={() => {
+                  onButtonCancel();
+                }}
+                clusterID={id}
+                clusterFullPath={cluster!.fullPath}
+              />
+            )}
           </StepAction>
         </Col>
       </Row>

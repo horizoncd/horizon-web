@@ -603,6 +603,10 @@ export default {
     批次暂停： 集群处于发布批次暂停中
     人工暂停： 集群处于人工暂停中，发布/回滚操作会在取消暂停后生效
   `,
+  'pages.message.cluster.builddeploy.rebuild.confirm': '确定要重新构建发布吗？',
+  'pages.message.cluster.builddeploy.rebuild.content': '当前集群发布未完成，重新构建发布会导致当前版本被回退，请评估风险后操作！',
+  'pages.message.cluster.builddeploy.rebuild.current': '当前版本：',
+  'pages.message.cluster.builddeploy.rebuild.rollback': '回退版本：',
   'pages.message.cluster.restart.confirm': '确定重启所有Pods?',
   'pages.message.cluster.restart.success': '重启操作提交成功',
   'pages.message.cluster.rollback.hint': '请选择流水线进行回滚',
