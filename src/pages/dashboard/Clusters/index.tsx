@@ -29,7 +29,7 @@ import './index.less';
 import Expression from '@/components/FilterBox/Expression';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
-import RebuilddeployModal from '@/components/RebuilddeployModal';
+import { RebuilddeployModal } from '@/components/rollout';
 
 function Title(props: {
   id: number,

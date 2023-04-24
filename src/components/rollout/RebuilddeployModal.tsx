@@ -7,6 +7,7 @@ import {
   getClusterBuildStatusV2, getClusterResourceTree, getClusterStatusV2, getStepV2,
 } from '@/services/clusters/clusters';
 import getSortedKey from './util';
+import { BoldText } from '../Widget';
 
 interface RebuilddeployModalProps {
   clusterID: number;
@@ -106,15 +107,15 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
       <div>
         <p>{intl.formatMessage({ id: 'pages.message.cluster.builddeploy.rebuild.content' })}</p>
         <p>
-          <span style={{ color: 'green', fontWeight: 'bold' }}>
+          <BoldText style={{ color: 'green' }}>
             {intl.formatMessage({ id: 'pages.message.cluster.builddeploy.rebuild.current' })}
-          </span>
+          </BoldText>
           {revisions[0]}
         </p>
         <p>
-          <span style={{ color: 'red', fontWeight: 'bold' }}>
+          <BoldText style={{ color: 'red' }}>
             {intl.formatMessage({ id: 'pages.message.cluster.builddeploy.rebuild.rollback' })}
-          </span>
+          </BoldText>
           {revisions[revisions.length - 1]}
         </p>
       </div>

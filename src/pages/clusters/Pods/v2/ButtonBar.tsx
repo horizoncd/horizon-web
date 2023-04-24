@@ -5,7 +5,7 @@ import {
 import { history, useIntl, useModel } from 'umi';
 import { stringify } from 'query-string';
 import { useState } from 'react';
-import RebuilddeployModal from '@/components/RebuilddeployModal';
+import { RebuilddeployModal } from '@/components/rollout';
 import RBAC from '@/rbac';
 import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';

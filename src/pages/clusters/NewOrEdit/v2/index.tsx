@@ -24,7 +24,7 @@ import {
 } from '../Widget';
 import { ResourceType } from '@/const';
 import { difference } from '@/utils';
-import RebuilddeployModal from '@/components/RebuilddeployModal';
+import { RebuilddeployModal } from '@/components/rollout';
 
 export default (props: any) => {
   const intl = useIntl();
