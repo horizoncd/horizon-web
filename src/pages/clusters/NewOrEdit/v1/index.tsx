@@ -449,15 +449,14 @@ export default (props: any) => {
                   : intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.edit.content' })}
               </ModalContent>
             </Modal>
-            {enableRebuilddeployModal && (
-              <RebuilddeployModal
-                onCancel={() => {
-                  onButtonCancel();
-                }}
-                clusterID={id}
-                clusterFullPath={cluster!.fullPath}
-              />
-            )}
+            <RebuilddeployModal
+              open={enableRebuilddeployModal}
+              onCancel={() => {
+                onButtonCancel();
+              }}
+              clusterID={id}
+              clusterFullPath={cluster?.fullPath ?? ''}
+            />
           </StepAction>
         </Col>
       </Row>

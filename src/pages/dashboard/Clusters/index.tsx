@@ -30,6 +30,7 @@ import Expression from '@/components/FilterBox/Expression';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
 import { RebuilddeployModal } from '@/components/rollout';
+import WithTheme from '@/theme';
 
 function Title(props: {
   id: number,
@@ -55,7 +56,7 @@ function Title(props: {
     setTemplate, setTemplateRelease, setEnv, setRegion,
   } = props;
   const intl = useIntl();
-  const [showRebuilddeployModal, setShowRebuilddeployModal] = useState(false);
+  const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
   const index = name.indexOf(filter);
   const beforeStr = name.substring(0, index);
   const afterStr = name.substring(index + filter.length);
@@ -101,7 +102,7 @@ function Title(props: {
             <a
               aria-label={intl.formatMessage({ id: 'pages.cluster.action.buildDeploy' })}
               onClick={() => {
-                setShowRebuilddeployModal(true);
+                setEnableRebuilddeployModal(true);
               }}
             >
               <RocketTwoTone style={{ marginLeft: '1rem' }} />
@@ -134,15 +135,14 @@ function Title(props: {
             <PopupTime time={updatedAt} prefix={intl.formatMessage({ id: 'pages.common.updated' })} />
           </Tooltip>
         </div>
-        {showRebuilddeployModal && (
-          <RebuilddeployModal
-            clusterID={id}
-            clusterFullPath={fullPath!}
-            onCancel={() => {
-              setShowRebuilddeployModal(false);
-            }}
-          />
-        )}
+        <RebuilddeployModal
+          open={enableRebuilddeployModal}
+          clusterID={id}
+          clusterFullPath={fullPath!}
+          onCancel={() => {
+            setEnableRebuilddeployModal(false);
+          }}
+        />
       </div>
     </div>
   );
@@ -457,7 +457,7 @@ function Clusters(props: ClustersProps) {
   ), [clear, clusters, env2DisplayName, filter, refreshCluster]);
 
   return (
-    <>
+    <WithTheme>
       <Tabs
         size="large"
         onChange={(key) => { setMode(key as Mode); }}
@@ -493,7 +493,7 @@ function Clusters(props: ClustersProps) {
           }}
         />
       </div>
-    </>
+    </WithTheme>
   );
 }
 

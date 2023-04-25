@@ -6,10 +6,11 @@ import { ClusterStatus, PublishType, TaskStatus } from '@/const';
 import {
   getClusterBuildStatusV2, getClusterResourceTree, getClusterStatusV2, getStepV2,
 } from '@/services/clusters/clusters';
-import getSortedKey from './util';
-import { BoldText } from '../Widget';
+import { refreshPodsInfo } from '@/components/rollout';
+import { BoldText } from '@/components/Widget';
 
 interface RebuilddeployModalProps {
+  open: boolean;
   clusterID: number;
   clusterFullPath: string;
   onCancel: () => void;
@@ -17,7 +18,7 @@ interface RebuilddeployModalProps {
 
 function RebuilddeployModal(props: RebuilddeployModalProps) {
   const {
-    clusterID, clusterFullPath, onCancel,
+    open = false, clusterID, clusterFullPath, onCancel,
   } = props;
 
   const intl = useIntl();
@@ -34,12 +35,17 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
 
   const { data: step, run: getStep } = useRequest(() => getStepV2(clusterID), {
     manual: true,
+    onSuccess: (data) => {
+      if (data.index === data.total) {
+        setWithoutConfirm(true);
+      }
+    },
   });
 
   const { run: getResourceTree } = useRequest(() => getClusterResourceTree(clusterID), {
     manual: true,
     onSuccess: (data) => {
-      const sortedKey = getSortedKey(data);
+      const { sortedKey } = refreshPodsInfo(data);
       const r: string[] = sortedKey.map((key) => {
         const parts = key.split('/');
         if (parts.length > 0) {
@@ -74,6 +80,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
         setWithoutConfirm(true);
       }
     },
+    ready: open,
   });
 
   useRequest(() => getClusterBuildStatusV2(clusterID), {
@@ -87,6 +94,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
         setWithoutConfirm(true);
       }
     },
+    ready: open,
   });
 
   return (
@@ -98,7 +106,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
           {intl.formatMessage({ id: 'pages.message.cluster.builddeploy.rebuild.confirm' })}
         </div>
       )}
-      open={nonBuilding && progressing && step && step.index !== step.total && revisions.length > 1}
+      open={open && nonBuilding && progressing && step && step.index !== step.total && revisions.length > 1}
       onCancel={onCancel}
       onOk={() => {
         window.location.href = `/clusters${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;

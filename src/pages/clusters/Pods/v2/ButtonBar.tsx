@@ -175,15 +175,14 @@ function ButtonBar(props: ButtonBarProps) {
           <DownOutlined />
         </Button>
       </Dropdown>
-      {enableRebuilddeployModal && (
-        <RebuilddeployModal
-          onCancel={() => {
-            setEnableRebuilddeployModal(false);
-          }}
-          clusterID={id}
-          clusterFullPath={fullPath}
-        />
-      )}
+      <RebuilddeployModal
+        open={enableRebuilddeployModal}
+        onCancel={() => {
+          setEnableRebuilddeployModal(false);
+        }}
+        clusterID={id}
+        clusterFullPath={fullPath}
+      />
     </div>
   );
 }

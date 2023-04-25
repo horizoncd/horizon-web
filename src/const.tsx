@@ -1,3 +1,7 @@
+import {
+  SmileOutlined, LoadingOutlined, FrownOutlined,
+} from '@ant-design/icons';
+import { ReactNode } from 'react';
 import Intl from '@/components/Intl';
 
 export enum ResourceType {
@@ -22,6 +26,10 @@ export enum RunningTask {
   BUILD = 'build',
   DEPLOY = 'deploy',
   NONE = 'none',
+}
+
+export enum BuildStatus {
+  None, Failed, Running,
 }
 
 export enum TaskStatus {
@@ -75,3 +83,39 @@ export const RedirectURL = `${window.location.protocol}//${window.location.host}
 export const IndexURL = `${window.location.protocol}//${window.location.host}`;
 
 export const gitURLRegExp = /^(?:git|ssh|https?|git@[-\w.]+):(\/\/)?(.*?)(\.git)(\/?|#[-\d\w._]+?)$/;
+
+const smile = <SmileOutlined />;
+const loading = <LoadingOutlined />;
+const frown = <FrownOutlined />;
+
+export const taskStatus2Entity = new Map<TaskStatus, {
+  icon: JSX.Element,
+  buildTitle: ReactNode,
+  deployTitle: ReactNode,
+  stepStatus: 'wait' | 'process' | 'finish' | 'error',
+}>([
+  [TaskStatus.PENDING, {
+    icon: loading,
+    buildTitle: <Intl id="pages.cluster.status.building" />,
+    deployTitle: <Intl id="pages.cluster.status.deploying" />,
+    stepStatus: 'process',
+  }],
+  [TaskStatus.RUNNING, {
+    icon: loading,
+    buildTitle: <Intl id="pages.cluster.status.building" />,
+    deployTitle: <Intl id="pages.cluster.status.deploying" />,
+    stepStatus: 'process',
+  }],
+  [TaskStatus.SUCCEEDED, {
+    icon: smile,
+    buildTitle: <Intl id="pages.cluster.status.built" />,
+    deployTitle: <Intl id="pages.cluster.status.deployed" />,
+    stepStatus: 'finish',
+  }],
+  [TaskStatus.FAILED, {
+    icon: frown,
+    buildTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.buildFail" /></span>,
+    deployTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.deployFail" /></span>,
+    stepStatus: 'error',
+  }],
+]);

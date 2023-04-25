@@ -291,6 +291,7 @@ export default (props: any) => {
   };
 
   const onBuildAndDeployButtonOK = () => {
+    setShowBuildDeployModal(false);
     setEnableRebuilddeployModal(true);
   };
 
@@ -517,15 +518,14 @@ export default (props: any) => {
             )}
             {buildDeployModal}
             {deployModal}
-            {enableRebuilddeployModal && (
-              <RebuilddeployModal
-                onCancel={() => {
-                  onButtonCancel();
-                }}
-                clusterID={id}
-                clusterFullPath={cluster!.fullPath}
-              />
-            )}
+            <RebuilddeployModal
+              open={enableRebuilddeployModal}
+              onCancel={() => {
+                onButtonCancel();
+              }}
+              clusterID={id}
+              clusterFullPath={cluster?.fullPath ?? ''}
+            />
           </StepAction>
         </Col>
       </Row>
