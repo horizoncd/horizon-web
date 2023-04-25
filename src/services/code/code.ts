@@ -57,8 +57,13 @@ export async function listGitRef(params: API.CodeBranchSearchParam) {
     url = '/apis/front/v1/code/listtag';
   }
 
+  if (!params.filter) {
+    // eslint-disable-next-line no-param-reassign
+    params.filter = '';
+  }
+
   const query = new URLSearchParams({ ...params, pageNumber: `${params.pageNumber}`, pageSize: `${params.pageSize}` });
-  url = `/apis/front/v1/code/listbranch?${query.toString()}`;
+  url = `${url}?${query.toString()}`;
 
   return fetch(url).then((res) => res.json());
 }

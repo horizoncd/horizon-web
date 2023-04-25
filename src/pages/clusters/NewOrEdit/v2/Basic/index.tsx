@@ -65,7 +65,7 @@ export default (props: any) => {
     return listGitRef({
       refType,
       giturl,
-      filter,
+      filter: filter ?? '',
       pageNumber: 1,
       pageSize: 50,
     });

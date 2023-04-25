@@ -62,7 +62,7 @@ export default (props: any) => {
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => listGitRef({
     refType: form.getFieldValue('refType'),
     giturl: cluster!.git.url,
-    filter,
+    filter: filter ?? '',
     pageNumber: 1,
     pageSize: 50,
   }), {

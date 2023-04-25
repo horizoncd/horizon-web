@@ -338,6 +338,8 @@ export default {
   'pages.cluster.monitor.last.3d': 'Last 3day',
   'pages.cluster.monitor.custom': 'Custom',
   'pages.cluster.monitor.nss': 'NSS',
+  'pages.cluster.monitor.grafanaNotConfigured': 'Grafana not configured',
+  'pages.cluster.monitor.grafanaNotConfigured.subTitle': 'Please configure Grafana first',
 
   'pages.cluster.action.buildDeploy': 'Build and deploy',
   'pages.cluster.action.deploy': 'Deploy',
