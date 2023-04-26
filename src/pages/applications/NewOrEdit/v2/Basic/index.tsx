@@ -5,7 +5,6 @@ import {
 import type { FieldData, Rule } from 'rc-field-form/lib/interface';
 import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
-import { useEffect } from 'react';
 import { queryReleases } from '@/services/templates/templates';
 import styles from '@/pages/applications/NewOrEdit/index.less';
 import { GitRefType, listGitRef } from '@/services/code/code';
@@ -41,12 +40,6 @@ export default (props: any) => {
     debounceInterval: 100,
     ready: !!form.getFieldValue('url') && !readOnly,
   });
-
-  useEffect(() => {
-    if (editing) {
-      refreshGitRefList(form.getFieldValue('url'));
-    }
-  }, [form, editing, refreshGitRefList]);
 
   const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({
     id: `pages.applicationNew.basic.${suffix}`,
