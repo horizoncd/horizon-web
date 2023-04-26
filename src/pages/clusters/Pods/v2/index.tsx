@@ -7,12 +7,12 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
   getClusterV2, getClusterStatusV2, getClusterResourceTree, getStepV2, getClusterBuildStatusV2,
 } from '@/services/clusters/clusters';
-import { ClusterStatus, TaskStatus } from '@/const';
+import { ClusterStatus, TaskStatus, BuildStatus } from '@/const';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin } from '@/components/Widget';
-import { BuildStatus, refreshPodsInfo } from '../util';
+import { refreshPodsInfo } from '@/components/rollout';
 import PodsTable from '../PodsTable';
 import { StepCard, BuildCard, CountCircle } from '../components';
 import ButtonBar from './ButtonBar';

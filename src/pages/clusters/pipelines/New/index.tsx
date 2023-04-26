@@ -57,6 +57,7 @@ export default (props: any) => {
       });
       refreshDiff(gitRef);
     },
+    ready: !!id,
   });
 
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => listGitRef({

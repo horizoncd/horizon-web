@@ -24,6 +24,7 @@ import {
 } from '../Widget';
 import { ResourceType } from '@/const';
 import { difference } from '@/utils';
+import { RebuilddeployModal } from '@/components/rollout';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -73,6 +74,7 @@ export default (props: any) => {
   const [deploySubmitted, setDeploySubmitted] = useState(false);
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
 
   const basicHasError = () => {
     if (editing && basicInfo.length === 0) {
@@ -289,7 +291,8 @@ export default (props: any) => {
   };
 
   const onBuildAndDeployButtonOK = () => {
-    window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+    setShowBuildDeployModal(false);
+    setEnableRebuilddeployModal(true);
   };
 
   const onDeployButtonOK = () => {
@@ -379,7 +382,7 @@ export default (props: any) => {
           {intl.formatMessage({ id: 'pages.clusterEdit.prompt.buildDeploy.title' })}
         </ModalTitle>
       )}
-      visible={showBuildDeployModal}
+      open={showBuildDeployModal}
       footer={[
         <Button
           onClick={onBuildAndDeployButtonOK}
@@ -405,7 +408,7 @@ export default (props: any) => {
           {intl.formatMessage({ id: 'pages.clusterEdit.prompt.deploy.title' })}
         </ModalTitle>
       )}
-      visible={showDeployModal}
+      open={showDeployModal}
       footer={[
         <Button
           onClick={onDeployButtonOK}
@@ -515,6 +518,16 @@ export default (props: any) => {
             )}
             {buildDeployModal}
             {deployModal}
+            <RebuilddeployModal
+              open={enableRebuilddeployModal}
+              setOpen={setEnableRebuilddeployModal}
+              onCancel={() => {
+                setEnableRebuilddeployModal(false);
+                onButtonCancel();
+              }}
+              clusterID={id}
+              clusterFullPath={cluster?.fullPath ?? ''}
+            />
           </StepAction>
         </Col>
       </Row>

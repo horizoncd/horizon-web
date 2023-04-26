@@ -604,6 +604,10 @@ export default {
     Step paused: The cluster is in the step paused state
     Manual paused: The cluster is in a manual paused state, and the latest deploy/rollback operation takes effect after unpause
   `,
+  'pages.message.cluster.builddeploy.rebuild.confirm': 'Are you sure to build and deploy the cluster again?',
+  'pages.message.cluster.builddeploy.rebuild.content': 'The current cluster\'s deployment has not been completed. Repeated deployment will cause the current revision to be rolled back. Please evaluate the risk before operation!',
+  'pages.message.cluster.builddeploy.rebuild.current': 'Current revision: ',
+  'pages.message.cluster.builddeploy.rebuild.rollback': 'Rollback revision: ',
   'pages.message.cluster.restart.confirm': 'Are you sure to restart all pods?',
   'pages.message.cluster.restart.success': 'Restart is submitted successfully',
   'pages.message.cluster.rollback.hint': 'Please select a pipeline to rollback',

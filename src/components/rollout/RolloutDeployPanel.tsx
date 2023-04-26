@@ -15,7 +15,6 @@ import {
 } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
-import styles from '../index.less';
 import { BoldText } from '@/components/Widget';
 
 const { Step } = Steps;
@@ -103,6 +102,7 @@ const Tips = () => {
         】
         {intl.formatMessage({ id: 'pages.message.pods.tip1.content0.2' })}
         {intl.formatMessage({ id: 'pages.message.pods.tip2.content2' })}
+        【
         {' '}
         <StrongTxt txt={intl.formatMessage({ id: 'pages.pods.unpause' })} />
         {' '}
@@ -348,7 +348,7 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                       Modal.confirm(
                         {
                           title: (
-                            <div className={styles.boldText}>
+                            <div style={{ fontWeight: 'bold' }}>
                               {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
                             </div>
                           ),
@@ -374,7 +374,7 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                       Modal.confirm(
                         {
                           title: (
-                            <div className={styles.boldText}>
+                            <div style={{ fontWeight: 'bold' }}>
                               {intl.formatMessage({ id: 'pages.message.cluster.deployCancel.confirm' })}
                             </div>
                           ),

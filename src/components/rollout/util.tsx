@@ -1,55 +1,9 @@
-import {
-  SmileOutlined, LoadingOutlined, FrownOutlined,
-} from '@ant-design/icons';
-import { ReactNode } from 'react';
-import Intl from '@/components/Intl';
-import { TaskStatus } from '@/const';
-import utils from '@/utils';
+import Utils from '@/utils';
 
 const runningState = 'Running';
 const onlineState = 'online';
 const unknownState = 'unknown';
 const offlineState = 'offline';
-
-const smile = <SmileOutlined />;
-const loading = <LoadingOutlined />;
-const frown = <FrownOutlined />;
-
-export enum BuildStatus {
-  None, Failed, Running,
-}
-
-export const taskStatus2Entity = new Map<TaskStatus, {
-  icon: JSX.Element,
-  buildTitle: ReactNode,
-  deployTitle: ReactNode,
-  stepStatus: 'wait' | 'process' | 'finish' | 'error',
-}>([
-  [TaskStatus.PENDING, {
-    icon: loading,
-    buildTitle: <Intl id="pages.cluster.status.building" />,
-    deployTitle: <Intl id="pages.cluster.status.deploying" />,
-    stepStatus: 'process',
-  }],
-  [TaskStatus.RUNNING, {
-    icon: loading,
-    buildTitle: <Intl id="pages.cluster.status.building" />,
-    deployTitle: <Intl id="pages.cluster.status.deploying" />,
-    stepStatus: 'process',
-  }],
-  [TaskStatus.SUCCEEDED, {
-    icon: smile,
-    buildTitle: <Intl id="pages.cluster.status.built" />,
-    deployTitle: <Intl id="pages.cluster.status.deployed" />,
-    stepStatus: 'finish',
-  }],
-  [TaskStatus.FAILED, {
-    icon: frown,
-    buildTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.buildFail" /></span>,
-    deployTitle: <span style={{ color: 'red' }}><Intl id="pages.cluster.status.deployFail" /></span>,
-    stepStatus: 'error',
-  }],
-]);
 
 // PodLifeCycleSchedule specifies whether pod has been scheduled
 const PodLifeCycleSchedule = 'PodSchedule';
@@ -274,7 +228,7 @@ function getVersion(revision: string) {
   return version;
 }
 
-export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
+const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
   const podsMap: Record<string, CLUSTER.PodInTable[]> = {};
   const currentPods: CLUSTER.PodInTable[] = [];
   const healthyPods: CLUSTER.PodInTable[] = [];
@@ -370,7 +324,7 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
             message,
           },
           podName: metadata.name,
-          createTime: utils.timeToLocal(creationTimestamp),
+          createTime: Utils.timeToLocal(creationTimestamp),
           ip: status.podIP,
           onlineStatus,
           readyCount,
@@ -426,3 +380,5 @@ export const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
     sortedKey,
   };
 };
+
+export default refreshPodsInfo;
