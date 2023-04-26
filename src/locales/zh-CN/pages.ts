@@ -337,6 +337,8 @@ export default {
   'pages.cluster.monitor.last.3d': '最近3天',
   'pages.cluster.monitor.custom': '自定义',
   'pages.cluster.monitor.nss': '哨兵监控',
+  'pages.cluster.monitor.grafanaNotConfigured': '未配置Grafana地址',
+  'pages.cluster.monitor.grafanaNotConfigured.subTitle': '使用监控前请配置Grafana地址',
 
   'pages.cluster.action.buildDeploy': '构建发布',
   'pages.cluster.action.deploy': '直接发布',

@@ -1,4 +1,5 @@
 import {
+  AutoComplete,
   Card, Form, Input, Select,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
@@ -64,7 +65,7 @@ export default (props: any) => {
     return listGitRef({
       refType,
       giturl,
-      filter,
+      filter: filter ?? '',
       pageNumber: 1,
       pageSize: 50,
     });
@@ -236,17 +237,14 @@ export default (props: any) => {
                   {
                   form.getFieldValue('refType') === GitRefType.Commit
                     ? <Input /> : (
-                      <Select
+                      <AutoComplete
                         disabled={readOnly}
                         showSearch
-                        onSearch={(item) => {
-                          refreshGitRefList(item);
-                        }}
                       >
                         {
-                        gitRefList.map((item: string) => <Option key={item} value={item}>{item}</Option>)
+                        gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
                       }
-                      </Select>
+                      </AutoComplete>
                     )
                 }
                 </Form.Item>

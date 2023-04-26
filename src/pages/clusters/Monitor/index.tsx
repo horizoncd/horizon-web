@@ -11,6 +11,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { CLUSTER } from '@/services/clusters';
 import MonitorSearchForm from '@/pages/clusters/Monitor/MonitorSearchForm';
 import { formatQueryParam, mergeDefaultValue } from '@/utils';
+import GrafanaNotConfigured from './GrafanaNotConfigured';
 
 const { TabPane } = Tabs;
 
@@ -100,6 +101,10 @@ export default () => {
       sortedDashboards.push(item);
     }
   });
+
+  if (data && (!data.host || data.host === '')) {
+    return <GrafanaNotConfigured />;
+  }
 
   return (
     <PageWithBreadcrumb>
