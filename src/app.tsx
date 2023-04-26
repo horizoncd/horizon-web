@@ -221,6 +221,7 @@ export const request: RequestConfig = {
         description: response.statusText,
       });
     }
+    throw error;
   },
 };
 
