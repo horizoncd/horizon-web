@@ -520,7 +520,9 @@ export default (props: any) => {
             {deployModal}
             <RebuilddeployModal
               open={enableRebuilddeployModal}
+              setOpen={setEnableRebuilddeployModal}
               onCancel={() => {
+                setEnableRebuilddeployModal(false);
                 onButtonCancel();
               }}
               clusterID={id}

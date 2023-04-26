@@ -177,6 +177,7 @@ function ButtonBar(props: ButtonBarProps) {
       </Dropdown>
       <RebuilddeployModal
         open={enableRebuilddeployModal}
+        setOpen={setEnableRebuilddeployModal}
         onCancel={() => {
           setEnableRebuilddeployModal(false);
         }}

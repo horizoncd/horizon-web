@@ -11,6 +11,7 @@ import { BoldText } from '@/components/Widget';
 
 interface RebuilddeployModalProps {
   open: boolean;
+  setOpen: (open: boolean) => void;
   clusterID: number;
   clusterFullPath: string;
   onCancel: () => void;
@@ -18,7 +19,7 @@ interface RebuilddeployModalProps {
 
 function RebuilddeployModal(props: RebuilddeployModalProps) {
   const {
-    open = false, clusterID, clusterFullPath, onCancel,
+    open = false, setOpen, clusterID, clusterFullPath, onCancel,
   } = props;
 
   const intl = useIntl();
@@ -109,6 +110,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
       open={open && nonBuilding && progressing && step && step.index !== step.total && revisions.length > 1}
       onCancel={onCancel}
       onOk={() => {
+        setOpen(false);
         window.location.href = `/clusters${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
       }}
     >

@@ -137,6 +137,7 @@ function Title(props: {
         </div>
         <RebuilddeployModal
           open={enableRebuilddeployModal}
+          setOpen={setEnableRebuilddeployModal}
           clusterID={id}
           clusterFullPath={fullPath!}
           onCancel={() => {
