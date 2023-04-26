@@ -1,7 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { PropsWithChildren, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
-import QueryBoldSpan from '../Widget/QueryBoldSpan';
 import { SuggestionProps } from './types';
 
 const FloatBox = styled.div`
@@ -34,7 +33,7 @@ const SuggestionItem = styled.li`
 `;
 
 const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>, ref) => {
-  const { query = '', expand = true, options: sgOptionsProps } = props;
+  const { expand = true, options: sgOptionsProps } = props;
   const [sgOptions, setSgOptions] = useState(sgOptionsProps);
 
   useImperativeHandle(ref, () => ({
@@ -67,7 +66,9 @@ const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>,
             </span>
           )
           : null}
-        <QueryBoldSpan query={query}>{item.name ?? ''}</QueryBoldSpan>
+        {
+          item.name ?? ''
+          }
       </SuggestionItem>
     );
   });
