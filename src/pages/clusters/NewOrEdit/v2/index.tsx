@@ -292,7 +292,11 @@ export default (props: any) => {
 
   const onBuildAndDeployButtonOK = () => {
     setShowBuildDeployModal(false);
-    setEnableRebuilddeployModal(true);
+    if (creating) {
+      window.location.href = `/clusters${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+    } else {
+      setEnableRebuilddeployModal(true);
+    }
   };
 
   const onDeployButtonOK = () => {
