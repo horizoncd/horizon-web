@@ -189,10 +189,9 @@ export default (props: any) => {
                           refreshDiff(key);
                         }}
                         showSearch
-                        // onSearch={(item) => {
-                        //   console.log("onSearch")
-                        //   refreshGitRefList(item);
-                        // }}
+                        onSearch={(item) => {
+                          refreshGitRefList(item);
+                        }}
                       >
                         {
                           gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
