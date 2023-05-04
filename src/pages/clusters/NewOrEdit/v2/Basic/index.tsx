@@ -240,6 +240,9 @@ export default (props: any) => {
                       <AutoComplete
                         disabled={readOnly}
                         showSearch
+                        onSearch={(item) => {
+                          refreshGitRefList(item);
+                        }}
                       >
                         {
                         gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
