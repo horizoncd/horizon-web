@@ -184,6 +184,7 @@ function Clusters(props: ClustersProps) {
   const [pageSize, setPageSize] = useState(10);
   const [clusters, setClusters] = useState<CLUSTER.Cluster[]>([]);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [displayName2Env, setDisplayName2Env] = useState<Map<string, string>>(new Map());
   const [displayName2Region, setDisplayName2Region] = useState<Map<string, string>>(new Map());
   const [environment, setEnvironment] = useState('');
   const [tpl, setTpl] = useState('');
@@ -262,7 +263,7 @@ function Clusters(props: ClustersProps) {
       if (expr.category && expr.value) {
         switch (expr.category) {
           case SearchKeyEnv:
-            setEnvironment(expr.value);
+            setEnvironment(displayName2Env?.get(expr.value) ?? '');
             break;
           case SearchKeyTemplate:
             setTpl(expr.value);
@@ -279,7 +280,7 @@ function Clusters(props: ClustersProps) {
       }
     });
     refreshCluster();
-  }, [displayName2Region, setFilterTrim, refreshCluster]);
+  }, [refreshCluster, setFilterTrim, displayName2Env, displayName2Region]);
 
   const { data: regions } = useRequest(queryRegions, {
     onSuccess: (items) => {
@@ -290,10 +291,22 @@ function Clusters(props: ClustersProps) {
     },
   });
 
+  const { data: envs } = useRequest(queryEnvironments, {
+    onSuccess: (data) => {
+      const e = new Map<string, string>();
+      data.forEach((item) => e.set(item.name, item.displayName));
+      setEnv2DisplayName(e);
+
+      const d2e = new Map<string, string>();
+      data.forEach((item) => d2e.set(item.displayName, item.name));
+      setDisplayName2Env(d2e);
+    },
+  });
+
   useEffect(() => {
     const exprs: Expression[] = [];
     if (environment !== '') {
-      exprs.push({ category: SearchKeyEnv, operator: '=', value: environment });
+      exprs.push({ category: SearchKeyEnv, operator: '=', value: (envs ?? []).find((e) => e.name === environment)?.displayName ?? '' });
     }
     if (region !== '') {
       exprs.push({ category: SearchKeyRegion, operator: '=', value: (regions ?? []).find((r) => r.name === region)?.displayName ?? '' });
@@ -308,15 +321,7 @@ function Clusters(props: ClustersProps) {
       exprs.push({ search: filter });
     }
     setDefaultValue([...exprs, {}]);
-  }, [environment, filter, tpl, tplRelease, region, regions]);
-
-  const { data: envs } = useRequest(queryEnvironments, {
-    onSuccess: () => {
-      const e = new Map<string, string>();
-      envs!.forEach((item) => e.set(item.name, item.displayName));
-      setEnv2DisplayName(e);
-    },
-  });
+  }, [environment, filter, tpl, tplRelease, region, regions, envs]);
 
   useRequest(() => listTemplatesV2({ fullpath: false }), {
     onSuccess: (items) => {
@@ -336,7 +341,7 @@ function Clusters(props: ClustersProps) {
         values: [
           {
             operator: '=',
-            possibleValues: envs ? envs.map((e) => e.name) : [],
+            possibleValues: envs ? envs.map((e) => e.displayName) : [],
           },
         ],
 
@@ -434,10 +439,10 @@ function Clusters(props: ClustersProps) {
       return (
         <div key={item.id}>
           <Title
-            setTemplate={(t) => { clear(); setTpl(t); }}
-            setTemplateRelease={(s) => { setTplRelease(s); }}
-            setEnv={(s) => { clear(); setEnvironment(s); }}
-            setRegion={(r) => { clear(); setRegion(r); }}
+            setTemplate={setTpl}
+            setTemplateRelease={setTplRelease}
+            setEnv={setEnvironment}
+            setRegion={setRegion}
             id={treeData.id}
             updatedAt={treeData.updatedAt}
             filter={filter}
@@ -455,7 +460,7 @@ function Clusters(props: ClustersProps) {
         </div>
       );
     })
-  ), [clear, clusters, env2DisplayName, filter, refreshCluster]);
+  ), [clusters, env2DisplayName, filter, refreshCluster]);
 
   return (
     <WithTheme>

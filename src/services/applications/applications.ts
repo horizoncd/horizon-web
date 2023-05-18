@@ -1,6 +1,4 @@
 import { request } from 'umi';
-import type { CLUSTER } from '../clusters';
-import type { API } from '../typings';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{

@@ -218,6 +218,7 @@ export const TagsFilter = React.forwardRef((props: TagsFilterProps, ref) => {
       if (query) {
         result.push({ search: query });
       }
+      setExpand(false);
       onSubmit(result);
       return;
     }

@@ -164,7 +164,7 @@ export default () => {
   const { data: clusters } = useRequest(() => queryClusters(
     id,
     {
-      filter, pageNumber, pageSize, environment, tagSelector,
+      filter, pageNumber, pageSize, environment, tagSelector, withFavorite: true,
     },
   ), {
     refreshDeps: [filter, environment, pageNumber, tagSelector],

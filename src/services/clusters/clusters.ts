@@ -9,7 +9,7 @@ export async function queryClusters(applicationID: number, params: CLUSTER.Clust
 
   return request<{
     data: API.PageResult<CLUSTER.ClusterBase>;
-  }>(`/apis/core/v1/applications/${applicationID}/clusters`, {
+  }>(`/apis/core/v2/applications/${applicationID}/clusters`, {
     method: 'GET',
     params: filter,
   });

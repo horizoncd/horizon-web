@@ -2,6 +2,7 @@
 import React, { PropsWithChildren, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
 import { SuggestionProps } from './types';
+import { QueryBoldSpan } from '../Widget';
 
 const FloatBox = styled.div`
   display: inline-block;
@@ -33,7 +34,7 @@ const SuggestionItem = styled.li`
 `;
 
 const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>, ref) => {
-  const { expand = true, options: sgOptionsProps } = props;
+  const { query = '', expand = true, options: sgOptionsProps } = props;
   const [sgOptions, setSgOptions] = useState(sgOptionsProps);
 
   useImperativeHandle(ref, () => ({
@@ -66,9 +67,7 @@ const Suggestions = React.forwardRef((props: PropsWithChildren<SuggestionProps>,
             </span>
           )
           : null}
-        {
-          item.name ?? ''
-          }
+        <QueryBoldSpan query={query}>{item.name ?? ''}</QueryBoldSpan>
       </SuggestionItem>
     );
   });
