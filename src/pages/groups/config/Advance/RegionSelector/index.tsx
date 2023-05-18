@@ -1,7 +1,7 @@
 import { Card } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
-import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
+import { ValueType, DynamicTagForm } from '@/components/tag';
 import { getGroupByID, updateGroupRegionSelector } from '@/services/groups/groups';
 import RBAC from '@/rbac';
 

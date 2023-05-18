@@ -12,7 +12,6 @@ import { getClusterV2 } from '@/services/clusters/clusters';
 import { pipelineV2 } from '@/services/version/version';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
 import { ResourceType } from '@/const';
-import { CLUSTER } from '@/services/clusters';
 import Basic from '../Basic';
 import Output from '../Output';
 import Tag from '../Tag';
@@ -127,7 +126,6 @@ export default () => {
         <Output clusterID={clusterID} />
         <Tag
           clusterID={clusterID}
-          clusterFullPath={clusterFullPath}
         />
       </MaxSpace>
     </PageWithBreadcrumb>

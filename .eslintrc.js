@@ -27,6 +27,7 @@ module.exports = {
     'airbnb/hooks',
   ],
   rules: {
+    'react/require-default-props': 0,
     'class-methods-use-this': 0,
     'react/function-component-definition': 0,
     'spaced-comment': 0,

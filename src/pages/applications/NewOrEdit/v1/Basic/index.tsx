@@ -8,8 +8,8 @@ import { queryReleases } from '@/services/templates/templates';
 import styles from '@/pages/applications/NewOrEdit/index.less';
 import { listGitRef, GitRefType } from '@/services/code/code';
 import HForm from '@/components/HForm';
-import type { API } from '@/services/typings';
 import { gitURLRegExp } from '@/const';
+import { TagFormItems, ValueType } from '@/components/tag';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -106,7 +106,7 @@ export default (props: any) => {
         layout="vertical"
         form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          setFormData(a, b);
+          setFormData(a, b.filter((item) => item.name[0] !== 'tags'));
         }}
         fields={formData}
       >
@@ -143,6 +143,10 @@ export default (props: any) => {
               ))}
             </Select>
           </Form.Item>
+        </Card>
+
+        <Card title="Tags" className={styles.gapBetweenCards}>
+          <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
         </Card>
 
         <Card title={formatMessage('repo')} className={styles.gapBetweenCards}>

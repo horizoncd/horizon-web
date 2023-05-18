@@ -15,6 +15,7 @@ import { queryRegions } from '@/services/applications/applications';
 import { ClusterStatus } from '@/const';
 import { MaxSpace } from '@/components/Widget';
 import { gitURLRegExp } from '@/const';
+import { TagFormItems, ValueType } from '@/components/tag';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -147,7 +148,7 @@ export default (props: any) => {
         layout="vertical"
         form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          setFormData(a, b);
+          setFormData(a, b.filter((item) => item.name[0] !== 'tags'));
         }}
         fields={formData}
       >
@@ -227,6 +228,10 @@ export default (props: any) => {
             </Form.Item>
             )
             }
+          </Card>
+
+          <Card title="Tags">
+            <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
           </Card>
 
           <Card title={formatMessage('repo')}>

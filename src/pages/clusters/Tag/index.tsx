@@ -2,7 +2,7 @@ import React from 'react';
 import { Divider } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
-import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
+import { ValueType, DynamicTagForm } from '@/components/tag';
 import { getClusterTags, updateClusterTags } from '@/services/clusters/clusters';
 import Detail from '@/components/PageWithBreadcrumb';
 

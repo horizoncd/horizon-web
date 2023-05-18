@@ -35,6 +35,7 @@ export default (props: any) => {
   const region = 'region';
   const expireTimeStr = 'expireTime';
   const url = 'url';
+  const tags = 'tags';
   const refType = 'refType';
   const refValue = 'refValue';
   const subfolder = 'subfolder';
@@ -172,7 +173,7 @@ export default (props: any) => {
     const { data } = useRequest(() => getApplicationV2(id), {
       onSuccess: () => {
         // eslint-disable-next-line no-console
-        const { git, name: appName } = data!;
+        const { git, name: appName, tags: appTags } = data!;
         setApplicationName(appName);
         if (!copying) {
           // basicInfo
@@ -181,6 +182,7 @@ export default (props: any) => {
             { name: environment, value: envFromQuery },
             { name: url, value: git.url },
             { name: subfolder, value: git.subfolder },
+            { name: tags, value: appTags },
             { name: refType, value: gitRefType },
             { name: refValue, value: gitRef },
           ]);
@@ -211,6 +213,7 @@ export default (props: any) => {
                 buildConfig: bc,
                 templateInfo: ti,
                 templateConfig: tc,
+                tags: clusterTags,
               } = clusterData!;
               const { environment: e, region: r } = scope;
               const { url: u, subfolder: s } = g;
@@ -222,6 +225,7 @@ export default (props: any) => {
                 { name: expireTimeStr, value: expireTime },
                 { name: url, value: u },
                 { name: subfolder, value: s },
+                { name: tags, value: clusterTags },
                 { name: refType, value: gitRefType },
                 { name: refValue, value: gitRef },
               ]);
@@ -253,6 +257,7 @@ export default (props: any) => {
           buildConfig: bc,
           templateInfo: ti,
           templateConfig: tc,
+          tags: clusterTags,
         } = clusterData!;
         const { environment: e, region: r } = scope;
         const { url: u, subfolder: s } = git;
@@ -265,6 +270,7 @@ export default (props: any) => {
           { name: expireTimeStr, value: expireTime },
           { name: url, value: u },
           { name: subfolder, value: s },
+          { name: tags, value: clusterTags },
           { name: refType, value: gitRefType },
           { name: refValue, value: gitRef },
         ]);
@@ -313,6 +319,7 @@ export default (props: any) => {
       name: form.getFieldValue(name),
       description: form.getFieldValue(description),
       expireTime: form.getFieldValue(expireTimeStr),
+      tags: form.getFieldValue(tags) ?? [],
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',

@@ -16,7 +16,7 @@ import {
 import Utils from '@/utils';
 import NotFound from '@/pages/404';
 import DetailCard, { Param } from '@/components/DetailCard';
-import DynamicTagForm, { ValueType } from '@/components/DynamicTagForm';
+import { ValueType, DynamicTagForm } from '@/components/tag';
 
 export default () => {
   const intl = useIntl();

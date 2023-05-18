@@ -13,8 +13,8 @@ import {
   getApplicationEnvTemplate,
   getApplicationV2,
   updateApplicationEnvTemplateV2,
+  updateApplicationTags,
 } from '@/services/applications/applications';
-import { API } from '@/services/typings';
 import { Param } from '@/components/DetailCard';
 import utils from '@/utils';
 import { parseGitRef } from '@/services/code/code';
@@ -23,6 +23,8 @@ import { queryEnvironments } from '@/services/environments/environments';
 import BuildConfig from '@/pages/applications/NewOrEdit/v2/BuildConfig';
 import TemplateConfig from '@/pages/applications/NewOrEdit/v2/Config';
 import { MaxSpace } from '@/components/Widget';
+import { TagCard } from '@/components/tag';
+import rbac from '@/rbac';
 
 const { Option } = Select;
 
@@ -253,6 +255,12 @@ export default () => {
               setTemplateConfig(formData);
               setTemplateConfigSubmitted(true);
             }}
+          />
+          <TagCard
+            tags={application.tags}
+            title={intl.formatMessage({ id: 'pages.tags.normal' })}
+            updateDisabled={!rbac.Permissions.updateApplicationTags}
+            onUpdate={(tags) => updateApplicationTags(id, tags).then(refreshApplication)}
           />
         </MaxSpace>
       </Card>

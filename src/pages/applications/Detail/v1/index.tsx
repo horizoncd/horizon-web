@@ -11,9 +11,10 @@ import {
   getApplication,
   getApplicationEnvTemplate,
   updateApplicationEnvTemplate,
+  updateApplicationTags,
 } from '@/services/applications/applications';
 import { querySchema } from '@/services/templates/templates';
-import Detail from '@/components/PageWithBreadcrumb';
+import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import 'antd/lib/form/style';
 import styles from '../index.less';
 import Basic from '../Basic';
@@ -22,6 +23,9 @@ import JsonSchemaForm from '@/components/JsonSchemaForm';
 import { queryEnvironments } from '@/services/environments/environments';
 import { parseGitRef } from '@/services/code/code';
 import { API } from '@/services/typings';
+import TagCard from '@/components/tag/TagCard';
+import { MaxSpace } from '@/components/Widget';
+import rbac from '@/rbac';
 
 const { Option } = Select;
 
@@ -157,7 +161,7 @@ export default () => {
   };
 
   return (
-    <Detail>
+    <PageWithBreadcrumb>
       <Basic
         id={id}
         name={applicationName}
@@ -166,27 +170,29 @@ export default () => {
         onEditClick={onEditClick}
         serviceDetail={serviceDetail}
       />
-      <Card
-        title={(
-          <span className={styles.cardTitle}>{intl.formatMessage({ id: 'pages.applicationDetail.basic.config' })}</span>)}
-        type="inner"
-        extra={(
-          <div>
-            <Button
-              type={editing ? 'primary' : 'default'}
-              disabled={editing && templateInputHasError()}
-              onClick={() => {
-                if (editing) {
-                  formRefs.current.forEach((formRef) => {
-                    formRef.submit();
-                  });
-                }
-                setEditing((prev) => !prev);
-              }}
-            >
-              {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
-            </Button>
-            {
+      <MaxSpace direction="vertical">
+        <Card
+          title={(
+            <span className={styles.cardTitle}>{intl.formatMessage({ id: 'pages.applicationDetail.basic.config' })}</span>
+          )}
+          type="inner"
+          extra={(
+            <div>
+              <Button
+                type={editing ? 'primary' : 'default'}
+                disabled={editing && templateInputHasError()}
+                onClick={() => {
+                  if (editing) {
+                    formRefs.current.forEach((formRef) => {
+                      formRef.submit();
+                    });
+                  }
+                  setEditing((prev) => !prev);
+                }}
+              >
+                {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
+              </Button>
+              {
               editing && (
                 <Button
                   style={{ marginLeft: '10px' }}
@@ -202,29 +208,29 @@ export default () => {
                 </Button>
               )
             }
-            <Select
-              style={{ minWidth: '100px', marginLeft: '10px' }}
-              value={currentEnv}
-              onSelect={(val: string) => {
-                getApplicationEnvTemplate(id, val).then(({ data }) => {
-                  setTemplateInput(data);
-                });
-                setCurrentEnv(val);
-              }}
-            >
-              <Option key="default" value="">
-                {intl.formatMessage({ id: 'pages.common.default' })}
-              </Option>
-              {environments?.map((item) => (
-                <Option key={item.name} value={item.name}>
-                  {item.displayName}
+              <Select
+                style={{ minWidth: '100px', marginLeft: '10px' }}
+                value={currentEnv}
+                onSelect={(val: string) => {
+                  getApplicationEnvTemplate(id, val).then(({ data }) => {
+                    setTemplateInput(data);
+                  });
+                  setCurrentEnv(val);
+                }}
+              >
+                <Option key="default" value="">
+                  {intl.formatMessage({ id: 'pages.common.default' })}
                 </Option>
-              ))}
-            </Select>
-          </div>
+                {environments?.map((item) => (
+                  <Option key={item.name} value={item.name}>
+                    {item.displayName}
+                  </Option>
+                ))}
+              </Select>
+            </div>
         )}
-      >
-        {
+        >
+          {
           template && Object.keys(template).map((item, i) => (
             <JsonSchemaForm
               key={item}
@@ -247,7 +253,14 @@ export default () => {
             />
           ))
         }
-      </Card>
-    </Detail>
+        </Card>
+        <TagCard
+          tags={application.tags}
+          title={intl.formatMessage({ id: 'pages.tags.normal' })}
+          updateDisabled={!rbac.Permissions.updateApplicationTags}
+          onUpdate={(tags) => updateApplicationTags(id, tags).then(refreshApplication)}
+        />
+      </MaxSpace>
+    </PageWithBreadcrumb>
   );
 };

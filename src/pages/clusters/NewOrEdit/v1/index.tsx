@@ -75,7 +75,9 @@ export default (props: any) => {
   if (creating) {
     const { data } = useRequest(() => getApplication(id), {
       onSuccess: () => {
-        const { template: t, git, name: n } = data!;
+        const {
+          template: t, git, name: n, tags: appTags,
+        } = data!;
         setApplicationName(n);
         if (!copying) {
           setTemplate(t);
@@ -85,6 +87,7 @@ export default (props: any) => {
             ...prevBasic,
             { name: url, value: git.url },
             { name: subfolder, value: git.subfolder },
+            { name: 'tags', value: appTags },
             { name: 'refType', value: gitRefType },
             { name: 'refValue', value: gitRef },
             { name: release, value: r },
@@ -101,6 +104,7 @@ export default (props: any) => {
                 templateInput,
                 scope,
                 expireTime,
+                tags,
               } = clusterData!;
               const { url: u, branch: b, subfolder: s } = gitInfo;
               const { environment: e, region: r } = scope;
@@ -114,6 +118,7 @@ export default (props: any) => {
                 { name: region, value: r },
                 { name: expireTimeStr, value: expireTime },
                 { name: url, value: u },
+                { name: 'tags', value: tags },
                 { name: branch, value: b },
                 { name: subfolder, value: s },
                 { name: release, value: rel },
@@ -141,6 +146,7 @@ export default (props: any) => {
           templateInput,
           scope,
           expireTime,
+          tags,
         } = clusterData!;
         const { url: u, branch: b, subfolder: s } = git;
         const { environment: e, region: r } = scope;
@@ -149,6 +155,7 @@ export default (props: any) => {
         setBasic([
           { name, value: n },
           { name: description, value: d },
+          { name: 'tags', value: tags },
           { name: 'refType', value: gitRefType },
           { name: 'refValue', value: gitRef },
           { name: environment, value: e },
@@ -291,6 +298,7 @@ export default (props: any) => {
         name: template.name,
         release: form.getFieldValue(release),
       },
+      tags: form.getFieldValue('tags') ?? [],
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',

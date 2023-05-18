@@ -15,7 +15,6 @@ import styles from '../index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
-import type { API } from '@/services/typings';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -58,6 +57,7 @@ export default (props: any) => {
           git,
           templateInput,
           template: t,
+          tags,
         } = app!;
         const { release: r, name: tn } = t;
         const { gitRefType, gitRef } = parseGitRef(git);
@@ -67,6 +67,7 @@ export default (props: any) => {
           { name: release, value: r },
           { name: priority, value: p },
           { name: url, value: git.url },
+          { name: 'tags', value: tags },
           { name: 'refType', value: gitRefType },
           { name: 'refValue', value: gitRef },
           { name: subfolder, value: git.subfolder },
@@ -189,6 +190,7 @@ export default (props: any) => {
         name: template.name,
         release: form.getFieldValue(release),
       },
+      tags: form.getFieldValue('tags') || [],
       git: {
         url: form.getFieldValue(url),
         subfolder: form.getFieldValue(subfolder) || '',
