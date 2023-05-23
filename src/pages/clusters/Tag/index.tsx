@@ -14,6 +14,7 @@ export default (): React.ReactNode => {
   return (
     <Detail>
       <h1>{intl.formatMessage({ id: 'pages.tags.normal.manage' })}</h1>
+      <span style={{ color: 'gray' }}>{intl.formatMessage({ id: 'pages.tags.description' })}</span>
       <Divider />
       <DynamicTagForm
         queryTags={() => getClusterTags(clusterID)}
