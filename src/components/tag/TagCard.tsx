@@ -12,21 +12,23 @@ import { CardTitle } from '@/pages/clusters/Detail/Widget';
 import DynamicTagForm, { ValueType } from './DynamicTagForm';
 
 interface TagCardProps {
-  title: string,
-  extra?: ReactNode
+  title: string | ReactNode,
+  extra: string,
   tags?: TAG.Tag[]
   updateDisabled?: boolean,
+  description?: string,
   onUpdate?: (tags: API.Tags) => void,
 }
 
 function TagCard(props: TagCardProps) {
+  const intl = useIntl();
   const {
     tags, title, onUpdate = () => {}, updateDisabled = false,
+    description = intl.formatMessage({ id: 'pages.tags.description' }),
   } = props;
   let { extra } = props;
 
   const [editing, setEditing] = useState(false);
-  const intl = useIntl();
   const editButton = useMemo(() => {
     if (!editing) {
       return (
@@ -84,11 +86,18 @@ function TagCard(props: TagCardProps) {
   return (
     <Card
       title={(
-        <div style={{ display: 'flex' }}>
-          <CardTitle>{title}</CardTitle>
-          <div style={{ flex: 1 }} />
-          {extra}
-        </div>
+        <>
+          <div style={{ display: 'flex' }}>
+            <CardTitle>{title}</CardTitle>
+            <div style={{ flex: 1 }} />
+            {extra}
+          </div>
+          {
+            description && (
+            <span>{intl.formatMessage({ id: 'pages.tags.description' })}</span>
+            )
+          }
+        </>
 )}
       type="inner"
     >

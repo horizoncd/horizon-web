@@ -104,6 +104,11 @@ const groupRoutes = [
 
 const applicationRoutes = [
   {
+    path: '/applications/*/-/tags',
+    menuRender: false,
+    component: 'applications/Tag',
+  },
+  {
     path: '/applications/*/-/members',
     component: 'applications/Member',
   },

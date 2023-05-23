@@ -528,6 +528,7 @@ export default {
 
   'pages.tags.normal': '标签',
   'pages.tags.normal.manage': '标签管理',
+  'pages.tags.description': '标签是分配给 Horizon 资源的标记。每个标签都由一个键和一个可选值组成。您可以使用标签来搜索和筛选资源或跟踪 Horizon 成本',
   'pages.tags.admin': '管理员标签',
   'pages.tags.admin.manage': '管理员标签管理',
   'pages.tags.key': '键',

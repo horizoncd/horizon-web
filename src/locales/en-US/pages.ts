@@ -529,6 +529,7 @@ export default {
 
   'pages.tags.normal': 'Tags',
   'pages.tags.normal.manage': 'Manage tags',
+  'pages.tags.description': 'Tags are labels assigned to Horizon resources. Each tag consists of a key and an optional value, you can use tags to search and filter resources or track Horizon costs',
   'pages.tags.admin': 'Admin tags',
   'pages.tags.admin.manage': 'Manage admin tags',
   'pages.tags.key': 'Key',

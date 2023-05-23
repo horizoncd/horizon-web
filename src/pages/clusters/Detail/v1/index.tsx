@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Card } from 'antd';
+import { Card, Tabs } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 
+import TabPane from 'antd/lib/tabs/TabPane';
 import { querySchema } from '@/services/templates/templates';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import 'antd/lib/form/style';
@@ -13,9 +14,8 @@ import { pipelineV1 } from '@/services/version/version';
 import { ResourceType } from '@/const';
 import Basic from '../Basic';
 import Output from '../Output';
-import Tag from '../Tag';
+import { Tag, AdminTag } from '../Tag';
 import { CardTitle } from '../Widget';
-import { MaxSpace } from '@/components/Widget';
 
 export default () => {
   const intl = useIntl();
@@ -92,16 +92,15 @@ export default () => {
         refreshCluster={refreshCluster}
         version={pipelineV1}
       />
-      <MaxSpace
-        direction="vertical"
-        size="middle"
-      >
-        <Card
-          title={(
-            <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
-          type="inner"
-        >
-          {
+      <Tabs>
+        <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })} key="1">
+          <Card
+            style={{ marginBottom: 10 }}
+            title={(
+              <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
+            type="inner"
+          >
+            {
             template && Object.keys(template).map((item) => (
               <JsonSchemaForm
                 key={item}
@@ -112,12 +111,22 @@ export default () => {
               />
             ))
           }
-        </Card>
-        <Output clusterID={clusterID} />
-        <Tag
-          clusterID={clusterID}
-        />
-      </MaxSpace>
+          </Card>
+          <AdminTag
+            clusterID={clusterID}
+            clusterFullPath={clusterFullPath}
+          />
+        </TabPane>
+        <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.output' })} key="2">
+          <Output clusterID={clusterID} />
+        </TabPane>
+        <TabPane tab={intl.formatMessage({ id: 'pages.tags.normal' })} key="3">
+          <Tag
+            clusterID={clusterID}
+            clusterFullPath={clusterFullPath}
+          />
+        </TabPane>
+      </Tabs>
     </PageWithBreadcrumb>
   );
 };

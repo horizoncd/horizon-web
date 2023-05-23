@@ -160,7 +160,19 @@ export default (props: any) => {
           </Form.Item>
         </Card>
 
-        <Card title="Tags" className={styles.gapBetweenCards}>
+        <Card
+          title={(
+            <>
+              <div>
+                {intl.formatMessage({ id: 'pages.tags.normal' })}
+              </div>
+              <div style={{ fontSize: '13px', color: 'gray' }}>
+                {intl.formatMessage({ id: 'pages.tags.description' })}
+              </div>
+            </>
+          )}
+          className={styles.gapBetweenCards}
+        >
           <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
         </Card>
 

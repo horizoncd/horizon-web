@@ -86,6 +86,14 @@ export async function getApplicationEnvTemplate(applicationID: number, environme
   });
 }
 
+export async function getApplicationTags(applicationID: number) {
+  return request<{
+    data: API.Tags
+  }>(`/apis/core/v2/applications/${applicationID}/tags`, {
+    method: 'GET',
+  });
+}
+
 export async function updateApplicationTags(applicationID: number, data: API.Tags) {
   return request<{
     data: API.Tags

@@ -4,8 +4,9 @@ import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useHistory } from 'umi';
 import {
-  Button, Card, Select, Space,
+  Button, Card, Select, Space, Tabs,
 } from 'antd';
+import TabPane from 'antd/lib/tabs/TabPane';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import Basic from '../Basic';
 import {
@@ -161,35 +162,41 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <Basic
-        id={id}
-        name={applicationName}
-        refreshApplication={refreshApplication}
-        delApplication={delApplication}
-        onEditClick={onEditClick}
-        serviceDetail={serviceDetail}
-      />
-      <Card
-        title={(
-          <span className={styles.cardTitle}>{intl.formatMessage({ id: 'pages.applicationDetail.basic.config' })}</span>)}
-        type="inner"
-        extra={(
-          <div>
-            <Space>
-              <Button
-                type={editing ? 'primary' : 'default'}
-                disabled={editing && templateInputHasError()}
-                onClick={() => {
-                  if (editing) {
-                    templateConfigRef.current.submit();
-                    buildConfigRef.current.submit();
-                  }
-                  setEditing((prev) => !prev);
-                }}
-              >
-                {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
-              </Button>
-              {
+      <MaxSpace direction="vertical">
+        <Basic
+          id={id}
+          name={applicationName}
+          refreshApplication={refreshApplication}
+          delApplication={delApplication}
+          onEditClick={onEditClick}
+          serviceDetail={serviceDetail}
+        />
+        <Tabs>
+          <TabPane
+            tab={intl.formatMessage({ id: 'pages.applicationDetail.basic.config' })}
+            key="config"
+          >
+            <Card
+              title={(
+                <span className={styles.cardTitle}>{intl.formatMessage({ id: 'pages.applicationDetail.basic.config' })}</span>)}
+              type="inner"
+              extra={(
+                <div>
+                  <Space>
+                    <Button
+                      type={editing ? 'primary' : 'default'}
+                      disabled={editing && templateInputHasError()}
+                      onClick={() => {
+                        if (editing) {
+                          templateConfigRef.current.submit();
+                          buildConfigRef.current.submit();
+                        }
+                        setEditing((prev) => !prev);
+                      }}
+                    >
+                      {editing ? intl.formatMessage({ id: 'pages.common.submit' }) : intl.formatMessage({ id: 'pages.common.edit' })}
+                    </Button>
+                    {
               editing && (
                 <Button
                   onClick={() => {
@@ -204,66 +211,85 @@ export default () => {
                 </Button>
               )
             }
-              <Select
-                value={currentEnv}
-                onSelect={(val: string) => {
-                  getApplicationEnvTemplate(id, val).then(({ data }) => {
-                    setBuildConfig(data.pipeline);
-                    setTemplateConfig(data.application);
-                  });
-                  setCurrentEnv(val);
-                }}
-              >
-                <Option key="default" value="">
-                  {intl.formatMessage({ id: 'pages.common.default' })}
-                </Option>
-                {environments?.map((item) => (
-                  <Option key={item.name} value={item.name}>
-                    {item.displayName}
-                  </Option>
-                ))}
-              </Select>
-            </Space>
-          </div>
+                    <Select
+                      value={currentEnv}
+                      onSelect={(val: string) => {
+                        getApplicationEnvTemplate(id, val).then(({ data }) => {
+                          setBuildConfig(data.pipeline);
+                          setTemplateConfig(data.application);
+                        });
+                        setCurrentEnv(val);
+                      }}
+                    >
+                      <Option key="default" value="">
+                        {intl.formatMessage({ id: 'pages.common.default' })}
+                      </Option>
+                      {environments?.map((item) => (
+                        <Option key={item.name} value={item.name}>
+                          {item.displayName}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Space>
+                </div>
         )}
-      >
-        <MaxSpace
-          direction="vertical"
-          size="middle"
-        >
-          <BuildConfig
-            readOnly={!editing}
-            ref={buildConfigRef}
-            buildConfig={buildConfig}
-            setBuildConfig={setBuildConfig}
-            setBuildConfigErrors={setBuildConfigErrors}
-            onSubmit={(formData: any) => {
-              setBuildConfig(formData);
-              setBuildSubmitted(true);
-            }}
-          />
-          <TemplateConfig
-            ref={templateConfigRef}
-            envTemplate
-            readOnly={!editing}
-            template={templateBasic}
-            release={releaseName}
-            templateConfig={templateConfig}
-            setTemplateConfig={setTemplateConfig}
-            setTemplateConfigErrors={setTemplateConfigErrors}
-            onSubmit={(formData: any) => {
-              setTemplateConfig(formData);
-              setTemplateConfigSubmitted(true);
-            }}
-          />
-          <TagCard
-            tags={application.tags}
-            title={intl.formatMessage({ id: 'pages.tags.normal' })}
-            updateDisabled={!rbac.Permissions.updateApplicationTags}
-            onUpdate={(tags) => updateApplicationTags(id, tags).then(refreshApplication)}
-          />
-        </MaxSpace>
-      </Card>
+            >
+              <MaxSpace
+                direction="vertical"
+                size="middle"
+              >
+                <BuildConfig
+                  readOnly={!editing}
+                  ref={buildConfigRef}
+                  buildConfig={buildConfig}
+                  setBuildConfig={setBuildConfig}
+                  setBuildConfigErrors={setBuildConfigErrors}
+                  onSubmit={(formData: any) => {
+                    setBuildConfig(formData);
+                    setBuildSubmitted(true);
+                  }}
+                />
+                <TemplateConfig
+                  ref={templateConfigRef}
+                  envTemplate
+                  readOnly={!editing}
+                  template={templateBasic}
+                  release={releaseName}
+                  templateConfig={templateConfig}
+                  setTemplateConfig={setTemplateConfig}
+                  setTemplateConfigErrors={setTemplateConfigErrors}
+                  onSubmit={(formData: any) => {
+                    setTemplateConfig(formData);
+                    setTemplateConfigSubmitted(true);
+                  }}
+                />
+              </MaxSpace>
+            </Card>
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.tags.normal' })} key="tags">
+            <TagCard
+              tags={application.tags}
+              title={intl.formatMessage({ id: 'pages.tags.normal' })}
+              onUpdate={(tags) => updateApplicationTags(id, tags).then(refreshApplication)}
+              extra={
+              (
+                <Button
+                  disabled={!rbac.Permissions.updateApplicationTags.allowed}
+                  onClick={
+                    () => history.push({
+                      pathname: `/applications${applicationFullPath}/-/tags`,
+                    })
+                  }
+                >
+                  {intl.formatMessage({ id: 'pages.tags.normal.manage' })}
+                </Button>
+              )
+            }
+            />
+
+          </TabPane>
+        </Tabs>
+      </MaxSpace>
     </PageWithBreadcrumb>
   );
 };
