@@ -10,6 +10,7 @@ import { listGitRef, GitRefType } from '@/services/code/code';
 import HForm from '@/components/HForm';
 import { gitURLRegExp } from '@/const';
 import { TagFormItems, ValueType } from '@/components/tag';
+import { TagFormName } from '@/components/tag/DynamicTagForm';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -106,7 +107,7 @@ export default (props: any) => {
         layout="vertical"
         form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          setFormData(a, b.filter((item) => item.name[0] !== 'tags'));
+          setFormData(a, b.filter((item) => item.name[0] !== TagFormName));
         }}
         fields={formData}
       >

@@ -18,6 +18,8 @@ export enum ValueType {
   Multiple,
 }
 
+export const TagFormName = 'tags';
+
 interface PairProps {
   itemKey: number,
   itemName: number,
@@ -48,7 +50,7 @@ function Pair(props: PairProps) {
     }]], [intl, valueType]);
 
   useEffect(() => {
-    setSelectedKey(form.getFieldValue(['tags', itemName, 'key']));
+    setSelectedKey(form.getFieldValue([TagFormName, itemName, 'key']));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemName]);
 
@@ -61,8 +63,8 @@ function Pair(props: PairProps) {
   const setSelectedKeyWrapped = useCallback((key: string) => {
     if (metaKeysIndex.get(key) !== undefined) {
       if (key !== selectedKey) {
-        form.setFieldValue(['tags', itemName, valueKey], undefined);
-        form.setFieldValue(['tags', itemName, 'key'], key);
+        form.setFieldValue([TagFormName, itemName, valueKey], undefined);
+        form.setFieldValue([TagFormName, itemName, 'key'], key);
       }
       setMustSelected(true);
     } else {
@@ -172,7 +174,7 @@ export const TagFormItems = (props: TagFormProps) => {
   const intl = useIntl();
 
   return (
-    <Form.List name="tags">
+    <Form.List name={TagFormName}>
       {(fields, { add, remove }) => (
         <>
           {
