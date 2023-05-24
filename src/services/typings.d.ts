@@ -180,6 +180,7 @@ declare namespace API {
       release: string;
       recommendedRelease: string;
     };
+    tags: TAG.Tag[];
     git: GitInfo;
     templateInput: any;
     createdAt: string;
@@ -200,6 +201,7 @@ declare namespace API {
     name: string;
     description: string;
     priority: string;
+    tags: TAG.Tag[];
     git: GitInfo;
 
     buildConfig: any;

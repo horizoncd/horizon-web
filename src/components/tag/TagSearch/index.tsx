@@ -1,7 +1,7 @@
 import { useIntl } from 'umi';
-import Expression from '../FilterBox/Expression';
-import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../FilterBox/HorizonAutoCompleteHandler';
-import { TagsFilter } from '../FilterBox/TagFilter';
+import Expression from '../../FilterBox/Expression';
+import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../FilterBox/HorizonAutoCompleteHandler';
+import { TagsFilter } from '../../FilterBox/TagFilter';
 
 interface Props {
   defaultValues?: SearchInput[] | undefined

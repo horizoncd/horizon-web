@@ -90,6 +90,11 @@ const Permissions = {
     action: Action.update,
     allowed: false,
   },
+  updateApplicationTags: {
+    resource: `${Resource.application}/${Resource.tags}`,
+    action: Action.create,
+    allowed: false,
+  },
   TransferApplication: {
     resource: `${Resource.application}/${Resource.transfer}`,
     action: Action.update,
@@ -201,7 +206,7 @@ const Permissions = {
     action: Action.create,
     allowed: false,
   },
-  updateTags: {
+  updateClusterTags: {
     resource: `${Resource.cluster}/${Resource.tags}`,
     action: Action.create,
     allowed: false,

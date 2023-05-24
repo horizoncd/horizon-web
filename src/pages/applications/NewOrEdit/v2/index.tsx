@@ -49,6 +49,7 @@ export default (props: any) => {
   // query application if editing
   const nameKey = 'name';
   const priorityKey = 'priority';
+  const tagsKey = 'tags';
   const gitURLKey = 'url';
   const descriptionKey = 'description';
   const subFolderKey = 'subfolder';
@@ -67,6 +68,7 @@ export default (props: any) => {
           { name: nameKey, value: getAppResp!.name },
           { name: descriptionKey, value: getAppResp!.description },
           { name: priorityKey, value: getAppResp!.priority },
+          { name: tagsKey, value: getAppResp!.tags },
           { name: gitURLKey, value: getAppResp!.git.url },
           { name: refTypeKey, value: gitRefType },
           { name: refValueKey, value: gitRef },
@@ -97,6 +99,7 @@ export default (props: any) => {
       priority: form.getFieldValue(priorityKey),
       templateConfig,
       templateInfo: { name: templateBasic.name, release: releaseName! },
+      tags: form.getFieldValue(tagsKey) || [],
       git: {
         url: form.getFieldValue(gitURLKey),
         subfolder: form.getFieldValue(subFolderKey) || '',

@@ -15,8 +15,8 @@ import { queryClusters } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import Utils from '@/utils';
 import NoData from '@/components/NoData';
-import TagSearch, { SearchInputType } from '@/components/TagSearch';
-import type { SearchInput, MultiValueTag } from '@/components/TagSearch';
+import TagSearch, { SearchInputType } from '@/components/tag/TagSearch';
+import type { SearchInput, MultiValueTag } from '@/components/tag/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
 import { MicroApp } from '@/components/Widget';
@@ -376,7 +376,7 @@ export default () => {
         </Tooltip>
       </div>
     </div>
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [onTagClear, onTagSearch, tags]);
 
   return (

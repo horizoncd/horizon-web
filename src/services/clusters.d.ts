@@ -72,6 +72,7 @@ declare namespace CLUSTER {
       name: string;
       release: string;
     };
+    tags: TAG.Tag[];
     git: API.GitInfo;
     scope: Scope;
     expireTime: string;

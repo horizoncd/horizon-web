@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Card } from 'antd';
+import { Card, Tabs } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 
+import TabPane from 'antd/lib/tabs/TabPane';
 import { querySchema } from '@/services/templates/templates';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import 'antd/lib/form/style';
@@ -12,10 +13,9 @@ import { getClusterV2 } from '@/services/clusters/clusters';
 import { pipelineV2 } from '@/services/version/version';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
 import { ResourceType } from '@/const';
-import { CLUSTER } from '@/services/clusters';
 import Basic from '../Basic';
 import Output from '../Output';
-import Tag from '../Tag';
+import { Tag, AdminTag } from '../Tag';
 import { CardTitle } from '../Widget';
 import { MaxSpace } from '@/components/Widget';
 
@@ -85,23 +85,23 @@ export default () => {
 
   return (
     <PageWithBreadcrumb>
-      <Basic
-        applicationID={applicationID}
-        clusterFullPath={clusterFullPath}
-        cluster={cluster}
-        refreshCluster={refreshCluster}
-        version={pipelineV2}
-      />
-      <MaxSpace
-        direction="vertical"
-        size="middle"
-      >
-        <Card
-          title={(
-            <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
-          type="inner"
-        >
-          {
+      <MaxSpace direction="vertical" size="middle">
+        <Basic
+          applicationID={applicationID}
+          clusterFullPath={clusterFullPath}
+          cluster={cluster}
+          refreshCluster={refreshCluster}
+          version={pipelineV2}
+        />
+        <Tabs>
+          <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })} key="1">
+            <Card
+              style={{ marginBottom: 10 }}
+              title={(
+                <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
+              type="inner"
+            >
+              {
             buildSchema && cluster.buildConfig
               && (
                 <JsonSchemaForm
@@ -112,7 +112,7 @@ export default () => {
                 />
               )
           }
-          {
+              {
             (templateSchema && cluster.templateConfig)
               && (
                 <JsonSchemaForm
@@ -123,12 +123,22 @@ export default () => {
                 />
               )
           }
-        </Card>
-        <Output clusterID={clusterID} />
-        <Tag
-          clusterID={clusterID}
-          clusterFullPath={clusterFullPath}
-        />
+            </Card>
+            <AdminTag
+              clusterID={clusterID}
+              clusterFullPath={clusterFullPath}
+            />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.output' })} key="2">
+            <Output clusterID={clusterID} />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.tags.normal' })} key="3">
+            <Tag
+              clusterID={clusterID}
+              clusterFullPath={clusterFullPath}
+            />
+          </TabPane>
+        </Tabs>
       </MaxSpace>
     </PageWithBreadcrumb>
   );

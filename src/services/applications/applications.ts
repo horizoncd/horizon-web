@@ -1,6 +1,4 @@
 import { request } from 'umi';
-import type { CLUSTER } from '../clusters';
-import type { API } from '../typings';
 
 export async function createApplication(groupID: number, body: API.NewApplication) {
   return request<{
@@ -85,6 +83,23 @@ export async function getApplicationEnvTemplate(applicationID: number, environme
     params: {
       environment,
     },
+  });
+}
+
+export async function getApplicationTags(applicationID: number) {
+  return request<{
+    data: API.Tags
+  }>(`/apis/core/v2/applications/${applicationID}/tags`, {
+    method: 'GET',
+  });
+}
+
+export async function updateApplicationTags(applicationID: number, data: API.Tags) {
+  return request<{
+    data: API.Tags
+  }>(`/apis/core/v2/applications/${applicationID}/tags`, {
+    method: 'POST',
+    data,
   });
 }
 

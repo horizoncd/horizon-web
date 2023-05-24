@@ -9,4 +9,12 @@ declare namespace TAG {
     operator: string
     values: string[]
   };
+
+  type MetaTag = {
+    tagKey: string
+    tagValue: string
+    description: string
+    createdAt: string
+    updatedAt: string
+  };
 }

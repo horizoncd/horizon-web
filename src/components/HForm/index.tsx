@@ -10,7 +10,9 @@ export default (props: HFromProps) => {
   const onBlur = () => {
     const b = form.getFieldsValue();
     Object.keys(b).forEach((item) => {
-      b[item] = b[item] && b[item].trim ? b[item].trim() : undefined;
+      if (b[item] && b[item].trim) {
+        b[item] = b[item].trim();
+      }
     });
     form.setFieldsValue(b);
   };

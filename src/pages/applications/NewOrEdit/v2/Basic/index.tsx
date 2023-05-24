@@ -12,6 +12,8 @@ import { pipelineV2 } from '@/services/version/version';
 import { gitURLRegExp } from '@/const';
 
 import HForm from '@/components/HForm';
+import { TagFormItems, ValueType } from '@/components/tag';
+import { TagFormName } from '@/components/tag/DynamicTagForm';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -113,7 +115,7 @@ export default (props: any) => {
         layout="vertical"
         form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
-          setFormData(a, b);
+          setFormData(a, b.filter((item) => item.name[0] !== TagFormName));
         }}
         fields={formData}
       >
@@ -157,6 +159,22 @@ export default (props: any) => {
               ))}
             </Select>
           </Form.Item>
+        </Card>
+
+        <Card
+          title={(
+            <>
+              <div>
+                {intl.formatMessage({ id: 'pages.tags.normal' })}
+              </div>
+              <div style={{ fontSize: '13px', color: 'gray' }}>
+                {intl.formatMessage({ id: 'pages.tags.description' })}
+              </div>
+            </>
+          )}
+          className={styles.gapBetweenCards}
+        >
+          <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
         </Card>
 
         <Card title={formatMessage('repo')}>
