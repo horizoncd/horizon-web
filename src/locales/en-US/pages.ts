@@ -137,6 +137,8 @@ export default {
   'pages.applicationNew.basic.revision': 'Revision',
   'pages.applicationNew.basic.subfolder': 'Subfolder',
   'pages.applicationNew.basic.branch': 'Branch',
+  'pages.applicationNew.basic.image': 'Image',
+  'pages.applicationNew.basic.image.ruleMessage': 'Invalid! Right examples: horizon/horizon:v1.0 or harbor.example.com/horizon/horizon:v1.0',
   'pages.applicationNew.basic.template': 'Template',
   'pages.applicationNew.basic.recommendedRelease': 'Recommended release',
   'pages.applicationEdit.success': 'update application successfully',

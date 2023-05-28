@@ -136,6 +136,8 @@ export default {
   'pages.applicationNew.basic.revision': '版本',
   'pages.applicationNew.basic.subfolder': '代码目录',
   'pages.applicationNew.basic.branch': '分支',
+  'pages.applicationNew.basic.image': '镜像',
+  'pages.applicationNew.basic.image.ruleMessage': '格式不正确！示例：horizon/horizon:v1.0，harbor.example.com/horizon/horizon:v1.0',
   'pages.applicationNew.basic.template': '模版',
   'pages.applicationNew.basic.recommendedRelease': '推荐版本',
   'pages.applicationEdit.success': '更新应用成功',

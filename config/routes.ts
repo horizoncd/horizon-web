@@ -88,7 +88,15 @@ const groupRoutes = [
   },{
     path: '/groups/*/-/newapplicationv2',
     menuRender: false,
-    component: 'applications/NewOrEdit/v2',
+    component: 'applications/NewOrEdit/v2/Navigation',
+  },{
+    path: '/groups/*/-/newapplicationv2/gitimport',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/GitImport',
+  },{
+    path: '/groups/*/-/newapplicationv2/imagedeploy',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -129,6 +137,16 @@ const applicationRoutes = [
     path: '/applications/*/-/editv2',
     menuRender: false,
     component: 'applications/NewOrEdit/v2',
+  },
+  {
+    path: '/applications/*/-/editv2/gitimport',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/applications/*/-/editv2/imagedeploy',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/applications/*/-/newcluster',

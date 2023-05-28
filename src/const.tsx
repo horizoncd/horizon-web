@@ -119,3 +119,36 @@ export const taskStatus2Entity = new Map<TaskStatus, {
     stepStatus: 'error',
   }],
 ]);
+
+// application and cluster fields
+export enum Priority {
+  P0 = 'P0',
+  P1 = 'P1',
+  P2 = 'P2',
+  P3 = 'P3',
+}
+
+export const Priorities = [Priority.P0, Priority.P1, Priority.P2, Priority.P3];
+
+export enum ResourceKey {
+  // base info
+  NAME = 'name',
+  DESCRIPTION = 'description',
+  PRIORITY = 'priority',
+  TAGS = 'tags',
+
+  // git info
+  GIT_URL = 'url',
+  GIT_SUB_FOLDER = 'subfolder',
+  GIT_BRANCH = 'branch',
+  GIT_REF_TYPE = 'refType',
+  GIT_REF_VALUE = 'refValue',
+
+  // image info
+  IMAGE_URL = 'image',
+}
+
+export enum AppOrClusterType {
+  GIT_IMPORT = 'gitImport',
+  IMAGE_DEPLOY = 'imageDeploy',
+}
