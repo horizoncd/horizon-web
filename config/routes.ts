@@ -159,6 +159,16 @@ const applicationRoutes = [
     component: 'clusters/NewOrEdit/v2',
   },
   {
+    path: '/applications/*/-/newclusterv2/gitimport',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/applications/*/-/newclusterv2/imagedeploy',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/ImageDeploy',
+  },
+  {
     path: '/applications/*/-/settings/advance',
     component: 'applications/config/Advance',
   },
@@ -183,6 +193,16 @@ const clusterRoutes = [
     path: '/clusters/*/-/editv2',
     menuRender: false,
     component: 'clusters/NewOrEdit/v2',
+  },
+  {
+    path: '/clusters/*/-/editv2/gitimport',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/clusters/*/-/editv2/imagedeploy',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/clusters/*/-/configs',

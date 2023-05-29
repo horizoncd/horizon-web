@@ -20,10 +20,17 @@ import type { SearchInput, MultiValueTag } from '@/components/tag/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
 import { FavoriteStar, MicroApp } from '@/components/Widget';
+import { AppOrClusterType } from '@/const';
 
 const { TabPane } = Tabs;
 
-export default () => {
+interface Props {
+  appType?: AppOrClusterType;
+}
+
+export default (props: Props) => {
+  const { appType = AppOrClusterType.GIT_IMPORT } = props;
+
   const params = new URLSearchParams(window.location.search);
   const environment = params.get('environment') || '';
   const tagSelector = params.get('tagSelector') || '';
@@ -37,7 +44,9 @@ export default () => {
   const [selectedCluster, setSelectedCluster] = useState();
 
   const pageSize = 10;
-  const newCluster = `/applications${fullPath}/-/newclusterv2`;
+  const newCluster = appType === AppOrClusterType.GIT_IMPORT
+    ? `/applications${fullPath}/-/newclusterv2/gitimport`
+    : `/applications${fullPath}/-/newclusterv2/imagedeploy`;
 
   const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
     if (!ts) {

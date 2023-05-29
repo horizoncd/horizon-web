@@ -53,7 +53,7 @@ function ButtonBar(props: ButtonBarProps) {
         successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.hint' }));
         break;
       case 'editCluster':
-        history.push(`/clusters${fullPath}/-/editv2`);
+        history.push(cluster?.git?.url ? `/clusters${fullPath}/-/editv2/gitimport` : `/clusters${fullPath}/-/editv2/imagedeploy`);
         break;
       case 'freeCluster':
         Modal.confirm({

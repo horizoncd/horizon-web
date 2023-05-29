@@ -188,6 +188,8 @@ export default {
   'pages.clusterNew.basic.branch': '分支',
   'pages.clusterNew.basic.refType.ruleMessage': '版本类型是必填项',
   'pages.clusterNew.basic.refValue.ruleMessage': '版本值是必填项',
+  'pages.clusterNew.basic.image': '镜像',
+  'pages.clusterNew.basic.image.ruleMessage': '格式不正确！示例：horizon/horizon:v1.0，harbor.example.com/horizon/horizon:v1.0',
   'pages.clusterNew.basic.environment': '环境',
   'pages.clusterNew.basic.region': '区域',
   'pages.clusterNew.basic.expireTime': '时长（天）',

@@ -16,7 +16,6 @@ import {
   updateApplicationV2,
 } from '@/services/applications/applications';
 import TemplateForm from '@/pages/applications/NewOrEdit/v2/components/TemplateForm';
-import { parseGitRef } from '@/services/code/code';
 import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
 import DeployConfigForm from '../components/DeployConfigForm';
@@ -47,16 +46,12 @@ export default (props: any) => {
     const { data: getAppResp } = useRequest(() => getApplicationV2(id), {
       onSuccess: () => {
         // set form data
-        const { gitRefType, gitRef } = parseGitRef(getAppResp!.git);
         const basicInfo = [
           { name: ResourceKey.NAME, value: getAppResp!.name },
           { name: ResourceKey.DESCRIPTION, value: getAppResp!.description },
           { name: ResourceKey.PRIORITY, value: getAppResp!.priority },
           { name: ResourceKey.TAGS, value: getAppResp!.tags },
-          { name: ResourceKey.GIT_URL, value: getAppResp!.git.url },
-          { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
-          { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
-          { name: ResourceKey.GIT_SUB_FOLDER, value: getAppResp!.git.subfolder },
+          { name: ResourceKey.IMAGE_URL, value: getAppResp!.image },
         ];
         // used for basic
         form.setFields(basicInfo);

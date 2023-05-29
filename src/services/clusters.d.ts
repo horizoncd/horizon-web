@@ -109,6 +109,7 @@ declare namespace CLUSTER {
 
     // source info
     git: GitInfo;
+    image?: string;
 
     // git config info
     buildConfig: any;
@@ -145,8 +146,9 @@ declare namespace CLUSTER {
     name: string;
     description?: string;
     expireTime?: string;
-    git: any;
-    buildConfig: any;
+    git?: any;
+    buildConfig?: any;
+    image?: string;
     templateInfo: any;
     templateConfig: any;
   };
@@ -162,8 +164,9 @@ declare namespace CLUSTER {
   type UpdateClusterV2 = {
     description?: string;
     expireTime?: string;
-    git: any;
-    buildConfig: any;
+    git?: any;
+    buildConfig?: any;
+    image?: string;
     templateInfo: any;
     templateConfig: any;
   };

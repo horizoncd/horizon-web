@@ -83,6 +83,12 @@ export default () => {
     ready: resourceType === ResourceType.CLUSTER && !!clusterID,
   });
 
+  if (cluster.id === 0) {
+    return (
+      <div />
+    );
+  }
+
   return (
     <PageWithBreadcrumb>
       <MaxSpace direction="vertical" size="middle">

@@ -189,6 +189,8 @@ export default {
   'pages.clusterNew.basic.branch': 'Branch',
   'pages.clusterNew.basic.refType.ruleMessage': 'Ref type is required',
   'pages.clusterNew.basic.refValue.ruleMessage': 'Ref value is required',
+  'pages.clusterNew.basic.image': 'Image',
+  'pages.clusterNew.basic.image.ruleMessage': 'Invalid! Right examples: horizon/horizon:v1.0 or harbor.example.com/horizon/horizon:v1.0',
   'pages.clusterNew.basic.environment': 'Environment',
   'pages.clusterNew.basic.region': 'Region',
   'pages.clusterNew.basic.expireTime': 'Duration (d)',

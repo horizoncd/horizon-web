@@ -136,6 +136,9 @@ export enum ResourceKey {
   DESCRIPTION = 'description',
   PRIORITY = 'priority',
   TAGS = 'tags',
+  ENVIRONMENT = 'environment',
+  REGION = 'region',
+  EXPIRE_TIME = 'expireTime',
 
   // git info
   GIT_URL = 'url',
