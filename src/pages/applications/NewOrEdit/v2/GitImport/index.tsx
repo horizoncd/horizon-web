@@ -44,6 +44,25 @@ export default (props: any) => {
   const [releaseName, setReleaseName] = useState<string>('');
   const [templateConfig, setTemplateConfig] = useState<Object>({});
 
+  const fillDefaultConfig = (data: API.GetApplicationResponseV2) => {
+    setBuildConfig(data!.buildConfig);
+
+    const basicTemplateInfo: API.Template = {
+      name: data!.templateInfo!.name,
+    };
+    setTemplateBasic(basicTemplateInfo);
+    setReleaseName(data!.templateInfo!.release);
+
+    setTemplateConfig(data!.templateConfig);
+  };
+
+  useEffect(() => {
+    const data = window.history.state.defaultAppData;
+    if (data) {
+      fillDefaultConfig(data);
+    }
+  }, []);
+
   // query application if editing
   if (editing) {
     const { data: getAppResp } = useRequest(() => getApplicationV2(id), {
@@ -63,16 +82,7 @@ export default (props: any) => {
         // used for basic
         form.setFields(basicInfo);
         // used for build
-        setBuildConfig(getAppResp!.buildConfig);
-        // used for config
-        setTemplateConfig(getAppResp!.templateConfig);
-        setReleaseName(getAppResp!.templateInfo!.release);
-
-        const basicTemplateInfo: API.Template = {
-          name: getAppResp!.templateInfo!.name,
-        };
-        setTemplateBasic(basicTemplateInfo);
-        setBuildConfig(getAppResp!.buildConfig);
+        fillDefaultConfig(getAppResp!);
       },
     });
   }
