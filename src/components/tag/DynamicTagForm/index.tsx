@@ -49,16 +49,29 @@ function Pair(props: PairProps) {
       max: 1280,
     }]], [intl, valueType]);
 
-  useEffect(() => {
-    setSelectedKey(form.getFieldValue([TagFormName, itemName, 'key']));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemName]);
+  const { run: runGetMetatagsByKey } = useRequest((key: string) => getMetatagsByKey(key ?? ''), {
+    onSuccess: (result) => {
+      const values = result.map((v) => ({ label: v.tagValue, value: v.tagValue }));
+      setMetaValues(values);
+      setMustSelected(true);
+    },
+    manual: true,
+  });
 
   const metaKeysIndex = useMemo(() => {
     const index: Map<string, number> = new Map();
     metaKeys.forEach((k, i) => { index.set(k, i); });
     return index;
   }, [metaKeys]);
+
+  useEffect(() => {
+    const key = form.getFieldValue([TagFormName, itemName, 'key']);
+    setSelectedKey(key);
+    if (metaKeysIndex.get(key) !== undefined) {
+      runGetMetatagsByKey(key);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemName, metaKeysIndex]);
 
   const setSelectedKeyWrapped = useCallback((key: string) => {
     if (metaKeysIndex.get(key) !== undefined) {
@@ -67,20 +80,12 @@ function Pair(props: PairProps) {
         form.setFieldValue([TagFormName, itemName, 'key'], key);
       }
       setMustSelected(true);
+      runGetMetatagsByKey(key);
     } else {
       setMustSelected(false);
     }
     setSelectedKey(key);
-  }, [form, itemName, metaKeysIndex, selectedKey, valueKey]);
-
-  useRequest(() => getMetatagsByKey(selectedKey ?? ''), {
-    onSuccess: (result) => {
-      const values = result.map((v) => ({ label: v.tagValue, value: v.tagValue }));
-      setMetaValues(values);
-    },
-    ready: selectedKey !== undefined && metaKeysIndex.has(selectedKey),
-    refreshDeps: [selectedKey],
-  });
+  }, [form, itemName, metaKeysIndex, runGetMetatagsByKey, selectedKey, valueKey]);
 
   const valueInput = useMemo(() => {
     const k = `tags_${itemName}_${itemKey}_value`;
@@ -97,7 +102,7 @@ function Pair(props: PairProps) {
     }
 
     if (mustSelected) {
-      return <Select key={k} options={metaValues} disabled={disabled} placeholder="value" />;
+      return <Select key={k} options={metaValues} disabled={disabled} placeholder="value" showSearch />;
     }
     return <Input key={k} disabled={disabled} placeholder="value" />;
   // eslint-disable-next-line react-hooks/exhaustive-deps
