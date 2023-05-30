@@ -23,7 +23,7 @@ export default {
   'pages.dashboard.search.filterBy.region': '区域',
   'pages.dashboard.search.filterBy.favorite': '收藏',
   'pages.dashboard.search.filterBy.user': '用户',
-  'pages.dashboard.search.history.clear': '清除历史记录',
+  'pages.dashboard.search.history.clear': '清除搜索记录',
   'pages.dashboard.search.history.notfound': '没有找到搜索记录',
   'pages.dashboard.search.history': '最近搜索',
 

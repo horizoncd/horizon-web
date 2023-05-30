@@ -24,7 +24,7 @@ export default {
   'pages.dashboard.search.filterBy.region': 'Region',
   'pages.dashboard.search.filterBy.favorite': 'Favorite',
   'pages.dashboard.search.filterBy.user': 'User',
-  'pages.dashboard.search.history.clear': 'Clear history',
+  'pages.dashboard.search.history.clear': 'Clear recent searches',
   'pages.dashboard.search.history.notfound': 'Recent searches not found',
   'pages.dashboard.search.history': 'Recent searches',
 

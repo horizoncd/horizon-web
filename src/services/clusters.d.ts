@@ -27,6 +27,7 @@ declare namespace CLUSTER {
     filter?: string;
     pageNumber: number;
     pageSize: number;
+    withFavorite?: boolean;
     environment?: string
     tagSelector?: string
   };
@@ -46,6 +47,7 @@ declare namespace CLUSTER {
       release: string;
     };
     tags: TAG.Tag[];
+    isFavorite?: boolean;
     updatedAt: string;
     createdAt: string;
   };

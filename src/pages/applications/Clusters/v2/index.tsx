@@ -1,5 +1,5 @@
 import {
-  Button, Table, Tabs, Tooltip,
+  Button, Space, Table, Tabs, Tooltip,
 } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import { history } from '@@/core/history';
@@ -19,7 +19,7 @@ import TagSearch, { SearchInputType } from '@/components/tag/TagSearch';
 import type { SearchInput, MultiValueTag } from '@/components/tag/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
-import { MicroApp } from '@/components/Widget';
+import { FavoriteStar, MicroApp } from '@/components/Widget';
 
 const { TabPane } = Tabs;
 
@@ -81,15 +81,69 @@ export default () => {
     });
   };
 
-  const columns = [
+  const [pageNumber, setPageNumber] = useState(1);
+  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
+  const [tags, setTags] = useState<MultiValueTag[]>([]);
+
+  const { data: envs } = useRequest(queryEnvironments, {
+    onSuccess: () => {
+      const e = new Map<string, string>();
+      envs!.forEach((item) => e.set(item.name, item.displayName));
+      setEnv2DisplayName(e);
+    },
+  });
+  const { data: clusters, run: refresh } = useRequest(() => queryClusters(
+    id,
+    {
+      filter, pageNumber, pageSize, environment, tagSelector, withFavorite: true,
+    },
+  ), {
+    refreshDeps: [filter, environment, pageNumber, tagSelector],
+    debounceInterval: 200,
+  });
+
+  const { data: tagsResp } = useRequest(() => querySubresourceTags('applications', id), {
+    onSuccess: () => {
+      const tMap = new Map<string, string[]>();
+      const ts: MultiValueTag[] = [];
+      tagsResp?.tags.forEach(
+        (tag) => {
+          if (tag.key === 'jvmExtra' || Utils.tagShouldOmit(tag)) {
+            return;
+          }
+          if (tMap.has(tag.key)) {
+            const values = tMap.get(tag.key) as string[];
+            values.push(tag.value);
+            tMap.set(tag.key, values);
+          } else {
+            tMap.set(tag.key, [tag.value]);
+          }
+        },
+      );
+      tMap.forEach(
+        (value, key) => {
+          ts.push({
+            key,
+            values: value,
+          });
+        },
+      );
+      setTags(ts);
+    },
+  });
+
+  const columns = useMemo(() => ([
     {
       title: intl.formatMessage({ id: 'pages.clusterNew.basic.name' }),
       dataIndex: 'name',
       key: 'name',
-      render: (text: string) => (
-        <a href={`${fullPath}/${text}`}>
-          {text}
-        </a>
+      render: (text: string, item: any) => (
+        <Space>
+          <a href={`${fullPath}/${text}`}>
+            {text}
+          </a>
+          <FavoriteStar isFavorite={item.isFavorite} clusterID={item.id} onStarClick={refresh} />
+        </Space>
       ),
     },
     {
@@ -148,58 +202,7 @@ export default () => {
       dataIndex: 'updatedTime',
       key: 'updatedTime',
     },
-  ];
-
-  const [pageNumber, setPageNumber] = useState(1);
-  const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
-  const [tags, setTags] = useState<MultiValueTag[]>([]);
-
-  const { data: envs } = useRequest(queryEnvironments, {
-    onSuccess: () => {
-      const e = new Map<string, string>();
-      envs!.forEach((item) => e.set(item.name, item.displayName));
-      setEnv2DisplayName(e);
-    },
-  });
-  const { data: clusters } = useRequest(() => queryClusters(
-    id,
-    {
-      filter, pageNumber, pageSize, environment, tagSelector,
-    },
-  ), {
-    refreshDeps: [filter, environment, pageNumber, tagSelector],
-    debounceInterval: 200,
-  });
-
-  const { data: tagsResp } = useRequest(() => querySubresourceTags('applications', id), {
-    onSuccess: () => {
-      const tMap = new Map<string, string[]>();
-      const ts: MultiValueTag[] = [];
-      tagsResp?.tags.forEach(
-        (tag) => {
-          if (tag.key === 'jvmExtra' || Utils.tagShouldOmit(tag)) {
-            return;
-          }
-          if (tMap.has(tag.key)) {
-            const values = tMap.get(tag.key) as string[];
-            values.push(tag.value);
-            tMap.set(tag.key, values);
-          } else {
-            tMap.set(tag.key, [tag.value]);
-          }
-        },
-      );
-      tMap.forEach(
-        (value, key) => {
-          ts.push({
-            key,
-            values: value,
-          });
-        },
-      );
-      setTags(ts);
-    },
-  });
+  ]), [fullPath, intl, refresh]);
 
   const onTagClear = useCallback(() => {
     setTagSelectorState('');
@@ -286,7 +289,7 @@ export default () => {
     </div>
   );
 
-  const data = clusters?.items.map((item) => {
+  const data = useMemo(() => clusters?.items.map((item) => {
     const {
       id: clusterID, name, scope, template, updatedAt, createdAt, tags: tagList,
     } = item;
@@ -299,6 +302,7 @@ export default () => {
       template: `${template.name}-${template.release}`,
       createdTime: Utils.timeToLocal(createdAt),
       updatedTime: Utils.timeToLocal(updatedAt),
+      isFavorite: item.isFavorite,
       tags: tagList,
     };
   }).sort((a, b) => {
@@ -310,7 +314,7 @@ export default () => {
     }
 
     return 0;
-  });
+  }), [clusters?.items, env2DisplayName]);
 
   const locale = {
     emptyText: <NoData

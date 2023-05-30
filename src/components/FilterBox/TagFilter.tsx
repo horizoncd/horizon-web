@@ -8,8 +8,8 @@ import { Portal } from 'react-portal';
 import { CloseCircleOutlined } from '@ant-design/icons/lib';
 import styled from 'styled-components';
 import FilterQueryParser from './FilterQueryParser';
-import Tag from './tag';
-import Suggestions from './suggestions';
+import Tag from './Tag';
+import Suggestions from './Suggestions';
 import BaseAutoCompleteHandler from './BaseAutoCompleteHandler';
 import GridDataAutoCompleteHandler, { Option } from './GridDataAutoCompleteHandler';
 import Expression from './Expression';
@@ -218,6 +218,7 @@ export const TagsFilter = React.forwardRef((props: TagsFilterProps, ref) => {
       if (query) {
         result.push({ search: query });
       }
+      setExpand(false);
       onSubmit(result);
       return;
     }

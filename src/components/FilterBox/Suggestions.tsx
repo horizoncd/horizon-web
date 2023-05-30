@@ -1,8 +1,8 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { PropsWithChildren, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
-import QueryBoldSpan from '../Widget/QueryBoldSpan';
 import { SuggestionProps } from './types';
+import { QueryBoldSpan } from '../Widget';
 
 const FloatBox = styled.div`
   display: inline-block;

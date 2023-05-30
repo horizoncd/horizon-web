@@ -11,9 +11,10 @@ import StyledDropdownSwitch from './DropdownSwitch';
 import MicroApp from './MicroApp';
 import Progressing from './Progessing';
 import FavoriteStar from './FavoriteStar';
+import QueryBoldSpan from './QueryBoldSpan';
 
 export {
   BoldText, StyledDropdownSwitch, CenterSpin, DangerMessage,
-  DropdownSwitch, ExactTime, MaxSpace, PopupTime,
+  DropdownSwitch, ExactTime, MaxSpace, PopupTime, QueryBoldSpan,
   MainText, ResourceAvatar, LocationBox, MicroApp, Progressing, FavoriteStar,
 };

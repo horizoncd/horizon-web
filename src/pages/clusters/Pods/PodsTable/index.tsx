@@ -566,6 +566,7 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
+      onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       onHeaderCell: noWrap,
       onCell: noWrap,
       render: (text: string, record: CLUSTER.PodInTable) => {
