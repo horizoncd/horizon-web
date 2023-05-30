@@ -4,8 +4,6 @@ import { useIntl } from 'umi';
 const { Option } = Select;
 const { TextArea } = Input;
 
-const DescriptionInput = () => <TextArea autoSize={{ minRows: 2, maxRows: 6 }} />;
-
 export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur: (s: string) => void }) => {
   const { onRepositoryBlur, editRepository } = props;
   const intl = useIntl();
@@ -19,7 +17,7 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
         name="description"
         extra={intl.formatMessage({ id: 'pages.message.template.desc.extra' })}
       >
-        <DescriptionInput />
+        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
       <Form.Item
         label={formatMessage('onlyOwner')}
@@ -88,7 +86,7 @@ export const ReleaseForm = (props: { prefix: string[] }) => {
         name={calculateName('description')}
         extra={intl.formatMessage({ id: 'pages.message.release.desc.extra' })}
       >
-        <DescriptionInput />
+        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
       <Form.Item
         label={formatMessage('onlyOwner')}
