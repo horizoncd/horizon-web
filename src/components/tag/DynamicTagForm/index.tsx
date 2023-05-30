@@ -49,11 +49,6 @@ function Pair(props: PairProps) {
       max: 1280,
     }]], [intl, valueType]);
 
-  useEffect(() => {
-    setSelectedKey(form.getFieldValue([TagFormName, itemName, 'key']));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemName]);
-
   const metaKeysIndex = useMemo(() => {
     const index: Map<string, number> = new Map();
     metaKeys.forEach((k, i) => { index.set(k, i); });
@@ -62,16 +57,21 @@ function Pair(props: PairProps) {
 
   const setSelectedKeyWrapped = useCallback((key: string) => {
     if (metaKeysIndex.get(key) !== undefined) {
-      if (key !== selectedKey) {
+      if (selectedKey && key !== selectedKey) {
         form.setFieldValue([TagFormName, itemName, valueKey], undefined);
         form.setFieldValue([TagFormName, itemName, 'key'], key);
       }
+      setSelectedKey(key);
       setMustSelected(true);
     } else {
       setMustSelected(false);
     }
-    setSelectedKey(key);
   }, [form, itemName, metaKeysIndex, selectedKey, valueKey]);
+
+  useEffect(() => {
+    setSelectedKeyWrapped(form.getFieldValue([TagFormName, itemName, 'key']));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemName]);
 
   useRequest(() => getMetatagsByKey(selectedKey ?? ''), {
     onSuccess: (result) => {
@@ -97,7 +97,7 @@ function Pair(props: PairProps) {
     }
 
     if (mustSelected) {
-      return <Select key={k} options={metaValues} disabled={disabled} placeholder="value" />;
+      return <Select key={k} options={metaValues} disabled={disabled} placeholder="value" showSearch />;
     }
     return <Input key={k} disabled={disabled} placeholder="value" />;
   // eslint-disable-next-line react-hooks/exhaustive-deps
