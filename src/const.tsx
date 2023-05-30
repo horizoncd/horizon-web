@@ -28,7 +28,7 @@ export enum RunningTask {
   NONE = 'none',
 }
 
-export enum BuildStatus {
+export enum PipelineStatus {
   None, Failed, Running,
 }
 

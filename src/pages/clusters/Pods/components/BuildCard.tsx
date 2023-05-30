@@ -72,7 +72,7 @@ function BuildCard(props: BuildCardProps) {
                       }
         <Progressing
           style={{ marginBottom: '10px', marginLeft: '10px' }}
-          title={intl.formatMessage({ id: 'pages.cluster.status.building' })}
+          title={intl.formatMessage({ id: 'pages.cluster.status.pipelineRunning' })}
         />
         <div style={{ flex: 1 }} />
         <Button className={styles.buttonClass}>

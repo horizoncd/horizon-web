@@ -142,7 +142,9 @@ function ButtonBar(props: ButtonBarProps) {
   return (
     <div style={{ marginBottom: '5px', textAlign: 'right' }}>
       <Button
-        disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(status)}
+        disabled={!RBAC.Permissions.buildAndDeployCluster.allowed
+          || isRestrictedStatus(status)
+          || !cluster.git?.url}
         type="primary"
         onClick={() => {
           onClickOperationWithResumePrompt({ key: 'builddeploy' });
