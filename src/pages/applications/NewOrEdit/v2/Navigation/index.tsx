@@ -42,12 +42,19 @@ const ItemCard = (props: ItemCardProps) => {
   );
 };
 
-export default () => {
+export default (props: any) => {
+  const { location } = props;
+
   const history = useHistory();
   const { initialState } = useModel('@@initialState');
   const intl = useIntl();
   const { fullPath } = initialState!.resource;
   const newApplicationV2URL = `/groups${fullPath}/-/newapplicationv2`;
+  const { pathname } = location;
+  if (pathname.endsWith('/editv2')) {
+    history.push(fullPath);
+  }
+
   return (
     <PageWithBreadcrumb>
       <Row>
@@ -87,7 +94,7 @@ export default () => {
               </Row>
             </Card>
             <MicroApp
-              name="quickStart"
+              name="quickstart"
               fullpath={fullPath}
             />
           </MaxSpace>

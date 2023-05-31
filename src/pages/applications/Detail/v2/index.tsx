@@ -21,11 +21,11 @@ import utils from '@/utils';
 import { parseGitRef } from '@/services/code/code';
 import styles from '@/pages/applications/Detail/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
-import BuildConfig from '@/pages/applications/NewOrEdit/v2/BuildConfig';
-import TemplateConfig from '@/pages/applications/NewOrEdit/v2/Config';
 import { CenterSpin, MaxSpace } from '@/components/Widget';
 import { TagCard } from '@/components/tag';
 import rbac from '@/rbac';
+import BuildConfigForm from '@/pages/applications/NewOrEdit/v2/components/BuildConfigForm';
+import DeployConfigForm from '@/pages/applications/NewOrEdit/v2/components/DeployConfigForm';
 
 const { Option } = Select;
 
@@ -64,9 +64,9 @@ export default () => {
   const [templateBasic, setTemplateBasic] = useState<API.Template>({ description: '', name: '' });
   const [application, setApplication] = useState<API.GetApplicationResponseV2>(defaultApplication);
   const [buildConfig, setBuildConfig] = useState({});
-  const [buildConfigErrors, setBuildConfigErrors] = useState<[]>([]);
   const [templateConfig, setTemplateConfig] = useState({});
-  const [templateConfigErrors, setTemplateConfigErrors] = useState<[]>([]);
+  const [buildConfigValid, setBuildConfigValid] = useState<boolean>(true);
+  const [deployConfigValid, setDeployConfigValid] = useState<boolean>(true);
   const [releaseName, setReleaseName] = useState<string>();
   const { gitRefType, gitRef } = parseGitRef({
     httpURL: '',
@@ -148,13 +148,6 @@ export default () => {
   const [editing, setEditing] = useState(false);
   const [currentEnv, setCurrentEnv] = useState('');
 
-  const templateInputHasError = () => {
-    if (buildConfigErrors.length > 0
-      || templateConfigErrors.length > 0) {
-      return true;
-    }
-    return false;
-  };
   const [buildSubmitted, setBuildSubmitted] = useState(false);
   const [templateConfigSubmitted, setTemplateConfigSubmitted] = useState(false);
   const buildConfigRef = useRef();
@@ -207,7 +200,7 @@ export default () => {
                   <Space>
                     <Button
                       type={editing ? 'primary' : 'default'}
-                      disabled={editing && templateInputHasError()}
+                      disabled={editing && (!buildConfigValid || !deployConfigValid)}
                       onClick={() => {
                         if (editing) {
                           templateConfigRef.current.submit();
@@ -263,19 +256,19 @@ export default () => {
                 size="middle"
               >
                 {!!application.git?.url && !!buildConfig && (
-                  <BuildConfig
+                  <BuildConfigForm
                     readOnly={!editing}
                     ref={buildConfigRef}
                     buildConfig={buildConfig}
                     setBuildConfig={setBuildConfig}
-                    setBuildConfigErrors={setBuildConfigErrors}
+                    setValid={setBuildConfigValid}
                     onSubmit={(formData: any) => {
                       setBuildConfig(formData);
                       setBuildSubmitted(true);
                     }}
                   />
                 )}
-                <TemplateConfig
+                <DeployConfigForm
                   ref={templateConfigRef}
                   envTemplate
                   readOnly={!editing}
@@ -283,7 +276,7 @@ export default () => {
                   release={releaseName}
                   templateConfig={templateConfig}
                   setTemplateConfig={setTemplateConfig}
-                  setTemplateConfigErrors={setTemplateConfigErrors}
+                  setValid={setDeployConfigValid}
                   onSubmit={(formData: any) => {
                     setTemplateConfig(formData);
                     setTemplateConfigSubmitted(true);
