@@ -1,6 +1,5 @@
 import {
-  AutoComplete,
-  Card, Form, Input, Select,
+  AutoComplete, Card, Form, Input, Select,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import TextArea from 'antd/es/input/TextArea';
@@ -15,7 +14,7 @@ import SubmitCancelButton from '@/components/SubmitCancelButton';
 import NotFound from '@/pages/404';
 import { PublishType } from '@/const';
 import {
-  buildDeploy, deploy, diffsOfCode, getCluster,
+  buildDeploy, deploy, diffsOfCode, getClusterV2,
 } from '@/services/clusters/clusters';
 import {
   gitRefTypeList, listGitRef, parseGitRef, GitRefType,
@@ -36,6 +35,7 @@ export default (props: any) => {
   const { query } = location;
   const { type } = query;
   const [refType, setRefType] = useState('');
+  const [showImageTag, setShowImageTag] = useState(false);
   if (!type) {
     return <NotFound />;
   }
@@ -47,13 +47,23 @@ export default (props: any) => {
     manual: true,
   });
 
-  const { data: cluster } = useRequest(() => getCluster(id!), {
+  const parseImageTag = (image: string) => {
+    const items = image.split(':');
+    return items.length > 1 ? items[items.length - 1] : '';
+  };
+
+  const { data: cluster } = useRequest(() => getClusterV2(id!), {
     onSuccess: () => {
-      const { gitRefType, gitRef } = parseGitRef(cluster.git);
+      if (cluster?.image) {
+        setShowImageTag(true);
+      }
+      const { gitRefType, gitRef } = parseGitRef(cluster?.git ?? {});
+      const imageTag = parseImageTag(cluster?.image || '');
       setRefType(gitRefType);
       form.setFieldsValue({
         refType: gitRefType,
         refValue: gitRef,
+        imageTag,
       });
       refreshDiff(gitRef);
     },
@@ -80,6 +90,13 @@ export default (props: any) => {
   const requiredRule: Rule[] = [
     {
       required: true,
+    },
+  ];
+
+  const imageTagRule: Rule[] = [
+    {
+      pattern: /^[a-zA-Z0-9_.-]+$/,
+      message: formatMessage('imageTagRule'),
     },
   ];
 
@@ -119,7 +136,10 @@ export default (props: any) => {
       });
     } else {
       form.validateFields(['title']).then(() => {
-        startDeploy(id!, info);
+        startDeploy(id!, {
+          ...info,
+          imageTag: form.getFieldValue('imageTag'),
+        });
       });
     }
   };
@@ -200,6 +220,17 @@ export default (props: any) => {
                     )
                   }
                 </Form.Item>
+              </Form.Item>
+            )
+          }
+          {
+            type === PublishType.DEPLOY && showImageTag && (
+              <Form.Item
+                label={formatMessage('imageTag')}
+                name="imageTag"
+                rules={imageTagRule}
+              >
+                <Input />
               </Form.Item>
             )
           }

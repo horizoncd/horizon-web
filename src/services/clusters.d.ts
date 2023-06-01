@@ -182,6 +182,7 @@ declare namespace CLUSTER {
   type ClusterDeploy = {
     title: string,
     description?: string;
+    imageTag?: string;
   };
 
   type ClusterRollback = {

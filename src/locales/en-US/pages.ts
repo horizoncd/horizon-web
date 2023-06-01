@@ -362,6 +362,8 @@ export default {
   'pages.pipeline.description': 'Description',
   'pages.pipeline.revision': 'Revision',
   'pages.pipeline.branch': 'Branch',
+  'pages.pipeline.imageTag': 'Image tag',
+  'pages.pipeline.imageTagRule': 'Invalid! Right examples: v1.0.0 or latest',
   'pages.pipeline.changes': 'Changes',
   'pages.pipeline.codeChange': 'Code change',
   'pages.pipeline.configChange': 'Config change',
