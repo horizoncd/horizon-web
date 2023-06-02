@@ -113,6 +113,7 @@ export default {
   'pages.groups.idcopy.success': 'copy success',
 
   'pages.application.id': 'Application ID',
+  'pages.application.navigation.switchToV1': 'Old mode',
   'pages.application.navigation.appType': 'Application type',
   'pages.application.navigation.gitImport': 'Import from git',
   'pages.application.navigation.gitImport.desc': 'Import source code from git, build and deploy it on Horizon',

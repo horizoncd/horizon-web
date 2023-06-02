@@ -112,6 +112,7 @@ export default {
   'pages.groups.idcopy.success': 'ID复制成功',
 
   'pages.application.id': '应用ID',
+  'pages.application.navigation.switchToV1': '旧版入口',
   'pages.application.navigation.appType': '应用类型',
   'pages.application.navigation.gitImport': '从Git导入',
   'pages.application.navigation.gitImport.desc': '从源代码开始，使用Horizon构建并发布应用',

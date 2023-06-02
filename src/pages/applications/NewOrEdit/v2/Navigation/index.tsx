@@ -1,5 +1,5 @@
 import {
-  Card, Col, Divider, Row, Avatar,
+  Card, Col, Divider, Row, Avatar, Button,
 } from 'antd';
 import { useHistory, useIntl, useModel } from 'umi';
 import styled from 'styled-components';
@@ -49,6 +49,7 @@ export default (props: any) => {
   const { initialState } = useModel('@@initialState');
   const intl = useIntl();
   const { fullPath } = initialState!.resource;
+  const newApplicationV1URL = `/groups${fullPath}/-/newapplicationv1`;
   const newApplicationV2URL = `/groups${fullPath}/-/newapplicationv2`;
   const { pathname } = location;
   if (pathname.endsWith('/editv2')) {
@@ -60,8 +61,16 @@ export default (props: any) => {
       <Row>
         <Col span={16} offset={4}>
           <Row>
-            <Col span={24}>
+            <Col span={12}>
               <Title>{intl.formatMessage({ id: 'pages.groups.New application' })}</Title>
+            </Col>
+            <Col span={12} style={{ textAlign: 'right' }}>
+              <Button
+                type="link"
+                onClick={() => history.push(newApplicationV1URL)}
+              >
+                {intl.formatMessage({ id: 'pages.application.navigation.switchToV1' })}
+              </Button>
             </Col>
           </Row>
           <Divider />
