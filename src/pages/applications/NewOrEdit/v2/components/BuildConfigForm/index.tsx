@@ -4,9 +4,21 @@ import { forwardRef, useImperativeHandle, useRef } from 'react';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
 
-export default forwardRef((props: any, ref) => {
+interface Props {
+  readOnly?: boolean;
+  buildConfig: Object;
+  setBuildConfig?: (buildConfig: Object) => void;
+  setValid?: (valid: boolean) => void;
+  onSubmit?: (formData: any) => void;
+}
+
+export default forwardRef((props: Props, ref) => {
   const {
-    readOnly = false, buildConfig, setBuildConfig, setBuildConfigErrors, onSubmit,
+    readOnly = false,
+    buildConfig,
+    setBuildConfig = () => {},
+    setValid = () => {},
+    onSubmit = () => {},
   } = props;
 
   const intl = useIntl();
@@ -24,7 +36,11 @@ export default forwardRef((props: any, ref) => {
       return;
     }
     setBuildConfig(formData);
-    setBuildConfigErrors(errors);
+    if (errors && errors.length > 0) {
+      setValid(false);
+    } else {
+      setValid(true);
+    }
   };
 
   return (

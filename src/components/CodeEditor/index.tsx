@@ -32,6 +32,7 @@ function CodeEditor(props: Props) {
       { regex: /\[build : git\]/, token: 'background-green' },
       { regex: /\[build : compile\]/, token: 'background-sky-blue' },
       { regex: /\[build : image\]/, token: 'background-yellow' },
+      { regex: /\[check : check\]/, token: 'background-violet' },
       { regex: /\[deploy : deploy\]/, token: 'background-purple' },
       { regex: /\[\d{4}-\d{2}-\d{2} \d{1,2}:\d{1,2}:\d{1,2}\]/, token: 'yellow' },
       { regex: /\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\]/, token: 'yellow' }, // [2021-11-12T02:16:48Z]

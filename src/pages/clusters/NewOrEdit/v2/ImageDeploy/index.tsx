@@ -3,48 +3,32 @@ import {
 } from 'antd';
 import { useRequest } from 'umi';
 import { useEffect, useRef, useState } from 'react';
-import type { FieldData } from 'rc-field-form/lib/interface';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import HSteps from '@/components/HSteps';
-import Basic from './Basic';
-import Build from '@/pages/applications/NewOrEdit/v2/BuildConfig';
-import Deploy from '@/pages/applications/NewOrEdit/v2/Config';
-import Audit from './Audit';
+import BaseInfoForm from '../components/BaseInfoForm';
+import DeployConfigForm from '@/pages/applications/NewOrEdit/v2/components/DeployConfigForm';
 import { getApplicationEnvTemplate } from '@/services/applications/applications';
 import { getApplicationV2 } from '@/services/applications/applications';
 import {
   createClusterV2, updateClusterV2, getClusterV2,
 } from '@/services/clusters/clusters';
-import { parseGitRef } from '@/services/code/code';
-import { PublishType } from '@/const';
+import { AppOrClusterType, PublishType, ResourceKey } from '@/const';
 import {
   Step, StepContent, StepAction, ModalTitle, ModalContent,
-} from '../Widget';
+} from '@/pages/clusters/NewOrEdit/Widget';
 import { ResourceType } from '@/const';
 import { difference } from '@/utils';
 import { RebuilddeployModal } from '@/components/rollout';
+import { MaxSpace } from '@/components/Widget';
 
 export default (props: any) => {
   const intl = useIntl();
 
-  const name = 'name';
-  const description = 'description';
-  const environment = 'environment';
-  const region = 'region';
-  const expireTimeStr = 'expireTime';
-  const url = 'url';
-  const tags = 'tags';
-  const refType = 'refType';
-  const refValue = 'refValue';
-  const subfolder = 'subfolder';
   const buildConfigKey = 'buildConfig';
   const templateBasicKey = 'templateBasic';
   const templateConfigKey = 'templateConfig';
-  const basicFieldsToValidate = [
-    name, environment, url, refValue,
-  ];
 
   const { initialState } = useModel('@@initialState');
   const { id } = initialState!.resource;
@@ -52,70 +36,37 @@ export default (props: any) => {
   const { location } = props;
   const { query, pathname } = location;
   const { environment: envFromQuery, sourceClusterID } = query;
-  const editing = pathname.endsWith('editv2');
-  const creating = pathname.endsWith('newclusterv2');
+  const editing = pathname.endsWith('editv2/imagedeploy');
+  const creating = pathname.endsWith('newclusterv2/imagedeploy');
   const copying = !!sourceClusterID;
 
   const { successAlert } = useModel('alert');
   const [form] = Form.useForm();
-  const buildFormRef = useRef();
   const templateFormRef = useRef();
   const [applicationName, setApplicationName] = useState('');
   const [current, setCurrent] = useState(0);
   const [cluster, setCluster] = useState<CLUSTER.ClusterV2>();
-  const [basicInfo, setBasicInfo] = useState<FieldData[]>([]);
   const [originConfig, setOriginConfig] = useState({});
   const [buildConfig, setBuildConfig] = useState({});
-  const [buildConfigErrors, setBuildConfigErrors] = useState({});
   const [templateBasic, setTemplateBasic] = useState({ name: '', release: '' });
   const [releaseName, setReleaseName] = useState('');
   const [templateConfig, setTemplateConfig] = useState({});
-  const [templateConfigErrors, setTemplateConfigErrors] = useState({});
-  const [buildSubmitted, setBuildSubmitted] = useState(false);
   const [deploySubmitted, setDeploySubmitted] = useState(false);
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
   const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
-
-  const basicHasError = () => {
-    if (editing && basicInfo.length === 0) {
-      return false;
-    }
-    let hasError = true;
-    let validatedNum = 0;
-    for (let i = 0; i < basicInfo!.length; i += 1) {
-      const val = basicInfo![i];
-      if (val.errors && val.errors.length > 0) {
-        break;
-      }
-      if (val.name.length > 0 && basicFieldsToValidate.includes(val.name[0]) && val.value) {
-        validatedNum += 1;
-      }
-    }
-    if (validatedNum === basicFieldsToValidate.length) {
-      hasError = false;
-    }
-    return hasError;
-  };
-
-  const configHasError = (configError: any) => {
-    if (configError && configError.length > 0) {
-      return true;
-    }
-    return false;
-  };
+  const [baseInfoValid, setBaseInfoValid] = useState<boolean>(false);
+  const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
   const currentStepIsValid = (cur: number) => {
     let valid: boolean;
     switch (cur) {
       case 0:
-        valid = !basicHasError();
+        valid = baseInfoValid;
         break;
       case 1:
-        valid = !basicHasError() && !configHasError(buildConfigErrors);
-        break;
       case 2:
-        valid = !basicHasError() && !configHasError(buildConfigErrors) && !configHasError(templateConfigErrors);
+        valid = baseInfoValid && !!templateBasic.name && deployConfigValid;
         break;
       default:
         valid = true;
@@ -128,31 +79,23 @@ export default (props: any) => {
     {
       title: intl.formatMessage({ id: 'pages.newV2.step.basic' }),
       disabled: false,
-    },
-    {
-      title: intl.formatMessage({ id: 'pages.newV2.step.build' }),
+    }, {
+      title: intl.formatMessage({ id: 'pages.newV2.deploy.config' }),
       disabled: !currentStepIsValid(0),
-    },
-    {
-      title: intl.formatMessage({ id: 'pages.newV2.step.deploy' }),
-      disabled: !currentStepIsValid(1),
-    },
-    {
+    }, {
       title: intl.formatMessage({ id: 'pages.newV2.step.audit' }),
-      disabled: !currentStepIsValid(2),
+      disabled: !currentStepIsValid(1),
     },
   ];
 
-  const next = async () => {
-    setCurrent(current + 1);
+  const onCurrentChange = (cur: number) => {
+    setCurrent(cur);
   };
-
   const prev = () => {
     setCurrent(current - 1);
   };
-
-  const onCurrentChange = async (cur: number) => {
-    setCurrent(cur);
+  const next = () => {
+    setCurrent(current + 1);
   };
 
   const { run: refreshAppEnvTemplate } = useRequest((env: string) => getApplicationEnvTemplate(id, env), {
@@ -172,19 +115,16 @@ export default (props: any) => {
   if (creating) {
     const { data } = useRequest(() => getApplicationV2(id), {
       onSuccess: () => {
-        // eslint-disable-next-line no-console
-        const { git, name: appName, tags: appTags } = data!;
+        const {
+          image, name: appName, tags: appTags,
+        } = data!;
         setApplicationName(appName);
         if (!copying) {
           // basicInfo
-          const { gitRefType, gitRef } = parseGitRef(data!.git);
           form.setFields([
-            { name: environment, value: envFromQuery },
-            { name: url, value: git.url },
-            { name: subfolder, value: git.subfolder },
-            { name: tags, value: appTags },
-            { name: refType, value: gitRefType },
-            { name: refValue, value: gitRef },
+            { name: ResourceKey.ENVIRONMENT, value: envFromQuery },
+            { name: ResourceKey.TAGS, value: appTags },
+            { name: ResourceKey.IMAGE_URL, value: image },
           ]);
 
           // basicTemplateInfo
@@ -192,7 +132,6 @@ export default (props: any) => {
             name: data!.templateInfo!.name,
             release: data!.templateInfo!.release,
           };
-          setBuildConfig(data!.buildConfig);
           // todo(zx): remove
           setTemplateBasic(basicTemplateInfo);
           setReleaseName(data!.templateInfo!.release);
@@ -207,29 +146,22 @@ export default (props: any) => {
                 description: d,
                 scope,
                 expireTime,
-                git: g,
+                tags: clusterTags,
+                image: i,
 
                 // build and deploy info
-                buildConfig: bc,
                 templateInfo: ti,
                 templateConfig: tc,
-                tags: clusterTags,
               } = clusterData!;
               const { environment: e, region: r } = scope;
-              const { url: u, subfolder: s } = g;
-              const { gitRefType, gitRef } = parseGitRef(g);
               form.setFields([
-                { name: description, value: d },
-                { name: environment, value: e },
-                { name: region, value: r },
-                { name: expireTimeStr, value: expireTime },
-                { name: url, value: u },
-                { name: subfolder, value: s },
-                { name: tags, value: clusterTags },
-                { name: refType, value: gitRefType },
-                { name: refValue, value: gitRef },
+                { name: ResourceKey.DESCRIPTION, value: d },
+                { name: ResourceKey.ENVIRONMENT, value: e },
+                { name: ResourceKey.REGION, value: r },
+                { name: ResourceKey.EXPIRE_TIME, value: expireTime },
+                { name: ResourceKey.TAGS, value: clusterTags },
+                { name: ResourceKey.IMAGE_URL, value: i },
               ]);
-              setBuildConfig(bc);
               setTemplateBasic(ti);
               setReleaseName(ti.release);
               setTemplateConfig(tc);
@@ -251,35 +183,27 @@ export default (props: any) => {
           description: d,
           scope,
           expireTime,
-          git,
+          image,
 
-          // build and deploy info
-          buildConfig: bc,
+          // deploy info
           templateInfo: ti,
           templateConfig: tc,
           tags: clusterTags,
         } = clusterData!;
         const { environment: e, region: r } = scope;
-        const { url: u, subfolder: s } = git;
-        const { gitRefType, gitRef } = parseGitRef(git);
         form.setFields([
-          { name, value: n },
-          { name: description, value: d },
-          { name: environment, value: e },
-          { name: region, value: r },
-          { name: expireTimeStr, value: expireTime },
-          { name: url, value: u },
-          { name: subfolder, value: s },
-          { name: tags, value: clusterTags },
-          { name: refType, value: gitRefType },
-          { name: refValue, value: gitRef },
+          { name: ResourceKey.NAME, value: n },
+          { name: ResourceKey.DESCRIPTION, value: d },
+          { name: ResourceKey.ENVIRONMENT, value: e },
+          { name: ResourceKey.REGION, value: r },
+          { name: ResourceKey.EXPIRE_TIME, value: expireTime },
+          { name: ResourceKey.TAGS, value: clusterTags },
+          { name: ResourceKey.IMAGE_URL, value: image },
         ]);
         setOriginConfig({
-          buildConfig: bc,
           templateBasic: ti,
           templateConfig: tc,
         });
-        setBuildConfig(bc);
         setTemplateBasic(ti);
         setReleaseName(ti.release);
         setTemplateConfig(tc);
@@ -287,14 +211,6 @@ export default (props: any) => {
       },
     });
   }
-
-  const setBasicFormData = (changedFields: FieldData[], allFields: FieldData[]) => {
-    // query regions when environment selected
-    if (changedFields[0].name[0] === 'environment') {
-      refreshAppEnvTemplate(changedFields[0].value);
-    }
-    setBasicInfo(allFields);
-  };
 
   const onBuildAndDeployButtonOK = () => {
     setShowBuildDeployModal(false);
@@ -316,16 +232,11 @@ export default (props: any) => {
 
   const { loading, run: submitCluster } = useRequest(() => {
     const info = {
-      name: form.getFieldValue(name),
-      description: form.getFieldValue(description),
-      expireTime: form.getFieldValue(expireTimeStr),
-      tags: form.getFieldValue(tags) ?? [],
-      git: {
-        url: form.getFieldValue(url),
-        subfolder: form.getFieldValue(subfolder) || '',
-        [form.getFieldValue(refType)]: form.getFieldValue(refValue),
-      },
-      buildConfig,
+      name: form.getFieldValue(ResourceKey.NAME),
+      description: form.getFieldValue(ResourceKey.DESCRIPTION),
+      expireTime: form.getFieldValue(ResourceKey.EXPIRE_TIME),
+      tags: form.getFieldValue(ResourceKey.TAGS) ?? [],
+      image: form.getFieldValue(ResourceKey.IMAGE_URL),
       templateInfo: {
         name: templateBasic.name,
         release: releaseName,
@@ -333,7 +244,11 @@ export default (props: any) => {
       templateConfig,
     };
     if (creating) {
-      return createClusterV2(id, `${form.getFieldValue(environment)}/${form.getFieldValue(region)}`, info);
+      return createClusterV2(
+        id,
+        `${form.getFieldValue(ResourceKey.ENVIRONMENT)}/${form.getFieldValue(ResourceKey.REGION)}`,
+        info,
+      );
     }
     return updateClusterV2(id, info);
   }, {
@@ -350,7 +265,6 @@ export default (props: any) => {
       } else if (editing) {
         getClusterV2(id).then(({ data: clusterData }) => {
           const currentConfig = {
-            buildConfig: clusterData.buildConfig,
             templateBasic: clusterData.templateInfo,
             templateConfig: clusterData.templateConfig,
           };
@@ -368,23 +282,17 @@ export default (props: any) => {
     },
   });
 
-  const onBuildSubmit = (formData: any) => {
-    setBuildConfig(formData);
-    setBuildSubmitted(true);
-  };
-
   const onDeploySubmit = (formData: any) => {
     setTemplateConfig(formData);
     setDeploySubmitted(true);
   };
 
   useEffect(() => {
-    if (buildSubmitted && deploySubmitted) {
+    if (deploySubmitted) {
       submitCluster();
-      setBuildSubmitted(false);
       setDeploySubmitted(false);
     }
-  }, [submitCluster, buildSubmitted, deploySubmitted]);
+  }, [submitCluster, deploySubmitted]);
 
   const buildDeployModal = (
     <Modal
@@ -452,55 +360,55 @@ export default (props: any) => {
           <StepContent>
             {
               current === 0 && (
-              <Basic
+              <BaseInfoForm
                 form={form}
-                applicationName={applicationName}
-                formData={basicInfo}
-                setFormData={setBasicFormData}
+                appName={applicationName}
+                clusterType={AppOrClusterType.IMAGE_DEPLOY}
+                clusterStatus={cluster?.status}
                 editing={editing}
-                status={cluster?.status}
+                setValid={setBaseInfoValid}
+                onEnvChange={refreshAppEnvTemplate}
               />
               )
             }
             {
               current === 1 && (
-              <Build
-                buildConfig={buildConfig}
-                setBuildConfig={setBuildConfig}
-                setBuildConfigErrors={setBuildConfigErrors}
-              />
-              )
-            }
-            {
-              current === 2 && (
-              <Deploy
+              <DeployConfigForm
                 template={templateBasic}
                 release={releaseName}
                 setReleaseName={setReleaseName}
                 templateConfig={templateConfig}
                 setTemplateConfig={setTemplateConfig}
-                setTemplateConfigErrors={setTemplateConfigErrors}
+                setValid={setDeployConfigValid}
                 clusterID={cluster?.id}
                 resourceType={ResourceType.CLUSTER}
               />
               )
             }
             {
-              current === 3 && (
-              <Audit
-                form={form}
-                applicationName={applicationName}
-                editing={editing}
-                buildConfig={buildConfig}
-                templateBasic={templateBasic}
-                release={releaseName}
-                templateConfig={templateConfig}
-                clusterID={cluster?.id}
-                buildFormRef={buildFormRef}
-                templateFormRef={templateFormRef}
-                onBuildSubmit={onBuildSubmit}
-                onDeploySubmit={onDeploySubmit}
-              />
+              current === 2 && (
+                <MaxSpace
+                  direction="vertical"
+                  size="middle"
+                >
+                  <BaseInfoForm
+                    readOnly
+                    form={form}
+                    editing={editing}
+                    appName={applicationName}
+                    clusterType={AppOrClusterType.IMAGE_DEPLOY}
+                  />
+                  <DeployConfigForm
+                    readOnly
+                    clusterID={cluster?.id}
+                    resourceType={ResourceType.CLUSTER}
+                    template={templateBasic}
+                    release={releaseName}
+                    templateConfig={templateConfig}
+                    ref={templateFormRef}
+                    onSubmit={onDeploySubmit}
+                  />
+                </MaxSpace>
               )
             }
           </StepContent>
@@ -514,7 +422,6 @@ export default (props: any) => {
               <Button
                 type="primary"
                 onClick={() => {
-                  buildFormRef.current.submit();
                   templateFormRef.current.submit();
                 }}
                 loading={loading}

@@ -204,6 +204,8 @@ declare namespace API {
     tags: TAG.Tag[];
     git: GitInfo;
 
+    image?: string;
+
     buildConfig: any;
     templateInfo?: TemplateInfoV2;
     templateConfig?: any;
@@ -219,7 +221,9 @@ declare namespace API {
     name: string
     description: string
     priority: string;
+    tags?: Tag[];
     git?: GitInfo;
+    image?: string;
     buildConfig?: any;
     templateInfo?: TemplateInfoV2;
     templateConfig?: any;

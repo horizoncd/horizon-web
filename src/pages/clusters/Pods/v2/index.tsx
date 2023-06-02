@@ -7,7 +7,7 @@ import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
   getClusterV2, getClusterStatusV2, getClusterResourceTree, getStepV2, getClusterBuildStatusV2,
 } from '@/services/clusters/clusters';
-import { ClusterStatus, TaskStatus, BuildStatus } from '@/const';
+import { ClusterStatus, TaskStatus, PipelineStatus } from '@/const';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -42,7 +42,7 @@ function PodsPage(props: PodsPageProps) {
   const [shouldAlertFreed, setShouldAlertFreed] = useState(true);
   const [env2DisplayName, setEnv2DisplayName] = useState<Map<string, string>>();
   const [region2DisplayName, setRegion2DisplayName] = useState<Map<string, string>>();
-  const [building, setBuilding] = useState<BuildStatus>(BuildStatus.None);
+  const [pipelineStatus, setBuilding] = useState<PipelineStatus>(PipelineStatus.None);
   const [progressing, setProgressing] = useState(false);
 
   const { data: cluster } = useRequest(() => getClusterV2(id), {});
@@ -69,11 +69,11 @@ function PodsPage(props: PodsPageProps) {
     onSuccess: (status) => {
       const taskStatus = status.runningTask.taskStatus as TaskStatus;
       if (taskStatus === TaskStatus.RUNNING || taskStatus === TaskStatus.PENDING) {
-        setBuilding(BuildStatus.Running);
+        setBuilding(PipelineStatus.Running);
       } else if (taskStatus === TaskStatus.FAILED) {
-        setBuilding(BuildStatus.Failed);
+        setBuilding(PipelineStatus.Failed);
       } else {
-        setBuilding(BuildStatus.None);
+        setBuilding(PipelineStatus.None);
       }
     },
   });
@@ -134,7 +134,7 @@ function PodsPage(props: PodsPageProps) {
         />
         {
           (clusterBuildStatus && clusterBuildStatus.latestPipelinerun
-            && (building !== BuildStatus.None)) && (
+            && (pipelineStatus !== PipelineStatus.None)) && (
             <BuildCard
               pipelinerunID={clusterBuildStatus.latestPipelinerun.id}
               runningTask={clusterBuildStatus.runningTask}
@@ -142,7 +142,7 @@ function PodsPage(props: PodsPageProps) {
           )
         }
         {
-          (building === BuildStatus.None && progressing && step && step.index !== step.total) && (
+          (pipelineStatus === PipelineStatus.None && progressing && step && step.index !== step.total) && (
             <StepCard
               step={step}
               refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}

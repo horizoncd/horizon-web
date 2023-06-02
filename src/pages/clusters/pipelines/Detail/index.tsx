@@ -97,21 +97,23 @@ export default (props: any) => {
     data[1][1].value[intl.formatMessage({ id: `pages.clusterDetail.basic.${refType}` })] = refValue;
   }
 
-  const cardTab = (pipeline && pipeline.action === PublishType.BUILD_DEPLOY) ? [
-    {
-      key: 'Changes',
-      tab: formatMessage('changes'),
-    },
-    {
-      key: 'BuildLog',
-      tab: formatMessage('buildLog'),
-    },
-  ] : [
-    {
-      key: 'Changes',
-      tab: formatMessage('changes'),
-    },
-  ];
+  const cardTab = (pipeline
+    && (pipeline.action === PublishType.BUILD_DEPLOY
+      || pipeline.action === PublishType.DEPLOY)) ? [
+      {
+        key: 'Changes',
+        tab: formatMessage('changes'),
+      },
+      {
+        key: 'BuildLog',
+        tab: formatMessage('buildLog'),
+      },
+    ] : [
+      {
+        key: 'Changes',
+        tab: formatMessage('changes'),
+      },
+    ];
 
   const [fullscreen, setFullscreen] = useState(false);
   const { successAlert, errorAlert } = useModel('alert');

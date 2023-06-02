@@ -114,6 +114,6 @@ function TemplateCards(props: TemplateProps & PageWithInitialStateProps) {
   );
 }
 
-const TempalteCardsWithInitialState = PageWithInitialState(TemplateCards);
+const TemplateCardsWithInitialState = PageWithInitialState(TemplateCards);
 
-export default TempalteCardsWithInitialState;
+export default TemplateCardsWithInitialState;

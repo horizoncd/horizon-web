@@ -40,38 +40,18 @@ export default () => {
       >
         {intl.formatMessage({ id: 'pages.groups.New subgroup' })}
       </Button>
-      <MicroApp
-        name="createApplication"
-        fullPath={fullPath}
-        title={intl.formatMessage({ id: 'pages.groups.New application' })}
-        disabled={!RBAC.Permissions.createApplication.allowed}
-        defaultNode={(
-          <Button
-            style={{ marginRight: 15 }}
-            type="primary"
-            disabled={!RBAC.Permissions.createApplication.allowed}
-            onClick={() => {
-              history.push({
-                pathname: newApplication,
-              });
-            }}
-          >
-            {intl.formatMessage({ id: 'pages.groups.New application' })}
-          </Button>
-        )}
-      >
-        {intl.formatMessage({ id: 'pages.groups.New application' })}
-      </MicroApp>
-      {/* <Button
+      <Button
+        style={{ marginRight: 15 }}
+        type="primary"
         disabled={!RBAC.Permissions.createApplication.allowed}
         onClick={() => {
           history.push({
-            pathname: newApplicationV2,
+            pathname: newApplication,
           });
         }}
       >
-        {intl.formatMessage({ id: 'pages.groups.New applicationV2' })}
-      </Button> */}
+        {intl.formatMessage({ id: 'pages.groups.New application' })}
+      </Button>
     </div>
   );
 

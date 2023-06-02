@@ -88,7 +88,15 @@ const groupRoutes = [
   },{
     path: '/groups/*/-/newapplicationv2',
     menuRender: false,
-    component: 'applications/NewOrEdit/v2',
+    component: 'applications/NewOrEdit/v2/Navigation',
+  },{
+    path: '/groups/*/-/newapplicationv2/gitimport',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/GitImport',
+  },{
+    path: '/groups/*/-/newapplicationv2/imagedeploy',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -128,7 +136,17 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/editv2',
     menuRender: false,
-    component: 'applications/NewOrEdit/v2',
+    component: 'applications/NewOrEdit/v2/Navigation',
+  },
+  {
+    path: '/applications/*/-/editv2/gitimport',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/applications/*/-/editv2/imagedeploy',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/applications/*/-/newcluster',
@@ -138,7 +156,17 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/newclusterv2',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2',
+    component: 'clusters/NewOrEdit/v2/Navigation',
+  },
+  {
+    path: '/applications/*/-/newclusterv2/gitimport',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/applications/*/-/newclusterv2/imagedeploy',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/applications/*/-/settings/advance',
@@ -164,7 +192,17 @@ const clusterRoutes = [
   {
     path: '/clusters/*/-/editv2',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2',
+    component: 'clusters/NewOrEdit/v2/Navigation',
+  },
+  {
+    path: '/clusters/*/-/editv2/gitimport',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/GitImport',
+  },
+  {
+    path: '/clusters/*/-/editv2/imagedeploy',
+    menuRender: false,
+    component: 'clusters/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/clusters/*/-/configs',

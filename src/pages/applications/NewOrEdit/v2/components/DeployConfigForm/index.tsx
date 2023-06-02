@@ -2,33 +2,56 @@ import { useIntl, useRequest } from 'umi';
 import {
   Card, Form, Input, Select,
 } from 'antd';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef, useEffect, useImperativeHandle, useRef, useState,
+} from 'react';
 import { Rule } from 'antd/lib/form';
 import { querySchema } from '@/services/templates/templates';
 import JsonSchemaForm from '@/components/JsonSchemaForm';
 import { queryReleases } from '@/services/templates/templates';
 import { ResourceType } from '@/const';
-import { API } from '@/services/typings';
 import { MaxSpace } from '@/components/Widget';
 
 const { Option } = Select;
 
-export default forwardRef((props: any, ref) => {
+interface Props {
+  readOnly?: boolean;
+  envTemplate?: boolean;
+  clusterID?: number;
+  resourceType?: string;
+  template: API.Template;
+  release?: string;
+  setReleaseName?: (releaseName: string) => void;
+  templateConfig?: Object;
+  setTemplateConfig?: (config: Object) => void;
+  setValid?: (valid: boolean) => void;
+  onSubmit?: (values: any) => void;
+}
+
+export default forwardRef((props: Props, ref) => {
   const appKey = 'application';
   const intl = useIntl();
   const {
     readOnly = false,
-    envTemplate,
+    envTemplate = false,
     clusterID,
     resourceType,
     template,
-    release, setReleaseName,
-    templateConfig, setTemplateConfig,
-    setTemplateConfigErrors,
-    onSubmit,
+    release, setReleaseName = () => {},
+    templateConfig, setTemplateConfig = () => {},
+    setValid = () => {},
+    onSubmit = () => {},
   } = props;
 
   const { name: templateName } = template;
+  const [initValidation, setInitValidation] = useState(true);
+
+  useEffect(() => {
+    if (initValidation && !!release) {
+      setValid(true);
+      setInitValidation(false);
+    }
+  }, [initValidation, setValid, release]);
 
   const formRef = useRef();
   useImperativeHandle(ref, () => ({
@@ -40,12 +63,12 @@ export default forwardRef((props: any, ref) => {
   const { data } = useRequest(
     () => {
       if (resourceType === ResourceType.CLUSTER) {
-        return querySchema(templateName, release, {
+        return querySchema(templateName, release!, {
           clusterID,
           resourceType: ResourceType.CLUSTER,
         });
       }
-      return querySchema(templateName, release);
+      return querySchema(templateName, release!);
     },
     {
       refreshDeps: [release],
@@ -86,11 +109,11 @@ export default forwardRef((props: any, ref) => {
     if (readOnly) {
       return;
     }
-    if (setTemplateConfig) {
-      setTemplateConfig(formData);
-    }
-    if (setTemplateConfigErrors) {
-      setTemplateConfigErrors(errors);
+    setTemplateConfig(formData);
+    if (!release || (errors && errors.length > 0)) {
+      setValid(false);
+    } else {
+      setValid(true);
     }
   };
 

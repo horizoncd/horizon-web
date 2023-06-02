@@ -48,14 +48,29 @@ export default function Basic(props: any) {
     ready: version !== pipelineV2 && !!cluster.scope.environment,
   });
 
-  const editClusterRoute = version !== pipelineV2
-    ? `/clusters${clusterFullPath}/-/edit`
-    : `/clusters${clusterFullPath}/-/editv2`;
+  const editClusterRoute = () => {
+    if (version !== pipelineV2) {
+      return `/clusters${clusterFullPath}/-/edit`;
+    }
+    if (cluster.git?.url) {
+      return `/clusters${clusterFullPath}/-/editv2/gitimport`;
+    }
+    return `/clusters${clusterFullPath}/-/editv2/imagedeploy`;
+  };
+
   const regionName = version !== pipelineV2
     ? region2DisplayName.get(cluster.scope.region)
     : cluster.scope.regionDisplayName;
 
-  const { gitRefType, gitRef } = parseGitRef(cluster.git);
+  const { gitRefType, gitRef } = parseGitRef({
+    httpURL: '',
+    url: cluster.git?.url || '',
+    subfolder: cluster.git?.subfolder || '',
+    branch: cluster.git?.branch || '',
+    tag: cluster.git?.tag || '',
+    commit: cluster.git?.commit || '',
+  });
+
   const serviceDetail: Param[][] = [
     [
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.name' }), value: cluster.name },
@@ -77,14 +92,14 @@ export default function Basic(props: any) {
           ? `${cluster.template.name}-${cluster.template.release}`
           : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
       },
-      { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git.url },
+      { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git?.url },
       {
         key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
         value: gitRef,
       },
       {
         key: intl.formatMessage({ id: 'pages.clusterDetail.basic.subfolder' }),
-        value: cluster.git.subfolder,
+        value: cluster.git?.subfolder,
       },
     ],
     [
@@ -143,7 +158,7 @@ export default function Basic(props: any) {
           className={styles.button}
           disabled={!RBAC.Permissions.updateCluster.allowed}
           onClick={() => history.push({
-            pathname: editClusterRoute,
+            pathname: editClusterRoute(),
           })}
         >
           {intl.formatMessage({ id: 'pages.clusterDetail.basic.edit' })}

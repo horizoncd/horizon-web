@@ -53,7 +53,7 @@ function ButtonBar(props: ButtonBarProps) {
         successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.hint' }));
         break;
       case 'editCluster':
-        history.push(`/clusters${fullPath}/-/editv2`);
+        history.push(cluster?.git?.url ? `/clusters${fullPath}/-/editv2/gitimport` : `/clusters${fullPath}/-/editv2/imagedeploy`);
         break;
       case 'freeCluster':
         Modal.confirm({
@@ -142,7 +142,9 @@ function ButtonBar(props: ButtonBarProps) {
   return (
     <div style={{ marginBottom: '5px', textAlign: 'right' }}>
       <Button
-        disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(status)}
+        disabled={!RBAC.Permissions.buildAndDeployCluster.allowed
+          || isRestrictedStatus(status)
+          || !cluster.git?.url}
         type="primary"
         onClick={() => {
           onClickOperationWithResumePrompt({ key: 'builddeploy' });
