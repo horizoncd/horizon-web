@@ -28,6 +28,7 @@ import { MaxSpace } from '@/components/Widget';
 export default (props: any) => {
   const intl = useIntl();
 
+  const gitKey = 'git';
   const buildConfigKey = 'buildConfig';
   const templateBasicKey = 'templateBasic';
   const templateConfigKey = 'templateConfig';
@@ -230,6 +231,7 @@ export default (props: any) => {
           { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
         ]);
         setOriginConfig({
+          git,
           buildConfig: bc,
           templateBasic: ti,
           templateConfig: tc,
@@ -301,12 +303,14 @@ export default (props: any) => {
       } else if (editing) {
         getClusterV2(id).then(({ data: clusterData }) => {
           const currentConfig = {
+            git: clusterData.git,
             buildConfig: clusterData.buildConfig,
             templateBasic: clusterData.templateInfo,
             templateConfig: clusterData.templateConfig,
           };
           const configDiff = difference(currentConfig, originConfig);
-          if (Object.keys(configDiff).includes(buildConfigKey)) {
+          if (Object.keys(configDiff).includes(gitKey)
+            || Object.keys(configDiff).includes(buildConfigKey)) {
             setShowBuildDeployModal(true);
           } else if (Object.keys(configDiff).includes(templateBasicKey)
             || Object.keys(configDiff).includes(templateConfigKey)) {

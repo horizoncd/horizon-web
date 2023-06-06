@@ -21,7 +21,7 @@ import utils from '@/utils';
 import { parseGitRef } from '@/services/code/code';
 import styles from '@/pages/applications/Detail/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
-import { CenterSpin, MaxSpace } from '@/components/Widget';
+import { MaxSpace } from '@/components/Widget';
 import { TagCard } from '@/components/tag';
 import rbac from '@/rbac';
 import BuildConfigForm from '@/pages/applications/NewOrEdit/v2/components/BuildConfigForm';
@@ -76,24 +76,32 @@ export default () => {
     tag: application.git?.tag || '',
     commit: application.git?.commit || '',
   });
+
+  const sourceDetail: Param[] = application.git?.url ? [
+    {
+      key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
+      value: `${application.templateInfo!.name}-${application.templateInfo!.release}`,
+    },
+    { key: intl.formatMessage({ id: 'pages.applicationNew.basic.url' }), value: application.git?.url },
+    {
+      key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
+      value: gitRef,
+    },
+    { key: intl.formatMessage({ id: 'pages.applicationNew.basic.subfolder' }), value: application.git?.subfolder },
+  ] : [
+    {
+      key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
+      value: `${application.templateInfo!.name}-${application.templateInfo!.release}`,
+    },
+    { key: intl.formatMessage({ id: 'pages.applicationNew.basic.image' }), value: application.image },
+  ];
   const serviceDetail: Param[][] = [
     [
       { key: intl.formatMessage({ id: 'pages.applicationNew.basic.name' }), value: application.name },
       { key: intl.formatMessage({ id: 'pages.applicationNew.basic.description' }), value: application.description || '' },
       { key: intl.formatMessage({ id: 'pages.applicationNew.basic.priority' }), value: application.priority },
     ],
-    [
-      {
-        key: intl.formatMessage({ id: 'pages.applicationDetail.basic.release' }),
-        value: `${application.templateInfo!.name}-${application.templateInfo!.release}`,
-      },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.url' }), value: application.git?.url },
-      {
-        key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
-        value: gitRef,
-      },
-      { key: intl.formatMessage({ id: 'pages.applicationNew.basic.subfolder' }), value: application.git?.subfolder },
-    ],
+    sourceDetail,
     [
       {
         key: intl.formatMessage({ id: 'pages.applicationDetail.basic.createTime' }),
@@ -170,7 +178,7 @@ export default () => {
   if (application.id === 0) {
     return (
       <PageWithBreadcrumb>
-        <CenterSpin />
+        <div />
       </PageWithBreadcrumb>
     );
   }

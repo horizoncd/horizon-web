@@ -71,6 +71,31 @@ export default function Basic(props: any) {
     commit: cluster.git?.commit || '',
   });
 
+  const sourceDetail: Param[] = cluster.git?.url ? [
+    {
+      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
+      value: version !== pipelineV2
+        ? `${cluster.template.name}-${cluster.template.release}`
+        : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
+    },
+    { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git?.url },
+    {
+      key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
+      value: gitRef,
+    },
+    {
+      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.subfolder' }),
+      value: cluster.git?.subfolder,
+    },
+  ] : [
+    {
+      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
+      value: version !== pipelineV2
+        ? `${cluster.template.name}-${cluster.template.release}`
+        : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
+    },
+    { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.image' }), value: cluster.image },
+  ];
   const serviceDetail: Param[][] = [
     [
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.name' }), value: cluster.name },
@@ -85,23 +110,7 @@ export default function Basic(props: any) {
       },
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.description' }), value: cluster.description || '' },
     ],
-    [
-      {
-        key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
-        value: version !== pipelineV2
-          ? `${cluster.template.name}-${cluster.template.release}`
-          : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
-      },
-      { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git?.url },
-      {
-        key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
-        value: gitRef,
-      },
-      {
-        key: intl.formatMessage({ id: 'pages.clusterDetail.basic.subfolder' }),
-        value: cluster.git?.subfolder,
-      },
-    ],
+    sourceDetail,
     [
       {
         key: intl.formatMessage({ id: 'pages.clusterDetail.basic.createTime' }),

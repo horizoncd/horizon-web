@@ -26,10 +26,6 @@ import { MaxSpace } from '@/components/Widget';
 export default (props: any) => {
   const intl = useIntl();
 
-  const buildConfigKey = 'buildConfig';
-  const templateBasicKey = 'templateBasic';
-  const templateConfigKey = 'templateConfig';
-
   const { initialState } = useModel('@@initialState');
   const { id } = initialState!.resource;
 
@@ -47,7 +43,6 @@ export default (props: any) => {
   const [current, setCurrent] = useState(0);
   const [cluster, setCluster] = useState<CLUSTER.ClusterV2>();
   const [originConfig, setOriginConfig] = useState({});
-  const [buildConfig, setBuildConfig] = useState({});
   const [templateBasic, setTemplateBasic] = useState({ name: '', release: '' });
   const [releaseName, setReleaseName] = useState('');
   const [templateConfig, setTemplateConfig] = useState({});
@@ -100,9 +95,6 @@ export default (props: any) => {
 
   const { run: refreshAppEnvTemplate } = useRequest((env: string) => getApplicationEnvTemplate(id, env), {
     onSuccess: (data: any) => {
-      if (data!.pipeline) {
-        setBuildConfig(data!.pipeline);
-      }
       if (data!.application) {
         setTemplateConfig(data!.application);
       }
@@ -201,6 +193,7 @@ export default (props: any) => {
           { name: ResourceKey.IMAGE_URL, value: image },
         ]);
         setOriginConfig({
+          image,
           templateBasic: ti,
           templateConfig: tc,
         });
@@ -257,22 +250,16 @@ export default (props: any) => {
       successAlert(creating ? intl.formatMessage({ id: 'pages.clusterNew.success' }) : intl.formatMessage({ id: 'pages.clusterEdit.success' }));
       if (creating) {
         setCluster(res);
-        if (Object.keys(buildConfig).length > 0) {
-          setShowBuildDeployModal(true);
-        } else {
-          setShowDeployModal(true);
-        }
+        setShowDeployModal(true);
       } else if (editing) {
         getClusterV2(id).then(({ data: clusterData }) => {
           const currentConfig = {
+            image: clusterData.image,
             templateBasic: clusterData.templateInfo,
             templateConfig: clusterData.templateConfig,
           };
           const configDiff = difference(currentConfig, originConfig);
-          if (Object.keys(configDiff).includes(buildConfigKey)) {
-            setShowBuildDeployModal(true);
-          } else if (Object.keys(configDiff).includes(templateBasicKey)
-            || Object.keys(configDiff).includes(templateConfigKey)) {
+          if (Object.keys(configDiff).length > 0) {
             setShowDeployModal(true);
           } else {
             onButtonCancel();
