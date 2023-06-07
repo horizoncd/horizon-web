@@ -40,7 +40,7 @@ export default () => {
 
   const pageSize = 10;
   const newCluster = `/applications${fullPath}/-/newcluster`;
-  const newClusterV2 = `/applications${fullPath}/-/newclusterv2`;
+  const newClusterV2Prefix = `/applications${fullPath}/-/newclusterv2`;
   const [copyCluster, setCopyCluster] = useState(newCluster);
 
   const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
@@ -211,7 +211,11 @@ export default () => {
   const { data: selectedClusterInfo } = useRequest(() => getClusterV2(selectedCluster?.id), {
     onSuccess: () => {
       if (isVersion2(selectedClusterInfo)) {
-        setCopyCluster(newClusterV2);
+        if (selectedClusterInfo?.git?.url) {
+          setCopyCluster(`${newClusterV2Prefix}/gitimport`);
+        } else {
+          setCopyCluster(`${newClusterV2Prefix}/imagedeploy`);
+        }
       } else {
         setCopyCluster(newCluster);
       }
