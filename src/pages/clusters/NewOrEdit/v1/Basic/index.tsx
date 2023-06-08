@@ -7,6 +7,7 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 import { history } from '@@/core/history';
 import { useModel } from '@@/plugin-model/useModel';
 import { Rule } from 'antd/lib/form';
+import { useCallback, useState } from 'react';
 import { queryEnvironments } from '@/services/environments/environments';
 import { listGitRef, GitRefType, gitRefTypeList } from '@/services/code/code';
 import { queryReleases } from '@/services/templates/templates';
@@ -31,6 +32,7 @@ export default (props: any) => {
   const { environment: envFromQuery } = q;
   const { initialState } = useModel('@@initialState');
   const { id, parentID } = initialState!.resource;
+  const [autoFreeFlags, setAutoFreeFlags] = useState<Map<string, boolean>>(new Map());
   const intl = useIntl();
 
   const { data: releases } = useRequest(() => queryReleases(template?.name), {
@@ -43,27 +45,33 @@ export default (props: any) => {
     ready: !!form.getFieldValue('environment'),
     refreshDeps: [form.getFieldValue('environment')],
     onSuccess: () => {
-      if (!editing && regions) {
+      if (regions) {
+        const m = new Map<string, boolean>();
+        regions.forEach((r) => {
+          m.set(r.name, r.autoFree);
+        });
+        setAutoFreeFlags(m);
+
+        if (!editing) {
         // put default region on top of the list
-        regions.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
-        // put disabled regions on bottom of the list
-        regions.sort((a, b) => Number(a.disabled) - Number(b.disabled));
-        if (!form.getFieldValue('region')) {
-          regions.forEach((r) => {
-            if (r.isDefault && !r.disabled) {
-              form.setFields([{
-                name: ['region'], value: r.name, errors: [],
-              }]);
-            }
-          });
+          regions.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+          // put disabled regions on bottom of the list
+          regions.sort((a, b) => Number(a.disabled) - Number(b.disabled));
+          if (!form.getFieldValue('region')) {
+            regions.forEach((r) => {
+              if (r.isDefault && !r.disabled) {
+                form.setFields([{
+                  name: ['region'], value: r.name, errors: [],
+                }]);
+              }
+            });
+          }
         }
       }
     },
   });
 
   const { data: environments } = useRequest(() => queryEnvironments());
-  const envAutoFreeFlags = new Map<string, boolean>();
-  environments?.forEach((item) => envAutoFreeFlags.set(item.name, item.autoFree));
 
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
     const giturl = form.getFieldValue('url');
@@ -135,13 +143,13 @@ export default (props: any) => {
   // provide expiryDay from 1 to 7 days, and 14 days for special test clusters.
   const expireTimeOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 14];
 
-  const autoFreeDisabled = () => {
-    const environmentName = form.getFieldValue('environment');
-    if (environmentName) {
-      return !envAutoFreeFlags.get(environmentName);
+  const autoFreeDisabled = useCallback(() => {
+    const regionName = form.getFieldValue('region');
+    if (regionName) {
+      return !autoFreeFlags.get(regionName);
     }
     return true;
-  };
+  }, [autoFreeFlags, form]);
 
   return (
     <div>

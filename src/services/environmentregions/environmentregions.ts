@@ -18,6 +18,16 @@ export async function createEnvironmentRegion(environmentRegion: SYSTEM.Environm
   });
 }
 
+export async function setEnvironmentRegionAutoFree(id: number, autoFree: boolean) {
+  return request(`/apis/core/v2/environmentregions/${id}/autofree`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: { autoFree },
+  });
+}
+
 export async function deleteEnvironmentRegionByID(id: number) {
   return request(`/apis/core/v1/environmentregions/${id}`, {
     method: 'DELETE',
