@@ -5,7 +5,7 @@ import {
 import { useModel, useRequest } from 'umi';
 import type { FieldData, Rule } from 'rc-field-form/lib/interface';
 import { useIntl } from '@@/plugin-locale/localeExports';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { history } from '@@/core/history';
 import {
   ResourceKey, AppOrClusterType, gitURLRegExp, ClusterStatus,
@@ -48,6 +48,7 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const { environment: envFromQuery } = q;
   const { initialState } = useModel('@@initialState');
   const { id, parentID } = initialState!.resource;
+  const [region, setRegion] = useState(form.getFieldValue(ResourceKey.REGION));
   const [autoFreeFlags, setAutoFreeFlags] = useState(new Map<string, boolean>());
 
   const intl = useIntl();
@@ -63,27 +64,26 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const { data: regions } = useRequest(() => queryRegions(applicationID, form.getFieldValue(ResourceKey.ENVIRONMENT)), {
     ready: !!form.getFieldValue(ResourceKey.ENVIRONMENT),
     refreshDeps: [form.getFieldValue(ResourceKey.ENVIRONMENT)],
-    onSuccess: () => {
-      if (regions) {
-        const m = new Map<string, boolean>();
-        regions.forEach((r) => {
-          m.set(r.name, r.autoFree);
-        });
-        setAutoFreeFlags(m);
-        if (!editing) {
+    onSuccess: (items) => {
+      const m = new Map<string, boolean>();
+      items.forEach((r) => {
+        m.set(r.name, r.autoFree);
+      });
+      setAutoFreeFlags(m);
+      if (!editing) {
         // put default region on top of the list
-          regions.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
-          // put disabled regions on bottom of the list
-          regions.sort((a, b) => Number(a.disabled) - Number(b.disabled));
-          if (!form.getFieldValue(ResourceKey.REGION)) {
-            regions.forEach((r) => {
-              if (r.isDefault && !r.disabled) {
-                form.setFields([{
-                  name: [ResourceKey.REGION], value: r.name, errors: [],
-                }]);
-              }
-            });
-          }
+        items.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+        // put disabled regions on bottom of the list
+        items.sort((a, b) => Number(a.disabled) - Number(b.disabled));
+        if (!form.getFieldValue(ResourceKey.REGION)) {
+          items.forEach((r) => {
+            if (r.isDefault && !r.disabled) {
+              setRegion(r.name);
+              form.setFields([{
+                name: [ResourceKey.REGION], value: r.name, errors: [],
+              }]);
+            }
+          });
         }
       }
     },
@@ -135,13 +135,14 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   // provide expiryDay from 1 to 7 days, and 14 days for special test clusters.
   const expireTimeOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 14];
 
-  const autoFreeDisabled = useCallback(() => {
+  const autoFreeDisabled = useMemo(() => {
     const regionName = form.getFieldValue('region');
     if (regionName) {
       return !autoFreeFlags.get(regionName);
     }
     return true;
-  }, [autoFreeFlags, form]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFreeFlags, form, region]);
 
   const fieldsToValidate = [
     ResourceKey.NAME, ResourceKey.ENVIRONMENT,
@@ -199,9 +200,13 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
     <HForm
       layout="vertical"
       form={form}
-      onFieldsChange={(_changedFields: FieldData[], allFields: FieldData[]) => {
+      onFieldsChange={(changedFields: FieldData[], allFields: FieldData[]) => {
         const valid = isFieldsValid(allFields);
-        // console.log('baseInfo validated: ', validated);
+        changedFields.forEach((field) => {
+          if (field.name[0] === ResourceKey.REGION) {
+            setRegion(field.value);
+          }
+        });
         setValid(valid);
       }}
     >
@@ -244,7 +249,7 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
             </Select>
           </Form.Item>
           {
-            autoFreeDisabled()
+            autoFreeDisabled
           || (
             <Form.Item
               label={formatMessage('expireTime')}

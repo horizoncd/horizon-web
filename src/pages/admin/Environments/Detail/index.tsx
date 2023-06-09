@@ -186,7 +186,7 @@ export default () => {
                         disabled={record.disabled}
                         onClick={() => setAutoFree(record.id, false).then(() => runEnvRegions())}
                       >
-                        取消自动释放
+                        {intl.formatMessage({ id: 'pages.admin.autofree.cancel' })}
                       </Button>
                     )
                       : (
@@ -195,7 +195,7 @@ export default () => {
                           disabled={record.disabled}
                           onClick={() => setAutoFree(record.id, true).then(() => runEnvRegions())}
                         >
-                          设置自动释放
+                          {intl.formatMessage({ id: 'pages.admin.autofree.set' })}
                         </Button>
                       )
                   }

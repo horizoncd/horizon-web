@@ -437,6 +437,8 @@ export default {
   'pages.admin.update.success': '用户权限更新成功',
   'pages.admin.banned': '用户已禁止登录',
   'pages.admin.unban': '用户已解除禁止登录',
+  'pages.admin.autofree.set': '设置自动释放',
+  'pages.admin.autofree.cancel': '取消自动释放',
 
   // v2
   'pages.newV2.step.basic': '基础信息',

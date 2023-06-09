@@ -438,6 +438,8 @@ export default {
   'pages.admin.update.success': 'User privileges update was successful',
   'pages.admin.banned': 'User has been banned from logging in',
   'pages.admin.unban': 'User ban on login has been lifted.',
+  'pages.admin.autofree.set': 'Set auto free',
+  'pages.admin.autofree.cancel': 'Cancel auto free',
 
   // v2
   'pages.newV2.step.basic': 'Basic',
