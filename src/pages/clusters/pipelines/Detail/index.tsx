@@ -64,6 +64,30 @@ export default (props: any) => {
     refValue = pipeline?.gitCommit || '';
   }
 
+  const getSourceData = () => {
+    const data: Param[] = [];
+    if (pipeline?.gitURL) {
+      const gitInfo: Record<string, string> = {
+        'Commit ID': pipeline?.gitCommit || '',
+      };
+      if (refType !== GitRefType.Commit) {
+        gitInfo[intl.formatMessage({ id: `pages.clusterDetail.basic.${refType}` })] = refValue;
+      }
+      data.push(
+        {
+          key: formatMessage('gitInfo'),
+          value: gitInfo,
+        },
+      );
+    }
+    if (pipeline?.imageURL) {
+      data.push({
+        key: formatMessage('image'),
+        value: pipeline?.imageURL,
+      });
+    }
+    return data;
+  };
   const data: Param[][] = [
     [
       {
@@ -84,18 +108,9 @@ export default (props: any) => {
         key: formatMessage('trigger'),
         value: pipeline?.createdBy.userName || '',
       },
-      {
-        key: formatMessage('gitInfo'),
-        value: {
-          'Commit ID': pipeline?.gitCommit || '',
-        },
-      },
+      ...getSourceData(),
     ],
   ];
-
-  if (refType !== GitRefType.Commit) {
-    data[1][1].value[intl.formatMessage({ id: `pages.clusterDetail.basic.${refType}` })] = refValue;
-  }
 
   const cardTab = (pipeline
     && (pipeline.action === PublishType.BUILD_DEPLOY

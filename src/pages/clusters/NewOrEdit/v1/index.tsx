@@ -123,7 +123,10 @@ export default (props: any) => {
                 { name: subfolder, value: s },
                 { name: release, value: rel },
               ]);
-              setOriginConfig(templateInput);
+              setOriginConfig({
+                git: gitInfo,
+                templateInput,
+              });
               setConfig(templateInput);
               setTemplate(tpl);
               setCluster(clusterData);
@@ -166,7 +169,10 @@ export default (props: any) => {
           { name: subfolder, value: s },
           { name: release, value: rel },
         ]);
-        setOriginConfig(templateInput);
+        setOriginConfig({
+          git,
+          templateInput,
+        });
         setConfig(templateInput);
         setTemplate(t);
         setCluster(clusterData);
@@ -321,7 +327,11 @@ export default (props: any) => {
 
       const appPart = 'application';
       const pipelinePart = 'pipeline';
-      const configDiff = difference(config, originConfig);
+      const gitPart = 'git';
+      const configDiff = difference({
+        git: res.git,
+        templateInput: config,
+      }, originConfig);
       if (creating) {
         if (Object.keys(config[pipelinePart]).length > 0) {
           setShowBuildDeployModal(true);
@@ -329,7 +339,8 @@ export default (props: any) => {
           setShowDeployModal(true);
         }
       } else if (editing) {
-        if (Object.keys(configDiff).includes(pipelinePart)) {
+        if (Object.keys(configDiff).includes(pipelinePart)
+          || Object.keys(configDiff).includes(gitPart)) {
           setShowBuildDeployModal(true);
         } else if (Object.keys(configDiff).includes(appPart)) {
           setShowDeployModal(true);
