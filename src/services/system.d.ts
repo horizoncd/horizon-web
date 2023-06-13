@@ -29,6 +29,7 @@ declare namespace SYSTEM {
     regionDisplayName: string,
     environmentName: string,
     disabled: boolean,
+    autoFree: boolean,
     isDefault: boolean,
     createdAt: string,
     updatedAt: string,

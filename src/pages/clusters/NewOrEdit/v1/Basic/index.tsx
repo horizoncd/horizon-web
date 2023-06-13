@@ -7,12 +7,13 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 import { history } from '@@/core/history';
 import { useModel } from '@@/plugin-model/useModel';
 import { Rule } from 'antd/lib/form';
+import { useMemo, useState } from 'react';
 import { queryEnvironments } from '@/services/environments/environments';
 import { listGitRef, GitRefType, gitRefTypeList } from '@/services/code/code';
 import { queryReleases } from '@/services/templates/templates';
 import HForm from '@/components/HForm';
 import { queryRegions } from '@/services/applications/applications';
-import { ClusterStatus } from '@/const';
+import { ClusterStatus, ResourceKey } from '@/const';
 import { MaxSpace } from '@/components/Widget';
 import { gitURLRegExp } from '@/const';
 import { TagFormItems, ValueType } from '@/components/tag';
@@ -31,6 +32,8 @@ export default (props: any) => {
   const { environment: envFromQuery } = q;
   const { initialState } = useModel('@@initialState');
   const { id, parentID } = initialState!.resource;
+  const [region, setRegion] = useState(form.getFieldValue(ResourceKey.REGION));
+  const [autoFreeFlags, setAutoFreeFlags] = useState<Map<string, boolean>>(new Map());
   const intl = useIntl();
 
   const { data: releases } = useRequest(() => queryReleases(template?.name), {
@@ -42,15 +45,22 @@ export default (props: any) => {
   const { data: regions } = useRequest(() => queryRegions(applicationID, form.getFieldValue('environment')), {
     ready: !!form.getFieldValue('environment'),
     refreshDeps: [form.getFieldValue('environment')],
-    onSuccess: () => {
-      if (!editing && regions) {
+    onSuccess: (items) => {
+      const m = new Map<string, boolean>();
+      items.forEach((r) => {
+        m.set(r.name, r.autoFree);
+      });
+      setAutoFreeFlags(m);
+
+      if (!editing) {
         // put default region on top of the list
-        regions.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+        items.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
         // put disabled regions on bottom of the list
-        regions.sort((a, b) => Number(a.disabled) - Number(b.disabled));
+        items.sort((a, b) => Number(a.disabled) - Number(b.disabled));
         if (!form.getFieldValue('region')) {
-          regions.forEach((r) => {
+          items.forEach((r) => {
             if (r.isDefault && !r.disabled) {
+              setRegion(r.name);
               form.setFields([{
                 name: ['region'], value: r.name, errors: [],
               }]);
@@ -62,8 +72,6 @@ export default (props: any) => {
   });
 
   const { data: environments } = useRequest(() => queryEnvironments());
-  const envAutoFreeFlags = new Map<string, boolean>();
-  environments?.forEach((item) => envAutoFreeFlags.set(item.name, item.autoFree));
 
   const { data: gitRefList = [], run: refreshGitRefList } = useRequest((filter?: string) => {
     const giturl = form.getFieldValue('url');
@@ -135,13 +143,14 @@ export default (props: any) => {
   // provide expiryDay from 1 to 7 days, and 14 days for special test clusters.
   const expireTimeOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 14];
 
-  const autoFreeDisabled = () => {
-    const environmentName = form.getFieldValue('environment');
-    if (environmentName) {
-      return !envAutoFreeFlags.get(environmentName);
+  const autoFreeDisabled = useMemo(() => {
+    const regionName = form.getFieldValue('region');
+    if (regionName) {
+      return !autoFreeFlags.get(regionName);
     }
     return true;
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFreeFlags, form, region]);
 
   return (
     <div>
@@ -149,6 +158,11 @@ export default (props: any) => {
         layout="vertical"
         form={form}
         onFieldsChange={(a: FieldData[], b: FieldData[]) => {
+          a.forEach((field) => {
+            if (field.name[0] === ResourceKey.REGION) {
+              setRegion(field.value);
+            }
+          });
           setFormData(a, b.filter((item) => item.name[0] !== TagFormName));
         }}
         fields={formData}
@@ -205,7 +219,7 @@ export default (props: any) => {
               </Select>
             </Form.Item>
             {
-              autoFreeDisabled()
+              autoFreeDisabled
             || (
             <Form.Item
               label={formatMessage('expireTime')}

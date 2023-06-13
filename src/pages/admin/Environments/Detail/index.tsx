@@ -14,6 +14,7 @@ import {
   deleteEnvironmentRegionByID,
   queryEnvironmentRegions,
   setDefault,
+  setEnvironmentRegionAutoFree,
 } from '@/services/environmentregions/environmentregions';
 import Utils from '@/utils';
 import NotFound from '@/pages/404';
@@ -37,6 +38,10 @@ export default () => {
   const { data: environmentRegions, run: runEnvRegions } = useRequest(() => queryEnvironmentRegions(environment!.name), {
     ready: !!environment,
   });
+  const { run: setAutoFree } = useRequest(setEnvironmentRegionAutoFree, {
+    manual: true,
+  });
+
   const { data: regions } = useRequest(() => queryRegions(), {});
 
   const formatMessage = (suffix: string) => intl.formatMessage({ id: `pages.environment.${suffix}` });
@@ -134,47 +139,65 @@ export default () => {
               render: (id: number, record: SYSTEM.EnvironmentRegion) => (
                 <div>
                   {
-                    (!record.isDefault && !record.disabled) ? (
                       // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
-                      <a
-                        type="primary"
-                        onClick={() => {
-                          Modal.confirm({
-                            title: intl.formatMessage({ id: 'pages.message.k8s.setDefault.confirm' }),
-                            onOk: () => {
-                              setDefault(id).then(() => {
-                                successAlert(intl.formatMessage({ id: 'pages.message.k8s.setDefault.success' }));
-                                runEnvRegions();
-                              });
-                            },
-                          });
-                        }}
-                      >
-                        {formatMessage('k8s.setDefault')}
-                      </a>
-                    ) : (
-                      <span style={{ color: 'grey' }}>
-                        {formatMessage('k8s.setDefault')}
-                      </span>
-                    )
+                    <Button
+                      type="link"
+                      disabled={record.isDefault || record.disabled}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: intl.formatMessage({ id: 'pages.message.k8s.setDefault.confirm' }),
+                          onOk: () => {
+                            setDefault(id).then(() => {
+                              successAlert(intl.formatMessage({ id: 'pages.message.k8s.setDefault.success' }));
+                              runEnvRegions();
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {formatMessage('k8s.setDefault')}
+                    </Button>
                   }
                   <Divider type="vertical" />
                   {
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/no-static-element-interactions
-                    <a onClick={() => {
-                      Modal.confirm({
-                        title: intl.formatMessage({ id: 'pages.message.k8s.delete.association.confirm' }),
-                        onOk: () => {
-                          deleteEnvironmentRegionByID(id).then(() => {
-                            successAlert(intl.formatMessage({ id: 'pages.message.k8s.delete.association.success' }));
-                            runEnvRegions();
-                          });
-                        },
-                      });
-                    }}
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        Modal.confirm({
+                          title: intl.formatMessage({ id: 'pages.message.k8s.delete.association.confirm' }),
+                          onOk: () => {
+                            deleteEnvironmentRegionByID(id).then(() => {
+                              successAlert(intl.formatMessage({ id: 'pages.message.k8s.delete.association.success' }));
+                              runEnvRegions();
+                            });
+                          },
+                        });
+                      }}
                     >
                       {intl.formatMessage({ id: 'pages.common.delete' })}
-                    </a>
+                    </Button>
+                  }
+                  <Divider type="vertical" />
+                  {
+                    record.autoFree ? (
+                      <Button
+                        type="link"
+                        disabled={record.disabled}
+                        onClick={() => setAutoFree(record.id, false).then(() => runEnvRegions())}
+                      >
+                        {intl.formatMessage({ id: 'pages.admin.autofree.cancel' })}
+                      </Button>
+                    )
+                      : (
+                        <Button
+                          type="link"
+                          disabled={record.disabled}
+                          onClick={() => setAutoFree(record.id, true).then(() => runEnvRegions())}
+                        >
+                          {intl.formatMessage({ id: 'pages.admin.autofree.set' })}
+                        </Button>
+                      )
                   }
                 </div>
               ),
