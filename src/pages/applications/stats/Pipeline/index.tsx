@@ -8,7 +8,6 @@ import { useIntl } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { queryPipelineStats } from '@/services/applications/applications';
 import Utils from '@/utils';
-import { API } from '@/services/typings';
 import { queryClusters } from '@/services/clusters/clusters';
 
 const { Option } = Select;
@@ -56,13 +55,13 @@ export default function PipelineStats() {
       title: intl.formatMessage({ id: 'pages.statistics.pipeline.id' }),
       key: 'pipelinerunID',
       render: (pipelineStats: API.PipelineStats) => (
-        <a href={`/clusters${fullPath}/${pipelineStats.cluster}/-/pipelines/${pipelineStats.pipelinerunID}`}>
+        <a href={`/instances${fullPath}/${pipelineStats.cluster}/-/pipelines/${pipelineStats.pipelinerunID}`}>
           {pipelineStats.pipelinerunID}
         </a>
       ),
     },
     {
-      title: intl.formatMessage({ id: 'pages.common.cluster' }),
+      title: intl.formatMessage({ id: 'pages.common.appinstance' }),
       dataIndex: 'cluster',
       key: 'cluster',
     },
@@ -129,7 +128,7 @@ export default function PipelineStats() {
   return (
     <PageWithBreadcrumb>
       <div style={{ marginBottom: 10 }}>
-        {intl.formatMessage({ id: 'pages.common.cluster' })}
+        {intl.formatMessage({ id: 'pages.common.appinstance' })}
         {'： '}
         <Select
           showSearch

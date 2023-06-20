@@ -22,7 +22,7 @@
   {
     path: '/',
     menuRender: false,
-    redirect: '/dashboard/clusters',
+    redirect: '/dashboard/instances',
   },
   {
     path: '/dashboard/groups',
@@ -35,9 +35,9 @@
     component: 'dashboard/Applications',
   },
   {
-    path: '/dashboard/clusters',
+    path: '/dashboard/instances',
     menuRender: false,
-    component: 'dashboard/Clusters',
+    component: 'dashboard/Instances',
   },
   {
     path: '/groups/new',
@@ -85,15 +85,15 @@ const groupRoutes = [
     path: '/groups/*/-/newapplicationv1',
     menuRender: false,
     component: 'applications/NewOrEdit/v1',
-  },{
+  }, {
     path: '/groups/*/-/newapplicationv2',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/Navigation',
-  },{
+  }, {
     path: '/groups/*/-/newapplicationv2/gitimport',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/GitImport',
-  },{
+  }, {
     path: '/groups/*/-/newapplicationv2/imagedeploy',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/ImageDeploy',
@@ -126,7 +126,7 @@ const applicationRoutes = [
   },
   {
     path: '/applications/*/-/pipelines',
-    component: 'clusters/pipelines/New',
+    component: 'instances/pipelines/New',
   },
   {
     path: '/applications/*/-/edit',
@@ -149,24 +149,24 @@ const applicationRoutes = [
     component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
-    path: '/applications/*/-/newcluster',
+    path: '/applications/*/-/newinstance',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v1',
+    component: 'instances/NewOrEdit/v1',
   },
   {
-    path: '/applications/*/-/newclusterv2',
+    path: '/applications/*/-/newinstancev2',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/Navigation',
+    component: 'instances/NewOrEdit/v2/Navigation',
   },
   {
-    path: '/applications/*/-/newclusterv2/gitimport',
+    path: '/applications/*/-/newinstancev2/gitimport',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/GitImport',
+    component: 'instances/NewOrEdit/v2/GitImport',
   },
   {
-    path: '/applications/*/-/newclusterv2/imagedeploy',
+    path: '/applications/*/-/newinstancev2/imagedeploy',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/ImageDeploy',
+    component: 'instances/NewOrEdit/v2/ImageDeploy',
   },
   {
     path: '/applications/*/-/settings/advance',
@@ -183,73 +183,73 @@ const applicationRoutes = [
   }
 ];
 
-const clusterRoutes = [
+const instanceRoutes = [
   {
-    path: '/clusters/*/-/edit',
+    path: '/instances/*/-/edit',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v1',
+    component: 'instances/NewOrEdit/v1',
   },
   {
-    path: '/clusters/*/-/editv2',
+    path: '/instances/*/-/editv2',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/Navigation',
+    component: 'instances/NewOrEdit/v2/Navigation',
   },
   {
-    path: '/clusters/*/-/editv2/gitimport',
+    path: '/instances/*/-/editv2/gitimport',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/GitImport',
+    component: 'instances/NewOrEdit/v2/GitImport',
   },
   {
-    path: '/clusters/*/-/editv2/imagedeploy',
+    path: '/instances/*/-/editv2/imagedeploy',
     menuRender: false,
-    component: 'clusters/NewOrEdit/v2/ImageDeploy',
+    component: 'instances/NewOrEdit/v2/ImageDeploy',
   },
   {
-    path: '/clusters/*/-/configs',
-    component: 'clusters/Detail',
+    path: '/instances/*/-/configs',
+    component: 'instances/Detail',
   },
   {
-    path: '/clusters/*/-/pods/:name',
+    path: '/instances/*/-/pods/:name',
     menuRender: false,
-    component: 'clusters/Pod',
+    component: 'instances/Pod',
   },
   {
-    path: '/clusters/*/-/pipelines',
-    component: 'clusters/pipelines/History',
+    path: '/instances/*/-/pipelines',
+    component: 'instances/pipelines/History',
   },
   {
-    path: '/clusters/*/-/pipelines/new',
-    component: 'clusters/pipelines/New',
+    path: '/instances/*/-/pipelines/new',
+    component: 'instances/pipelines/New',
   },
   {
-    path: '/clusters/*/-/pipelines/:id',
-    component: 'clusters/pipelines/Detail',
+    path: '/instances/*/-/pipelines/:id',
+    component: 'instances/pipelines/Detail',
   },
   {
-    path: '/clusters/*/-/members',
-    component: 'clusters/Member',
+    path: '/instances/*/-/members',
+    component: 'instances/Member',
   },
   {
-    path: '/clusters/*/-/webconsole',
+    path: '/instances/*/-/webconsole',
     menuRender: false,
-    component: 'clusters/Pods/Console',
+    component: 'instances/Pods/Console',
   },
   {
-    path: '/clusters/*/-/monitoring',
-    component: 'clusters/Monitor',
+    path: '/instances/*/-/monitoring',
+    component: 'instances/Monitor',
   },
   {
-    path: '/clusters/*/-/tags',
+    path: '/instances/*/-/tags',
     menuRender: false,
-    component: 'clusters/Tag',
+    component: 'instances/Tag',
   },
   {
-    path: '/clusters/*/-/admintags',
+    path: '/instances/*/-/admintags',
     menuRender: false,
-    component: 'clusters/AdminTag',
+    component: 'instances/AdminTag',
   },
   {
-    path: '/clusters/*/-/settings/accesstokens',
+    path: '/instances/*/-/settings/accesstokens',
     menuRender: false,
     component: 'accesstoken/ResourceAccessToken'
   }
@@ -337,9 +337,9 @@ const userRoutes = [
 ]
 
 adminRoutes.forEach((route) => {
-  route['wrappers'] =     [
-      '@/wrappers/auth',
-    ]
+  route['wrappers'] = [
+    '@/wrappers/auth',
+  ]
 })
 
 const templateRoutes = [
@@ -450,23 +450,23 @@ const webhookRoutes = [
     component: 'webhooks/LogDetail'
   },
   {
-    path: '/clusters/*/-/settings/webhooks',
+    path: '/instances/*/-/settings/webhooks',
     component: 'webhooks'
   },
   {
-    path: '/clusters/*/-/settings/newwebhook',
+    path: '/instances/*/-/settings/newwebhook',
     component: 'webhooks/New'
   },
   {
-    path: '/clusters/*/-/settings/webhooks/:id',
+    path: '/instances/*/-/settings/webhooks/:id',
     component: 'webhooks/LogList'
   },
   {
-    path: '/clusters/*/-/settings/webhooks/:id/edit',
+    path: '/instances/*/-/settings/webhooks/:id/edit',
     component: 'webhooks/Edit'
   },
   {
-    path: '/clusters/*/-/settings/webhooks/:webhookID/:id',
+    path: '/instances/*/-/settings/webhooks/:webhookID/:id',
     component: 'webhooks/LogDetail'
   },
 ]
@@ -475,7 +475,7 @@ const allRoute = [];
 allRoute.push(...routes);
 allRoute.push(...groupRoutes);
 allRoute.push(...applicationRoutes);
-allRoute.push(...clusterRoutes);
+allRoute.push(...instanceRoutes);
 allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
 allRoute.push(...userRoutes);

@@ -37,10 +37,10 @@ export default forwardRef((props: Props, ref) => {
     clusterID,
     resourceType,
     template,
-    release, setReleaseName = () => {},
-    templateConfig, setTemplateConfig = () => {},
-    setValid = () => {},
-    onSubmit = () => {},
+    release, setReleaseName = () => { },
+    templateConfig, setTemplateConfig = () => { },
+    setValid = () => { },
+    onSubmit = () => { },
   } = props;
 
   const { name: templateName } = template;
@@ -62,10 +62,10 @@ export default forwardRef((props: Props, ref) => {
 
   const { data } = useRequest(
     () => {
-      if (resourceType === ResourceType.CLUSTER) {
+      if (resourceType === ResourceType.INSTANCE) {
         return querySchema(templateName, release!, {
           clusterID,
-          resourceType: ResourceType.CLUSTER,
+          resourceType: ResourceType.INSTANCE,
         });
       }
       return querySchema(templateName, release!);

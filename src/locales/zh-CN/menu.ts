@@ -7,7 +7,6 @@ export default {
   'menu.Settings.Advance': '高级配置',
   'menu.Settings.Developer': '开发者设置',
   'menu.Application configs': '详情',
-  'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
   'menu.Cluster configs': '详情',
   'menu.Pods': 'Pods',

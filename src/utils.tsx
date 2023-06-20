@@ -18,7 +18,7 @@ const getResourcePath = () => {
       (item) => item !== ''
         && item !== 'groups'
         && item !== 'applications'
-        && item !== 'clusters'
+        && item !== 'instances'
         && item !== 'templates',
     );
   let path = '';
@@ -93,7 +93,7 @@ const getBreadcrumbs = (fullName: string) => {
   const filteredPath = pathname
     .split('/')
     .filter(
-      (item) => item !== '' && item !== 'groups' && item !== 'applications' && item !== 'clusters',
+      (item) => item !== '' && item !== 'groups' && item !== 'applications' && item !== 'instances',
     );
   let currentLink = '';
   for (let i = 0; i < filteredPath.length; i += 1) {

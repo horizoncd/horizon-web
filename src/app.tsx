@@ -47,7 +47,7 @@ const IconMap = {
   appstore: <AppstoreOutlined />,
   fundout: <FundOutlined />,
   tags: <TagsOutlined />,
-  cluster: <ClusterOutlined />,
+  instance: <ClusterOutlined />,
   environment: <EnvironmentOutlined />,
   database: <DatabaseOutlined />,
   templates: <SnippetsOutlined />,
@@ -83,7 +83,7 @@ export async function getInitialState(): Promise<API.InitialState> {
     parentID: 0,
   };
 
-  if(history.location.pathname === loginPath
+  if (history.location.pathname === loginPath
     || history.location.pathname === callbackPath) {
     return { resource, accordionCollapse: false };
   }
@@ -100,7 +100,7 @@ export async function getInitialState(): Promise<API.InitialState> {
   try {
     const { data: userData } = await queryCurrentUser();
 
-    if(userData?.id && history.location.pathname.startsWith(loginPath)) {
+    if (userData?.id && history.location.pathname.startsWith(loginPath)) {
       history.replace('/');
     }
 
@@ -111,11 +111,11 @@ export async function getInitialState(): Promise<API.InitialState> {
 
     const { data: rolesData } = await queryRoles();
     roles = rolesData;
-  } catch(e) {
+  } catch (e) {
     currentUser = undefined;
   }
 
-  if(!pathnameInStaticRoutes()) {
+  if (!pathnameInStaticRoutes()) {
     const path = Utils.getResourcePath();
     try {
       const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/;
@@ -135,23 +135,23 @@ export async function getInitialState(): Promise<API.InitialState> {
 
       let memberData = null;
 
-      if(isRelease) {
+      if (isRelease) {
         const { data: template } = await queryResource(pathArr[1], 'templates');
         ({ data: memberData } = await querySelfMember('template', template.id));
       } else {
         ({ data: memberData } = await querySelfMember(resource.type, resource.id));
       }
-      if(memberData.total > 0) {
+      if (memberData.total > 0) {
         currentUser!.role = memberData.items[0].role;
       } else {
         currentUser!.role = RBAC.AnonymousRole;
       }
-      if(currentUser!.isAdmin) {
+      if (currentUser!.isAdmin) {
         currentUser!.role = RBAC.AdminRole;
       }
 
       RBAC.RefreshPermissions(roles, currentUser!);
-    } catch(e) {
+    } catch (e) {
       settings.menuRender = false;
     }
   }
@@ -169,14 +169,14 @@ export const request: RequestConfig = {
   responseInterceptors: [
     (response) => {
       if (history.location.pathname === '/user/login/callback'
-      || history.location.pathname === '/user/login') {
+        || history.location.pathname === '/user/login') {
         return response;
       }
-      if(response.headers.get(sessionExpireHeaderKey)) {
+      if (response.headers.get(sessionExpireHeaderKey)) {
         let u = new URL(window.location.toString());
 
         const redirect = u.searchParams.get('redirect') ?? '';
-        if(redirect === '') {
+        if (redirect === '') {
           u.searchParams.delete('redirect');
         } else {
           u = new URL(redirect);
@@ -201,7 +201,7 @@ export const request: RequestConfig = {
   },
   errorHandler: (error: any) => {
     const { response, data } = error;
-    if(!response) {
+    if (!response) {
       notification.error({
         message: 'Network abnomaly',
         description: 'Your network is abnormal and cannot connect to the server',
@@ -210,7 +210,7 @@ export const request: RequestConfig = {
     if (response.headers.get(sessionExpireHeaderKey)) {
       return
     }
-    if(data.errorCode || data.errorMessage) {
+    if (data.errorCode || data.errorMessage) {
       notification.error({
         message: data.errorCode,
         description: data.errorMessage,
@@ -231,20 +231,20 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   rightContentRender: () => <RightContent />,
   footerRender: () => <Footer />,
   onPageChange: () => {
-    if(!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
+    if (!initialState?.currentUser?.isAdmin && history.location.pathname.startsWith('/admin/')) {
       // @ts-ignore
       setInitialState((s) => ({ ...s, settings: { ...s.settings, menuRender: false } }));
     }
   },
   menuHeaderRender: () => {
     const { name: t, fullPath: f, type } = initialState?.resource || {};
-    
-    const title = t || (history.location.pathname.startsWith('/admin')? 'admin' : 'profile');
+
+    const title = t || (history.location.pathname.startsWith('/admin') ? 'admin' : 'profile');
     const fullPath = f || (history.location.pathname.startsWith('/admin') ? '/admin' : '/profile/user');
 
     const { accordionCollapse = false } = initialState || {};
     const firstLetter = title.charAt(0).toUpperCase();
-    if(!accordionCollapse) {
+    if (!accordionCollapse) {
       const titleContent = title.length <= 15 ? title : `${title.substr(0, 12)}...`;
       return (
         <Tooltip title={title}>
@@ -252,7 +252,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             style={{ alignItems: 'center', lineHeight: '40px' }}
             onClick={(e: any) => {
               if (type === ResourceType.TEMPLATE) {
-                handleHref(e,`/templates${fullPath}/-/detail`)
+                handleHref(e, `/templates${fullPath}/-/detail`)
               } else {
                 handleHref(e, fullPath)
               }
@@ -300,7 +300,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       resource: initialState?.resource,
     },
     request: async (params, defaultMenuData) => {
-      if(history.location.pathname.startsWith('/admin/')) {
+      if (history.location.pathname.startsWith('/admin/')) {
         return loopMenuItem([
           ...routes,
           {
@@ -310,7 +310,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           }, {
             path: '/admin/kubernetes',
             name: 'Kubernetes',
-            icon: 'cluster',
+            icon: 'instance',
           }, {
             path: '/admin/environments',
             name: 'Environments',
@@ -348,17 +348,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ])
       }
 
-      if(pathnameInStaticRoutes() || !initialState) {
+      if (pathnameInStaticRoutes() || !initialState) {
         return defaultMenuData;
       }
 
       const { type, fullPath } = initialState.resource;
-      switch(type) {
+      switch (type) {
         case ResourceType.GROUP:
           return loopMenuItem(formatGroupMenu(fullPath));
         case ResourceType.APPLICATION:
           return loopMenuItem(formatApplicationMenu(fullPath));
-        case ResourceType.CLUSTER:
+        case ResourceType.INSTANCE:
           return loopMenuItem(formatClusterMenu(fullPath));
         case ResourceType.TEMPLATE:
           return loopMenuItem(formatTemplateMenu(fullPath));
@@ -438,7 +438,7 @@ function formatGroupMenu(fullPath: string) {
           path: `/groups${fullPath}/-/settings/webhooks`,
           name: 'Webhooks',
         },
-       {
+        {
           path: `/groups${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
@@ -499,11 +499,11 @@ function formatApplicationMenu(fullPath: string) {
       menuRender: false,
     },
     {
-      path: `/applications${fullPath}/-/newcluster`,
+      path: `/applications${fullPath}/-/newinstance`,
       menuRender: false,
     },
     {
-      path: `/applications${fullPath}/-/newclusterv2`,
+      path: `/applications${fullPath}/-/newinstancev2`,
       menuRender: false,
     },
     {
@@ -550,57 +550,57 @@ function formatClusterMenu(fullPath: string) {
     {
       name: 'Cluster configs',
       icon: 'bank',
-      path: `/clusters${fullPath}/-/configs`,
+      path: `/instances${fullPath}/-/configs`,
     },
     {
-      path: `/clusters${fullPath}/-/edit`,
+      path: `/instances${fullPath}/-/edit`,
       menuRender: false,
     },
     {
-      path: `/clusters${fullPath}/-/editv2`,
+      path: `/instances${fullPath}/-/editv2`,
       menuRender: false,
     },
     {
-      path: `/clusters${fullPath}/-/pipelines`,
+      path: `/instances${fullPath}/-/pipelines`,
       name: 'Pipelines',
       icon: 'tags',
     },
     {
-      path: `/clusters${fullPath}/-/pipelines/new`,
-      parentKeys: [`/clusters${fullPath}/-/pipelines`],
+      path: `/instances${fullPath}/-/pipelines/new`,
+      parentKeys: [`/instances${fullPath}/-/pipelines`],
     },
     {
-      path: `/clusters${fullPath}/-/pipelines/:id`,
-      parentKeys: [`/clusters${fullPath}/-/pipelines`],
+      path: `/instances${fullPath}/-/pipelines/:id`,
+      parentKeys: [`/instances${fullPath}/-/pipelines`],
     },
     {
-      path: `/clusters${fullPath}/-/monitoring`,
+      path: `/instances${fullPath}/-/monitoring`,
       name: 'Monitoring',
       icon: 'fundout',
     },
     {
-      path: `/clusters${fullPath}/-/members`,
+      path: `/instances${fullPath}/-/members`,
       name: 'Members',
       icon: 'contacts',
     },
     {
-      path: `/clusters${fullPath}/-/webconsole`,
+      path: `/instances${fullPath}/-/webconsole`,
       menuRender: false,
       headerRender: false,
       menuHeaderRender: false,
       footerRender: false,
     },
     {
-      path: `/clusters${fullPath}/-/settings`,
+      path: `/instances${fullPath}/-/settings`,
       name: 'Settings',
       icon: 'setting',
       children: [
         {
-          path: `/clusters${fullPath}/-/settings/accesstokens`,
+          path: `/instances${fullPath}/-/settings/accesstokens`,
           name: 'Access Token',
         },
         RBAC.Permissions.listClusterWebhooks.allowed && {
-          path: `/clusters${fullPath}/-/settings/webhooks`,
+          path: `/instances${fullPath}/-/settings/webhooks`,
           name: 'Webhooks',
         },
       ],
@@ -610,7 +610,7 @@ function formatClusterMenu(fullPath: string) {
 
 // @ts-ignore
 export const qiankun = fetch(__MICRO_APP_LOC)
-.then((res) => res.json())
-.then(({apps}) => ({
-  apps,
-})).catch(()=> ({ apps: [] }));
+  .then((res) => res.json())
+  .then(({ apps }) => ({
+    apps,
+  })).catch(() => ({ apps: [] }));

@@ -7,7 +7,7 @@ import Intl from '@/components/Intl';
 export enum ResourceType {
   GROUP = 'group',
   APPLICATION = 'application',
-  CLUSTER = 'cluster',
+  INSTANCE = 'cluster',
   TEMPLATE = 'template',
   RELEASE = 'release',
 }
@@ -120,7 +120,7 @@ export const taskStatus2Entity = new Map<TaskStatus, {
   }],
 ]);
 
-// application and cluster fields
+// application and instance fields
 export enum Priority {
   P0 = 'P0',
   P1 = 'P1',

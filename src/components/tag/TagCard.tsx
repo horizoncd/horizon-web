@@ -8,7 +8,7 @@ import {
 } from 'react';
 import styles from './index.less';
 import { BoldText } from '@/components/Widget';
-import { CardTitle } from '@/pages/clusters/Detail/Widget';
+import { CardTitle } from '@/pages/instances/Detail/Widget';
 import DynamicTagForm, { ValueType } from './DynamicTagForm';
 
 interface TagCardProps {
@@ -22,7 +22,7 @@ interface TagCardProps {
 function TagCard(props: TagCardProps) {
   const intl = useIntl();
   const {
-    tags, title, onUpdate = () => {}, updateDisabled = false,
+    tags, title, onUpdate = () => { }, updateDisabled = false,
   } = props;
   let { extra } = props;
 
@@ -89,10 +89,10 @@ function TagCard(props: TagCardProps) {
           <div style={{ flex: 1 }} />
           {extra}
         </div>
-)}
+      )}
       type="inner"
     >
-      {content }
+      {content}
     </Card>
   );
 }

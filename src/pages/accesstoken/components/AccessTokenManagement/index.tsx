@@ -19,7 +19,7 @@ import {
 import { API } from '@/services/typings';
 import rbac from '@/rbac';
 
-function AccessTokenManagement(props: { resourceType?: string, resourceID?: number, role?:string, resourceScope?: boolean }) {
+function AccessTokenManagement(props: { resourceType?: string, resourceID?: number, role?: string, resourceScope?: boolean }) {
   const {
     resourceType, resourceID, resourceScope, role,
   } = props;
@@ -94,7 +94,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
     const resourcePerssions = {
       [ResourceType.GROUP]: rbac.Permissions.createGroupAccessTokens.allowed,
       [ResourceType.APPLICATION]: rbac.Permissions.createApplicationAccessTokens.allowed,
-      [ResourceType.CLUSTER]: rbac.Permissions.createClusterAccessTokens.allowed,
+      [ResourceType.INSTANCE]: rbac.Permissions.createClusterAccessTokens.allowed,
     };
     canCreate = resourcePerssions[resourceType!];
   }
@@ -106,7 +106,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
     const resourcePerssions = {
       [ResourceType.GROUP]: rbac.Permissions.deleteGroupAccessTokens.allowed,
       [ResourceType.APPLICATION]: rbac.Permissions.deleteApplicationAccessTokens.allowed,
-      [ResourceType.CLUSTER]: rbac.Permissions.deleteClusterAccessTokens.allowed,
+      [ResourceType.INSTANCE]: rbac.Permissions.deleteClusterAccessTokens.allowed,
     };
     canDelete = resourcePerssions[resourceType!];
   }
@@ -242,7 +242,7 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
   return (
     <>
       <h1>
-        { resourceScope ? 'Access Token' : 'Personal Access Token'}
+        {resourceScope ? 'Access Token' : 'Personal Access Token'}
       </h1>
       <Description>
         {intl.formatMessage({ id: 'pages.accesstokens.desc' })}
@@ -289,15 +289,15 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
           </Form.Item>
           {
             resourceScope && (
-            <Form.Item
-              label={<FormLabel>{intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' })}</FormLabel>}
-              name="role"
-              rules={required}
-            >
-              <Select
-                options={roleList.slice(roleRank.get(role!)).map((r: string) => ({ key: r, label: r, value: r }))}
-              />
-            </Form.Item>
+              <Form.Item
+                label={<FormLabel>{intl.formatMessage({ id: 'pages.accesstokens.addToken.role.title' })}</FormLabel>}
+                name="role"
+                rules={required}
+              >
+                <Select
+                  options={roleList.slice(roleRank.get(role!)).map((r: string) => ({ key: r, label: r, value: r }))}
+                />
+              </Form.Item>
             )
           }
           <Form.Item
@@ -307,20 +307,20 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
           >
             <Checkbox.Group>
               {
-               scopes.map((scope) => (
-                 <>
-                   <Checkbox
-                     value={scope.name}
-                   >
-                     {scope.name}
-                   </Checkbox>
-                   <Description
-                     style={{ marginBottom: '20px', marginLeft: '10px' }}
-                   >
-                     {scope.desc}
-                   </Description>
-                 </>
-               ))
+                scopes.map((scope) => (
+                  <>
+                    <Checkbox
+                      value={scope.name}
+                    >
+                      {scope.name}
+                    </Checkbox>
+                    <Description
+                      style={{ marginBottom: '20px', marginLeft: '10px' }}
+                    >
+                      {scope.desc}
+                    </Description>
+                  </>
+                ))
               }
             </Checkbox.Group>
           </Form.Item>
@@ -336,20 +336,20 @@ function AccessTokenManagement(props: { resourceType?: string, resourceID?: numb
         </Form>
       </Card>
       {
-      tokenCode && (
-      <>
-        <Divider />
-        <ImportantTxt>
-          {intl.formatMessage({ id: 'pages.accesstokens.addToken.code.title' })}
-        </ImportantTxt>
-        <Input
-          disabled
-          value={tokenCode}
-          style={{ width: '500px' }}
-        />
-        <Button onClick={onCopyClick} icon={<CopyOutlined />} />
-      </>
-      )
+        tokenCode && (
+          <>
+            <Divider />
+            <ImportantTxt>
+              {intl.formatMessage({ id: 'pages.accesstokens.addToken.code.title' })}
+            </ImportantTxt>
+            <Input
+              disabled
+              value={tokenCode}
+              style={{ width: '500px' }}
+            />
+            <Button onClick={onCopyClick} icon={<CopyOutlined />} />
+          </>
+        )
       }
       <TokenListCard
         bordered={false}
