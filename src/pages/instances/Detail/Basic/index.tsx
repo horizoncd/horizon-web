@@ -107,11 +107,15 @@ export default function Basic(props: any) {
     return [
       {
         key: intl.formatMessage({ id: 'pages.clusterDetail.basic.template' }),
-        value: cluster.templateInfo.name,
+        value: version !== pipelineV2
+          ? cluster.template.name
+          : cluster.templateInfo.name,
       },
       {
         key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
-        value: cluster.templateInfo.release,
+        value: version !== pipelineV2
+          ? cluster.template.release
+          : cluster.templateInfo.release,
       },
     ];
   })();

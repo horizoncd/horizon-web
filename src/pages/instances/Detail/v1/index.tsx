@@ -20,45 +20,13 @@ import { CardTitle } from '../Widget';
 export default () => {
   const intl = useIntl();
   const { initialState } = useModel('@@initialState');
-  const [template, setTemplate] = useState([]);
+  const [template, setTemplate] = useState<Templates.TemplateSchema>();
 
   const {
     id: clusterID, fullPath: clusterFullPath, type, parentID: applicationID,
   } = initialState!.resource;
 
-  const defaultCluster: CLUSTER.Cluster = {
-    createdBy: { name: '' },
-    updatedBy: { name: '' },
-    latestDeployedCommit: '',
-    id: 0,
-    application: {
-      id: 0,
-      name: '',
-    },
-    name: '',
-    priority: 'P0',
-    description: '',
-    template: {
-      name: '',
-      release: '',
-    },
-    git: {
-      url: '',
-      subfolder: '',
-      branch: '',
-      commit: '',
-    },
-    scope: {
-      environment: '',
-      region: '',
-      regionDisplayName: '',
-    },
-    templateInput: undefined,
-    fullPath: '',
-    createdAt: '',
-    updatedAt: '',
-  };
-  const [cluster, setCluster] = useState<CLUSTER.Cluster>(defaultCluster);
+  const [cluster, setCluster] = useState<CLUSTER.Cluster>();
 
   const { data: templateData, run: runQuerySchema } = useRequest(
     () => querySchema(cluster!.template.name, cluster!.template.release, {
@@ -82,6 +50,10 @@ export default () => {
     ready: type === ResourceType.INSTANCE && !!clusterID,
     refreshDeps: [clusterID],
   });
+
+  if (!cluster) {
+    return null;
+  }
 
   return (
     <PageWithBreadcrumb>
