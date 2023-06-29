@@ -151,7 +151,7 @@ export default (props: any) => {
                   {
                     isInstancePage
                       ? intl.formatMessage({ id: 'pages.navigation.appType' })
-                      : intl.formatMessage({ id: 'pages.navigation.clusterType' })
+                      : intl.formatMessage({ id: 'pages.navigation.instanceType' })
                   }
                 </CardTitle>
               )}
