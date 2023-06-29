@@ -150,8 +150,8 @@ export default (props: any) => {
                 <CardTitle>
                   {
                     isInstancePage
-                      ? intl.formatMessage({ id: 'pages.navigation.appType' })
-                      : intl.formatMessage({ id: 'pages.navigation.instanceType' })
+                      ? intl.formatMessage({ id: 'pages.navigation.instanceType' })
+                      : intl.formatMessage({ id: 'pages.navigation.appType' })
                   }
                 </CardTitle>
               )}
