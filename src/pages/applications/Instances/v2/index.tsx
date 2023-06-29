@@ -20,17 +20,15 @@ import type { SearchInput, MultiValueTag } from '@/components/tag/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
 import { FavoriteStar, MicroApp } from '@/components/Widget';
-import { AppOrClusterType } from '@/const';
+import { CatalogType } from '@/services/core';
 
 const { TabPane } = Tabs;
 
 interface Props {
-  appType?: AppOrClusterType;
 }
 
-export default (props: Props) => {
-  const { appType = AppOrClusterType.GIT_IMPORT } = props;
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default (_ : Props) => {
   const params = new URLSearchParams(window.location.search);
   const environment = params.get('environment') || '';
   const tagSelector = params.get('tagSelector') || '';
@@ -44,9 +42,7 @@ export default (props: Props) => {
   const [selectedCluster, setSelectedCluster] = useState();
 
   const pageSize = 10;
-  const newCluster = appType === AppOrClusterType.GIT_IMPORT
-    ? `/applications${fullPath}/-/newclusterv2/gitimport`
-    : `/applications${fullPath}/-/newclusterv2/imagedeploy`;
+  const newCluster = `/applications${fullPath}/-/newinstancev2`;
 
   const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
     if (!ts) {
@@ -169,6 +165,7 @@ export default (props: Props) => {
       title: intl.formatMessage({ id: 'pages.common.template' }),
       dataIndex: 'template',
       key: 'template',
+      render: (text: string, item: any) => (`${item.template}-${item.release}`),
     },
     {
       title: (
@@ -258,6 +255,29 @@ export default (props: Props) => {
     });
   }, [environment, fullPath]);
 
+  const onCopyClick = useCallback(() => {
+    history.push({
+      pathname: (() => {
+        if (selectedCluster?.type === CatalogType.Middleware
+                || selectedCluster?.type === CatalogType.Database
+                || selectedCluster?.type === CatalogType.Other) {
+          return `${newCluster}/chart`;
+        }
+        if (selectedCluster?.type === CatalogType.V1) {
+          return `/applications${fullPath}/-/newinstance/git`;
+        }
+        if (selectedCluster?.git?.httpURL || selectedCluster?.git?.gitURL) {
+          return `/applications${fullPath}/-/newinstancev2/git`;
+        }
+        return `/applications${fullPath}/-/newinstancev2/image`;
+      })(),
+      state: { template: { name: selectedCluster?.template } },
+      search: stringify({
+        sourceClusterID: selectedCluster?.id,
+      }),
+    });
+  }, [fullPath, newCluster, selectedCluster]);
+
   const queryInput = (
     // @ts-ignore
     <div style={{ display: 'flex' }}>
@@ -284,14 +304,7 @@ export default (props: Props) => {
       <Button
         disabled={!RBAC.Permissions.createCluster.allowedEnv(environment) || !selectedCluster}
         className={styles.createClusterBtn}
-        onClick={() => {
-          history.push({
-            pathname: newCluster,
-            search: stringify({
-              sourceClusterID: selectedCluster?.id,
-            }),
-          });
-        }}
+        onClick={onCopyClick}
       >
         {intl.formatMessage({ id: 'pages.groups.copy cluster' })}
       </Button>
@@ -300,15 +313,18 @@ export default (props: Props) => {
 
   const data = useMemo(() => clusters?.items.map((item) => {
     const {
-      id: clusterID, name, scope, template, updatedAt, createdAt, tags: tagList,
+      id: clusterID, name, scope, template, updatedAt, createdAt, tags: tagList, type, git,
     } = item;
     return {
       id: clusterID,
       key: name,
       name,
+      type,
+      git,
       environment: env2DisplayName?.get(scope.environment),
       regionDisplayName: scope.regionDisplayName,
-      template: `${template.name}-${template.release}`,
+      template: template.name,
+      release: template.release,
       createdTime: Utils.timeToLocal(createdAt),
       updatedTime: Utils.timeToLocal(updatedAt),
       isFavorite: item.isFavorite,

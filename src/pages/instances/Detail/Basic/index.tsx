@@ -1,5 +1,5 @@
 import { Button, Modal, Tooltip } from 'antd';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useHistory, useIntl } from 'umi';
@@ -48,15 +48,17 @@ export default function Basic(props: any) {
     ready: version !== pipelineV2 && !!cluster.scope.environment,
   });
 
-  const editClusterRoute = () => {
+  const editCluster = useCallback(() => {
     if (version !== pipelineV2) {
-      return `/instances${clusterFullPath}/-/edit`;
+      history.push(`/instances${clusterFullPath}/-/edit`);
+    } else if (cluster.git?.url) {
+      history.push(`/instances${clusterFullPath}/-/editv2/git`);
+    } else if (cluster.image) {
+      history.push(`/instances${clusterFullPath}/-/editv2/image`);
+    } else {
+      history.push(`/instances${clusterFullPath}/-/editv2/chart`, { template: { name: cluster?.template?.name } });
     }
-    if (cluster.git?.url) {
-      return `/instances${clusterFullPath}/-/editv2/gitimport`;
-    }
-    return `/instances${clusterFullPath}/-/editv2/imagedeploy`;
-  };
+  }, [version, cluster.git?.url, cluster.image, cluster?.template?.name, history, clusterFullPath]);
 
   const regionName = version !== pipelineV2
     ? region2DisplayName.get(cluster.scope.region)
@@ -71,31 +73,48 @@ export default function Basic(props: any) {
     commit: cluster.git?.commit || '',
   });
 
-  const sourceDetail: Param[] = cluster.git?.url ? [
-    {
-      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
-      value: version !== pipelineV2
-        ? `${cluster.template.name}-${cluster.template.release}`
-        : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
-    },
-    { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git?.url },
-    {
-      key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
-      value: gitRef,
-    },
-    {
-      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.subfolder' }),
-      value: cluster.git?.subfolder,
-    },
-  ] : [
-    {
-      key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
-      value: version !== pipelineV2
-        ? `${cluster.template.name}-${cluster.template.release}`
-        : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
-    },
-    { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.image' }), value: cluster.image },
-  ];
+  const sourceDetail: Param[] = (() => {
+    if (cluster.git?.url) {
+      return [
+        {
+          key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
+          value: version !== pipelineV2
+            ? `${cluster.template.name}-${cluster.template.release}`
+            : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
+        },
+        { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.url' }), value: cluster.git?.url },
+        {
+          key: intl.formatMessage({ id: `pages.clusterDetail.basic.${gitRefType}` }),
+          value: gitRef,
+        },
+        {
+          key: intl.formatMessage({ id: 'pages.clusterDetail.basic.subfolder' }),
+          value: cluster.git?.subfolder,
+        },
+      ];
+    }
+    if (cluster.image) {
+      return [
+        {
+          key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
+          value: version !== pipelineV2
+            ? `${cluster.template.name}-${cluster.template.release}`
+            : `${cluster.templateInfo.name}-${cluster.templateInfo.release}`,
+        },
+        { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.image' }), value: cluster.image },
+      ];
+    }
+    return [
+      {
+        key: intl.formatMessage({ id: 'pages.clusterDetail.basic.template' }),
+        value: cluster.templateInfo.name,
+      },
+      {
+        key: intl.formatMessage({ id: 'pages.clusterDetail.basic.release' }),
+        value: cluster.templateInfo.release,
+      },
+    ];
+  })();
   const serviceDetail: Param[][] = [
     [
       { key: intl.formatMessage({ id: 'pages.clusterDetail.basic.name' }), value: cluster.name },
@@ -166,9 +185,7 @@ export default function Basic(props: any) {
           type="primary"
           className={styles.button}
           disabled={!RBAC.Permissions.updateCluster.allowed}
-          onClick={() => history.push({
-            pathname: editClusterRoute(),
-          })}
+          onClick={editCluster}
         >
           {intl.formatMessage({ id: 'pages.clusterDetail.basic.edit' })}
         </Button>

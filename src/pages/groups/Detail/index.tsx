@@ -50,7 +50,7 @@ export default () => {
           });
         }}
       >
-        {intl.formatMessage({ id: 'pages.groups.New application' })}
+        {intl.formatMessage({ id: 'pages.groups.newapplication' })}
       </Button>
     </div>
   );

@@ -15,9 +15,9 @@ export default () => {
   if (data) {
     if (isVersion2(data)) {
       if (data.git?.url) {
-        return <ClusterV2 appType={AppOrClusterType.GIT_IMPORT} />;
+        return <ClusterV2 appType={AppOrClusterType.GIT} />;
       }
-      return <ClusterV2 appType={AppOrClusterType.IMAGE_DEPLOY} />;
+      return <ClusterV2 appType={AppOrClusterType.IMAGE} />;
     }
     return <ClusterV1 />;
   }

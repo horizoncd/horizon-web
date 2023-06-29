@@ -1,7 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
-import type { API } from './typings';
 
 export async function queryResource(fullPath: string, type: string) {
   return request<{
@@ -13,4 +12,12 @@ export async function queryResource(fullPath: string, type: string) {
       type
     },
   });
+}
+
+export enum CatalogType {
+    V1 = 'v1',
+    Workload = 'workload',
+    Middleware = 'middleware',
+    Database = 'database',
+    Other = 'other'
 }

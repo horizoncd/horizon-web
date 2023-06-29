@@ -2,14 +2,16 @@ import {
   Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
 import { useRequest } from 'umi';
-import { useEffect, useRef, useState } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import HSteps from '@/components/HSteps';
 import BaseInfoForm from '../components/BaseInfoForm';
-import BuildConfigForm from '@/pages/applications/NewOrEdit/v2/components/BuildConfigForm';
-import DeployConfigForm from '@/pages/applications/NewOrEdit/v2/components/DeployConfigForm';
+import BuildConfigForm from '@/components/neworedit/components/BuildConfigForm';
+import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { getApplicationEnvTemplate } from '@/services/applications/applications';
 import { getApplicationV2 } from '@/services/applications/applications';
 import {
@@ -24,6 +26,8 @@ import { ResourceType } from '@/const';
 import { difference } from '@/utils';
 import { RebuilddeployModal } from '@/components/rollout';
 import { MaxSpace } from '@/components/Widget';
+import { CatalogType } from '@/services/core';
+import TemplateForm from '@/components/neworedit/components/TemplateForm';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -39,8 +43,8 @@ export default (props: any) => {
   const { location } = props;
   const { query, pathname } = location;
   const { environment: envFromQuery, sourceClusterID } = query;
-  const editing = pathname.endsWith('editv2/gitimport');
-  const creating = pathname.endsWith('newclusterv2/gitimport');
+  const editing = pathname.endsWith('editv2/git');
+  const creating = pathname.endsWith('newinstancev2/git');
   const copying = !!sourceClusterID;
 
   const { successAlert } = useModel('alert');
@@ -52,7 +56,7 @@ export default (props: any) => {
   const [cluster, setCluster] = useState<CLUSTER.ClusterV2>();
   const [originConfig, setOriginConfig] = useState({});
   const [buildConfig, setBuildConfig] = useState({});
-  const [templateBasic, setTemplateBasic] = useState({ name: '', release: '' });
+  const [templateBasic, setTemplateBasic] = useState({ name: '' });
   const [releaseName, setReleaseName] = useState('');
   const [templateConfig, setTemplateConfig] = useState({});
   const [buildSubmitted, setBuildSubmitted] = useState(false);
@@ -64,6 +68,11 @@ export default (props: any) => {
   const [buildConfigValid, setBuildConfigValid] = useState<boolean>(true);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
+  const resetTemplate = useCallback((t: API.Template) => {
+    setTemplateBasic({ name: t.name });
+    setReleaseName('');
+  }, []);
+
   const currentStepIsValid = (cur: number) => {
     let valid: boolean;
     switch (cur) {
@@ -74,7 +83,12 @@ export default (props: any) => {
         valid = baseInfoValid && buildConfigValid;
         break;
       case 2:
-        valid = baseInfoValid && buildConfigValid && deployConfigValid;
+        valid = baseInfoValid && buildConfigValid && !!templateBasic.name;
+        break;
+      case 3:
+      case 4:
+        valid = baseInfoValid && buildConfigValid && !!templateBasic.name
+        && deployConfigValid;
         break;
       default:
         valid = true;
@@ -91,6 +105,10 @@ export default (props: any) => {
     {
       title: intl.formatMessage({ id: 'pages.newV2.step.build' }),
       disabled: !currentStepIsValid(0),
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.newV2.deploy.template' }),
+      disabled: !currentStepIsValid(1),
     },
     {
       title: intl.formatMessage({ id: 'pages.newV2.step.deploy' }),
@@ -126,124 +144,122 @@ export default (props: any) => {
   });
 
   // query application if creating
-  if (creating) {
-    const { data } = useRequest(() => getApplicationV2(id), {
-      onSuccess: () => {
-        const { git, name: appName, tags: appTags } = data!;
-        setApplicationName(appName);
-        if (!copying) {
-          // basicInfo
-          const { gitRefType, gitRef } = parseGitRef(data!.git);
-          form.setFields([
-            { name: ResourceKey.ENVIRONMENT, value: envFromQuery },
-            { name: ResourceKey.TAGS, value: appTags },
-            { name: ResourceKey.GIT_URL, value: git.url },
-            { name: ResourceKey.GIT_SUB_FOLDER, value: git.subfolder },
-            { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
-            { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
-          ]);
-
-          // basicTemplateInfo
-          const basicTemplateInfo = {
-            name: data!.templateInfo!.name,
-            release: data!.templateInfo!.release,
-          };
-          setBuildConfig(data!.buildConfig);
-          // todo(zx): remove
-          setTemplateBasic(basicTemplateInfo);
-          setReleaseName(data!.templateInfo!.release);
-          setTemplateConfig(data!.templateConfig);
-          refreshAppEnvTemplate(envFromQuery);
-        } else {
-          // query source cluster if copying
-          getClusterV2(sourceClusterID).then(
-            ({ data: clusterData }) => {
-              const {
-                // basic info
-                description: d,
-                scope,
-                expireTime,
-                git: g,
-
-                // build and deploy info
-                buildConfig: bc,
-                templateInfo: ti,
-                templateConfig: tc,
-                tags: clusterTags,
-              } = clusterData!;
-              const { environment: e, region: r } = scope;
-              const { url: u, subfolder: s } = g;
-              const { gitRefType, gitRef } = parseGitRef(g);
-              form.setFields([
-                { name: ResourceKey.DESCRIPTION, value: d },
-                { name: ResourceKey.ENVIRONMENT, value: e },
-                { name: ResourceKey.REGION, value: r },
-                { name: ResourceKey.EXPIRE_TIME, value: expireTime },
-                { name: ResourceKey.TAGS, value: clusterTags },
-                { name: ResourceKey.GIT_URL, value: u },
-                { name: ResourceKey.GIT_SUB_FOLDER, value: s },
-                { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
-                { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
-              ]);
-              setBuildConfig(bc);
-              setTemplateBasic(ti);
-              setReleaseName(ti.release);
-              setTemplateConfig(tc);
-              setCluster(clusterData);
-            },
-          );
-        }
-      },
-    });
-  }
-
-  // query cluster if editing
-  if (editing) {
-    const { data: clusterData } = useRequest(() => getClusterV2(id), {
-      onSuccess: () => {
-        const {
-          // basic info
-          name: n,
-          description: d,
-          scope,
-          expireTime,
-          git,
-
-          // build and deploy info
-          buildConfig: bc,
-          templateInfo: ti,
-          templateConfig: tc,
-          tags: clusterTags,
-        } = clusterData!;
-        const { environment: e, region: r } = scope;
-        const { url: u, subfolder: s } = git;
-        const { gitRefType, gitRef } = parseGitRef(git);
+  useRequest(() => getApplicationV2(id), {
+    ready: creating,
+    onSuccess: (data) => {
+      const { git, name: appName, tags: appTags } = data;
+      setApplicationName(appName);
+      if (!copying) {
+        // basicInfo
+        const { gitRefType, gitRef } = parseGitRef(data.git);
         form.setFields([
-          { name: ResourceKey.NAME, value: n },
-          { name: ResourceKey.DESCRIPTION, value: d },
-          { name: ResourceKey.ENVIRONMENT, value: e },
-          { name: ResourceKey.REGION, value: r },
-          { name: ResourceKey.EXPIRE_TIME, value: expireTime },
-          { name: ResourceKey.TAGS, value: clusterTags },
-          { name: ResourceKey.GIT_URL, value: u },
-          { name: ResourceKey.GIT_SUB_FOLDER, value: s },
+          { name: ResourceKey.ENVIRONMENT, value: envFromQuery },
+          { name: ResourceKey.TAGS, value: appTags },
+          { name: ResourceKey.GIT_URL, value: git.url },
+          { name: ResourceKey.GIT_SUB_FOLDER, value: git.subfolder },
           { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
           { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
         ]);
-        setOriginConfig({
-          git,
-          buildConfig: bc,
-          templateBasic: ti,
-          templateConfig: tc,
-        });
-        setBuildConfig(bc);
-        setTemplateBasic(ti);
-        setReleaseName(ti.release);
-        setTemplateConfig(tc);
-        setCluster(clusterData);
-      },
-    });
-  }
+
+        // basicTemplateInfo
+        const basicTemplateInfo = {
+          name: data!.templateInfo!.name,
+          release: data!.templateInfo!.release,
+        };
+        setBuildConfig(data!.buildConfig);
+        // todo(zx): remove
+        setTemplateBasic(basicTemplateInfo);
+        setReleaseName(data!.templateInfo!.release);
+        setTemplateConfig(data!.templateConfig);
+        refreshAppEnvTemplate(envFromQuery);
+      } else {
+        // query source cluster if copying
+        getClusterV2(sourceClusterID).then(
+          ({ data: clusterData }) => {
+            const {
+              // basic info
+              description: d,
+              scope,
+              expireTime,
+              git: g,
+
+              // build and deploy info
+              buildConfig: bc,
+              templateInfo: ti,
+              templateConfig: tc,
+              tags: clusterTags,
+            } = clusterData!;
+            const { environment: e, region: r } = scope;
+            const { url: u, subfolder: s } = g;
+            const { gitRefType, gitRef } = parseGitRef(g);
+            form.setFields([
+              { name: ResourceKey.DESCRIPTION, value: d },
+              { name: ResourceKey.ENVIRONMENT, value: e },
+              { name: ResourceKey.REGION, value: r },
+              { name: ResourceKey.EXPIRE_TIME, value: expireTime },
+              { name: ResourceKey.TAGS, value: clusterTags },
+              { name: ResourceKey.GIT_URL, value: u },
+              { name: ResourceKey.GIT_SUB_FOLDER, value: s },
+              { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
+              { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
+            ]);
+            setBuildConfig(bc);
+            setTemplateBasic(ti);
+            setReleaseName(ti.release);
+            setTemplateConfig(tc);
+            setCluster(clusterData);
+          },
+        );
+      }
+    },
+  });
+
+  // query cluster if editing
+  useRequest(() => getClusterV2(id), {
+    ready: editing,
+    onSuccess: (data) => {
+      const {
+        // basic info
+        name: n,
+        description: d,
+        scope,
+        expireTime,
+        git,
+
+        // build and deploy info
+        buildConfig: bc,
+        templateInfo: ti,
+        templateConfig: tc,
+        tags: clusterTags,
+      } = data;
+      const { environment: e, region: r } = scope;
+      const { url: u, subfolder: s } = git;
+      const { gitRefType, gitRef } = parseGitRef(git);
+      form.setFields([
+        { name: ResourceKey.NAME, value: n },
+        { name: ResourceKey.DESCRIPTION, value: d },
+        { name: ResourceKey.ENVIRONMENT, value: e },
+        { name: ResourceKey.REGION, value: r },
+        { name: ResourceKey.EXPIRE_TIME, value: expireTime },
+        { name: ResourceKey.TAGS, value: clusterTags },
+        { name: ResourceKey.GIT_URL, value: u },
+        { name: ResourceKey.GIT_SUB_FOLDER, value: s },
+        { name: ResourceKey.GIT_REF_TYPE, value: gitRefType },
+        { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
+      ]);
+      setOriginConfig({
+        git,
+        buildConfig: bc,
+        templateBasic: ti,
+        templateConfig: tc,
+      });
+      setBuildConfig(bc);
+      setTemplateBasic(ti);
+      setReleaseName(ti.release);
+      setTemplateConfig(tc);
+      setCluster(data);
+    },
+  });
 
   const onBuildAndDeployButtonOK = () => {
     setShowBuildDeployModal(false);
@@ -410,7 +426,7 @@ export default (props: any) => {
                 <BaseInfoForm
                   form={form}
                   appName={applicationName}
-                  clusterType={AppOrClusterType.GIT_IMPORT}
+                  clusterType={AppOrClusterType.GIT}
                   clusterStatus={cluster?.status}
                   editing={editing}
                   setValid={setBaseInfoValid}
@@ -428,7 +444,17 @@ export default (props: any) => {
               )
             }
             {
+              // deploy template
               current === 2 && (
+                <TemplateForm
+                  template={templateBasic}
+                  resetTemplate={resetTemplate}
+                  type={CatalogType.Workload}
+                />
+              )
+            }
+            {
+              current === 3 && (
                 <DeployConfigForm
                   template={templateBasic}
                   release={releaseName}
@@ -442,7 +468,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 3 && (
+              current === 4 && (
                 <MaxSpace
                   direction="vertical"
                   size="middle"
@@ -452,7 +478,7 @@ export default (props: any) => {
                     form={form}
                     editing={editing}
                     appName={applicationName}
-                    clusterType={AppOrClusterType.GIT_IMPORT}
+                    clusterType={AppOrClusterType.GIT}
                   />
                   <BuildConfigForm
                     readOnly

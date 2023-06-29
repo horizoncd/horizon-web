@@ -61,6 +61,7 @@ function PodsPage(props: PodsPageProps) {
       items.forEach((item) => e.set(item.name, item.displayName));
       setRegion2DisplayName(e);
     },
+    refreshDeps: [cluster],
     ready: !!cluster,
   });
 

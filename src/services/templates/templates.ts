@@ -69,7 +69,7 @@ export async function createRelease(template: string | number, data: Templates.C
 }
 
 export async function createTemplate(group: number, data: Templates.CreateTemplateRequest) {
-  const path = `/apis/core/v1/groups/${group}/templates`;
+  const path = `/apis/core/v2/groups/${group}/templates`;
   const config = {
     method: 'POST',
     Headers: {
@@ -87,7 +87,9 @@ export async function listTemplatesV2(
     groupID?: number,
     filter?: string,
     withoutCI?: boolean,
-    userID?: number },
+    type?: string | string[],
+    userID?: number
+  },
 ) {
   const path = '/apis/core/v2/templates';
   const config = {

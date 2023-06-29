@@ -44,7 +44,7 @@ export default (props: any) => {
   const { query, pathname } = location;
   const { environment: envFromQuery, sourceClusterID } = query;
   const editing = pathname.endsWith('edit');
-  const creating = pathname.endsWith('newcluster');
+  const creating = pathname.endsWith('newinstance/git');
   const copying = !!sourceClusterID;
 
   const { successAlert } = useModel('alert');
@@ -281,14 +281,14 @@ export default (props: any) => {
   const onBuildAndDeployButtonOK = () => {
     setShowBuildDeployModal(false);
     if (creating) {
-      window.location.href = `/instaces${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+      window.location.href = `/instances${cluster!.fullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
     } else {
       setEnableRebuilddeployModal(true);
     }
   };
 
   const onDeployButtonOK = () => {
-    window.location.href = `/instaces${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`;
+    window.location.href = `/instances${cluster!.fullPath}/-/pipelines/new?type=${PublishType.DEPLOY}`;
   };
 
   const onButtonCancel = () => {

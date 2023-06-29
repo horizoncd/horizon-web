@@ -20,7 +20,6 @@ import Utils, { handleHref } from '@/utils';
 import '@/components/GroupTree/index.less';
 import { queryEnvironments } from '@/services/environments/environments';
 import { listTemplatesV2 } from '@/services/templates/templates';
-import { GitInfo } from '@/services/code/code';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { setQuery } from '../utils';
 import { WithContainer, SearchBox } from '../components';
@@ -41,7 +40,7 @@ function Title(props: {
   template: { name: string, release: string },
   name: string,
   fullPath?: string,
-  git: GitInfo,
+  git: API.GitInfo,
   description?: string,
   isFavorite?: boolean,
   setTemplate: (s: string) => void,

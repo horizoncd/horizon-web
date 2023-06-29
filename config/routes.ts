@@ -89,14 +89,24 @@ const groupRoutes = [
     path: '/groups/*/-/newapplicationv2',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/Navigation',
-  }, {
-    path: '/groups/*/-/newapplicationv2/gitimport',
+  },{
+    path: '/groups/*/-/newapplicationv2/git',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/GitImport',
-  }, {
-    path: '/groups/*/-/newapplicationv2/imagedeploy',
+  },{
+    path: '/groups/*/-/newapplicationv2/image',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/ImageDeploy',
+  },
+  {
+    path: '/groups/*/-/newapplicationv2/chart',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ChartDeploy',
+  },
+  {
+    path: '/groups/*/-/(newapplicationv2|newinstancev2)/chartcatalog',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/Catalog',
   },
   {
     path: `/groups/*/-/newoauthapp`,
@@ -139,34 +149,54 @@ const applicationRoutes = [
     component: 'applications/NewOrEdit/v2/Navigation',
   },
   {
-    path: '/applications/*/-/editv2/gitimport',
+    path: '/applications/*/-/editv2/git',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/GitImport',
   },
   {
-    path: '/applications/*/-/editv2/imagedeploy',
+    path: '/applications/*/-/editv2/image',
     menuRender: false,
     component: 'applications/NewOrEdit/v2/ImageDeploy',
   },
   {
+    path: '/applications/*/-/editv2/chart',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v2/ChartDeploy',
+  },
+  {
     path: '/applications/*/-/newinstance',
     menuRender: false,
-    component: 'instances/NewOrEdit/v1',
+    component: 'instances/NewOrEdit/Navigation',
+  },
+  {
+    path: '/applications/*/-/newinstance/git',
+    menuRender: false,
+    component: 'applications/NewOrEdit/v1',
   },
   {
     path: '/applications/*/-/newinstancev2',
     menuRender: false,
-    component: 'instances/NewOrEdit/v2/Navigation',
+    component: 'instances/NewOrEdit/Navigation',
   },
   {
-    path: '/applications/*/-/newinstancev2/gitimport',
+    path: '/applications/*/-/newinstancev2/chartcatalog',
+    menuRender: false,
+    component: 'instances/NewOrEdit/v2/Catalog',
+  },
+  {
+    path: '/applications/*/-/newinstancev2/git',
     menuRender: false,
     component: 'instances/NewOrEdit/v2/GitImport',
   },
   {
-    path: '/applications/*/-/newinstancev2/imagedeploy',
+    path: '/applications/*/-/newinstancev2/image',
     menuRender: false,
     component: 'instances/NewOrEdit/v2/ImageDeploy',
+  },
+  {
+    path: '/applications/*/-/newinstancev2/chart',
+    menuRender: false,
+    component: 'instances/NewOrEdit/v2/ChartDeploy',
   },
   {
     path: '/applications/*/-/settings/advance',
@@ -192,17 +222,22 @@ const instanceRoutes = [
   {
     path: '/instances/*/-/editv2',
     menuRender: false,
-    component: 'instances/NewOrEdit/v2/Navigation',
+    component: 'instances/NewOrEdit/Navigation',
   },
   {
-    path: '/instances/*/-/editv2/gitimport',
+    path: '/instances/*/-/editv2/git',
     menuRender: false,
     component: 'instances/NewOrEdit/v2/GitImport',
   },
   {
-    path: '/instances/*/-/editv2/imagedeploy',
+    path: '/instances/*/-/editv2/image',
     menuRender: false,
     component: 'instances/NewOrEdit/v2/ImageDeploy',
+  },
+  {
+    path: '/instances/*/-/editv2/chart',
+    menuRender: false,
+    component: 'instances/NewOrEdit/v2/ChartDeploy',
   },
   {
     path: '/instances/*/-/configs',

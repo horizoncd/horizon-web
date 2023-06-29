@@ -152,6 +152,7 @@ export enum ResourceKey {
 }
 
 export enum AppOrClusterType {
-  GIT_IMPORT = 'gitImport',
-  IMAGE_DEPLOY = 'imageDeploy',
+  GIT = 'git',
+  IMAGE = 'image',
+  CHART = 'chart',
 }

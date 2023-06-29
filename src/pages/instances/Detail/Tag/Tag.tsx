@@ -22,7 +22,7 @@ export default function Tag(props: TagProps) {
 
   const history = useHistory();
 
-  const manageTagsRoute = `/instaces${clusterFullPath}/-/tags`;
+  const manageTagsRoute = `/instances${clusterFullPath}/-/tags`;
 
   return (
     <TagCard

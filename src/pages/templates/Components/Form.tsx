@@ -13,6 +13,19 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
   return (
     <div>
       <Form.Item
+        label={formatMessage('type')}
+        name="type"
+        extra={intl.formatMessage({ id: 'pages.template.type.extra' })}
+      >
+        <Select>
+          <Option key="database" value="database">{intl.formatMessage({ id: 'pages.catalog.database' })}</Option>
+          <Option key="middleware" value="middleware">{intl.formatMessage({ id: 'pages.catalog.middleware' })}</Option>
+          <Option key="workload" value="workload">{intl.formatMessage({ id: 'pages.catalog.workload' })}</Option>
+          <Option key="other" value="other">{intl.formatMessage({ id: 'pages.catalog.other' })}</Option>
+          <Option key="v1" value="v1">{intl.formatMessage({ id: 'pages.catalog.v1' })}</Option>
+        </Select>
+      </Form.Item>
+      <Form.Item
         label={formatMessage('description')}
         name="description"
         extra={intl.formatMessage({ id: 'pages.message.template.desc.extra' })}

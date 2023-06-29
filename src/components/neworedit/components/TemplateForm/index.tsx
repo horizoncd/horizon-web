@@ -40,6 +40,8 @@ const Cards = (props: { data: API.Template[], template: API.Template, resetTempl
 interface TemplateProps {
   template: API.Template,
   resetTemplate: (o: API.Template) => void
+  // eslint-disable-next-line react/no-unused-prop-types
+  type?: string | string[],
 }
 
 interface GroupTemplateProps extends TemplateProps {
@@ -47,9 +49,11 @@ interface GroupTemplateProps extends TemplateProps {
 }
 
 const AllTemplateCards = (props: TemplateProps) => {
-  const { template, resetTemplate } = props;
+  const { template, type, resetTemplate } = props;
   const { data } = useRequest(
-    () => listTemplatesV2({ fullpath: false, groupID: 0, withoutCI: true }),
+    () => listTemplatesV2({
+      fullpath: false, groupID: 0, type,
+    }),
   );
 
   if (!data) {
@@ -67,9 +71,11 @@ const AllTemplateCards = (props: TemplateProps) => {
 
 const GroupCards = (props: GroupTemplateProps) => {
   const {
-    groupID, template, resetTemplate,
+    groupID, template, resetTemplate, type,
   } = props;
-  const { data } = useRequest(() => listTemplatesV2({ fullpath: false, groupIDRecursive: groupID, withoutCI: true }));
+  const { data } = useRequest(() => listTemplatesV2({
+    fullpath: false, groupIDRecursive: groupID, type,
+  }));
   if (!data) {
     return null;
   }
@@ -88,7 +94,7 @@ const GroupCards = (props: GroupTemplateProps) => {
 };
 
 function TemplateCards(props: TemplateProps & PageWithInitialStateProps) {
-  const { initialState: { resource: { id, type, parentID } } } = props;
+  const { initialState: { resource: { id, type, parentID } }, type: tplType } = props;
   const { template, resetTemplate } = props;
 
   const groupID = type === ResourceType.APPLICATION
@@ -101,10 +107,12 @@ function TemplateCards(props: TemplateProps & PageWithInitialStateProps) {
         <AllTemplateCards
           template={template}
           resetTemplate={resetTemplate}
+          type={tplType}
         />
       </TabPane>
       <TabPane tab="Group Templates" key={2}>
         <GroupCards
+          type={tplType}
           template={template}
           resetTemplate={resetTemplate}
           groupID={groupID}

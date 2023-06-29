@@ -53,7 +53,13 @@ function ButtonBar(props: ButtonBarProps) {
         successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.hint' }));
         break;
       case 'editCluster':
-        history.push(cluster?.git?.url ? `/instances${fullPath}/-/editv2/gitimport` : `/instances${fullPath}/-/editv2/imagedeploy`);
+        if (cluster?.git?.url) {
+          history.push(`/instances${fullPath}/-/editv2/git`);
+        } else if (cluster?.image) {
+          history.push(`/instances${fullPath}/-/editv2/image`);
+        } else {
+          history.push(`instances${fullPath}/-/editv2/image`);
+        }
         break;
       case 'freeCluster':
         Modal.confirm({

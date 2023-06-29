@@ -35,12 +35,12 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const {
     form,
     appName,
-    clusterType = AppOrClusterType.GIT_IMPORT,
+    clusterType = AppOrClusterType.GIT,
     clusterStatus = '',
     readOnly = false,
     editing = false,
-    setValid = () => {},
-    onEnvChange = () => {},
+    setValid = () => { },
+    onEnvChange = () => { },
   } = props;
 
   const { query: q } = history.location;
@@ -140,9 +140,9 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const fieldsToValidate = [
     ResourceKey.NAME, ResourceKey.ENVIRONMENT,
   ];
-  if (clusterType === AppOrClusterType.GIT_IMPORT) {
+  if (clusterType === AppOrClusterType.GIT) {
     fieldsToValidate.push(ResourceKey.GIT_URL, ResourceKey.GIT_REF_VALUE);
-  } else {
+  } else if (clusterType === AppOrClusterType.IMAGE) {
     fieldsToValidate.push(ResourceKey.IMAGE_URL);
   }
 
@@ -195,7 +195,6 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
       form={form}
       onFieldsChange={(_changedFields: FieldData[], allFields: FieldData[]) => {
         const valid = isFieldsValid(allFields);
-        // console.log('baseInfo validated: ', validated);
         setValid(valid);
       }}
     >
@@ -239,28 +238,28 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
           </Form.Item>
           {
             autoFreeDisabled()
-          || (
-            <Form.Item
-              label={formatMessage('expireTime')}
-              name="expireTime"
-              rules={requiredRule}
-              initialValue={`${expireTimeOptions[2] * 24}h0m0s`}
-              extra={intl.formatMessage({ id: 'pages.message.expireTime.hint' })}
-            >
-              <Select
-                disabled={readOnly}
+            || (
+              <Form.Item
+                label={formatMessage('expireTime')}
+                name="expireTime"
+                rules={requiredRule}
+                initialValue={`${expireTimeOptions[2] * 24}h0m0s`}
+                extra={intl.formatMessage({ id: 'pages.message.expireTime.hint' })}
               >
-                {expireTimeOptions?.map((item) => (
-                  <Option
-                    key={item}
-                    value={`${item * 24}h0m0s`}
-                  >
-                    {item}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          )
+                <Select
+                  disabled={readOnly}
+                >
+                  {expireTimeOptions?.map((item) => (
+                    <Option
+                      key={item}
+                      value={`${item * 24}h0m0s`}
+                    >
+                      {item}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            )
           }
         </Card>
         <Card title={(
@@ -276,7 +275,7 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
         >
           <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
         </Card>
-        {clusterType === AppOrClusterType.GIT_IMPORT && (
+        {clusterType === AppOrClusterType.GIT && (
           <Card title={formatMessage('repo')}>
             <Form.Item label={formatMessage('url')} name="url" rules={gitURLRules}>
               <Input disabled={readOnly} />
@@ -304,8 +303,8 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
                     }}
                   >
                     {
-                    gitRefTypeList.map((item) => <Option key={item.key} value={item.key}>{item.displayName}</Option>)
-                  }
+                      gitRefTypeList.map((item) => <Option key={item.key} value={item.key}>{item.displayName}</Option>)
+                    }
                   </Select>
                 </Form.Item>
                 <Form.Item
@@ -314,27 +313,27 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
                   style={{ display: 'inline-block', width: 'calc(100% - 100px)' }}
                 >
                   {
-                  form.getFieldValue('refType') === GitRefType.Commit
-                    ? <Input /> : (
-                      <AutoComplete
-                        disabled={readOnly}
-                        showSearch
-                        onSearch={(item) => {
-                          refreshGitRefList(item);
-                        }}
-                      >
-                        {
-                        gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
-                      }
-                      </AutoComplete>
-                    )
-                }
+                    form.getFieldValue('refType') === GitRefType.Commit
+                      ? <Input /> : (
+                        <AutoComplete
+                          disabled={readOnly}
+                          showSearch
+                          onSearch={(item) => {
+                            refreshGitRefList(item);
+                          }}
+                        >
+                          {
+                            gitRefList.map((item: string) => <AutoComplete.Option key={item} value={item}>{item}</AutoComplete.Option>)
+                          }
+                        </AutoComplete>
+                      )
+                  }
                 </Form.Item>
               </Input.Group>
             </Form.Item>
           </Card>
         )}
-        {clusterType === AppOrClusterType.IMAGE_DEPLOY && (
+        {clusterType === AppOrClusterType.IMAGE && (
           <Card title={formatMessage('image')}>
             <Form.Item
               label={formatMessage('url')}

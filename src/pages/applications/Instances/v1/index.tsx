@@ -19,9 +19,8 @@ import TagSearch, { SearchInputType } from '@/components/tag/TagSearch';
 import type { SearchInput, MultiValueTag } from '@/components/tag/TagSearch';
 import { querySubresourceTags } from '@/services/tags/tags';
 import CollapseList from '@/components/CollapseList';
-import { getClusterV2 } from '@/services/clusters/clusters';
-import { isVersion2 } from '@/services/version/version';
 import { FavoriteStar, MicroApp } from '@/components/Widget';
+import { CatalogType } from '@/services/core';
 
 const { TabPane } = Tabs;
 
@@ -39,9 +38,6 @@ export default () => {
   const [selectedCluster, setSelectedCluster] = useState();
 
   const pageSize = 10;
-  const newCluster = `/applications${fullPath}/-/newcluster`;
-  const newClusterV2Prefix = `/applications${fullPath}/-/newclusterv2`;
-  const [copyCluster, setCopyCluster] = useState(newCluster);
 
   const TagSelector2SearchInput = (ts: TAG.TagSelector[] | undefined) => {
     if (!ts) {
@@ -134,6 +130,7 @@ export default () => {
       title: intl.formatMessage({ id: 'pages.common.template' }),
       dataIndex: 'template',
       key: 'template',
+      render: (text: string, item: any) => (`${item.template}-${item.release}`),
     },
     {
       title: (
@@ -208,22 +205,6 @@ export default () => {
     },
   });
 
-  const { data: selectedClusterInfo } = useRequest(() => getClusterV2(selectedCluster?.id), {
-    onSuccess: () => {
-      if (isVersion2(selectedClusterInfo)) {
-        if (selectedClusterInfo?.git?.url) {
-          setCopyCluster(`${newClusterV2Prefix}/gitimport`);
-        } else {
-          setCopyCluster(`${newClusterV2Prefix}/imagedeploy`);
-        }
-      } else {
-        setCopyCluster(newCluster);
-      }
-    },
-    ready: !!selectedCluster,
-    refreshDeps: [selectedCluster?.id],
-  });
-
   const onTagClear = useCallback(() => {
     setTagSelectorState('');
     setFilterState('');
@@ -269,6 +250,29 @@ export default () => {
     });
   }, [environment, fullPath]);
 
+  const onCopyClick = useCallback(() => {
+    history.push({
+      pathname: (() => {
+        if (selectedCluster?.type === CatalogType.Middleware
+          || selectedCluster?.type === CatalogType.Database
+          || selectedCluster?.type === CatalogType.Other) {
+          return `/applications${fullPath}/-/newinstancev2/chart`;
+        }
+        if (selectedCluster?.type === CatalogType.V1) {
+          return `/applications${fullPath}/-/newinstance/git`;
+        }
+        if (selectedCluster?.git?.httpURL || selectedCluster?.git?.gitURL) {
+          return `/applications${fullPath}/-/newinstancev2/git`;
+        }
+        return `/applications${fullPath}/-/newinstancev2/image`;
+      })(),
+      state: { template: { name: selectedCluster?.template } },
+      search: stringify({
+        sourceClusterID: selectedCluster?.id,
+      }),
+    });
+  }, [fullPath, selectedCluster]);
+
   const queryInput = (
     // @ts-ignore
     <div style={{ display: 'flex' }}>
@@ -282,7 +286,7 @@ export default () => {
         className={styles.createClusterBtn}
         onClick={() => {
           history.push({
-            pathname: newCluster,
+            pathname: `/applications${fullPath}/-/newinstance`,
             search: stringify({
               application,
               environment,
@@ -295,14 +299,7 @@ export default () => {
       <Button
         disabled={!RBAC.Permissions.createCluster.allowedEnv(environment) || !selectedCluster}
         className={styles.createClusterBtn}
-        onClick={() => {
-          history.push({
-            pathname: copyCluster,
-            search: stringify({
-              sourceClusterID: selectedCluster?.id,
-            }),
-          });
-        }}
+        onClick={onCopyClick}
       >
         {intl.formatMessage({ id: 'pages.groups.copy cluster' })}
       </Button>
@@ -311,15 +308,18 @@ export default () => {
 
   const data = useMemo(() => clusters?.items.map((item) => {
     const {
-      id: clusterID, name, scope, template, updatedAt, createdAt, tags: tagList,
+      id: clusterID, name, scope, template, updatedAt, createdAt, tags: tagList, git, type,
     } = item;
     return {
       id: clusterID,
       key: name,
       name,
+      type,
+      git,
       environment: env2DisplayName?.get(scope.environment),
       regionDisplayName: scope.regionDisplayName,
-      template: `${template.name}-${template.release}`,
+      template: template.name,
+      release: template.release,
       createdTime: Utils.timeToLocal(createdAt),
       updatedTime: Utils.timeToLocal(updatedAt),
       isFavorite: item.isFavorite,

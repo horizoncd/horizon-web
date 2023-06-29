@@ -24,8 +24,8 @@ import { queryEnvironments } from '@/services/environments/environments';
 import { MaxSpace } from '@/components/Widget';
 import { TagCard } from '@/components/tag';
 import rbac from '@/rbac';
-import BuildConfigForm from '@/pages/applications/NewOrEdit/v2/components/BuildConfigForm';
-import DeployConfigForm from '@/pages/applications/NewOrEdit/v2/components/DeployConfigForm';
+import BuildConfigForm from '@/components/neworedit/components/BuildConfigForm';
+import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 
 const { Option } = Select;
 
@@ -142,12 +142,14 @@ export default () => {
   const onEditClick = () => {
     if (application.git?.url) {
       history.push({
-        pathname: `/applications${applicationFullPath}/-/editv2/gitimport`,
+        pathname: `/applications${applicationFullPath}/-/editv2/git`,
       });
     } else if (application.image) {
       history.push({
-        pathname: `/applications${applicationFullPath}/-/editv2/imagedeploy`,
+        pathname: `/applications${applicationFullPath}/-/editv2/image`,
       });
+    } else {
+      history.push(`/applications${applicationFullPath}/-/editv2/chart`, { template: templateBasic });
     }
   };
 

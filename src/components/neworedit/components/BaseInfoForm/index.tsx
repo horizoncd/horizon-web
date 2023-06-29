@@ -28,10 +28,10 @@ interface Props {
 const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const {
     form,
-    appType = AppOrClusterType.GIT_IMPORT,
+    appType = AppOrClusterType.GIT,
     readOnly = false,
     editing = false,
-    setValid = () => {},
+    setValid = () => { },
   } = props;
   const intl = useIntl();
   const [initValidation, setInitValidation] = useState(true);
@@ -78,9 +78,9 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const fieldsToValidate = [
     ResourceKey.NAME, ResourceKey.PRIORITY,
   ];
-  if (appType === AppOrClusterType.GIT_IMPORT) {
+  if (appType === AppOrClusterType.GIT) {
     fieldsToValidate.push(ResourceKey.GIT_URL);
-  } else {
+  } else if (appType === AppOrClusterType.IMAGE) {
     fieldsToValidate.push(ResourceKey.IMAGE_URL);
   }
 
@@ -177,7 +177,7 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
         >
           <TagFormItems form={form} disabled={readOnly} valueType={ValueType.Single} />
         </Card>
-        {appType === AppOrClusterType.GIT_IMPORT && (
+        {appType === AppOrClusterType.GIT && (
           <Card title={formatMessage('repo')}>
             <Form.Item
               label={formatMessage('url')}
@@ -239,7 +239,7 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
             </Form.Item>
           </Card>
         )}
-        {appType === AppOrClusterType.IMAGE_DEPLOY && (
+        {appType === AppOrClusterType.IMAGE && (
           <Card title={formatMessage('image')}>
             <Form.Item
               label={formatMessage('url')}
