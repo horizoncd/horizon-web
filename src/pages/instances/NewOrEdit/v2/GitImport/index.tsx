@@ -68,6 +68,25 @@ export default (props: any) => {
   const [buildConfigValid, setBuildConfigValid] = useState<boolean>(true);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
+  const fillDefaultConfig = (data: API.GetApplicationResponseV2) => {
+    setBuildConfig(data!.buildConfig);
+
+    const basicTemplateInfo: API.Template = {
+      name: data!.templateInfo!.name,
+    };
+    setTemplateBasic(basicTemplateInfo);
+    setReleaseName(data!.templateInfo!.release);
+
+    setTemplateConfig(data!.templateConfig);
+  };
+
+  useEffect(() => {
+    const data = window.history.state.defaultAppData;
+    if (data) {
+      fillDefaultConfig(data);
+    }
+  }, []);
+
   const resetTemplate = useCallback((t: API.Template) => {
     setTemplateBasic({ name: t.name });
     setReleaseName('');
