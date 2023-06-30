@@ -1,7 +1,7 @@
 import {
   Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
@@ -9,6 +9,7 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
+import Template from '@/components/neworedit/components/TemplateV1';
 import { parseGitRef } from '@/services/code/code';
 import { createCluster, getCluster, updateCluster } from '@/services/clusters/clusters';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -206,16 +207,20 @@ export default (props: any) => {
 
   const steps = [
     {
-      title: intl.formatMessage({ id: 'pages.clusterNew.step.one' }),
+      title: intl.formatMessage({ id: 'pages.clusterNew.tpl.select' }),
       disabled: false,
     },
     {
-      title: intl.formatMessage({ id: 'pages.clusterNew.step.two' }),
-      disabled: basicHasError(),
+      title: intl.formatMessage({ id: 'pages.clusterNew.basic' }),
+      disabled: !template.name,
     },
     {
-      title: intl.formatMessage({ id: 'pages.clusterNew.step.three' }),
-      disabled: basicHasError() || configHasError(),
+      title: intl.formatMessage({ id: 'pages.clusterNew.tpl.config' }),
+      disabled: !template.name || basicHasError(),
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.clusterNew.review' }),
+      disabled: !template.name || basicHasError() || configHasError(),
     },
   ];
 
@@ -223,6 +228,9 @@ export default (props: any) => {
     let valid: boolean;
     switch (current) {
       case 0:
+        valid = !!template.name;
+        break;
+      case 1:
         try {
           await form.validateFields(basicNeedValidFields);
           valid = true;
@@ -231,7 +239,7 @@ export default (props: any) => {
           valid = !errorFields.length;
         }
         break;
-      case 1:
+      case 2:
         valid = !configHasError();
         break;
       default:
@@ -269,6 +277,19 @@ export default (props: any) => {
       setCurrent(cur);
     }
   };
+
+  const resetTemplate = useCallback((t: API.Template) => {
+    setTemplate({ name: t.name, release: '' });
+    // reset selected release version
+    if (basic) {
+      setBasic(basic!.map((item) => {
+        if (item.name === release) {
+          return { ...item, value: '' };
+        }
+        return item;
+      }));
+    }
+  }, [basic]);
 
   const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
     // query regions when environment selected
@@ -368,7 +389,10 @@ export default (props: any) => {
         <Col span={20}>
           <StepContent>
             {
-              current === 0
+              current === 0 && <Template template={template} resetTemplate={resetTemplate} />
+            }
+            {
+              current === 1
               && (
                 <Basic
                   form={form}
@@ -382,7 +406,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 1 && (
+              current === 2 && (
                 <Config
                   template={template}
                   release={form.getFieldValue(release)}
@@ -394,7 +418,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 2
+              current === 3
               && (
                 <Audit
                   template={template}

@@ -171,7 +171,7 @@ const applicationRoutes = [
   {
     path: '/applications/*/-/newinstance/git',
     menuRender: false,
-    component: 'applications/NewOrEdit/v1',
+    component: 'instances/NewOrEdit/v1',
   },
   {
     path: '/applications/*/-/newinstancev2',

@@ -261,7 +261,7 @@ export default (_ : Props) => {
         if (selectedCluster?.type === CatalogType.Middleware
                 || selectedCluster?.type === CatalogType.Database
                 || selectedCluster?.type === CatalogType.Other) {
-          return `${newCluster}/chart`;
+          return `/applications${fullPath}/-/newinstancev2/chart`;
         }
         if (selectedCluster?.type === CatalogType.V1) {
           return `/applications${fullPath}/-/newinstance/git`;
@@ -276,7 +276,7 @@ export default (_ : Props) => {
         sourceClusterID: selectedCluster?.id,
       }),
     });
-  }, [fullPath, newCluster, selectedCluster]);
+  }, [fullPath, selectedCluster]);
 
   const queryInput = (
     // @ts-ignore

@@ -9,7 +9,7 @@ import RBAC from '@/rbac';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import GroupTree from '@/components/GroupTree';
 import styles from '@/pages/applications/Detail/index.less';
-import utils from '../../../utils';
+import utils from '@/utils';
 import './index.less';
 import { MicroApp } from '@/components/Widget';
 

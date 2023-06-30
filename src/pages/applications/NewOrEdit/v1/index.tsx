@@ -7,7 +7,7 @@ import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import type { FieldData } from 'rc-field-form/lib/interface';
 import HSteps from '@/components/HSteps';
-import Template from './Template';
+import Template from '@/components/neworedit/components/TemplateV1';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';

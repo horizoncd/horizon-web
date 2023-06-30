@@ -15,6 +15,7 @@ export const TemplateForm = (props: { editRepository?: boolean, onRepositoryBlur
       <Form.Item
         label={formatMessage('type')}
         name="type"
+        required
         extra={intl.formatMessage({ id: 'pages.template.type.extra' })}
       >
         <Select>

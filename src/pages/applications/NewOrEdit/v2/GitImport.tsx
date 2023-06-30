@@ -9,18 +9,18 @@ import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import styles from '@//pages/applications/NewOrEdit/index.less';
 import HSteps from '@/components/HSteps';
-import BaseInfoForm from '../../../../components/neworedit/components/BaseInfoForm';
+import BaseInfoForm from '@/components/neworedit/components/BaseInfoForm';
 import {
   createApplicationV2,
   getApplicationV2,
   updateApplicationV2,
 } from '@/services/applications/applications';
-import TemplateForm from '../../../../components/neworedit/components/TemplateForm';
+import TemplateForm from '@/components/neworedit/components/TemplateForm';
 import { parseGitRef } from '@/services/code/code';
 import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
-import BuildConfigForm from '../../../../components/neworedit/components/BuildConfigForm';
-import DeployConfigForm from '../../../../components/neworedit/components/DeployConfigForm';
+import BuildConfigForm from '@/components/neworedit/components/BuildConfigForm';
+import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { CatalogType } from '@/services/core';
 
 export default (props: any) => {

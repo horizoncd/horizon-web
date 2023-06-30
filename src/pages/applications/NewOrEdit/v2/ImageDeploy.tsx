@@ -9,7 +9,7 @@ import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import styles from '@//pages/applications/NewOrEdit/index.less';
 import HSteps from '@/components/HSteps';
-import BaseInfoForm from '../../../../components/neworedit/components/BaseInfoForm';
+import BaseInfoForm from '@/components/neworedit/components/BaseInfoForm';
 import {
   createApplicationV2,
   getApplicationV2,
@@ -18,7 +18,7 @@ import {
 import TemplateForm from '@/components/neworedit/components/TemplateForm';
 import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
-import DeployConfigForm from '../../../../components/neworedit/components/DeployConfigForm';
+import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { CatalogType } from '@/services/core';
 
 export default (props: any) => {

@@ -15,37 +15,12 @@ import { getApplicationV2 } from '@/services/applications/applications';
 import { queryTemplate } from '@/services/templates/templates';
 import { CatalogType } from '@/services/core';
 import { ResourceType } from '@/const';
+import ItemCard from '../components/ItemCard';
 
 const CardTitle = styled.span`
   font-size: 17px;
   font-weight: 550;
 `;
-
-interface ItemCardProps {
-  avatar: React.ReactNode;
-  title: React.ReactNode;
-  description: string;
-  onClick: () => void;
-}
-
-const ItemCard = (props: ItemCardProps) => {
-  const {
-    avatar, title, description, onClick,
-  } = props;
-  return (
-    <Card
-      style={{ height: 150 }}
-      hoverable
-      onClick={onClick}
-    >
-      <Card.Meta
-        avatar={avatar}
-        title={title}
-        description={description}
-      />
-    </Card>
-  );
-};
 
 export default (props: any) => {
   const { location } = props;

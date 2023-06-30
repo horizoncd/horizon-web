@@ -26,7 +26,7 @@ import { WithContainer, SearchBox } from '../components';
 import { FavoriteStar, PopupTime } from '@/components/Widget';
 import './index.less';
 import Expression from '@/components/FilterBox/Expression';
-import HorizonAutoCompleteHandler, { AutoCompleteOption } from '../../../components/FilterBox/HorizonAutoCompleteHandler';
+import HorizonAutoCompleteHandler, { AutoCompleteOption } from '@/components/FilterBox/HorizonAutoCompleteHandler';
 import { queryRegions } from '@/services/regions/regions';
 import { RebuilddeployModal } from '@/components/rollout';
 import WithTheme from '@/theme';
