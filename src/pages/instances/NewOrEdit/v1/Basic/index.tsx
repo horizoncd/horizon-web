@@ -173,7 +173,12 @@ export default (props: any) => {
             <Form.Item label={formatMessage('template')}>
               <Input disabled value={template?.name} />
             </Form.Item>
-            <Form.Item label={formatMessage('release')} name="release">
+            <Form.Item
+              label={formatMessage('release')}
+              required
+              rules={requiredRule}
+              name="release"
+            >
               <Select disabled={readOnly}>
                 {releases?.map((item: any) => (
                   <Option key={item.name} value={item.name}>

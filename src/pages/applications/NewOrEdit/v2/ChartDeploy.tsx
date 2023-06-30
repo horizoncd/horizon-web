@@ -22,14 +22,19 @@ import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
 import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { CatalogType } from '@/services/core';
+import { ModalInfo } from '../components/DeployModal';
 
 export default (props: any) => {
-  const history = useHistory<{ template?: Templates.Template }>();
+  const history = useHistory<{ template?: API.Template }>();
   const intl = useIntl();
   const [current, setCurrent] = useState(0);
   const { location } = props;
   const { pathname } = location;
   const { initialState, refresh } = useModel('@@initialState');
+  useEffect(() => {
+    refresh();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { id } = initialState!.resource;
   const { fullPath } = initialState!.resource;
   const creating = pathname.endsWith('newapplicationv2/chart');
@@ -148,16 +153,22 @@ export default (props: any) => {
         submitApp().then((result) => {
           successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
             : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
-          let destPath;
           if (result) {
-            destPath = result.fullPath;
+            ModalInfo({
+              onOk: () => {
+                const url = `/applications${result.fullPath}/-/newinstancev2/chart`;
+                window.history.pushState({ template: { name: templateBasic.name } }, '', url);
+                // window.history.state = { template: { name: templateBasic.name } };
+                window.location.href = url;
+              },
+              onCancel: () => { window.location.href = result.fullPath; },
+              intl,
+            });
           } else {
-            destPath = fullPath;
+            history.push({
+              pathname: fullPath,
+            });
           }
-          history.push({
-            pathname: destPath,
-          });
-          refresh().then();
         });
         setTemplateConfigSubmitted(false);
       }

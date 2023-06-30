@@ -15,6 +15,7 @@ import styles from '../index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
+import { ModalInfo } from '../components/DeployModal';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -207,7 +208,13 @@ export default (props: any) => {
     onSuccess: (res: API.Application) => {
       successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' }) : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
       // jump to application's home page
-      window.location.href = res.fullPath;
+      ModalInfo(
+        {
+          onOk: () => { window.location.href = `/applications${res.fullPath}/-/newinstance/git`; },
+          onCancel: () => { window.location.href = res.fullPath; },
+          intl,
+        },
+      );
     },
   });
 

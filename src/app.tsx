@@ -477,7 +477,7 @@ function formatApplicationMenu(fullPath: string) {
     ...routes,
     {
       path: `${fullPath}`,
-      name: 'Clusters',
+      name: 'Instances',
       icon: 'appstore',
     },
     {

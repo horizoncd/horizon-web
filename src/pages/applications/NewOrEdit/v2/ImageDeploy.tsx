@@ -20,6 +20,7 @@ import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
 import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { CatalogType } from '@/services/core';
+import { ModalInfo } from '../components/DeployModal';
 
 export default (props: any) => {
   const history = useHistory();
@@ -145,15 +146,20 @@ export default (props: any) => {
         submitApp().then((result) => {
           successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' })
             : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
-          let destPath;
           if (result) {
-            destPath = result.fullPath;
+            ModalInfo({
+              onOk: () => {
+                const url = `/applications${result.fullPath}/-/newinstancev2/image`;
+                window.location.href = url;
+              },
+              onCancel: () => { window.location.href = result.fullPath; },
+              intl,
+            });
           } else {
-            destPath = fullPath;
+            history.push({
+              pathname: fullPath,
+            });
           }
-          history.push({
-            pathname: destPath,
-          });
           refresh().then();
         });
         setTemplateConfigSubmitted(false);

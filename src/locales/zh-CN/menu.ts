@@ -1,5 +1,6 @@
 export default {
   'menu.Group overview': '主页',
+  'menu.Instances': '应用实例',
   'menu.Members': '成员',
   'menu.Settings': '设置',
   'menu.Settings.General': '基础设置',

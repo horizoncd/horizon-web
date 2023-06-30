@@ -57,7 +57,7 @@ export default (props: any) => {
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
   const history = useHistory<{ template?: Templates.Template }>();
-  const [templateBasic, setTemplateBasic] = useState(history.location.state.template);
+  const [templateBasic, setTemplateBasic] = useState(history.location.state?.template ?? window.history.state.template);
   const pageOrders = useMemo(() => (templateBasic ? [0, 2, 3] : [0, 1, 2, 3]), [templateBasic]);
 
   const currentStepIsValid = (cur: number) => {

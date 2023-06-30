@@ -129,6 +129,8 @@ export default {
   'pages.applicationNew.step.two': 'Basic',
   'pages.applicationNew.step.three': 'Config',
   'pages.applicationNew.step.four': 'Audit',
+  'pages.applicationNew.deployConfirm.title': 'Deploy confirm',
+  'pages.applicationNew.deployConfirm.content': 'Creating the application successfully, should create the corresponding application instance based on the application directly?',
 
   'pages.applicationNew.step.message': 'Step {index}',
   'pages.applicationNew.basic.title': 'Service basic',

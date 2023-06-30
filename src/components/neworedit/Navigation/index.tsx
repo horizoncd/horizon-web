@@ -171,6 +171,7 @@ export default (props: any) => {
             <MicroApp
               name="quickstart"
               fullpath={fullPath}
+              isInstancePage={isInstancePage}
             />
           </MaxSpace>
         </Col>

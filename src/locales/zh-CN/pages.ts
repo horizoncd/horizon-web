@@ -129,6 +129,8 @@ export default {
   'pages.applicationNew.step.two': '配置服务',
   'pages.applicationNew.step.three': '自定义配置',
   'pages.applicationNew.step.four': '审计',
+  'pages.applicationNew.deployConfirm.title': '确认发布',
+  'pages.applicationNew.deployConfirm.content': '创建应用成功，是否需要直接根据应用创建相应的应用实例？',
 
   'pages.applicationNew.step.message': '第 {index} 步',
   'pages.applicationNew.basic.title': '应用基础信息',
