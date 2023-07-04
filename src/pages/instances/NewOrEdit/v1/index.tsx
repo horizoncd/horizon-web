@@ -1,7 +1,9 @@
 import {
   Affix, Button, Col, Form, Modal, Row,
 } from 'antd';
-import { useCallback, useRef, useState } from 'react';
+import {
+  useCallback, useMemo, useRef, useState,
+} from 'react';
 import { useRequest } from 'umi';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
@@ -63,6 +65,7 @@ export default (props: any) => {
   const [showBuildDeployModal, setShowBuildDeployModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
   const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
+  const pageOrders = useMemo(() => (editing ? [1, 2, 3] : [0, 1, 2, 3]), [editing]);
 
   const { run: refreshAppEnvTemplate } = useRequest((env) => getApplicationEnvTemplate(id, env), {
     onSuccess: (data) => {
@@ -222,7 +225,7 @@ export default (props: any) => {
       title: intl.formatMessage({ id: 'pages.clusterNew.review' }),
       disabled: !template.name || basicHasError() || configHasError(),
     },
-  ];
+  ].filter((_, index) => pageOrders.includes(index));
 
   const currentIsValid = async () => {
     let valid: boolean;
@@ -291,10 +294,11 @@ export default (props: any) => {
     }
   }, [basic]);
 
-  const setBasicFormData = (changingFiled: FieldData[], allFields: FieldData[]) => {
+  const setBasicFormData = (changingField: FieldData[], allFields: FieldData[]) => {
     // query regions when environment selected
-    if ((changingFiled[0].name[0] === 'environment') && !copying) {
-      refreshAppEnvTemplate(changingFiled[0].value);
+    if (changingField && changingField.length > 0
+      && (changingField[0].name[0] === 'environment') && !copying) {
+      refreshAppEnvTemplate(changingField[0].value);
     }
     setBasic(allFields);
   };
@@ -389,10 +393,10 @@ export default (props: any) => {
         <Col span={20}>
           <StepContent>
             {
-              current === 0 && <Template template={template} resetTemplate={resetTemplate} />
+              pageOrders[current] === 0 && <Template template={template} resetTemplate={resetTemplate} />
             }
             {
-              current === 1
+              pageOrders[current] === 1
               && (
                 <Basic
                   form={form}
@@ -406,7 +410,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 2 && (
+              pageOrders[current] === 2 && (
                 <Config
                   template={template}
                   release={form.getFieldValue(release)}
@@ -418,7 +422,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 3
+              pageOrders[current] === 3
               && (
                 <Audit
                   template={template}

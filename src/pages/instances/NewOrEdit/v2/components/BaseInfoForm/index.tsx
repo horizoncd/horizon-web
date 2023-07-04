@@ -186,15 +186,21 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
     });
   }, {
     debounceInterval: 100,
-    ready: !!form.getFieldValue(ResourceKey.GIT_URL) && !readOnly,
+    manual: true,
+    ready: !readOnly,
   });
 
   return (
     <HForm
       layout="vertical"
       form={form}
-      onFieldsChange={(_changedFields: FieldData[], allFields: FieldData[]) => {
+      onFieldsChange={(changedFields: FieldData[], allFields: FieldData[]) => {
         const valid = isFieldsValid(allFields);
+        changedFields.forEach((f) => {
+          if ((!f.errors || f.errors.length === 0) && f.name[0] === 'url') {
+            refreshGitRefList();
+          }
+        });
         setValid(valid);
       }}
     >
@@ -291,11 +297,12 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
               <Input.Group compact>
                 <Form.Item
                   name="refType"
+                  initialValue={gitRefTypeList[0].key}
                   rules={[{ required: true, message: formatMessage('refType.ruleMessage') }]}
                 >
                   <Select
                     disabled={readOnly}
-                    defaultValue={gitRefTypeList[0]}
+                    // defaultValue={gitRefTypeList[0]}
                     onSelect={(key: any) => {
                       if (key !== GitRefType.Commit) {
                         refreshGitRefList();

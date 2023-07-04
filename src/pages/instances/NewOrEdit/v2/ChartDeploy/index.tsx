@@ -58,7 +58,7 @@ export default (props: any) => {
 
   const history = useHistory<{ template?: Templates.Template }>();
   const [templateBasic, setTemplateBasic] = useState(history.location.state?.template ?? window.history.state.template);
-  const pageOrders = useMemo(() => (templateBasic ? [0, 2, 3] : [0, 1, 2, 3]), [templateBasic]);
+  const pageOrders = useMemo(() => (templateBasic || editing ? [0, 2, 3] : [0, 1, 2, 3]), [templateBasic, editing]);
 
   const currentStepIsValid = (cur: number) => {
     let valid: boolean;

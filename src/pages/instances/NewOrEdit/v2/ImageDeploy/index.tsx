@@ -3,7 +3,7 @@ import {
 } from 'antd';
 import { useRequest } from 'umi';
 import {
-  useCallback, useEffect, useRef, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
@@ -57,6 +57,8 @@ export default (props: any) => {
   const [baseInfoValid, setBaseInfoValid] = useState<boolean>(false);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
+  const pageOrders = useMemo(() => (editing ? [0, 2, 3] : [0, 1, 2, 3]), [editing]);
+
   const resetTemplate = useCallback((newTemplate: API.Template) => {
     setTemplateBasic({ name: newTemplate.name });
     if (newTemplate.name !== templateBasic?.name) {
@@ -97,7 +99,7 @@ export default (props: any) => {
       title: intl.formatMessage({ id: 'pages.newV2.step.audit' }),
       disabled: !currentStepIsValid(2),
     },
-  ];
+  ].filter((_, index) => pageOrders.includes(index));
 
   const onCurrentChange = (cur: number) => {
     setCurrent(cur);
@@ -362,7 +364,7 @@ export default (props: any) => {
         <Col span={20}>
           <StepContent>
             {
-              current === 0 && (
+              pageOrders[current] === 0 && (
                 <BaseInfoForm
                   form={form}
                   appName={applicationName}
@@ -375,7 +377,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 1 && (
+              pageOrders[current] === 1 && (
                 <TemplateForm
                   template={templateBasic}
                   resetTemplate={resetTemplate}
@@ -385,7 +387,7 @@ export default (props: any) => {
             }
             {
               // deploy config
-              current === 2 && (
+              pageOrders[current] === 2 && (
                 <DeployConfigForm
                   template={templateBasic}
                   release={releaseName}
@@ -400,7 +402,7 @@ export default (props: any) => {
             }
             {
               // audit, list all the content
-              current === 3 && (
+              pageOrders[current] === 3 && (
                 <MaxSpace
                   direction="vertical"
                   size="middle"

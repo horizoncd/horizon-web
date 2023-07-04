@@ -3,7 +3,7 @@ import {
 } from 'antd';
 import { useRequest } from 'umi';
 import {
-  useCallback, useEffect, useRef, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
@@ -68,6 +68,8 @@ export default (props: any) => {
   const [buildConfigValid, setBuildConfigValid] = useState<boolean>(true);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
 
+  const pageOrders = useMemo(() => (editing ? [0, 1, 3, 4] : [0, 1, 2, 3, 4]), [editing]);
+
   const fillDefaultConfig = (data: API.GetApplicationResponseV2) => {
     setBuildConfig(data!.buildConfig);
 
@@ -81,7 +83,7 @@ export default (props: any) => {
   };
 
   useEffect(() => {
-    const data = window.history.state.defaultAppData;
+    const data = window.history.state?.defaultAppData;
     if (data) {
       fillDefaultConfig(data);
     }
@@ -137,7 +139,7 @@ export default (props: any) => {
       title: intl.formatMessage({ id: 'pages.newV2.step.audit' }),
       disabled: !currentStepIsValid(2),
     },
-  ];
+  ].filter((_, index) => pageOrders.includes(index));
 
   const onCurrentChange = (cur: number) => {
     setCurrent(cur);
@@ -441,7 +443,7 @@ export default (props: any) => {
         <Col span={20}>
           <StepContent>
             {
-              current === 0 && (
+              pageOrders[current] === 0 && (
                 <BaseInfoForm
                   form={form}
                   appName={applicationName}
@@ -454,7 +456,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 1 && (
+              pageOrders[current] === 1 && (
                 <BuildConfigForm
                   buildConfig={buildConfig}
                   setBuildConfig={setBuildConfig}
@@ -464,7 +466,7 @@ export default (props: any) => {
             }
             {
               // deploy template
-              current === 2 && (
+              pageOrders[current] === 2 && (
                 <TemplateForm
                   template={templateBasic}
                   resetTemplate={resetTemplate}
@@ -473,7 +475,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 3 && (
+              pageOrders[current] === 3 && (
                 <DeployConfigForm
                   template={templateBasic}
                   release={releaseName}
@@ -487,7 +489,7 @@ export default (props: any) => {
               )
             }
             {
-              current === 4 && (
+              pageOrders[current] === 4 && (
                 <MaxSpace
                   direction="vertical"
                   size="middle"

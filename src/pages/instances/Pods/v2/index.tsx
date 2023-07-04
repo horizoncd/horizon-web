@@ -168,7 +168,7 @@ function PodsPage(props: PodsPageProps) {
                         `${getLastPattern(key)}`
                         }
                         <CountCircle count={podsInfo.podsMap[key].length} />
-                        {index === 0 ? ' (current)' : ''}
+                        {podsInfo.sorted && index === 0 ? ' (current)' : ''}
                       </Popover>
                     )}
                     key={key}
