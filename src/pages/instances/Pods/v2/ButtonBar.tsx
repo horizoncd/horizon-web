@@ -58,7 +58,7 @@ function ButtonBar(props: ButtonBarProps) {
         } else if (cluster?.image) {
           history.push(`/instances${fullPath}/-/editv2/image`);
         } else {
-          history.push(`instances${fullPath}/-/editv2/chart`);
+          history.push(`/instances${fullPath}/-/editv2/chart`);
         }
         break;
       case 'freeCluster':

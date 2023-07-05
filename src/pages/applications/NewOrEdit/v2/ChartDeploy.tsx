@@ -230,7 +230,7 @@ export default (props: any) => {
                 >
                   <BaseInfoForm
                     form={form}
-                    appType={AppOrClusterType.IMAGE}
+                    appType={AppOrClusterType.CHART}
                     readOnly
                   />
                   <DeployConfigForm
