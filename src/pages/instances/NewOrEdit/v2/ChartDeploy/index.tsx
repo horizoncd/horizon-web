@@ -340,9 +340,6 @@ export default (props: any) => {
                 />
               )
             }
-          {
-              (releaseName ?? '') !== ''
-          && (
           <DeployConfigForm
             template={templateBasic}
             release={releaseName}
@@ -355,8 +352,6 @@ export default (props: any) => {
             onSubmit={onDeploySubmit}
             resourceType={ResourceType.INSTANCE}
           />
-          )
-            }
 
           <StepAction>
             <Button
