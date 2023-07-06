@@ -36,20 +36,21 @@ function WebhookList(props: { initialState: API.InitialState }) {
   const pageSize = 10;
   const { successAlert } = useModel('alert');
   const isAdminPage = resourceType === 'group' && resourceID === 0;
+  const path = resourceType === 'cluster' ? 'instance' : resourceType;
 
   const createWebhookURL = isAdminPage
     ? '/admin/webhooks/new'
-    : `/${resourceType}s${resourceFullPath}/-/settings/newwebhook`;
+    : `/${path}s${resourceFullPath}/-/settings/newwebhook`;
   const getEditWebhookURL = (id: number) => {
     const editWebhookURL = isAdminPage
       ? `/admin/webhooks/${id}/edit`
-      : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/edit`;
+      : `/${path}s${resourceFullPath}/-/settings/webhooks/${id}/edit`;
     return editWebhookURL;
   };
   const getWebhookLogsURL = (id: number) => {
     const webhookLogsURL = isAdminPage
       ? `/admin/webhooks/${id}`
-      : `/${resourceType}s${resourceFullPath}/-/settings/webhooks/${id}`;
+      : `/${path}s${resourceFullPath}/-/settings/webhooks/${id}`;
     return webhookLogsURL;
   };
 

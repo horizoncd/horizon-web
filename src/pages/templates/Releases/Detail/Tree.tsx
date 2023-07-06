@@ -2,13 +2,11 @@ import { BookOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useRequest } from 'umi';
-import type { API } from '@/services/typings';
 import { listClusters } from '@/services/clusters/clusters';
 import { listApplications } from '@/services/applications/applications';
-import type { CLUSTER } from '@/services/clusters';
 import NoData from '@/components/NoData';
 import { DTree, DTreeItemProp } from '@/components/DirectoryTree';
-import { ComponentWithPagination } from '../../../../components/Enhancement';
+import { ComponentWithPagination } from '@/components/Enhancement';
 
 const { TabPane } = Tabs;
 

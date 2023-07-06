@@ -233,8 +233,10 @@ const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
   const currentPods: CLUSTER.PodInTable[] = [];
   const healthyPods: CLUSTER.PodInTable[] = [];
   const notHealthyPods: CLUSTER.PodInTable[] = [];
+  let sorted = true;
   if (!data) {
     return {
+      sorted: true,
       podsMap,
       currentPods,
       healthyPods,
@@ -362,6 +364,7 @@ const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
       const versionB = getVersion(revisionB);
       return versionB - versionA;
     }
+    sorted = false;
     if (revisionA !== '') {
       return 1;
     }
@@ -373,6 +376,7 @@ const refreshPodsInfo = (data?: CLUSTER.ResourceTree) => {
   }).map((n) => getPrefix(n.node.uid));
 
   return {
+    sorted,
     podsMap,
     currentPods,
     healthyPods,

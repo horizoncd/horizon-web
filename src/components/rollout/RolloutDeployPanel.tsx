@@ -387,7 +387,7 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
                             </div>
                           ),
                           onOk: () => {
-                            history.push(`/clusters${fullPath}/-/pipelines?category=rollback`);
+                            history.push(`/instances${fullPath}/-/pipelines?category=rollback`);
                           },
                           okText: intl.formatMessage({ id: 'pages.common.confirm' }),
                           width: '750px',

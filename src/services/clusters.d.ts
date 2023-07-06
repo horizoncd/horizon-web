@@ -42,6 +42,11 @@ declare namespace CLUSTER {
     id: number,
     name: string;
     scope: Scope
+    type: sting;
+    git: {
+      httpURL: string;
+      gitURL: string;
+    }
     template: {
       name: string;
       release: string;
@@ -91,6 +96,7 @@ declare namespace CLUSTER {
     updatedBy: {
       name: string,
     }
+    version: 1,
   };
 
   type ClusterV2 = {
@@ -128,6 +134,7 @@ declare namespace CLUSTER {
       name: string,
     }
     ttlInSeconds?: number,
+    version: 2,
   };
 
   type NewCluster = {
@@ -142,7 +149,7 @@ declare namespace CLUSTER {
     templateInput: any
   };
 
-  type NewClusterV2 = {
+  type NewInstanceV2 = {
     name: string;
     description?: string;
     expireTime?: string;
@@ -265,7 +272,7 @@ declare namespace CLUSTER {
     podDetail?: Kubernetes.Pod,
     parentRefs: ResourceRef[],
     info: InfoItem[],
-    resourceVersion:string,
+    resourceVersion: string,
     images: string[],
     health: string,
     createdAt: string,

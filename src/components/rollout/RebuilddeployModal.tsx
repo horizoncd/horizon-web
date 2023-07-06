@@ -30,7 +30,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
 
   useEffect(() => {
     if (withoutConfirm) {
-      window.location.href = `/clusters${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+      window.location.href = `/instances${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
     }
   }, [clusterFullPath, withoutConfirm]);
 
@@ -111,7 +111,7 @@ function RebuilddeployModal(props: RebuilddeployModalProps) {
       onCancel={onCancel}
       onOk={() => {
         setOpen(false);
-        window.location.href = `/clusters${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
+        window.location.href = `/instances${clusterFullPath}/-/pipelines/new?type=${PublishType.BUILD_DEPLOY}`;
       }}
     >
       <div>

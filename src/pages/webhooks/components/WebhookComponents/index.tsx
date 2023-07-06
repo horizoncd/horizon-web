@@ -25,7 +25,7 @@ import { Succeeded, Failed, Progressing } from '@/components/State';
 import utils from '@/utils';
 import { listSupportEvents } from '@/services/events/events';
 import Label from '@/components/Label';
-import Title from '@/components/Title';
+import { Key } from '@/components/Title';
 import { PopupTime } from '@/components/Widget';
 
 const { TextArea } = Input;
@@ -152,13 +152,13 @@ function WebhookConfig(
       </Form.Item>
       {
         isSSL && (
-        <Form.Item
-          name="sslVerifyEnabled"
-          label={intl.formatMessage({ id: 'pages.webhook.component.form.sslVerify' })}
-          valuePropName="checked"
-        >
-          <Switch />
-        </Form.Item>
+          <Form.Item
+            name="sslVerifyEnabled"
+            label={intl.formatMessage({ id: 'pages.webhook.component.form.sslVerify' })}
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
         )
       }
       <Form.Item
@@ -411,34 +411,34 @@ function WebhookLogDetail(props: { webhookLog: Webhooks.Log | undefined }) {
   return (
     <Card>
       <BasicInfo>
-        <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.url.title' })}</Title>
+        <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.url.title' })}</Key>
         <span>{webhookLog?.url}</span>
       </BasicInfo>
       <BasicInfo>
-        <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.duration.title' })}</Title>
+        <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.duration.title' })}</Key>
         <span>
           {utils.timeSecondsDuration(webhookLog?.createdAt || '', webhookLog?.updatedAt || '')}
           s
         </span>
       </BasicInfo>
       <BasicInfo>
-        <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.createdAt.title' })}</Title>
+        <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.createdAt.title' })}</Key>
         <span>{webhookLog?.createdAt}</span>
       </BasicInfo>
       <Divider />
-      <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestHeader.title' })}</Title>
+      <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestHeader.title' })}</Key>
       <ContentBlock>
-        { formatHeaders(webhookLog?.requestHeaders) }
+        {formatHeaders(webhookLog?.requestHeaders)}
       </ContentBlock>
-      <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestBody.title' })}</Title>
+      <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.requestBody.title' })}</Key>
       <ContentBlock>
         {JSON.stringify(JSON.parse(webhookLog?.requestData || '{}'), null, 4)}
       </ContentBlock>
-      <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseHeader.title' })}</Title>
+      <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseHeader.title' })}</Key>
       <ContentBlock>
-        { formatHeaders(webhookLog?.responseHeaders) }
+        {formatHeaders(webhookLog?.responseHeaders)}
       </ContentBlock>
-      <Title>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseBody.title' })}</Title>
+      <Key>{intl.formatMessage({ id: 'pages.webhook.log.detail.responseBody.title' })}</Key>
       <ContentBlock>{webhookLog?.responseBody}</ContentBlock>
     </Card>
   );

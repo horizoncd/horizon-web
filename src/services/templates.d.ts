@@ -3,6 +3,7 @@ declare namespace Templates {
     id: number
     name: string
     chartName: string
+    type: string,
     description?: string
     repository: string
     group: number

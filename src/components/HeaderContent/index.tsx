@@ -19,7 +19,7 @@ const GlobalHeaderContent: React.FC = () => {
       selectable={false}
     >
       <Menu.Item key="1">
-        <a onClick={() => history.push('/dashboard/clusters')}>
+        <a onClick={() => history.push('/dashboard/instances')}>
           <BoldText>{intl.formatMessage({ id: 'pages.header.clusters' })}</BoldText>
         </a>
       </Menu.Item>

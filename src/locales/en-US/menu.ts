@@ -7,7 +7,6 @@ export default {
   'menu.Settings.Advance': 'Advance',
   'menu.Settings.Developer': 'Developer',
   'menu.Application configs': 'Details',
-  'menu.Clusters': 'Clusters',
   'menu.Pipelines': 'Pipelines',
   'menu.Cluster configs': 'Details',
   'menu.Pods': 'Pods',

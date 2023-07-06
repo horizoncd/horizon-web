@@ -92,7 +92,7 @@ export default () => {
             });
           }}
         >
-          {intl.formatMessage({ id: 'pages.groups.New application' })}
+          {intl.formatMessage({ id: 'pages.groups.newapplication' })}
         </Button>
         <Table columns={columns} dataSource={cdata} />
       </div>

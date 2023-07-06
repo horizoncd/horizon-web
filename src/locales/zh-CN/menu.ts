@@ -1,5 +1,7 @@
 export default {
+  'menu.Overview': '主页',
   'menu.Group overview': '主页',
+  'menu.Instances': '应用实例',
   'menu.Members': '成员',
   'menu.Settings': '设置',
   'menu.Settings.General': '基础设置',
@@ -7,7 +9,6 @@ export default {
   'menu.Settings.Advance': '高级配置',
   'menu.Settings.Developer': '开发者设置',
   'menu.Application configs': '详情',
-  'menu.Clusters': '集群',
   'menu.Pipelines': '流水线',
   'menu.Cluster configs': '详情',
   'menu.Pods': 'Pods',

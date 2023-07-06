@@ -27,7 +27,7 @@ export async function createCluster(applicationID: number, scope: string, data: 
   });
 }
 
-export async function createClusterV2(applicationID: number, scope: string, data: CLUSTER.NewClusterV2) {
+export async function createClusterV2(applicationID: number, scope: string, data: CLUSTER.NewInstanceV2) {
   return request<{
     data: CLUSTER.Cluster
   }>(`/apis/core/v2/applications/${applicationID}/clusters`, {
@@ -190,7 +190,7 @@ export async function cancelAutoPromote(clusterID: number) {
 }
 
 export async function diffsOfCode(clusterID: number, refType: string, targetRef: string) {
-  const params : Record<string, string> = {};
+  const params: Record<string, string> = {};
   if (refType === GitRefType.Tag) {
     params.targetTag = targetRef;
   } else if (refType === GitRefType.Branch) {

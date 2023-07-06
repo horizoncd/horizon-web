@@ -7,7 +7,7 @@ import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import type { FieldData } from 'rc-field-form/lib/interface';
 import HSteps from '@/components/HSteps';
-import Template from './Template';
+import Template from '@/components/neworedit/components/TemplateV1';
 import Basic from './Basic';
 import Config from './Config';
 import Audit from './Audit';
@@ -15,6 +15,7 @@ import styles from '../index.less';
 import { createApplication, getApplication, updateApplication } from '@/services/applications/applications';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import { parseGitRef } from '@/services/code/code';
+import { ModalInfo } from '../components/DeployModal';
 
 export default (props: any) => {
   const intl = useIntl();
@@ -207,7 +208,13 @@ export default (props: any) => {
     onSuccess: (res: API.Application) => {
       successAlert(creating ? intl.formatMessage({ id: 'pages.applicationNew.success' }) : intl.formatMessage({ id: 'pages.applicationEdit.success' }));
       // jump to application's home page
-      window.location.href = res.fullPath;
+      ModalInfo(
+        {
+          onOk: () => { window.location.href = `/applications${res.fullPath}/-/newinstance/git`; },
+          onCancel: () => { window.location.href = res.fullPath; },
+          intl,
+        },
+      );
     },
   });
 

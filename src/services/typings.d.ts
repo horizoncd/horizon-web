@@ -392,6 +392,7 @@ declare namespace API {
   }
 
   export type GitInfo = {
+    httpURL?: string | URL
     url: string
     subfolder: string
     branch: string

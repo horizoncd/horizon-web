@@ -4,16 +4,7 @@ export enum GitRefType {
   Commit = 'commit',
 }
 
-export type GitInfo = {
-  httpURL: string | URL | undefined;
-  url: string
-  subfolder: string
-  branch: string
-  tag: string
-  commit: string
-};
-
-export const parseGitRef = (gitInfo: GitInfo) => {
+export const parseGitRef = (gitInfo: API.GitInfo) => {
   if (gitInfo.tag) {
     return {
       gitRefType: GitRefType.Tag,
