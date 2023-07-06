@@ -1,7 +1,9 @@
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import { Popover, Tabs } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
@@ -48,6 +50,7 @@ function PodsPage(props: PodsPageProps) {
   const [progressing, setProgressing] = useState(false);
 
   const { data: cluster } = useRequest(() => getCluster(id), {});
+  const infoMenuRef = useRef();
 
   useRequest(queryEnvironments, {
     onSuccess: (items) => {
@@ -96,6 +99,9 @@ function PodsPage(props: PodsPageProps) {
         || status.status === ClusterStatus.SUSPENDED
         || status.status === ClusterStatus.NOTHEALTHY
         || status.status === ClusterStatus.DEGRADED) {
+        if (infoMenuRef.current) {
+          infoMenuRef.current.refreshOutput();
+        }
         setProgressing(true);
         getStep();
       } else {
@@ -138,6 +144,7 @@ function PodsPage(props: PodsPageProps) {
         <ButtonBar cluster={cluster} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
         <MaxSpace direction="vertical">
           <InfoMenu
+            ref={infoMenuRef}
             manualPaused={(step && step.manualPaused) ?? false}
             cluster={cluster}
             clusterStatus={clusterStatus}

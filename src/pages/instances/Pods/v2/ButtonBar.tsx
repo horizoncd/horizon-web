@@ -10,15 +10,19 @@ import RBAC from '@/rbac';
 import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';
 import { deleteCluster, freeCluster, restart } from '@/services/clusters/clusters';
+import { CatalogType } from '@/services/core';
 
 interface ButtonBarProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
   cluster: CLUSTER.ClusterV2,
   manualPaused: boolean,
+  template?: Templates.Template
 }
 
 function ButtonBar(props: ButtonBarProps) {
-  const { clusterStatus, cluster, manualPaused } = props;
+  const {
+    clusterStatus, cluster, manualPaused, template = { type: CatalogType.V1 },
+  } = props;
   const { id, fullPath } = cluster;
   const { status } = clusterStatus;
   const intl = useIntl();
@@ -169,7 +173,11 @@ function ButtonBar(props: ButtonBarProps) {
         {intl.formatMessage({ id: 'pages.cluster.action.deploy' })}
       </Button>
       <Button
-        disabled={!RBAC.Permissions.restartCluster.allowed || isRestrictedStatus(status)}
+        disabled={
+          !RBAC.Permissions.restartCluster.allowed
+          || isRestrictedStatus(status)
+          || !(template.type === CatalogType.V1 || template.type === CatalogType.Workload)
+        }
         onClick={() => {
           onClickOperationWithResumePrompt({ key: 'restart' });
         }}

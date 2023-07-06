@@ -1,4 +1,5 @@
 export default {
+  'menu.Overview': '主页',
   'menu.Group overview': '主页',
   'menu.Instances': '应用实例',
   'menu.Members': '成员',

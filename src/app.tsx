@@ -544,7 +544,7 @@ function formatClusterMenu(fullPath: string) {
     ...routes,
     {
       path: `${fullPath}`,
-      name: 'Pods',
+      name: 'Overview',
       icon: 'appstore',
     },
     {

@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd';
 import { useIntl, useModel } from 'umi';
-import React, { Ref } from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 import ClusterCard from './ClusterCard';
 import ClusterCardV2 from './ClusterCardV2'; // 将导入重命名为 ClusterCardV2
 import Output from '../../Detail/Output';
@@ -16,16 +16,24 @@ interface InfoMenuProps {
   podsInfo: any,
 }
 
-const InfoMenu = React.forwardRef((props: InfoMenuProps, ref: Ref<HTMLDivElement>) => {
+const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
   const { initialState } = useModel('@@initialState');
   const { fullPath: clusterFullPath } = initialState!.resource;
   const {
     manualPaused, cluster, clusterStatus, env2DisplayName,
     region2DisplayName, podsInfo,
   } = props;
+  const outputRef = useRef();
   const intl = useIntl();
+  useImperativeHandle(ref, () => ({
+    refreshOutput: () => {
+      if (outputRef.current) {
+        outputRef.current.refresh();
+      }
+    },
+  }));
   return (
-    <div ref={ref}>
+    <div>
       <MaxSpace direction="vertical">
         {
                     cluster.version === 1 ? (
@@ -50,7 +58,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref: Ref<HTMLDivElement
                 }
         <ConfigProvider renderEmpty={() => <span>{intl.formatMessage({ id: 'pages.common.nodata' })}</span>}>
           <MaxSpace direction="vertical">
-            <Output clusterID={cluster.id} />
+            <Output ref={outputRef} clusterID={cluster.id} />
             <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />
           </MaxSpace>
         </ConfigProvider>

@@ -59,8 +59,8 @@ const LifeCycleItemRunning = 'Running';
 const noWrap = () => ({ style: { whiteSpace: 'nowrap' } });
 
 // eslint-disable-next-line react/require-default-props
-export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster | CLUSTER.ClusterV2 }) => {
-  const { data, cluster } = props;
+export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster | CLUSTER.ClusterV2, noMicroApp?: boolean }) => {
+  const { data, cluster, noMicroApp = false } = props;
   const intl = useIntl();
   const [pageNumber, setPageNumber] = useState(1);
   const [filter, setFilter] = useState('');
@@ -333,26 +333,32 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       {/* @ts-ignore */}
       <Search placeholder="Search" onChange={onChange} style={{ width: '300px' }} value={filter} />
       <div style={{ float: 'right' }}>
-        <MicroApp
-          name="podoperation"
-          type="online"
-          errorAlert={errorAlert}
-          successAlert={successAlert}
-          formatMessage={formatMessage}
-          clusterID={cluster!.id}
-          podNames={podNames}
-          disabled={podOperationDisabled}
-        />
-        <MicroApp
-          name="podoperation"
-          type="offline"
-          errorAlert={errorAlert}
-          successAlert={successAlert}
-          formatMessage={formatMessage}
-          clusterID={cluster!.id}
-          podNames={podNames}
-          disabled={podOperationDisabled}
-        />
+        {
+          !noMicroApp && (
+            <>
+              <MicroApp
+                name="podoperation"
+                type="online"
+                errorAlert={errorAlert}
+                successAlert={successAlert}
+                formatMessage={formatMessage}
+                clusterID={cluster!.id}
+                podNames={podNames}
+                disabled={podOperationDisabled}
+              />
+              <MicroApp
+                name="podoperation"
+                type="offline"
+                errorAlert={errorAlert}
+                successAlert={successAlert}
+                formatMessage={formatMessage}
+                clusterID={cluster!.id}
+                podNames={podNames}
+                disabled={podOperationDisabled}
+              />
+            </>
+          )
+        }
         <Button
           style={{ marginLeft: '10px' }}
           onClick={() => {

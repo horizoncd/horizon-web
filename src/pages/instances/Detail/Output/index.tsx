@@ -1,8 +1,9 @@
 import { Card, Table, Tooltip } from 'antd';
-import { useState } from 'react';
+import { useImperativeHandle, useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useRequest } from '@@/plugin-request/request';
 import { useIntl } from 'umi';
+import React from 'react';
 import styles from '../index.less';
 import {
   getClusterOutputs,
@@ -16,14 +17,14 @@ interface ClusterOutput {
   value: string
 }
 
-export default function Output(props: any) {
+const Output = React.forwardRef((props: any, ref) => {
   const { clusterID } = props;
 
   const intl = useIntl();
 
   const [clusterOutputArray, setClusterOutputArray] = useState<ClusterOutput[]>();
 
-  useRequest(() => getClusterOutputs(clusterID), {
+  const { refresh } = useRequest(() => getClusterOutputs(clusterID), {
     refreshDeps: [clusterID],
     onSuccess: (items) => {
       let outputs: ClusterOutput[] = [];
@@ -37,6 +38,10 @@ export default function Output(props: any) {
       setClusterOutputArray(outputs);
     },
   });
+
+  useImperativeHandle(ref, () => ({
+    refresh,
+  }));
 
   const outputColumns = [
     {
@@ -90,4 +95,6 @@ export default function Output(props: any) {
       />
     </Card>
   );
-}
+});
+
+export default Output;
