@@ -56,9 +56,9 @@ export default function Basic(props: any) {
     } else if (cluster.image) {
       history.push(`/instances${clusterFullPath}/-/editv2/image`);
     } else {
-      history.push(`/instances${clusterFullPath}/-/editv2/chart`, { template: { name: cluster?.template?.name } });
+      history.push(`/instances${clusterFullPath}/-/editv2/chart`, { template: { name: cluster?.template?.name ?? cluster?.templateInfo.name } });
     }
-  }, [version, cluster.git?.url, cluster.image, cluster?.template?.name, history, clusterFullPath]);
+  }, [version, cluster.git?.url, cluster.image, cluster?.template?.name, cluster?.templateInfo.name, history, clusterFullPath]);
 
   const regionName = version !== pipelineV2
     ? region2DisplayName.get(cluster.scope.region)

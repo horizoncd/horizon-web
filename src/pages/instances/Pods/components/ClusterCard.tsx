@@ -1,6 +1,7 @@
 import { useIntl } from 'umi';
 import DetailCard, { Param } from '@/components/DetailCard';
 import { StatusComponent } from '@/components/State';
+import { BoldText } from '@/components/Widget';
 
 interface ClusterCardProps {
   cluster: CLUSTER.Cluster,
@@ -101,7 +102,7 @@ function ClusterCard(props: ClusterCardProps) {
 
   return (
     <DetailCard
-      title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
+      title={<BoldText>{intl.formatMessage({ id: 'pages.common.basicInfo' })}</BoldText>}
       data={baseInfo}
     />
   );

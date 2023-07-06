@@ -76,8 +76,11 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   ];
 
   const fieldsToValidate = [
-    ResourceKey.NAME, ResourceKey.PRIORITY,
+    ResourceKey.NAME,
   ];
+  if (appType !== AppOrClusterType.CHART) {
+    fieldsToValidate.push(ResourceKey.PRIORITY);
+  }
   if (appType === AppOrClusterType.GIT) {
     fieldsToValidate.push(ResourceKey.GIT_URL);
   } else if (appType === AppOrClusterType.IMAGE) {
@@ -133,7 +136,6 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
       form={form}
       onFieldsChange={(_changedFields: FieldData[], allFields: FieldData[]) => {
         const valid = isFieldsValid(allFields);
-        // console.log('baseInfo validated: ', validated);
         setValid(valid);
       }}
     >
@@ -153,15 +155,19 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
               autoSize={{ minRows: 3 }}
             />
           </Form.Item>
-          <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
-            <Select disabled={readOnly}>
-              {Priorities.map((item) => (
-                <Option key={item} value={item}>
-                  {item}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+          {
+            appType !== AppOrClusterType.CHART && (
+            <Form.Item label={formatMessage('priority')} name="priority" rules={requiredRule}>
+              <Select disabled={readOnly}>
+                {Priorities.map((item) => (
+                  <Option key={item} value={item}>
+                    {item}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            )
+          }
         </Card>
         <Card
           title={(

@@ -1,7 +1,9 @@
 import { useIntl } from '@@/plugin-locale/localeExports';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
-import { useMemo, useState } from 'react';
+import {
+  useEffect, useMemo, useState,
+} from 'react';
 import { Popover, Tabs } from 'antd';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
@@ -11,13 +13,14 @@ import { ClusterStatus, TaskStatus, PipelineStatus } from '@/const';
 import { queryEnvironments } from '@/services/environments/environments';
 import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
-import { CenterSpin } from '@/components/Widget';
+import { CenterSpin, MaxSpace } from '@/components/Widget';
 import { refreshPodsInfo } from '@/components/rollout';
 import PodsTable from '../PodsTable';
 import { StepCard, BuildCard, CountCircle } from '../components';
 import ButtonBar from './ButtonBar';
-import ClusterCard from './ClusterCard';
 import NoData from '@/components/NoData';
+import InfoMenu from '../components/InfoMenu';
+import useRefCallback from '../components/useRefCallback';
 
 const { TabPane } = Tabs;
 
@@ -117,6 +120,21 @@ function PodsPage(props: PodsPageProps) {
 
   const podsInfo = useMemo(() => refreshPodsInfo(resourceTree), [resourceTree]);
 
+  const showBuildView = useMemo(() => clusterBuildStatus && clusterBuildStatus.latestPipelinerun
+    && (pipelineStatus !== PipelineStatus.None), [clusterBuildStatus, pipelineStatus]);
+
+  const showDeployView = useMemo(
+    () => pipelineStatus === PipelineStatus.None && progressing && step && step.index !== step.total,
+    [pipelineStatus, progressing, step],
+  );
+
+  const [deployRef, deployRefCallback] = useRefCallback();
+  useEffect(() => {
+    if (showDeployView && deployRef) {
+      deployRef.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [deployRef, showDeployView]);
+
   if (!clusterStatus || !cluster || !env2DisplayName || !region2DisplayName) {
     return <CenterSpin />;
   }
@@ -125,59 +143,61 @@ function PodsPage(props: PodsPageProps) {
     <PageWithBreadcrumb>
       <div>
         <ButtonBar cluster={cluster} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
-        <ClusterCard
-          manualPaused={(step && step.manualPaused) ?? false}
-          cluster={cluster}
-          clusterStatus={clusterStatus}
-          env2DisplayName={env2DisplayName}
-          region2DisplayName={region2DisplayName}
-          podsInfo={podsInfo}
-        />
-        {
-          (clusterBuildStatus && clusterBuildStatus.latestPipelinerun
-            && (pipelineStatus !== PipelineStatus.None)) && (
+        <MaxSpace direction="vertical">
+          <InfoMenu
+            manualPaused={(step && step.manualPaused) ?? false}
+            cluster={cluster}
+            clusterStatus={clusterStatus}
+            env2DisplayName={env2DisplayName}
+            region2DisplayName={region2DisplayName}
+            podsInfo={podsInfo}
+          />
+          {
+          showBuildView && (
             <BuildCard
-              pipelinerunID={clusterBuildStatus.latestPipelinerun.id}
-              runningTask={clusterBuildStatus.runningTask}
+              pipelinerunID={clusterBuildStatus!.latestPipelinerun!.id}
+              runningTask={clusterBuildStatus!.runningTask}
             />
           )
         }
-        {
-          (pipelineStatus === PipelineStatus.None && progressing && step && step.index !== step.total) && (
+          {
+          showDeployView && (
             <StepCard
+              ref={deployRefCallback}
               step={step}
               refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
               clusterStatus={clusterStatus}
             />
           )
         }
+        </MaxSpace>
         {
           podsInfo.sortedKey.length >= 1
-          && clusterStatus.status !== ClusterStatus.FREED
-          && clusterStatus.status !== ClusterStatus.NOTFOUND
+            && clusterStatus.status !== ClusterStatus.FREED
+            && clusterStatus.status !== ClusterStatus.NOTFOUND
             ? (
               <Tabs
                 defaultActiveKey={podsInfo.sortedKey[0]}
               >
                 {
-                podsInfo.sortedKey.map((key, index) => (
-                  <TabPane
-                    tab={(
-                      <Popover content={key}>
-                        {
-                        `${getLastPattern(key)}`
-                        }
-                        <CountCircle count={podsInfo.podsMap[key].length} />
-                        {podsInfo.sorted && index === 0 ? ' (current)' : ''}
-                      </Popover>
-                    )}
-                    key={key}
-                    tabKey={key}
-                  >
-                    <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} />
-                  </TabPane>
-                ))
-              }
+                  podsInfo.sortedKey.map((key, index) => (
+                    <TabPane
+                      tab={(
+                        <Popover content={key}>
+                          {
+                            `${getLastPattern(key)}`
+                          }
+                          <CountCircle count={podsInfo.podsMap[key].length} />
+                          {podsInfo.sorted && index === 0 ? ' (current)' : ''}
+                        </Popover>
+                      )}
+                      key={key}
+                      tabKey={key}
+                    >
+                      <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} />
+                    </TabPane>
+                  ))
+                }
               </Tabs>
             )
             : <NoData titleID="pages.cluster.podsTable.nodata.title" descID="pages.cluster.podsTable.nodata.desc" />

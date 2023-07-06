@@ -10,17 +10,23 @@ import {
 import { CardTitle } from '../Widget';
 import { BoldText } from '@/components/Widget';
 
+interface ClusterOutput {
+  key:string,
+  description: string,
+  value: string
+}
+
 export default function Output(props: any) {
   const { clusterID } = props;
 
   const intl = useIntl();
 
-  const [clusterOutputArray, setClusterOutputArray] = useState();
+  const [clusterOutputArray, setClusterOutputArray] = useState<ClusterOutput[]>();
 
   useRequest(() => getClusterOutputs(clusterID), {
     refreshDeps: [clusterID],
     onSuccess: (items) => {
-      let outputs: any = [];
+      let outputs: ClusterOutput[] = [];
       Object.keys(items).forEach((key) => {
         outputs = outputs.concat({
           key,
@@ -74,6 +80,10 @@ export default function Output(props: any) {
       title={(<CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.output' })}</CardTitle>)}
     >
       <Table
+        pagination={
+          { hideOnSinglePage: true }
+        }
+        showHeader={clusterOutputArray && clusterOutputArray.length > 0}
         tableLayout="fixed"
         dataSource={clusterOutputArray}
         columns={outputColumns}

@@ -75,6 +75,10 @@ function TagCard(props: TagCardProps) {
     )
     : (
       <Table
+        pagination={
+          { hideOnSinglePage: true }
+        }
+        showHeader={tags && tags.length > 0}
         tableLayout="fixed"
         dataSource={tags}
         columns={tagColumns}

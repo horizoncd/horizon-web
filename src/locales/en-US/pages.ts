@@ -41,6 +41,7 @@ export default {
   'pages.common.edit.success': 'Edit successfully',
   'pages.common.create': 'Create',
   'pages.common.create.success': 'Create successfully',
+  'pages.common.nodata': 'No data',
   'pages.common.delete': 'Delete',
   'pages.common.delete.success': 'Delete successfully',
   'pages.common.update': 'Update',
@@ -65,6 +66,7 @@ export default {
   'pages.common.env': 'Environment',
   'pages.common.region': 'Region',
   'pages.common.template': 'Template',
+  'pages.common.release': 'Release',
   'pages.common.pod': 'Pod',
   'pages.common.pods': 'Pods',
   'pages.common.tags': 'Tags',
@@ -133,7 +135,7 @@ export default {
   'pages.applicationNew.deployConfirm.content': 'Creating the application successfully, should create the corresponding application instance based on the application directly?',
 
   'pages.applicationNew.step.message': 'Step {index}',
-  'pages.applicationNew.basic.title': 'Service basic',
+  'pages.applicationNew.basic.title': 'Basic',
   'pages.applicationNew.basic.name.ruleMessage': 'The application name is required, which supports letters, numbers and dashes, and should start with a letter',
   'pages.applicationNew.basic.name': 'Name',
   'pages.applicationNew.basic.description': 'Description',
@@ -460,7 +462,7 @@ export default {
   'pages.newV2.deploy.template': 'Deploy template',
   'pages.newV2.deploy.template.name': 'Template',
   'pages.newV2.deploy.template.release': 'Release',
-  'pages.newV2.deploy.config': 'Template config',
+  'pages.newV2.deploy.config': 'Config',
 
   'pages.environment.new': 'New environment',
   'pages.environment.name': 'Name',

@@ -1,6 +1,7 @@
 import { useIntl } from 'umi';
 import DetailCard, { Param } from '@/components/DetailCard';
 import { StatusComponent } from '@/components/State';
+import { BoldText } from '@/components/Widget';
 
 interface ClusterCardProps {
   cluster: CLUSTER.ClusterV2,
@@ -31,11 +32,11 @@ const DurationDisplay = (props: { seconds: number }) => {
     return (
       <span
         style={
-        {
-          margin: '0 0 6px 5px',
-          wordBreak: 'break-all',
+          {
+            margin: '0 0 6px 5px',
+            wordBreak: 'break-all',
+          }
         }
-      }
       >
         {ttlText}
 
@@ -45,12 +46,12 @@ const DurationDisplay = (props: { seconds: number }) => {
   return (
     <span
       style={
-      {
-        color: 'var(--red-500, #dd2b0e)',
-        margin: '0 0 6px 5px',
-        wordBreak: 'break-all',
+        {
+          color: 'var(--red-500, #dd2b0e)',
+          margin: '0 0 6px 5px',
+          wordBreak: 'break-all',
+        }
       }
-    }
     >
       {intl.formatMessage({ id: 'pages.common.time.hour' }, { hour })}
 
@@ -58,7 +59,7 @@ const DurationDisplay = (props: { seconds: number }) => {
   );
 };
 
-function ClusterCard(props: ClusterCardProps) {
+function ClusterCardV2(props: ClusterCardProps) {
   const {
     cluster, clusterStatus, podsInfo, region2DisplayName, env2DisplayName, manualPaused,
   } = props;
@@ -101,10 +102,10 @@ function ClusterCard(props: ClusterCardProps) {
 
   return (
     <DetailCard
-      title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
+      title={<BoldText>{intl.formatMessage({ id: 'pages.common.basicInfo' })}</BoldText>}
       data={baseInfo}
     />
   );
 }
 
-export default ClusterCard;
+export default ClusterCardV2;

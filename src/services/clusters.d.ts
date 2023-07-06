@@ -96,6 +96,7 @@ declare namespace CLUSTER {
     updatedBy: {
       name: string,
     }
+    version: 1,
   };
 
   type ClusterV2 = {
@@ -133,6 +134,7 @@ declare namespace CLUSTER {
       name: string,
     }
     ttlInSeconds?: number,
+    version: 2,
   };
 
   type NewCluster = {

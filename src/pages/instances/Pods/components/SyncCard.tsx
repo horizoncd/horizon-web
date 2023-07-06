@@ -1,4 +1,5 @@
 import { Card } from 'antd';
+import { Ref, forwardRef } from 'react';
 import { RolloutDeployPanel } from '@/components/rollout';
 
 interface StepCardProps {
@@ -8,7 +9,7 @@ interface StepCardProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
 }
 
-function StepCard(props: StepCardProps) {
+const StepCard = forwardRef((props: StepCardProps, ref: Ref<HTMLDivElement>) => {
   const { step, refresh, clusterStatus } = props;
 
   if (!step || step.total === 0) {
@@ -16,10 +17,12 @@ function StepCard(props: StepCardProps) {
   }
 
   return (
-    <Card>
-      <RolloutDeployPanel step={step} refresh={refresh} clusterStatus={clusterStatus} />
-    </Card>
+    <div ref={ref}>
+      <Card>
+        <RolloutDeployPanel step={step} refresh={refresh} clusterStatus={clusterStatus} />
+      </Card>
+    </div>
   );
-}
+});
 
 export default StepCard;

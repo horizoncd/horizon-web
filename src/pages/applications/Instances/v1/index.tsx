@@ -130,7 +130,11 @@ export default () => {
       title: intl.formatMessage({ id: 'pages.common.template' }),
       dataIndex: 'template',
       key: 'template',
-      render: (text: string, item: any) => (`${item.template}-${item.release}`),
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.common.release' }),
+      dataIndex: 'release',
+      key: 'release',
     },
     {
       title: (

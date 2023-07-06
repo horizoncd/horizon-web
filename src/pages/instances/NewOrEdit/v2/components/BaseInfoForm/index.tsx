@@ -130,6 +130,9 @@ const BaseInfoForm: React.FC<Props> = (props: Props) => {
   const expireTimeOptions: number[] = [1, 2, 3, 4, 5, 6, 7, 14];
 
   const autoFreeDisabled = () => {
+    if (clusterType === AppOrClusterType.CHART) {
+      return true;
+    }
     const environmentName = form.getFieldValue('environment');
     if (environmentName) {
       return !envAutoFreeFlags.get(environmentName);

@@ -1,6 +1,7 @@
 import { useIntl } from '@@/plugin-locale/localeExports';
 import {
-  Affix, Button, Col, Form, Row,
+  Affix,
+  Button, Col, Form, Row,
 } from 'antd';
 import {
   useEffect, useMemo, useRef, useState,
@@ -10,7 +11,6 @@ import { useModel } from '@@/plugin-model/useModel';
 import { useHistory } from 'umi';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import styles from '@/pages/applications/NewOrEdit/index.less';
-import HSteps from '@/components/HSteps';
 import BaseInfoForm from '@/components/neworedit/components/BaseInfoForm';
 import {
   createApplicationV2,
@@ -18,16 +18,15 @@ import {
   updateApplicationV2,
 } from '@/services/applications/applications';
 import TemplateForm from '@/components/neworedit/components/TemplateForm';
-import { MaxSpace } from '@/components/Widget';
 import { AppOrClusterType, ResourceKey } from '@/const';
 import DeployConfigForm from '@/components/neworedit/components/DeployConfigForm';
 import { CatalogType } from '@/services/core';
 import { ModalInfo } from '../components/DeployModal';
+import { queryTemplate } from '@/services/templates/templates';
 
 export default (props: any) => {
   const history = useHistory<{ template?: API.Template }>();
   const intl = useIntl();
-  const [current, setCurrent] = useState(0);
   const { location } = props;
   const { pathname } = location;
   const { initialState, refresh } = useModel('@@initialState');
@@ -41,13 +40,10 @@ export default (props: any) => {
   const editing = pathname.endsWith('editv2/chart');
   const { successAlert } = useModel('alert');
 
-  const { template } = history.location.state;
-  const pageOrders = useMemo(() => (template ? [0, 2, 3] : [0, 1, 2, 3]), [template]);
-
   const [form] = Form.useForm();
   const [baseInfoValid, setBaseInfoValid] = useState<boolean>(false);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
-  const [templateBasic, setTemplateBasic] = useState<API.Template>(template ?? { description: '', name: '' });
+  const [templateBasic, setTemplateBasic] = useState<API.Template>(history.location.state?.template ?? { description: '', name: '' });
   const [releaseName, setReleaseName] = useState<string>('');
   const [templateConfig, setTemplateConfig] = useState<Object>({});
   const [templateConfigSubmitted, setTemplateConfigSubmitted] = useState(false);
@@ -78,6 +74,8 @@ export default (props: any) => {
     });
   }
 
+  const { data: template } = useRequest(() => queryTemplate(templateBasic.name));
+
   const { loading, run: submitApp } = useRequest(() => {
     const createReq: API.CreateOrUpdateRequestV2 = {
       name: form.getFieldValue(ResourceKey.NAME),
@@ -94,50 +92,10 @@ export default (props: any) => {
     manual: true,
   });
 
-  const currentStepIsValid = (cur: number) => {
-    let valid: boolean;
-    switch (cur) {
-      case 0:
-        valid = baseInfoValid;
-        break;
-      case 1:
-        valid = baseInfoValid && !!templateBasic.name;
-        break;
-      case 2:
-      case 3:
-        valid = baseInfoValid && !!templateBasic.name && deployConfigValid;
-        break;
-      default:
-        valid = true;
-    }
-    return valid;
-  };
-
-  const steps = [
-    {
-      title: intl.formatMessage({ id: 'pages.newV2.step.basic' }),
-      disabled: false,
-    }, {
-      title: intl.formatMessage({ id: 'pages.newV2.deploy.template' }),
-      disabled: !currentStepIsValid(0),
-    }, {
-      title: intl.formatMessage({ id: 'pages.newV2.deploy.config' }),
-      disabled: !currentStepIsValid(1),
-    }, {
-      title: intl.formatMessage({ id: 'pages.newV2.step.audit' }),
-      disabled: !currentStepIsValid(2),
-    },
-  ].filter((_, index) => pageOrders.includes(index));
-
-  const onCurrentChange = (cur: number) => {
-    setCurrent(cur);
-  };
-  const prev = () => {
-    setCurrent(current - 1);
-  };
-  const next = () => {
-    setCurrent(current + 1);
-  };
+  const isValid = useMemo(
+    () => baseInfoValid && !!templateBasic.name && deployConfigValid,
+    [baseInfoValid, deployConfigValid, templateBasic.name],
+  );
 
   const templateConfigRef = useRef();
   const resetTemplate = (newTemplate: API.Template) => {
@@ -179,18 +137,24 @@ export default (props: any) => {
 
   return (
     <PageWithBreadcrumb>
-      <Row>
-        <Col span={4}>
-          <Affix offsetTop={50}>
-            <div className={styles.step} />
-            <HSteps current={current} onChange={onCurrentChange} steps={steps} />
-          </Affix>
-        </Col>
-        <Col span={20}>
+      <Row gutter={20}>
+        {
+          template && (template?.description ?? '') !== '' && (
+          <Col span={3} offset={1} style={{ marginTop: '15px' }}>
+            <Affix offsetTop={60}>
+              <span>
+                <b>{`${template.name}: `}</b>
+                <div dangerouslySetInnerHTML={{ __html: template.description ?? '' }} />
+              </span>
+            </Affix>
+          </Col>
+          )
+        }
+        <Col span={20} offset={(template?.description ?? '') === '' ? 2 : 0}>
           <div className={styles.stepsContent}>
             {
               // basic
-              current === 0 && (
+              (
                 <BaseInfoForm
                   form={form}
                   appType={AppOrClusterType.CHART}
@@ -200,7 +164,7 @@ export default (props: any) => {
               )
             }
             {
-            current === 1 && pageOrders.includes(current) && (
+            !(history.location.state?.template) && (
               <TemplateForm
                 template={templateBasic}
                 resetTemplate={resetTemplate}
@@ -210,66 +174,34 @@ export default (props: any) => {
             }
             {
               // deploy config
-              pageOrders[current] === 2 && (
+              (
                 <DeployConfigForm
                   template={templateBasic}
                   release={releaseName}
                   setReleaseName={setReleaseName}
                   templateConfig={templateConfig}
+                  ref={templateConfigRef}
+                  onSubmit={(formData: any) => {
+                    setTemplateConfig(formData);
+                    setTemplateConfigSubmitted(true);
+                  }}
                   setTemplateConfig={setTemplateConfig}
                   setValid={setDeployConfigValid}
                 />
               )
             }
-            {
-              // audit, list all the content
-              pageOrders[current] === 3 && (
-                <MaxSpace
-                  direction="vertical"
-                  size="middle"
-                >
-                  <BaseInfoForm
-                    form={form}
-                    appType={AppOrClusterType.CHART}
-                    readOnly
-                  />
-                  <DeployConfigForm
-                    readOnly
-                    template={templateBasic}
-                    release={releaseName}
-                    templateConfig={templateConfig}
-                    ref={templateConfigRef}
-                    onSubmit={(formData: any) => {
-                      setTemplateConfig(formData);
-                      setTemplateConfigSubmitted(true);
-                    }}
-                  />
-                </MaxSpace>
-              )
-            }
           </div>
           <div className={styles.stepsAction}>
-            {current > 0 && (
-              <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-                {intl.formatMessage({ id: 'pages.common.back' })}
-              </Button>
-            )}
-            {current < steps.length - 1 && (
-              <Button type="primary" disabled={!currentStepIsValid(current)} onClick={() => next()}>
-                {intl.formatMessage({ id: 'pages.common.next' })}
-              </Button>
-            )}
-            {current === steps.length - 1 && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  templateConfigRef.current.submit();
-                }}
-                loading={loading}
-              >
-                {intl.formatMessage({ id: 'pages.common.submit' })}
-              </Button>
-            )}
+            <Button
+              type="primary"
+              onClick={() => {
+                templateConfigRef.current.submit();
+              }}
+              loading={loading}
+              disabled={!isValid}
+            >
+              {intl.formatMessage({ id: 'pages.common.submit' })}
+            </Button>
           </div>
         </Col>
       </Row>

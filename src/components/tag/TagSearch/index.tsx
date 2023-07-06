@@ -7,6 +7,7 @@ interface Props {
   defaultValues?: SearchInput[] | undefined
   // selector array, selector example: a=b,c,d
   tagSelectors: MultiValueTag[];
+  // clusters?: CLUSTER.ClusterBase[];
   onSearch: (inputs: SearchInput[]) => void;
   onClear: () => void;
 }

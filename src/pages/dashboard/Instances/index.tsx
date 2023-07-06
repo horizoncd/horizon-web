@@ -60,7 +60,7 @@ function Title(props: {
   const beforeStr = name.substring(0, index);
   const afterStr = name.substring(index + filter.length);
   const tmp = filter && index > -1 ? (
-    <a className="group-title" onClick={(e) => handleHref(e, `/instances${fullPath}`)}>
+    <a className="group-title" onClick={(e) => handleHref(e, `${fullPath}`)}>
       {beforeStr}
       <span className="site-tree-search-value">{filter}</span>
       {afterStr}

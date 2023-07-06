@@ -49,6 +49,7 @@ function CodeEditor(props: Props) {
 
   return (
     <ReactCodeMirror
+      autoScroll={false}
       className={styles.myCodeMirror}
       value={content}
       editorDidMount={(editor) => {
