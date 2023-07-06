@@ -271,7 +271,7 @@ export default {
   'pages.cluster.status.manualPaused': '人工暂停',
   'pages.cluster.status.stepPaused': '批次暂停',
 
-  'pages.cluster.basic.status': '应用实例状态',
+  'pages.cluster.basic.status': '实例状态',
   'pages.cluster.basic.expireIn': '剩余时长',
 
   'pages.cluster.podsTable.nodata.title': '没有Pod',
