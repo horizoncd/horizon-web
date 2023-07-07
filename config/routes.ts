@@ -290,6 +290,14 @@ const instanceRoutes = [
   }
 ];
 
+const clusterRoutes = [
+  {
+    path: '/clusters/*/-/webconsole',
+    menuRender: false,
+    component: 'instances/Pods/Console',
+  },
+];
+
 const adminRoutes = [
   {
     path: '/admin',
@@ -515,6 +523,7 @@ allRoute.push(...adminRoutes);
 allRoute.push(...templateRoutes);
 allRoute.push(...userRoutes);
 allRoute.push(...webhookRoutes);
+allRoute.push(...clusterRoutes);
 // @ts-ignore
 allRoute.push({
   path: '/*',
