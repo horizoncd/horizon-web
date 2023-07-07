@@ -411,6 +411,9 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     });
     return res;
   }).sort((a: CLUSTER.PodInTable, b: CLUSTER.PodInTable) => {
+    if (a.onlineStatus !== b.onlineStatus) {
+      return a.onlineStatus === 'offline' ? -1 : 1;
+    }
     if (a.createTime < b.createTime) {
       return 1;
     }
@@ -423,6 +426,11 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
 
   const statusList = Array.from(new Set(filteredData.map((item) => item.state.reason))).map((item) => ({
     text: item,
+    value: item,
+  }));
+
+  const onlineStatusList = Array.from(new Set(filteredData.map((item) => item.onlineStatus))).map((item) => ({
+    text: item.slice(0, 1).toUpperCase() + item.slice(1),
     value: item,
   }));
 
@@ -632,6 +640,8 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       title: formatMessage('onlineStatus'),
       dataIndex: 'onlineStatus',
       key: 'onlineStatus',
+      filters: onlineStatusList,
+      onFilter: (value: string, record: CLUSTER.PodInTable) => record.onlineStatus === value,
       render: (text: string) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {status2StateNode.get(text)}
