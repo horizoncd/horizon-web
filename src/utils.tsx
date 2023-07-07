@@ -19,6 +19,7 @@ const getResourcePath = () => {
         && item !== 'groups'
         && item !== 'applications'
         && item !== 'instances'
+        && item !== 'clusters'
         && item !== 'templates',
     );
   let path = '';
