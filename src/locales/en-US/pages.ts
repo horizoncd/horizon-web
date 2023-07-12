@@ -656,6 +656,7 @@ export default {
   'pages.message.cluster.deployCancel.first.content2': 'Cancel will free the application instance directly',
   'pages.message.cluster.deployCancel.success': 'The deploy has canceled successfully',
   'pages.message.cluster.deployCancel.first.success': 'The deploy has canceled successfully. Start to free it',
+  'pages.message.cluster.promoteFull.success': 'The promote-full is submitted successfully',
   'pages.message.cluster.manualPause.success': 'The manual pause is successful',
   'pages.message.cluster.unpause.success': 'Unpause successful',
   'pages.message.cluster.deployAll.confirm': 'Are you sure to deploy them all?',

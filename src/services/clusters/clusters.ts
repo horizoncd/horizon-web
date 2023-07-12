@@ -184,6 +184,13 @@ export async function autoPromote(clusterID: number) {
   });
 }
 
+export async function promoteFull(clusterID: number) {
+  await action(clusterID, {
+    action: 'promote-full',
+    ...rolloutGVR,
+  });
+}
+
 export async function cancelAutoPromote(clusterID: number) {
   await action(clusterID, {
     action: 'cancel-auto-promote',

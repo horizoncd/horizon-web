@@ -656,6 +656,7 @@ export default {
   'pages.message.cluster.deployCancel.first.content2': '取消发布将直接释放应用实例',
   'pages.message.cluster.deployCancel.success': '取消发布成功',
   'pages.message.cluster.deployCancel.first.success': '取消发布成功，开始释放应用实例',
+  'pages.message.cluster.promoteFull.success': '全部发布成功',
   'pages.message.cluster.manualPause.success': '人工暂停成功',
   'pages.message.cluster.unpause.success': '取消暂停成功',
   'pages.message.cluster.deployAll.confirm': '确定要全部发布？',
