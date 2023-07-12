@@ -50,7 +50,8 @@ export async function getCluster(clusterID: number) {
     data: CLUSTER.Cluster
   }>(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'GET',
-  });
+  // eslint-disable-next-line no-param-reassign
+  }).then((c) => { if (c) c.data.version = 1; return c; });
 }
 
 export async function getClusterV2(clusterID: number) {
@@ -58,7 +59,8 @@ export async function getClusterV2(clusterID: number) {
     data: CLUSTER.ClusterV2
   }>(`/apis/core/v2/clusters/${clusterID}`, {
     method: 'GET',
-  });
+  // eslint-disable-next-line no-param-reassign
+  }).then((c) => { if (c) c.data.version = 2; return c; });
 }
 
 export async function getClusterOutputs(clusterID: number) {

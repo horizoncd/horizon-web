@@ -8,8 +8,8 @@
 export default {
   dev: {
     '/apis/': {
-      target: 'http://localhost:8080',
-      // target: 'http://horizon.yf-dev2.netease.com',
+      // target: 'http://localhost:8080',
+      target: 'http://horizon.yf-dev2.netease.com',
       // target: 'https://horizon.netease.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },

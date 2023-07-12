@@ -363,6 +363,7 @@ export default {
   'pages.cluster.monitor.grafanaNotConfigured.subTitle': '使用监控前请配置Grafana地址',
 
   'pages.cluster.action.buildDeploy': '构建发布',
+  'pages.cluster.action.gotoDetail': '查看详情',
   'pages.cluster.action.deploy': '直接发布',
   'pages.cluster.action.restart': '重新启动',
   'pages.cluster.action.rollback': '回滚',

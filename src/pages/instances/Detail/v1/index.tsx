@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
@@ -8,19 +8,17 @@ import TabPane from 'antd/lib/tabs/TabPane';
 import { querySchema } from '@/services/templates/templates';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import 'antd/lib/form/style';
-import JsonSchemaForm from '@/components/JsonSchemaForm';
 import { getCluster } from '@/services/clusters/clusters';
 import { pipelineV1 } from '@/services/version/version';
 import { ResourceType } from '@/const';
 import Basic from '../Basic';
 import Output from '../Output';
 import { Tag, AdminTag } from '../Tag';
-import { CardTitle } from '../Widget';
+import ConfigCard from '../ConfigCard';
 
 export default () => {
   const intl = useIntl();
   const { initialState } = useModel('@@initialState');
-  const [template, setTemplate] = useState<Templates.TemplateSchema>();
 
   const {
     id: clusterID, fullPath: clusterFullPath, type, parentID: applicationID,
@@ -28,15 +26,12 @@ export default () => {
 
   const [cluster, setCluster] = useState<CLUSTER.Cluster>();
 
-  const { data: templateData, run: runQuerySchema } = useRequest(
+  const { data: templateSchema, run: runQuerySchema } = useRequest(
     () => querySchema(cluster!.template.name, cluster!.template.release, {
       clusterID,
       resourceType: ResourceType.INSTANCE,
     }),
     {
-      onSuccess: () => {
-        setTemplate(templateData);
-      },
       ready: !!cluster && !!cluster.template.name && !!cluster.template.release,
     },
   );
@@ -66,24 +61,10 @@ export default () => {
       />
       <Tabs>
         <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })} key="1">
-          <Card
-            style={{ marginBottom: 10 }}
-            title={(
-              <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
-            type="inner"
-          >
-            {
-              template && Object.keys(template).map((item) => (
-                <JsonSchemaForm
-                  key={item}
-                  disabled
-                  uiSchema={template[item].uiSchema}
-                  formData={cluster.templateInput[item]}
-                  jsonSchema={template[item].jsonSchema}
-                />
-              ))
-            }
-          </Card>
+          <ConfigCard
+            templateSchema={templateSchema}
+            cluster={cluster}
+          />
           <AdminTag
             clusterID={clusterID}
             clusterFullPath={clusterFullPath}

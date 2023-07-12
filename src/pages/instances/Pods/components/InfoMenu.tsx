@@ -32,10 +32,12 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
       }
     },
   }));
+
   return (
     <div>
-      <MaxSpace direction="vertical">
-        {
+      <ConfigProvider renderEmpty={() => <span>{intl.formatMessage({ id: 'pages.common.nodata' })}</span>}>
+        <MaxSpace direction="vertical" size="large">
+          {
                     cluster.version === 1 ? (
                       <ClusterCard
                         manualPaused={manualPaused}
@@ -56,13 +58,10 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
                       />
                     )
                 }
-        <ConfigProvider renderEmpty={() => <span>{intl.formatMessage({ id: 'pages.common.nodata' })}</span>}>
-          <MaxSpace direction="vertical">
-            <Output ref={outputRef} clusterID={cluster.id} />
-            <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />
-          </MaxSpace>
-        </ConfigProvider>
-      </MaxSpace>
+          <Output ref={outputRef} clusterID={cluster.id} />
+          <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />
+        </MaxSpace>
+      </ConfigProvider>
     </div>
   );
 });

@@ -129,23 +129,30 @@ export default forwardRef((props: Props, ref) => {
               <Form.Item label={formatMessage('template.name', '模版')}>
                 <Input disabled value={templateName} />
               </Form.Item>
-              <Form.Item
-                label={formatMessage('template.release', '模版版本')}
-                name="release"
-                rules={requiredRule}
-                initialValue={release}
-              >
-                <Select
-                  disabled={readOnly}
-                  onChange={onReleaseChange}
+              {
+                releases && (
+                <Form.Item
+                  label={formatMessage('template.release', '模版版本')}
+                  name="release"
+                  rules={requiredRule}
+                  initialValue={release}
                 >
-                  {releases?.map((item: any) => (
-                    <Option key={item.name} value={item.name}>
-                      {formatReleaseOption(item)}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
+                  <Select
+                    disabled={readOnly}
+                    onChange={onReleaseChange}
+                    value={release}
+                    defaultValue={release}
+                  >
+                    {releases.map((item: any) => (
+                      <Option key={item.name} value={item.name}>
+                        {formatReleaseOption(item)}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                )
+              }
             </Card>
           </Form>
         )

@@ -9,7 +9,6 @@ import { queryTemplate, updateTemplate } from '@/services/templates/templates';
 import { TemplateForm } from '../Components/Form';
 import rbac from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
-import { API } from '@/services/typings';
 
 function TemplateEdit(props: { initialState: API.InitialState }) {
   const [form] = Form.useForm();

@@ -16,7 +16,7 @@ import { history } from '@@/core/history';
 import copy from 'copy-to-clipboard';
 import yaml from 'js-yaml';
 import podStyles from './index.less';
-import styles from '@/pages/instances/Pods/PodsTable/index.less';
+import styles from '@/pages/instances/Pods/components/PodsTable/index.less';
 import DetailCard from '@/components/DetailCard';
 import type { Param } from '@/components/DetailCard';
 import { queryPodDetail } from '@/services/clusters/pods';

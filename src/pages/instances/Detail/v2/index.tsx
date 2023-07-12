@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
@@ -8,7 +8,6 @@ import TabPane from 'antd/lib/tabs/TabPane';
 import { querySchema } from '@/services/templates/templates';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import 'antd/lib/form/style';
-import JsonSchemaForm from '@/components/JsonSchemaForm';
 import { getClusterV2 } from '@/services/clusters/clusters';
 import { pipelineV2 } from '@/services/version/version';
 import { getBuildSchema } from '@/services/buildschema/buildschema';
@@ -16,8 +15,8 @@ import { ResourceType } from '@/const';
 import Basic from '../Basic';
 import Output from '../Output';
 import { Tag, AdminTag } from '../Tag';
-import { CardTitle } from '../Widget';
 import { MaxSpace } from '@/components/Widget';
+import ConfigCard from '../ConfigCard';
 
 export default () => {
   const intl = useIntl();
@@ -61,6 +60,7 @@ export default () => {
     expireTime: '',
     tags: [],
     manifest: undefined,
+    version: 2,
   };
   const [cluster, setCluster] = useState<CLUSTER.ClusterV2>(defaultCluster);
 
@@ -101,35 +101,11 @@ export default () => {
         />
         <Tabs>
           <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })} key="1">
-            <Card
-              style={{ marginBottom: 10 }}
-              title={(
-                <CardTitle>{intl.formatMessage({ id: 'pages.clusterDetail.basic.config' })}</CardTitle>)}
-              type="inner"
-            >
-              {
-                buildSchema && cluster.buildConfig
-                && (
-                  <JsonSchemaForm
-                    disabled
-                    uiSchema={buildSchema.uiSchema}
-                    jsonSchema={buildSchema.jsonSchema}
-                    formData={cluster.buildConfig}
-                  />
-                )
-              }
-              {
-                (templateSchema && cluster.templateConfig)
-                && (
-                  <JsonSchemaForm
-                    disabled
-                    uiSchema={templateSchema.application.uiSchema}
-                    jsonSchema={templateSchema.application.jsonSchema}
-                    formData={cluster.templateConfig}
-                  />
-                )
-              }
-            </Card>
+            <ConfigCard
+              cluster={cluster}
+              templateSchema={templateSchema}
+              buildSchema={buildSchema}
+            />
             <AdminTag
               clusterID={clusterID}
               clusterFullPath={clusterFullPath}

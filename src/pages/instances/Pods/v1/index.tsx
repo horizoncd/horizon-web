@@ -15,7 +15,7 @@ import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin, MaxSpace } from '@/components/Widget';
 import { refreshPodsInfo } from '@/components/rollout';
-import PodsTable from '../PodsTable';
+import PodsTable from '../components/PodsTable';
 import StepCard from '../components/SyncCard';
 import { ButtonBar, CountCircle } from '../components';
 import BuildCard from '../components/BuildCard';
@@ -124,7 +124,7 @@ function PodsPage(props: PodsPageProps) {
 
   const podsInfo = useMemo(() => refreshPodsInfo(resourceTree), [resourceTree]);
   const showBuildView = useMemo(() => (clusterBuildStatus && clusterBuildStatus.latestPipelinerun
-            && (pipelineStatus !== PipelineStatus.None)), [clusterBuildStatus, pipelineStatus]);
+    && (pipelineStatus !== PipelineStatus.None)), [clusterBuildStatus, pipelineStatus]);
   const showDeployView = useMemo(() => (pipelineStatus === PipelineStatus.None && progressing && step && step.index !== step.total), [pipelineStatus, progressing, step]);
 
   const [deployRef, deployRefCallback] = useRefCallback();
@@ -153,23 +153,23 @@ function PodsPage(props: PodsPageProps) {
             podsInfo={podsInfo}
           />
           {
-        showBuildView && (
-        <BuildCard
-          pipelinerunID={clusterBuildStatus!.latestPipelinerun!.id}
-          runningTask={clusterBuildStatus!.runningTask}
-        />
-        )
-        }
+            showBuildView && (
+              <BuildCard
+                pipelinerunID={clusterBuildStatus!.latestPipelinerun!.id}
+                runningTask={clusterBuildStatus!.runningTask}
+              />
+            )
+          }
           {
-          showDeployView && (
-            <StepCard
-              ref={deployRefCallback}
-              step={step}
-              refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
-              clusterStatus={clusterStatus}
-            />
-          )
-        }
+            showDeployView && (
+              <StepCard
+                ref={deployRefCallback}
+                step={step}
+                refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
+                clusterStatus={clusterStatus}
+              />
+            )
+          }
         </MaxSpace>
         {
           podsInfo.sortedKey.length >= 1

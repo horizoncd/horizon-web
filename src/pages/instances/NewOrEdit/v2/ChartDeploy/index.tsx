@@ -239,8 +239,7 @@ export default (props: any) => {
     },
   });
 
-  const onDeploySubmit = (formData: any) => {
-    setTemplateConfig(formData);
+  const onDeploySubmit = () => {
     setDeploySubmitted(true);
   };
 
