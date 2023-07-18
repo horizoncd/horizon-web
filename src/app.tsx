@@ -591,13 +591,6 @@ function formatClusterMenu(fullPath: string) {
       footerRender: false,
     },
     {
-      path: `/clusters${fullPath}/-/webconsole`,
-      menuRender: false,
-      headerRender: false,
-      menuHeaderRender: false,
-      footerRender: false,
-    },
-    {
       path: `/instances${fullPath}/-/settings`,
       name: 'Settings',
       icon: 'setting',
