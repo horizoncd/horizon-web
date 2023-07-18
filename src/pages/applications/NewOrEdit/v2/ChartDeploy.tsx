@@ -175,19 +175,21 @@ export default (props: any) => {
             {
               // deploy config
               (
-                <DeployConfigForm
-                  template={templateBasic}
-                  release={releaseName}
-                  setReleaseName={setReleaseName}
-                  templateConfig={templateConfig}
-                  ref={templateConfigRef}
-                  onSubmit={(formData: any) => {
-                    setTemplateConfig(formData);
-                    setTemplateConfigSubmitted(true);
-                  }}
-                  setTemplateConfig={setTemplateConfig}
-                  setValid={setDeployConfigValid}
-                />
+               (!editing || releaseName) && (
+               <DeployConfigForm
+                 template={templateBasic}
+                 release={releaseName}
+                 setReleaseName={setReleaseName}
+                 templateConfig={templateConfig}
+                 ref={templateConfigRef}
+                 onSubmit={(formData: any) => {
+                   setTemplateConfig(formData);
+                   setTemplateConfigSubmitted(true);
+                 }}
+                 setTemplateConfig={setTemplateConfig}
+                 setValid={setDeployConfigValid}
+               />
+               )
               )
             }
           </div>

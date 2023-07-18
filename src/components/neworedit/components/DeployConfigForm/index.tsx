@@ -141,7 +141,6 @@ export default forwardRef((props: Props, ref) => {
                     disabled={readOnly}
                     onChange={onReleaseChange}
                     value={release}
-                    defaultValue={release}
                   >
                     {releases.map((item: any) => (
                       <Option key={item.name} value={item.name}>
