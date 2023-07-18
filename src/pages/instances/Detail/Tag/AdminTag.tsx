@@ -22,7 +22,7 @@ export default function AdminTag(props: AdminTagProps) {
 
   const history = useHistory();
 
-  const manageAdminTagsRoute = `/clusters${clusterFullPath}/-/admintags`;
+  const manageAdminTagsRoute = `/instances${clusterFullPath}/-/admintags`;
 
   return (
     <TagCard

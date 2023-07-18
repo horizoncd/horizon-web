@@ -15,7 +15,7 @@ import { queryRegions } from '@/services/applications/applications';
 import { PageWithInitialState } from '@/components/Enhancement';
 import { CenterSpin, MaxSpace } from '@/components/Widget';
 import { refreshPodsInfo } from '@/components/rollout';
-import PodsTable from '../PodsTable';
+import PodsTable from '../components/PodsTable';
 import { StepCard, BuildCard, CountCircle } from '../components';
 import ButtonBar from './ButtonBar';
 import NoData from '@/components/NoData';
@@ -153,7 +153,7 @@ function PodsPage(props: PodsPageProps) {
     <PageWithBreadcrumb>
       <div>
         <ButtonBar cluster={cluster} template={template} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
-        <MaxSpace direction="vertical">
+        <MaxSpace direction="vertical" size="large">
           <InfoMenu
             ref={infoMenuRef}
             manualPaused={(step && step.manualPaused) ?? false}
@@ -164,25 +164,24 @@ function PodsPage(props: PodsPageProps) {
             podsInfo={podsInfo}
           />
           {
-          showBuildView && (
-            <BuildCard
-              pipelinerunID={clusterBuildStatus!.latestPipelinerun!.id}
-              runningTask={clusterBuildStatus!.runningTask}
-            />
-          )
-        }
+            showBuildView && (
+              <BuildCard
+                pipelinerunID={clusterBuildStatus!.latestPipelinerun!.id}
+                runningTask={clusterBuildStatus!.runningTask}
+              />
+            )
+          }
           {
-          showDeployView && (
-            <StepCard
-              ref={deployRefCallback}
-              step={step}
-              refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
-              clusterStatus={clusterStatus}
-            />
-          )
-        }
-        </MaxSpace>
-        {
+            showDeployView && (
+              <StepCard
+                ref={deployRefCallback}
+                step={step}
+                refresh={() => { refreshStep(); refreshCluster(); refreshBuildStatus(); }}
+                clusterStatus={clusterStatus}
+              />
+            )
+          }
+          {
           podsInfo.sortedKey.length >= 1
             && clusterStatus.status !== ClusterStatus.FREED
             && clusterStatus.status !== ClusterStatus.NOTFOUND
@@ -213,6 +212,7 @@ function PodsPage(props: PodsPageProps) {
             )
             : <NoData titleID="pages.cluster.podsTable.nodata.title" descID="pages.cluster.podsTable.nodata.desc" />
         }
+        </MaxSpace>
       </div>
     </PageWithBreadcrumb>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { Card, Tooltip } from 'antd';
 import * as React from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -74,25 +75,28 @@ export default (props: Props) => {
                 const keys = Object.keys(param.value);
                 for (let key = 0; key < keys.length; key += 1) {
                   const i = keys[key];
-                  itemContents.push(<div key={col2++} className={styles.textValue}>
-                    <span
-                      className={styles.textValueKey}
-                    >
-                      {i}
-                    </span>
-                    :
-                    {' '}
-                    <span
+                  itemContents.push((
+                    <div key={col2++} className={styles.textValue}>
+                      <span
+                        className={styles.textValueKey}
+                      >
+                        {i}
+                      </span>
+                      :
+                      {' '}
+                      <span
                       // @ts-ignore
-                      className={styles.textValueValue}
-                    >
-                      {param.value[i]}
-                    </span>
-                                    </div>);
+                        className={styles.textValueValue}
+                      >
+                        {param.value[i]}
+                      </span>
+                    </div>
+                  ));
                 }
               }
             }
 
+            // eslint-disable-next-line consistent-return
             return (
               <div key={param.key} className={styles.dataColumnItem}>
                 <div className={styles.textKey}>{param.key}</div>
@@ -127,7 +131,7 @@ export default (props: Props) => {
   });
 
   return (
-    <div className={styles.card}>
+    <div>
       <Card title={title} type="inner" bodyStyle={{ paddingInline: 0 }} extra={extra}>
         <div className={styles.cardBody}>
           {contents}

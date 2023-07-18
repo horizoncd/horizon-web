@@ -12,6 +12,7 @@ const Resource = {
   buildDeploy: 'builddeploy',
   pods: 'pods',
   deploy: 'deploy',
+  deployAll: 'deployall',
   diff: 'diff',
   next: 'next',
   restart: 'restart',
@@ -158,6 +159,11 @@ const Permissions = {
   },
   deployCluster: {
     resource: `${Resource.instance}/${Resource.deploy}`,
+    action: Action.create,
+    allowed: false,
+  },
+  deployClusterAll: {
+    resource: `${Resource.instance}/${Resource.deployAll}`,
     action: Action.create,
     allowed: false,
   },

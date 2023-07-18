@@ -2,15 +2,14 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './index.less';
 import Form from '@rjsf/bootstrap-4';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
+import validator from '@rjsf/validator-ajv8';
 
 interface FormProps {
-  key?: string,
-
   disabled: boolean,
   jsonSchema: any,
   uiSchema: any;
 
-  formData: any;
+  formData?: any;
 
   onChange?: any;
 
@@ -28,7 +27,7 @@ export default forwardRef((props: FormProps, ref) => {
     ref,
     () => ({
       submit: () => {
-        (formRef.current as any).formElement.dispatchEvent(
+        (formRef.current as any).formElement.current.dispatchEvent(
           new CustomEvent('submit', {
             cancelable: true,
             bubbles: true, // <-- actual fix
@@ -41,6 +40,7 @@ export default forwardRef((props: FormProps, ref) => {
     // @ts-ignore
     <div>
       <Form
+        validator={validator}
         ref={formRef}
         disabled={props.disabled}
         formData={props.formData}
@@ -49,7 +49,7 @@ export default forwardRef((props: FormProps, ref) => {
         onChange={props.onChange}
         onSubmit={props.onSubmit}
         liveValidate={props.liveValidate}
-        showErrorList={props.showErrorList}
+        showErrorList={props.showErrorList && 'bottom'}
         omitExtraData
       >
         <div />

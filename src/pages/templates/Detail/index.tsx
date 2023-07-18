@@ -41,6 +41,30 @@ function TemplateDetail(props: { initialState: API.InitialState }) {
     ],
     [
       {
+        key: formatMessage('type'),
+        value: (() => {
+          switch (template?.type) {
+            case 'database':
+              return intl.formatMessage({ id: 'pages.catalog.database' });
+              break;
+            case 'middleware':
+              return intl.formatMessage({ id: 'pages.catalog.middleware' });
+              break;
+            case 'workload':
+              return intl.formatMessage({ id: 'pages.catalog.workload' });
+              break;
+            case 'other':
+              return intl.formatMessage({ id: 'pages.catalog.other' });
+              break;
+            case 'v1':
+              return intl.formatMessage({ id: 'pages.catalog.v1' });
+              break;
+            default:
+              return '';
+          }
+        })(),
+      },
+      {
         key: formatMessage('createdAt'),
         value: new Date(template?.createdAt || '').toLocaleString(),
       },
