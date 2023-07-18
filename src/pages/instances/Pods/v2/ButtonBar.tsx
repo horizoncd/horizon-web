@@ -151,7 +151,7 @@ function ButtonBar(props: ButtonBarProps) {
 
   return (
     <div style={{ marginBottom: '5px', textAlign: 'right' }}>
-      <Button
+      {/* <Button
         type="primary"
         onClick={() => {
           history.push(`/instances${fullPath}/-/configs`);
@@ -159,7 +159,7 @@ function ButtonBar(props: ButtonBarProps) {
         style={{ marginRight: '10px' }}
       >
         {intl.formatMessage({ id: 'pages.cluster.action.gotoDetail' })}
-      </Button>
+      </Button> */}
       <Button
         disabled={!RBAC.Permissions.buildAndDeployCluster.allowed
           || isRestrictedStatus(status)
