@@ -239,7 +239,8 @@ export default (props: any) => {
     },
   });
 
-  const onDeploySubmit = () => {
+  const onDeploySubmit = (formData: any) => {
+    setTemplateConfig(formData);
     setDeploySubmitted(true);
   };
 
@@ -339,19 +340,22 @@ export default (props: any) => {
                 />
               )
             }
-          <DeployConfigForm
-            template={templateBasic}
-            release={releaseName}
-            setReleaseName={setReleaseName}
-            templateConfig={templateConfig}
-            setTemplateConfig={setTemplateConfig}
-            setValid={setDeployConfigValid}
-            clusterID={cluster?.id}
-            ref={templateFormRef}
-            onSubmit={onDeploySubmit}
-            resourceType={ResourceType.INSTANCE}
-          />
-
+          {
+            (!editing || releaseName) && (
+            <DeployConfigForm
+              template={templateBasic}
+              release={releaseName}
+              setReleaseName={setReleaseName}
+              templateConfig={templateConfig}
+              setTemplateConfig={setTemplateConfig}
+              setValid={setDeployConfigValid}
+              clusterID={cluster?.id}
+              ref={templateFormRef}
+              onSubmit={onDeploySubmit}
+              resourceType={ResourceType.INSTANCE}
+            />
+            )
+            }
           <StepAction>
             <Button
               type="primary"
