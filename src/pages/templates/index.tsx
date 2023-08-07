@@ -16,6 +16,7 @@ import {
 import { PageWithInitialState } from '@/components/Enhancement';
 import { ComponentWithPagination } from '../../components/Enhancement';
 import PopupTime from '@/components/Widget/PopupTime';
+import { CatalogType } from '@/services/core';
 
 const { TabPane } = Tabs;
 
@@ -140,12 +141,12 @@ const render = (node: TreeDataNode): React.ReactNode => {
   return <DTreeItem title={title} extra={group !== 0 && <GroupSource groupID={group || 0} />} fullPath={fullPath} updatedAt={updatedAt} />;
 };
 
-const TemplateTable = (props: { userID: number }) => {
-  const { userID } = props;
+const TemplateTable = (props: { userID: number, type?: string }) => {
+  const { userID, type } = props;
   const [templates, setTemplates] = useState([] as API.Template[]);
   useRequest(() => Promise.all([
-    listTemplatesV2({ fullpath: true, userID }),
-    listTemplatesV2({ fullpath: true, groupID: 0 }),
+    listTemplatesV2({ fullpath: true, userID, type }),
+    listTemplatesV2({ fullpath: true, groupID: 0, type }),
   ]).then((v) => {
     const data: Templates.Template[] = [];
     if (v[0] && v[0].data !== null && v[0].data !== undefined) data.push(...v[0].data);
@@ -203,8 +204,20 @@ function TemplateList(props: { initialState: API.InitialState }) {
         <TemplateTab
           createButton={currentUser.isAdmin && queryInput}
         >
-          <TabPane tab={intl.formatMessage({ id: 'pages.dashboard.title.templates' })} key="1">
-            <TemplateTable userID={userID} />
+          <TabPane tab={intl.formatMessage({ id: 'pages.catalog.workload' })} key="1">
+            <TemplateTable userID={userID} type={CatalogType.Workload} />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.catalog.v1' })} key="2">
+            <TemplateTable userID={userID} type={CatalogType.V1} />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.catalog.middleware' })} key="3">
+            <TemplateTable userID={userID} type={CatalogType.Middleware} />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.catalog.database' })} key="4">
+            <TemplateTable userID={userID} type={CatalogType.Database} />
+          </TabPane>
+          <TabPane tab={intl.formatMessage({ id: 'pages.catalog.other' })} key="5">
+            <TemplateTable userID={userID} type={CatalogType.Other} />
           </TabPane>
         </TemplateTab>
       </Col>

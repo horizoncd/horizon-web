@@ -17,7 +17,7 @@ import { CenterSpin, MaxSpace } from '@/components/Widget';
 import { refreshPodsInfo } from '@/components/rollout';
 import PodsTable from '../components/PodsTable';
 import { StepCard, BuildCard, CountCircle } from '../components';
-import ButtonBar from './ButtonBar';
+import ButtonBarV2 from '../components/ButtonBarV2';
 import NoData from '@/components/NoData';
 import InfoMenu from '../components/InfoMenu';
 import useRefCallback from '../components/useRefCallback';
@@ -89,6 +89,8 @@ function PodsPage(props: PodsPageProps) {
     ready: !!cluster,
   });
 
+  const isWorkload = useMemo(() => template && template.type === CatalogType.Workload, [template]);
+
   const { data: step, run: getStep, refresh: refreshStep } = useRequest(() => getStepV2(id), {
     manual: true,
   });
@@ -115,6 +117,7 @@ function PodsPage(props: PodsPageProps) {
       }
 
       if (status.status !== ClusterStatus.FREED
+        && status.status !== ClusterStatus.DELETING
         && status.status !== ClusterStatus.NOTFOUND) {
         getResourceTree();
       }
@@ -152,9 +155,10 @@ function PodsPage(props: PodsPageProps) {
   return (
     <PageWithBreadcrumb>
       <div>
-        <ButtonBar cluster={cluster} template={template} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
+        <ButtonBarV2 cluster={cluster} template={template} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
         <MaxSpace direction="vertical" size="large">
           <InfoMenu
+            showOutputTags={!isWorkload}
             ref={infoMenuRef}
             manualPaused={(step && step.manualPaused) ?? false}
             cluster={cluster}
@@ -182,36 +186,36 @@ function PodsPage(props: PodsPageProps) {
             )
           }
           {
-          podsInfo.sortedKey.length >= 1
-            && clusterStatus.status !== ClusterStatus.FREED
-            && clusterStatus.status !== ClusterStatus.NOTFOUND
-            ? (
-              <Tabs
-                defaultActiveKey={podsInfo.sortedKey[0]}
-              >
-                {
-                  podsInfo.sortedKey.map((key, index) => (
-                    <TabPane
-                      tab={(
-                        <Popover content={key}>
-                          {
-                            `${getLastPattern(key)}`
-                          }
-                          <CountCircle count={podsInfo.podsMap[key].length} />
-                          {podsInfo.sorted && index === 0 ? ' (current)' : ''}
-                        </Popover>
-                      )}
-                      key={key}
-                      tabKey={key}
-                    >
-                      <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} noMicroApp={template && (template.type !== CatalogType.V1 && template.type !== CatalogType.Workload)} />
-                    </TabPane>
-                  ))
-                }
-              </Tabs>
-            )
-            : <NoData titleID="pages.cluster.podsTable.nodata.title" descID="pages.cluster.podsTable.nodata.desc" />
-        }
+            podsInfo.sortedKey.length >= 1
+              && clusterStatus.status !== ClusterStatus.FREED
+              && clusterStatus.status !== ClusterStatus.NOTFOUND
+              ? (
+                <Tabs
+                  defaultActiveKey={podsInfo.sortedKey[0]}
+                >
+                  {
+                    podsInfo.sortedKey.map((key, index) => (
+                      <TabPane
+                        tab={(
+                          <Popover content={key}>
+                            {
+                              `${getLastPattern(key)}`
+                            }
+                            <CountCircle count={podsInfo.podsMap[key].length} />
+                            {podsInfo.sorted && index === 0 ? ' (current)' : ''}
+                          </Popover>
+                        )}
+                        key={key}
+                        tabKey={key}
+                      >
+                        <PodsTable key={key} data={podsInfo.podsMap[key]} cluster={cluster} noMicroApp={!isWorkload} />
+                      </TabPane>
+                    ))
+                  }
+                </Tabs>
+              )
+              : <NoData titleID="pages.cluster.podsTable.nodata.title" descID="pages.cluster.podsTable.nodata.desc" />
+          }
         </MaxSpace>
       </div>
     </PageWithBreadcrumb>
