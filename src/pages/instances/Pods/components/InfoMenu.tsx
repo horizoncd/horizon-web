@@ -14,6 +14,7 @@ interface InfoMenuProps {
   env2DisplayName: Map<string, string>,
   region2DisplayName: Map<string, string>,
   podsInfo: any,
+  showOutputTags?: boolean,
 }
 
 const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
@@ -21,7 +22,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
   const { fullPath: clusterFullPath } = initialState!.resource;
   const {
     manualPaused, cluster, clusterStatus, env2DisplayName,
-    region2DisplayName, podsInfo,
+    region2DisplayName, podsInfo, showOutputTags = false,
   } = props;
   const outputRef = useRef();
   const intl = useIntl();
@@ -38,28 +39,34 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
       <ConfigProvider renderEmpty={() => <span>{intl.formatMessage({ id: 'pages.common.nodata' })}</span>}>
         <MaxSpace direction="vertical" size="large">
           {
-                    cluster.version === 1 ? (
-                      <ClusterCard
-                        manualPaused={manualPaused}
-                        cluster={cluster}
-                        clusterStatus={clusterStatus}
-                        env2DisplayName={env2DisplayName}
-                        region2DisplayName={region2DisplayName}
-                        podsInfo={podsInfo}
-                      />
-                    ) : (
-                      <ClusterCardV2 // 使用重命名后的名称
-                        manualPaused={manualPaused}
-                        cluster={cluster}
-                        clusterStatus={clusterStatus}
-                        env2DisplayName={env2DisplayName}
-                        region2DisplayName={region2DisplayName}
-                        podsInfo={podsInfo}
-                      />
-                    )
-                }
-          <Output ref={outputRef} clusterID={cluster.id} />
-          <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />
+            cluster.version === 1 ? (
+              <ClusterCard
+                manualPaused={manualPaused}
+                cluster={cluster}
+                clusterStatus={clusterStatus}
+                env2DisplayName={env2DisplayName}
+                region2DisplayName={region2DisplayName}
+                podsInfo={podsInfo}
+              />
+            ) : (
+              <ClusterCardV2 // 使用重命名后的名称
+                manualPaused={manualPaused}
+                cluster={cluster}
+                clusterStatus={clusterStatus}
+                env2DisplayName={env2DisplayName}
+                region2DisplayName={region2DisplayName}
+                podsInfo={podsInfo}
+              />
+            )
+          }
+          {
+            showOutputTags && (
+              <>
+                <Output ref={outputRef} clusterID={cluster.id} />
+                <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />
+              </>
+            )
+          }
         </MaxSpace>
       </ConfigProvider>
     </div>

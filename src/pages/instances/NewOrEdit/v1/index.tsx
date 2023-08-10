@@ -353,6 +353,7 @@ export default (props: any) => {
       const appPart = 'application';
       const pipelinePart = 'pipeline';
       const gitPart = 'git';
+      const tplInput = 'templateInput';
       const configDiff = difference({
         git: res.git,
         templateInput: config,
@@ -364,10 +365,10 @@ export default (props: any) => {
           setShowDeployModal(true);
         }
       } else if (editing) {
-        if (Object.keys(configDiff).includes(pipelinePart)
+        if ((tplInput in configDiff && pipelinePart in configDiff.templateInput)
           || Object.keys(configDiff).includes(gitPart)) {
           setShowBuildDeployModal(true);
-        } else if (Object.keys(configDiff).includes(appPart)) {
+        } else if (tplInput in configDiff && appPart in configDiff.templateInput) {
           setShowDeployModal(true);
         } else {
           onButtonCancel();

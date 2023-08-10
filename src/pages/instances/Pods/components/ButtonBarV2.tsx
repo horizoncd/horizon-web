@@ -19,7 +19,7 @@ interface ButtonBarProps {
   template?: Templates.Template
 }
 
-function ButtonBar(props: ButtonBarProps) {
+function ButtonBarV2(props: ButtonBarProps) {
   const {
     clusterStatus, cluster, manualPaused, template = { type: CatalogType.V1 },
   } = props;
@@ -213,4 +213,4 @@ function ButtonBar(props: ButtonBarProps) {
   );
 }
 
-export default ButtonBar;
+export default ButtonBarV2;

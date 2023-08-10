@@ -109,6 +109,7 @@ function PodsPage(props: PodsPageProps) {
       }
 
       if (status.status !== ClusterStatus.FREED
+        && status.status !== ClusterStatus.DELETING
         && status.status !== ClusterStatus.NOTFOUND) {
         getResourceTree();
       }
