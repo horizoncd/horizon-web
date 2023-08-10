@@ -22,7 +22,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
   const { fullPath: clusterFullPath } = initialState!.resource;
   const {
     manualPaused, cluster, clusterStatus, env2DisplayName,
-    region2DisplayName, podsInfo, showOutputTags: isWorkload = false,
+    region2DisplayName, podsInfo, showOutputTags = false,
   } = props;
   const outputRef = useRef();
   const intl = useIntl();
@@ -60,7 +60,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
             )
           }
           {
-            isWorkload && (
+            showOutputTags && (
               <>
                 <Output ref={outputRef} clusterID={cluster.id} />
                 <Tag clusterID={cluster.id} clusterFullPath={clusterFullPath} />

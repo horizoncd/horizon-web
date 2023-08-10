@@ -20,7 +20,7 @@ function LogList(props: { initialState: API.InitialState }) {
   const isAdminPage = resourceType === 'group' && resourceID === 0;
   const webhookLogDetailURL = isAdminPage
     ? `/admin/webhooks/${id}/`
-    : `/${resourceType === 'clusters' ? 'instances' : resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/`;
+    : `/${resourceType === 'cluster' ? 'instances' : resourceType}s${resourceFullPath}/-/settings/webhooks/${id}/`;
 
   const { data: webhook } = useRequest(() => getWebhook(id), {
     onSuccess: () => {
