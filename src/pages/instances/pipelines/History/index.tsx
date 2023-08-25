@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useModel } from '@@/plugin-model/useModel';
 import { useRequest } from '@@/plugin-request/request';
 import { history, useIntl, Link } from 'umi';
-import { getPipelines } from '@/services/clusters/clusters';
+import { listPipelineRuns } from '@/services/clusters/clusters';
 import Utils from '@/utils';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
@@ -30,8 +30,11 @@ export default (props: any) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [tabKey, setTabKey] = useState(category);
 
-  const { data: pipelines } = useRequest(() => getPipelines(id, {
-    pageNumber, pageSize, canRollback: category === 'rollback',
+  const { data: pipelines } = useRequest(() => listPipelineRuns(id, {
+    pageNumber,
+    pageSize,
+    canRollback: category === 'rollback',
+    status: tabKey === 'unmerged' ? ['ready', 'pending'] : undefined,
   }), {
     refreshDeps: [pageNumber, tabKey],
   });
@@ -107,18 +110,18 @@ export default (props: any) => {
       key: 'operations',
       render: (text: string, record: PIPELINES.Pipeline) => (
         record.canRollback && (
-        <Space size="middle">
-          <Button
-            type="link"
-            style={{ padding: 0 }}
-            disabled={!RBAC.Permissions.rollbackCluster.allowed}
-            onClick={() => onRetry(record)}
-          >
-            <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.rollback.tooltip' })}>
-              {formatMessage('rollback')}
-            </Tooltip>
-          </Button>
-        </Space>
+          <Space size="middle">
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              disabled={!RBAC.Permissions.rollbackCluster.allowed}
+              onClick={() => onRetry(record)}
+            >
+              <Tooltip title={intl.formatMessage({ id: 'pages.message.cluster.rollback.tooltip' })}>
+                {formatMessage('rollback')}
+              </Tooltip>
+            </Button>
+          </Space>
         )
       ),
     },
@@ -162,6 +165,9 @@ export default (props: any) => {
           {table}
         </TabPane>
         <TabPane tab={formatMessage('canRollback')} key="rollback">
+          {table}
+        </TabPane>
+        <TabPane tab={formatMessage('unmerged')} key="unmerged">
           {table}
         </TabPane>
       </Tabs>

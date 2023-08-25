@@ -188,30 +188,30 @@ export default (props: any) => {
     Changes: (
       <div>
         {
-        pipeline?.action === PublishType.BUILD_DEPLOY
-        && (
-        <Card title={formatMessage('codeChange')} className={styles.gapBetweenCards}>
-          <b>Commit ID</b>
-          <br />
-          {diff?.codeInfo.commitID}
-          <br />
-          <br />
-          <b>Commit Log</b>
-          <br />
-          {diff?.codeInfo.commitMsg}
-          <br />
-          <br />
-          <b>Commit History</b>
-          <br />
-          <ButtonWithoutPadding
-            type="link"
-            onClick={() => window.open(diff?.codeInfo.link)}
-          >
-            Link
-          </ButtonWithoutPadding>
-        </Card>
-        )
-      }
+          pipeline?.action === PublishType.BUILD_DEPLOY
+          && (
+            <Card title={formatMessage('codeChange')} className={styles.gapBetweenCards}>
+              <b>Commit ID</b>
+              <br />
+              {diff?.codeInfo.commitID}
+              <br />
+              <br />
+              <b>Commit Log</b>
+              <br />
+              {diff?.codeInfo.commitMsg}
+              <br />
+              <br />
+              <b>Commit History</b>
+              <br />
+              <ButtonWithoutPadding
+                type="link"
+                onClick={() => window.open(diff?.codeInfo.link)}
+              >
+                Link
+              </ButtonWithoutPadding>
+            </Card>
+          )
+        }
         <Card title={formatMessage('configChange')} className={styles.gapBetweenCards}>
           <CodeDiff diff={diff?.configDiff.diff || ''} />
         </Card>

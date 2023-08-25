@@ -11,7 +11,7 @@ import {
   ClusterStatus,
 } from '@/const';
 import {
-  next, pause, resume, getPipelines, freeCluster, autoPromote, cancelAutoPromote, promoteFull,
+  next, pause, resume, listPipelineRuns, freeCluster, autoPromote, cancelAutoPromote, promoteFull,
 } from '@/services/clusters/clusters';
 import RBAC from '@/rbac';
 import { PageWithInitialState } from '@/components/Enhancement';
@@ -22,7 +22,7 @@ const smile = <SmileOutlined />;
 const loading = <LoadingOutlined />;
 const waiting = <HourglassOutlined />;
 
-const StrongTxt = ({ txt }:{ txt: string }) => (
+const StrongTxt = ({ txt }: { txt: string }) => (
   <BoldText style={{ color: 'green' }}>
     {txt}
   </BoldText>
@@ -223,9 +223,9 @@ function DeployButtons({
         <Button
           type="primary"
           disabled={
-          !RBAC.Permissions.deployClusterAll.allowed
-          || manualPaused
-        }
+            !RBAC.Permissions.deployClusterAll.allowed
+            || manualPaused
+          }
           style={{ margin: '0 8px' }}
           onClick={onPromoteFull}
         >
@@ -359,7 +359,7 @@ function RolloutDeployPanel(props: RolloutDeployPanelProps) {
               onCancelDeploy={
                 () => {
                   // query latest canRollback pipelinerun
-                  getPipelines(id, {
+                  listPipelineRuns(id, {
                     pageNumber: 1, pageSize: 1, canRollback: true,
                   }).then(({ data }) => {
                     const { total } = data;

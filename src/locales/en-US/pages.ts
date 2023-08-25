@@ -274,6 +274,8 @@ export default {
   'pages.cluster.status.stepPaused': 'Step paused',
 
   'pages.cluster.basic.status': 'Status',
+  'pages.cluster.basic.pipeline.unmerged': 'Unmerged PR',
+  'pages.cluster.basic.pipeline.unmerged.description': 'Unmerged PR count during the leatest 10 releases',
   'pages.cluster.basic.expireIn': 'Expires in',
 
   'pages.cluster.podsTable.nodata.title': 'No Pod',
@@ -386,6 +388,7 @@ export default {
   'pages.pipeline.configChange': 'Config change',
   'pages.pipeline.all': 'All',
   'pages.pipeline.canRollback': 'Can rollback',
+  'pages.pipeline.unmerged': 'Unmerged',
   'pages.pipeline.status': 'Status',
   'pages.pipeline.status.passed': 'Passed',
   'pages.pipeline.status.created': 'Created',

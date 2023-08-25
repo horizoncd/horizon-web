@@ -50,7 +50,7 @@ export async function getCluster(clusterID: number) {
     data: CLUSTER.Cluster
   }>(`/apis/core/v1/clusters/${clusterID}`, {
     method: 'GET',
-  // eslint-disable-next-line no-param-reassign
+    // eslint-disable-next-line no-param-reassign
   }).then((c) => { if (c) c.data.version = 1; return c; });
 }
 
@@ -59,7 +59,7 @@ export async function getClusterV2(clusterID: number) {
     data: CLUSTER.ClusterV2
   }>(`/apis/core/v2/clusters/${clusterID}`, {
     method: 'GET',
-  // eslint-disable-next-line no-param-reassign
+    // eslint-disable-next-line no-param-reassign
   }).then((c) => { if (c) c.data.version = 2; return c; });
 }
 
@@ -224,10 +224,10 @@ export async function diffsOfCode(clusterID: number, refType: string, targetRef:
   });
 }
 
-export async function getPipelines(clusterID: number, params: PIPELINES.ListPipelineParam) {
+export async function listPipelineRuns(clusterID: number, params: PIPELINES.ListPipelineParam) {
   return request<{
     data: API.PageResult<PIPELINES.Pipeline>
-  }>(`/apis/core/v1/clusters/${clusterID}/pipelineruns`, {
+  }>(`/apis/core/v2/clusters/${clusterID}/pipelineruns`, {
     method: 'GET',
     params,
   });

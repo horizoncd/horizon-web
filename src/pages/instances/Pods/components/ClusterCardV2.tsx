@@ -1,4 +1,4 @@
-import { useIntl } from 'umi';
+import { Link, useIntl } from 'umi';
 import DetailCard, { Param } from '@/components/DetailCard';
 import { StatusComponent } from '@/components/State';
 import { CardTitle } from '../../Detail/Widget';
@@ -13,6 +13,7 @@ interface ClusterCardProps {
   },
   region2DisplayName: Map<string, string>,
   env2DisplayName: Map<string, string>,
+  unmergedPipelineCount: number,
 }
 
 const DurationDisplay = (props: { seconds: number }) => {
@@ -61,7 +62,8 @@ const DurationDisplay = (props: { seconds: number }) => {
 
 function ClusterCardV2(props: ClusterCardProps) {
   const {
-    cluster, clusterStatus, podsInfo, region2DisplayName, env2DisplayName, manualPaused,
+    cluster, clusterStatus, podsInfo, unmergedPipelineCount,
+    region2DisplayName, env2DisplayName, manualPaused,
   } = props;
 
   const intl = useIntl();
@@ -88,6 +90,11 @@ function ClusterCardV2(props: ClusterCardProps) {
       {
         key: intl.formatMessage({ id: 'pages.common.env' }),
         value: (cluster && env2DisplayName) ? env2DisplayName.get(cluster.scope.environment) : '',
+      },
+      {
+        key: intl.formatMessage({ id: 'pages.cluster.basic.pipeline.unmerged' }),
+        value: <Link to={`/instances/${cluster.fullPath}/-/pipelines?category=unmerged`}>{unmergedPipelineCount}</Link>,
+        description: intl.formatMessage({ id: 'pages.message.cluster.pipeline.unmerged.description' }),
       },
     ],
   ];

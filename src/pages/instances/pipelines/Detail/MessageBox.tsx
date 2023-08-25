@@ -61,7 +61,7 @@ const DialogContent = styled.div`
     padding-left: 22px;
     padding-right: 22px;
 
-    font-size: 1.1rem;
+    font-size: 0.9rem;
 `;
 
 interface DialogProps {

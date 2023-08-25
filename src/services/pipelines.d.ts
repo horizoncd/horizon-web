@@ -39,6 +39,7 @@ declare namespace PIPELINES {
     pageNumber: number,
     pageSize: number,
     canRollback: boolean
+    status?: string[]
   };
 
   type CheckRun = {

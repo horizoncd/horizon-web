@@ -274,6 +274,8 @@ export default {
   'pages.cluster.status.stepPaused': '批次暂停',
 
   'pages.cluster.basic.status': '实例状态',
+  'pages.cluster.basic.pipeline.unmerged': '未合入PR',
+  'pages.cluster.basic.pipeline.unmerged.description': '最近10次发布中未合入的PR数量',
   'pages.cluster.basic.expireIn': '剩余时长',
 
   'pages.cluster.podsTable.nodata.title': '没有Pod',
@@ -386,6 +388,7 @@ export default {
   'pages.pipeline.configChange': '配置变更',
   'pages.pipeline.all': '所有',
   'pages.pipeline.canRollback': '可回滚',
+  'pages.pipeline.unmerged': '未合入',
   'pages.pipeline.status': '状态',
   'pages.pipeline.status.passed': '成功',
   'pages.pipeline.status.created': '已创建',
