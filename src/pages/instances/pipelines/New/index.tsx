@@ -14,7 +14,7 @@ import SubmitCancelButton from '@/components/SubmitCancelButton';
 import NotFound from '@/pages/404';
 import { PublishType } from '@/const';
 import {
-  buildDeploy, deploy, diffsOfCode, getClusterV2,
+  createPipelineRun, diffsOfCode, getClusterV2,
 } from '@/services/clusters/clusters';
 import {
   gitRefTypeList, listGitRef, parseGitRef, GitRefType,
@@ -29,7 +29,6 @@ export default (props: any) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { initialState } = useModel('@@initialState');
-  const { successAlert } = useModel('alert');
   const { id, fullPath } = initialState?.resource || {};
   const { location } = props;
   const { query } = location;
@@ -81,12 +80,6 @@ export default (props: any) => {
     ready: !!cluster,
   });
 
-  const hookAfterSubmit = () => {
-    successAlert(formatMessage('submit'));
-    // jump to pods' url
-    history.push(`${fullPath}`);
-  };
-
   const requiredRule: Rule[] = [
     {
       required: true,
@@ -101,21 +94,12 @@ export default (props: any) => {
   ];
 
   const {
-    run: startBuildDeploy,
-    loading: buildDeployLoading,
-  } = useRequest((clusterID: number, d: CLUSTER.ClusterBuildDeploy) => buildDeploy(clusterID, d), {
-    onSuccess: () => {
-      hookAfterSubmit();
-    },
-    manual: true,
-  });
-
-  const {
-    run: startDeploy,
-    loading: deployLoading,
-  } = useRequest((clusterID: number, d: CLUSTER.ClusterDeploy) => deploy(clusterID, d), {
-    onSuccess: () => {
-      hookAfterSubmit();
+    run: pipelineRunCreate,
+    loading,
+  } = useRequest(createPipelineRun, {
+    onSuccess: (pr: PIPELINES.Pipeline) => {
+      // jump to pods' url
+      history.push(`/instances${fullPath}/-/pipelines/${pr.id}`);
     },
     manual: true,
   });
@@ -127,8 +111,9 @@ export default (props: any) => {
     };
     if (type === PublishType.BUILD_DEPLOY) {
       form.validateFields(['title', 'refType', 'refValue']).then(() => {
-        startBuildDeploy(id!, {
+        pipelineRunCreate(id!, {
           ...info,
+          action: 'builddeploy',
           git: {
             [form.getFieldValue('refType')]: form.getFieldValue('refValue'),
           },
@@ -136,8 +121,9 @@ export default (props: any) => {
       });
     } else {
       form.validateFields(['title']).then(() => {
-        startDeploy(id!, {
+        pipelineRunCreate(id!, {
           ...info,
+          action: 'deploy',
           imageTag: form.getFieldValue('imageTag'),
         });
       });
@@ -268,7 +254,7 @@ export default (props: any) => {
         </Card>
       </Card>
 
-      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel} loading={buildDeployLoading || deployLoading} />
+      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel} loading={loading} />
     </PageWithBreadcrumb>
   );
 };

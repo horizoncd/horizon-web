@@ -347,6 +347,21 @@ const Permissions = {
     action: Action.get,
     allowed: false,
   },
+  runPipelineRun: {
+    resource: `${Resource.pipelines}/run`,
+    action: Action.create,
+    allowed: false,
+  },
+  forceRunPipelineRun: {
+    resource: `${Resource.pipelines}/forcerun`,
+    action: Action.create,
+    allowed: false,
+  },
+  cancelPipelineRun: {
+    resource: `${Resource.pipelines}/cancel`,
+    action: Action.create,
+    allowed: false,
+  },
 };
 
 // roles response example：

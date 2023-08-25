@@ -3,7 +3,7 @@ import { useIntl, useModel, useRequest } from 'umi';
 import { CopyOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import copy from 'copy-to-clipboard';
-import { cancelPipeline, queryPipelineLog } from '@/services/pipelineruns/pipelineruns';
+import { stopPipelineRun, queryPipelineLog } from '@/services/pipelineruns/pipelineruns';
 import CodeEditor from '@/components/CodeEditor';
 import styles from '../index.less';
 import FullscreenModal from '@/components/FullscreenModal';
@@ -56,20 +56,20 @@ function BuildCard(props: BuildCardProps) {
           {intl.formatMessage({ id: 'pages.pods.buildLog' })}
         </span>
         {
-                canCancel && (
-                <Button
-                  danger
-                  style={{ marginLeft: '10px', marginBottom: '10px' }}
-                  onClick={() => {
-                    cancelPipeline(pipelinerunID).then(() => {
-                      successAlert(intl.formatMessage({ id: 'pages.message.cluster.deployCancel.success' }));
-                    });
-                  }}
-                >
-                  {intl.formatMessage({ id: 'pages.pods.deployCancel' })}
-                </Button>
-                )
-                      }
+          canCancel && (
+            <Button
+              danger
+              style={{ marginLeft: '10px', marginBottom: '10px' }}
+              onClick={() => {
+                stopPipelineRun(pipelinerunID).then(() => {
+                  successAlert(intl.formatMessage({ id: 'pages.message.cluster.deployCancel.success' }));
+                });
+              }}
+            >
+              {intl.formatMessage({ id: 'pages.pods.deployCancel' })}
+            </Button>
+          )
+        }
         <Progressing
           style={{ marginBottom: '10px', marginLeft: '10px' }}
           title={intl.formatMessage({ id: 'pages.cluster.status.pipelineRunning' })}

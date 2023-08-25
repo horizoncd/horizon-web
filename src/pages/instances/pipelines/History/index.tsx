@@ -9,7 +9,7 @@ import { getPipelines } from '@/services/clusters/clusters';
 import Utils from '@/utils';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import {
-  Failed, NotFound, Progressing, Succeeded, Cancelled,
+  Failed, NotFound, Progressing, Succeeded, Cancelled, Ready, Pending,
 } from '@/components/State';
 import { DeployTypeMap } from '@/const';
 import RBAC from '@/rbac';
@@ -54,10 +54,15 @@ export default (props: any) => {
             return <Succeeded link={link} text={formatMessage('status.passed')} />;
           case 'failed':
             return <Failed link={link} />;
+          case 'pending':
+            return <Pending link={link} />;
+          case 'running':
           case 'created':
             return <Progressing link={link} text={formatMessage('status.created')} />;
           case 'cancelled':
             return <Cancelled link={link} />;
+          case 'ready':
+            return <Ready link={link} />;
           default:
             return <NotFound link={link} />;
         }

@@ -40,4 +40,35 @@ declare namespace PIPELINES {
     pageSize: number,
     canRollback: boolean
   };
+
+  type CheckRun = {
+    id: number
+    name: string
+    checkId: uint
+    status : string
+    pipilineRunId: number
+    detailUrl: string
+    message: string
+    createdAt: string
+    updatedAt: string
+  };
+
+  type PrMessage = {
+    id: number
+    pipilineRunId: number
+    content: string
+    createdAt: string
+    updatedAt: string
+    createdBy: {
+      id: number
+      name: string
+      userType?: string
+    }
+    updatedBy: {
+      id: number
+      name: string
+      userType?: string
+    }
+  };
+
 }

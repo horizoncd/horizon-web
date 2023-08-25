@@ -85,6 +85,15 @@ export async function updateClusterV2(clusterID: number, data: CLUSTER.UpdateClu
   });
 }
 
+export async function createPipelineRun(clusterID: number, data: CLUSTER.PipelineRunCreate) {
+  return request<{
+    data: PIPELINES.Pipeline
+  }>(`/apis/core/v2/clusters/${clusterID}/pipelinerun`, {
+    method: 'POST',
+    data,
+  });
+}
+
 export async function buildDeploy(clusterID: number, data: CLUSTER.ClusterBuildDeploy) {
   return request<{
     data: {

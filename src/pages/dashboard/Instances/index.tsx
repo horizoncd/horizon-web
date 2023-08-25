@@ -23,7 +23,7 @@ import { listTemplatesV2 } from '@/services/templates/templates';
 import { PageWithInitialState, PageWithInitialStateProps } from '@/components/Enhancement';
 import { setQuery } from '../utils';
 import { WithContainer, SearchBox } from '../components';
-import { FavoriteStar, PopupTime } from '@/components/Widget';
+import { CircleTag, FavoriteStar, PopupTime } from '@/components/Widget';
 import './index.less';
 import Expression from '@/components/FilterBox/Expression';
 import HorizonAutoCompleteHandler, { AutoCompleteOption } from '@/components/FilterBox/HorizonAutoCompleteHandler';
@@ -81,13 +81,13 @@ function Title(props: {
           {firstLetter}
         </span>
         <span style={{ marginLeft: 60 }}>{tmp}</span>
-        <span className="user-access-role" onClick={() => setEnv(scope.environment)}>{env}</span>
-        <span className="user-access-role" onClick={() => setRegion(scope.region)}>{scope.regionDisplayName}</span>
-        <span className="user-access-role" onClick={() => { setTemplate(template.name); setTemplateRelease(template.release); }}>
+        <CircleTag style={{ marginLeft: '0.5rem' }} onClick={() => setEnv(scope.environment)}>{env}</CircleTag>
+        <CircleTag style={{ marginLeft: '0.5rem' }} onClick={() => setRegion(scope.region)}>{scope.regionDisplayName}</CircleTag>
+        <CircleTag style={{ marginLeft: '0.5rem' }} onClick={() => { setTemplate(template.name); setTemplateRelease(template.release); }}>
           {template.name}
           -
           {template.release}
-        </span>
+        </CircleTag>
         <br />
         <span style={{ marginLeft: 60, color: '#666666' }}>{description}</span>
       </div>

@@ -6,7 +6,9 @@ import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import copy from 'copy-to-clipboard';
 import { useState } from 'react';
-import { Button, Card, Modal } from 'antd';
+import {
+  Button, Card, Modal,
+} from 'antd';
 import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import type { Param } from '@/components/DetailCard';
@@ -21,13 +23,18 @@ import 'codemirror/addon/display/fullscreen.css';
 import 'codemirror/addon/display/fullscreen';
 import styles from './index.less';
 import CodeDiff from '@/components/CodeDiff';
-import { getPipeline, getPipelineDiffs, queryPipelineLog } from '@/services/pipelineruns/pipelineruns';
+import {
+  getPipeline, getPipelineDiffs, listCheckRuns, queryPipelineLog,
+} from '@/services/pipelineruns/pipelineruns';
 import Utils from '@/utils';
 import { PublishType } from '@/const';
-import { rollback } from '@/services/clusters/clusters';
+import { createPipelineRun } from '@/services/clusters/clusters';
 import FullscreenModal from '@/components/FullscreenModal';
 import { GitRefType } from '@/services/code/code';
 import ButtonWithoutPadding from '@/components/Widget/ButtonWithoutPadding';
+import MergeBox from './MergeBox';
+import { MaxSpace } from '@/components/Widget';
+import MessageBox from './MessageBox';
 
 export default (props: any) => {
   const params = useParams<{ id: string }>();
@@ -41,9 +48,9 @@ export default (props: any) => {
 
   const { initialState } = useModel('@@initialState');
   const { id, fullPath } = initialState!.resource;
-  const [loading, setLoading] = useState(false);
 
   const { data: pipeline } = useRequest(() => getPipeline(pipelineID));
+  const { data: checkruns } = useRequest(() => listCheckRuns(pipelineID));
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
   const { data: buildLog } = useRequest(() => queryPipelineLog(pipelineID), {
     formatResult: (res) => res,
@@ -136,6 +143,17 @@ export default (props: any) => {
     setFullscreen(true);
   };
 
+  const {
+    run: pipelineRunCreate,
+    loading,
+  } = useRequest(createPipelineRun, {
+    onSuccess: (pr: PIPELINES.Pipeline) => {
+      // jump to pods' url
+      history.push(`/instances${fullPath}/-/pipelines/${pr.id}`);
+    },
+    manual: true,
+  });
+
   const onClose = () => {
     setFullscreen(false);
   };
@@ -210,49 +228,57 @@ export default (props: any) => {
 
   return (
     <PageWithBreadcrumb>
-      <DetailCard
-        title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
-        data={data}
-        extra={showRollback ? (
-          <Button
-            loading={loading}
-            onClick={() => {
-              Modal.confirm({
-                title: intl.formatMessage({ id: 'pages.message.cluster.rollback.confirm' }),
-                icon: <ExclamationCircleOutlined />,
-                onOk: () => {
-                  setLoading(true);
-                  rollback(id, { pipelinerunID: pipelineID }).then(() => {
-                    successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
-                    history.push(`${fullPath}`);
-                  });
-                },
-              });
-            }}
-          >
-            {formatMessage('rollback.confirm')}
-          </Button>
-        ) : null}
-      />
-      <Card
-        tabList={cardTab}
-        bodyStyle={{ height: cardContentHeight[activeTabKey] }}
-        onTabChange={setActiveTabKey}
-        tabBarExtraContent={extraContent[activeTabKey]}
-      >
-        {content[activeTabKey]}
-      </Card>
-      <FullscreenModal
-        title=""
-        visible={fullscreen}
-        onClose={onClose}
-        fullscreen
-        supportFullscreenToggle={false}
-      >
-        <CodeEditor
-          content={buildLog}
+      <MaxSpace direction="vertical">
+        <DetailCard
+          title={intl.formatMessage({ id: 'pages.common.basicInfo' })}
+          data={data}
+          extra={showRollback ? (
+            <Button
+              loading={loading}
+              onClick={() => {
+                Modal.confirm({
+                  title: intl.formatMessage({ id: 'pages.message.cluster.rollback.confirm' }),
+                  icon: <ExclamationCircleOutlined />,
+                  onOk: () => {
+                    pipelineRunCreate(id, {
+                      action: 'rollback',
+                      title: 'rollback',
+                      pipelinerunID: pipelineID,
+                    });
+                  },
+                });
+              }}
+            >
+              {formatMessage('rollback.confirm')}
+            </Button>
+          ) : null}
         />
-      </FullscreenModal>
+        {
+          pipeline && <MessageBox pipelinerunID={pipelineID} />
+        }
+        {
+          pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} />
+        }
+        <Card
+          tabList={cardTab}
+          bodyStyle={{ height: cardContentHeight[activeTabKey] }}
+          onTabChange={setActiveTabKey}
+          tabBarExtraContent={extraContent[activeTabKey]}
+        >
+          {content[activeTabKey]}
+        </Card>
+        <FullscreenModal
+          title=""
+          visible={fullscreen}
+          onClose={onClose}
+          fullscreen
+          supportFullscreenToggle={false}
+        >
+          <CodeEditor
+            content={buildLog}
+          />
+        </FullscreenModal>
+      </MaxSpace>
     </PageWithBreadcrumb>
   );
 };

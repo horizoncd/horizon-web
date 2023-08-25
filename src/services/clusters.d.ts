@@ -178,6 +178,17 @@ declare namespace CLUSTER {
     templateConfig: any;
   };
 
+  type PipelineRunCreate = {
+    action: 'builddeploy' | 'deploy' | 'rollback'
+    title: string,
+    description?: string;
+    git?: {
+      branch: string;
+    };
+    imageTag?: string;
+    pipelinerunID?: number;
+  };
+
   type ClusterBuildDeploy = {
     title: string,
     description?: string;
