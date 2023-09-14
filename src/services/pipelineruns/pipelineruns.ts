@@ -46,17 +46,21 @@ export async function forceRunPipelineRun(pipelinerunID: number) {
 }
 
 export async function listCheckRuns(pipelinerunID: number) {
+  const filter: PIPELINES.CheckRunFilter = {
+    pipelinerunID,
+  };
   return request<{
     data: PIPELINES.CheckRun[]
-  }>(`/apis/core/v2/pipelineruns/${pipelinerunID}/checkrun`, {
+  }>('/apis/core/v2/checkruns', {
     method: 'GET',
+    params: filter,
   });
 }
 
 export async function listPrMessage(pipelinerunID: number, pageParam?: API.PageParam) {
   return request<{
     data: API.PageResult<PIPELINES.PrMessage>
-  }>(`/apis/core/v2/pipelineruns/${pipelinerunID}/message`, {
+  }>(`/apis/core/v2/pipelineruns/${pipelinerunID}/messages`, {
     method: 'GET',
     params: pageParam,
   });

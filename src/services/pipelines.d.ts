@@ -54,6 +54,11 @@ declare namespace PIPELINES {
     updatedAt: string
   };
 
+  type CheckRunFilter = {
+    pipelinerunID?: number
+    checkID?: number
+  };
+
   type PrMessage = {
     id: number
     pipilineRunId: number

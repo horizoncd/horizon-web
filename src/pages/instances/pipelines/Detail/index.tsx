@@ -5,7 +5,7 @@ import { useModel } from '@@/plugin-model/useModel';
 import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import copy from 'copy-to-clipboard';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button, Card, Modal,
 } from 'antd';
@@ -28,8 +28,8 @@ import {
 } from '@/services/pipelineruns/pipelineruns';
 import Utils from '@/utils';
 import { PublishType } from '@/const';
-import { createPipelineRun } from '@/services/clusters/clusters';
 import FullscreenModal from '@/components/FullscreenModal';
+import { rollback } from '@/services/clusters/clusters';
 import { GitRefType } from '@/services/code/code';
 import ButtonWithoutPadding from '@/components/Widget/ButtonWithoutPadding';
 import MergeBox from './MergeBox';
@@ -49,8 +49,14 @@ export default (props: any) => {
   const { initialState } = useModel('@@initialState');
   const { id, fullPath } = initialState!.resource;
 
-  const { data: pipeline } = useRequest(() => getPipeline(pipelineID));
-  const { data: checkruns } = useRequest(() => listCheckRuns(pipelineID));
+  const { data: pipeline } = useRequest(() => getPipeline(pipelineID), {
+    pollingInterval: 6000,
+    pollingWhenHidden: false,
+  });
+  const { data: checkruns } = useRequest(() => listCheckRuns(pipelineID), {
+    pollingInterval: 6000,
+    pollingWhenHidden: false,
+  });
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
   const { data: buildLog } = useRequest(() => queryPipelineLog(pipelineID), {
     formatResult: (res) => res,
@@ -95,6 +101,18 @@ export default (props: any) => {
     }
     return data;
   };
+  const getDuration = useMemo(() => {
+    const data: Param[] = [];
+
+    if (pipeline && pipeline.status !== 'pending'
+      && pipeline.status !== 'ready' && pipeline.status !== 'cancelled') {
+      data.push({
+        key: intl.formatMessage({ id: 'pages.pipeline.duration' }),
+        value: `${Utils.timeSecondsDuration(pipeline!.startedAt || pipeline!.createdAt, pipeline!.finishedAt || moment().format('YYYY-MM-DD HH:mm:ss'))}s`,
+      });
+    }
+    return data;
+  }, [pipeline, intl]);
   const data: Param[][] = [
     [
       {
@@ -105,10 +123,7 @@ export default (props: any) => {
         key: formatMessage('createdAt'),
         value: Utils.timeToLocal(pipeline?.createdAt || ''),
       },
-      {
-        key: formatMessage('duration'),
-        value: pipeline ? `${Utils.timeSecondsDuration(pipeline!.createdAt, pipeline!.finishedAt || moment().format('YYYY-MM-DD HH:mm:ss'))}s` : '',
-      },
+      ...getDuration,
     ],
     [
       {
@@ -143,13 +158,11 @@ export default (props: any) => {
     setFullscreen(true);
   };
 
-  const {
-    run: pipelineRunCreate,
-    loading,
-  } = useRequest(createPipelineRun, {
-    onSuccess: (pr: PIPELINES.Pipeline) => {
+  const { run: runRollback, loading } = useRequest((prID: number) => rollback(id, { pipelinerunID: prID }), {
+    onSuccess: () => {
       // jump to pods' url
-      history.push(`/instances${fullPath}/-/pipelines/${pr.id}`);
+      successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
+      history.push(`${fullPath}`);
     },
     manual: true,
   });
@@ -240,11 +253,7 @@ export default (props: any) => {
                   title: intl.formatMessage({ id: 'pages.message.cluster.rollback.confirm' }),
                   icon: <ExclamationCircleOutlined />,
                   onOk: () => {
-                    pipelineRunCreate(id, {
-                      action: 'rollback',
-                      title: 'rollback',
-                      pipelinerunID: pipelineID,
-                    });
+                    runRollback(pipelineID);
                   },
                 });
               }}

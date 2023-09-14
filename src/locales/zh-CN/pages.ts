@@ -391,7 +391,7 @@ export default {
   'pages.pipeline.unmerged': '未合入',
   'pages.pipeline.status': '状态',
   'pages.pipeline.status.passed': '成功',
-  'pages.pipeline.status.created': '已创建',
+  'pages.pipeline.status.running': '运行中',
   'pages.pipeline.pipeline': '流水线',
   'pages.pipeline.trigger': '触发者',
   'pages.pipeline.triggerType': '触发类型',
@@ -412,6 +412,7 @@ export default {
   'pages.pipeline.mergeStatus.cancelled.description': '本次发布已取消',
   'pages.pipeline.merge.confirm': '确认合入',
   'pages.pipeline.merge.confirm.force': '强制合入',
+  'pages.pipeline.merge.cancel': '取消',
   'pages.pipeline.check.detail': '详情',
 
   'pages.application.members.title': '应用成员',
@@ -685,6 +686,7 @@ export default {
   'pages.message.cluster.deployAll.content4': '注：',
   'pages.message.cluster.deployAll.content5': '1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注',
   'pages.message.cluster.deployAll.content6': '2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%',
+  'pages.message.cluster.pipeline.unmerged.description': '未合入的流水线数量',
 
   'pages.message.pods.step.deploy': '第{index}批次开始发布',
   'pages.message.pods.tip1': '温馨提示1',

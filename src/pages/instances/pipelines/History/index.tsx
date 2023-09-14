@@ -61,7 +61,7 @@ export default (props: any) => {
             return <Pending link={link} />;
           case 'running':
           case 'created':
-            return <Progressing link={link} text={formatMessage('status.created')} />;
+            return <Progressing link={link} text={formatMessage('status.running')} />;
           case 'cancelled':
             return <Cancelled link={link} />;
           case 'ready':

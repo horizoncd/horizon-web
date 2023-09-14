@@ -5,7 +5,9 @@ import {
   Row, Col, Card, Divider, Button, Space, ButtonProps,
 } from 'antd';
 import { ReactNode, useCallback, useMemo } from 'react';
-import { useIntl, useRequest } from 'umi';
+import {
+  useHistory, useIntl, useModel, useRequest,
+} from 'umi';
 import styled from 'styled-components';
 import {
   cancelPipelineRun, runPipelineRun, forceRunPipelineRun,
@@ -84,6 +86,9 @@ interface ConfirmButtonProps extends Omit<ButtonProps, 'type'> {
 const ConfirmButton = (props: ConfirmButtonProps) => {
   const { pipelinerunID, forceRun: forceRunFlag } = props;
   const intl = useIntl();
+  const history = useHistory();
+  const { initialState } = useModel('@@initialState');
+  const { fullPath } = initialState?.resource || {};
 
   const params = useMemo(() => {
     if (forceRunFlag) {
@@ -99,12 +104,16 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   }, [forceRunFlag, intl]);
 
   const { run } = useRequest(() => runPipelineRun(pipelinerunID), {
-    onSuccess: () => {},
+    onSuccess: () => {
+      history.push(`${fullPath}`);
+    },
     manual: true,
   });
 
   const { run: forceRun } = useRequest(() => forceRunPipelineRun(pipelinerunID), {
-    onSuccess: () => {},
+    onSuccess: () => {
+      history.push(`${fullPath}`);
+    },
     manual: true,
   });
 
@@ -130,15 +139,21 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
 
 const CancelButton = (props: { pipelinerunID: number }) => {
   const { pipelinerunID } = props;
+  const intl = useIntl();
+  const history = useHistory();
+  const { initialState } = useModel('@@initialState');
+  const { fullPath } = initialState?.resource || {};
 
   const { run: cancel } = useRequest(() => cancelPipelineRun(pipelinerunID), {
-    onSuccess: () => {},
+    onSuccess: () => {
+      history.push(`${fullPath}`);
+    },
     manual: true,
   });
 
   return (
     <Button onClick={cancel}>
-      取消发布
+      {intl.formatMessage({ id: 'pages.pipeline.merge.cancel' })}
     </Button>
   );
 };
@@ -191,9 +206,20 @@ const CheckRunItem = (props: { checkrun: PIPELINES.CheckRun }) => {
         <RandomAvatar name={name} size={40} />
         <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{name}</span>
         <LightText style={{ marginTop: '4px', fontSize: '0.9em' }}>{message}</LightText>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', flexGrow: '1' }}>
-          <a style={{ marginRight: '20px' }} href={detailUrl}>{intl.formatMessage({ id: 'pages.pipeline.check.detail' })}</a>
-        </div>
+        {
+          detailUrl && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', flexGrow: '1' }}>
+              <a
+                style={{ marginRight: '20px' }}
+                target="_blank"
+                rel="noreferrer"
+                href={detailUrl}
+              >
+                {intl.formatMessage({ id: 'pages.pipeline.check.detail' })}
+              </a>
+            </div>
+          )
+        }
       </div>
       <ThinDivider />
     </>

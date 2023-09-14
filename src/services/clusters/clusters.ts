@@ -88,7 +88,7 @@ export async function updateClusterV2(clusterID: number, data: CLUSTER.UpdateClu
 export async function createPipelineRun(clusterID: number, data: CLUSTER.PipelineRunCreate) {
   return request<{
     data: PIPELINES.Pipeline
-  }>(`/apis/core/v2/clusters/${clusterID}/pipelinerun`, {
+  }>(`/apis/core/v2/clusters/${clusterID}/pipelineruns`, {
     method: 'POST',
     data,
   });
