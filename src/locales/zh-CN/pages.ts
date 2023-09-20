@@ -413,7 +413,7 @@ export default {
   'pages.pipeline.merge.confirm': '确认合入',
   'pages.pipeline.merge.confirm.force': '强制合入',
   'pages.pipeline.merge.cancel': '取消',
-  'pages.pipeline.check.detail': '详情',
+  'pages.pipeline.check.detail': '查看详情',
 
   'pages.application.members.title': '应用成员',
   'pages.groups.members.title': '分组成员',

@@ -1,5 +1,5 @@
 import {
-  AutoComplete, Card, Form, Input, Select,
+  AutoComplete, Button, Card, Form, Input, Select,
 } from 'antd';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import TextArea from 'antd/es/input/TextArea';
@@ -10,7 +10,6 @@ import type { FieldData, Rule } from 'rc-field-form/lib/interface';
 import { useState } from 'react';
 import CodeDiff from '@/components/CodeDiff';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
-import SubmitCancelButton from '@/components/SubmitCancelButton';
 import NotFound from '@/pages/404';
 import { PublishType } from '@/const';
 import {
@@ -134,6 +133,17 @@ export default (props: any) => {
     history.goBack();
   };
 
+  const buttons = () => (
+    <div>
+      <Button type="primary" onClick={onSubmit} loading={loading}>
+        {intl.formatMessage({ id: 'pages.common.create' })}
+      </Button>
+      <Button style={{ float: 'right' }} onClick={onCancel}>
+        {intl.formatMessage({ id: 'pages.common.cancel' })}
+      </Button>
+    </div>
+  );
+
   return (
     <PageWithBreadcrumb>
       <Card title={formatMessage('title')} className={styles.gapBetweenCards}>
@@ -253,8 +263,7 @@ export default (props: any) => {
           <CodeDiff diff={data?.configDiff || ''} />
         </Card>
       </Card>
-
-      <SubmitCancelButton onSubmit={onSubmit} onCancel={onCancel} loading={loading} />
+      {buttons()}
     </PageWithBreadcrumb>
   );
 };

@@ -1,5 +1,6 @@
 import {
-  CheckCircleFilled, CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined, PauseCircleOutlined, QuestionCircleOutlined, StopOutlined,
+  CheckCircleFilled, PauseCircleFilled, StopFilled, QuestionCircleFilled, CheckCircleOutlined,
+  CloseCircleOutlined, LoadingOutlined, PauseCircleOutlined, QuestionCircleOutlined, StopOutlined,
 } from '@ant-design/icons';
 import {
   Row, Col, Card, Divider, Button, Space, ButtonProps,
@@ -36,16 +37,19 @@ const Status = (props: StatusProps) => {
     switch (kind) {
       case 'ready':
         return {
+          icon: <CheckCircleFilled style={{ color: 'green', fontSize: '40px' }} />,
           color: 'green',
           kind: 'ready',
         };
       case 'cancelled':
         return {
+          icon: <StopFilled style={{ color: 'grey', fontSize: '40px' }} />,
           color: 'grey',
           kind: 'cancelled',
         };
       case 'pending':
         return {
+          icon: <PauseCircleFilled style={{ color: 'orange', fontSize: '40px' }} />,
           color: 'orange',
           kind: 'pending',
         };
@@ -54,11 +58,13 @@ const Status = (props: StatusProps) => {
       case 'ok':
       case 'failed':
         return {
+          icon: <CheckCircleFilled style={{ color: 'green', fontSize: '40px' }} />,
           color: 'green',
           kind: 'merged',
         };
       default:
         return {
+          icon: <QuestionCircleFilled style={{ color: 'grey', fontSize: '40px' }} />,
           color: 'grey',
           kind: 'unknown',
         };
@@ -67,7 +73,7 @@ const Status = (props: StatusProps) => {
 
   return (
     <div style={{ display: 'flex', gap: '16px' }}>
-      <CheckCircleFilled style={{ color: params.color, fontSize: '40px' }} />
+      {params.icon}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span style={{ color: params.color, fontWeight: 'bold', fontSize: '18px' }}>
           {intl.formatMessage({ id: `pages.pipeline.mergeStatus.${params.kind}` }) }
@@ -84,7 +90,7 @@ interface ConfirmButtonProps extends Omit<ButtonProps, 'type'> {
 }
 
 const ConfirmButton = (props: ConfirmButtonProps) => {
-  const { pipelinerunID, forceRun: forceRunFlag } = props;
+  const { pipelinerunID, forceRun: forceRunFlag, disabled } = props;
   const intl = useIntl();
   const history = useHistory();
   const { initialState } = useModel('@@initialState');
@@ -98,10 +104,10 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
       };
     }
     return {
-      color: 'green',
+      color: disabled ? 'lightgrey' : 'green',
       buttonContent: intl.formatMessage({ id: 'pages.pipeline.merge.confirm' }),
     };
-  }, [forceRunFlag, intl]);
+  }, [forceRunFlag, intl, disabled]);
 
   const { run } = useRequest(() => runPipelineRun(pipelinerunID), {
     onSuccess: () => {
@@ -170,7 +176,7 @@ const CheckRunItem = (props: { checkrun: PIPELINES.CheckRun }) => {
     color?: string,
   } = useMemo(() => {
     switch (status) {
-      case 'Queue':
+      case 'Pending':
         return {
           icon: <PauseCircleOutlined />,
         };
@@ -205,12 +211,12 @@ const CheckRunItem = (props: { checkrun: PIPELINES.CheckRun }) => {
         </div>
         <RandomAvatar name={name} size={40} />
         <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{name}</span>
-        <LightText style={{ marginTop: '4px', fontSize: '0.9em' }}>{message}</LightText>
+        <LightText style={{ marginLeft: '5px', marginTop: '4px', fontSize: '0.9em' }}>{message}</LightText>
         {
           detailUrl && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', flexGrow: '1' }}>
               <a
-                style={{ marginRight: '20px' }}
+                style={{ marginRight: '30px', fontWeight: 'bold' }}
                 target="_blank"
                 rel="noreferrer"
                 href={detailUrl}

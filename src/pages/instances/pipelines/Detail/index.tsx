@@ -49,12 +49,14 @@ export default (props: any) => {
   const { initialState } = useModel('@@initialState');
   const { id, fullPath } = initialState!.resource;
 
+  const pollingInterval = 6000;
+
   const { data: pipeline } = useRequest(() => getPipeline(pipelineID), {
-    pollingInterval: 6000,
+    pollingInterval,
     pollingWhenHidden: false,
   });
   const { data: checkruns } = useRequest(() => listCheckRuns(pipelineID), {
-    pollingInterval: 6000,
+    pollingInterval,
     pollingWhenHidden: false,
   });
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
