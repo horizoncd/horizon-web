@@ -12,9 +12,12 @@ import MicroApp from './MicroApp';
 import Progressing from './Progessing';
 import FavoriteStar from './FavoriteStar';
 import QueryBoldSpan from './QueryBoldSpan';
+import IdentAvatar from './RandomAvatar';
+import CircleTag from './CircleTag';
 
 export {
   BoldText, StyledDropdownSwitch, CenterSpin, DangerMessage,
   DropdownSwitch, ExactTime, MaxSpace, PopupTime, QueryBoldSpan,
-  MainText, ResourceAvatar, LocationBox, MicroApp, Progressing, FavoriteStar,
+  MainText, ResourceAvatar, LocationBox, MicroApp, Progressing,
+  FavoriteStar, IdentAvatar as RandomAvatar, CircleTag,
 };

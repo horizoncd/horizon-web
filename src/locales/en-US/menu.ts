@@ -6,6 +6,7 @@ export default {
   'menu.Settings.DefaultRegions': 'Default regions',
   'menu.Settings.Advance': 'Advance',
   'menu.Settings.Developer': 'Developer',
+  'menu.Settings.Webhooks': 'Webhooks',
   'menu.Application configs': 'Details',
   'menu.Pipelines': 'Pipelines',
   'menu.Cluster configs': 'Details',

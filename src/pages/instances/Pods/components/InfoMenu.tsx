@@ -1,11 +1,12 @@
 import { ConfigProvider } from 'antd';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, useRequest } from 'umi';
 import React, { useImperativeHandle, useRef } from 'react';
 import ClusterCard from './ClusterCard';
 import ClusterCardV2 from './ClusterCardV2'; // 将导入重命名为 ClusterCardV2
 import Output from '../../Detail/Output';
 import { Tag } from '../../Detail/Tag';
 import { MaxSpace } from '@/components/Widget';
+import { listPipelineRuns } from '@/services/clusters/clusters';
 
 interface InfoMenuProps {
   manualPaused: boolean
@@ -33,6 +34,21 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
       }
     },
   }));
+  const [unmergedPipelineCount, setUnmergedPipelineCount] = React.useState(0);
+
+  useRequest(() => listPipelineRuns(cluster.id, {
+    pageNumber: 1, pageSize: 10, canRollback: false,
+  }), {
+    onSuccess: (data) => {
+      let count = 0;
+      for (let i = 0; i < data.items.length; i += 1) {
+        if (data.items[i].status === 'pending' || data.items[i].status === 'ready') {
+          count += 1;
+        }
+      }
+      setUnmergedPipelineCount(count);
+    },
+  });
 
   return (
     <div>
@@ -47,6 +63,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
                 env2DisplayName={env2DisplayName}
                 region2DisplayName={region2DisplayName}
                 podsInfo={podsInfo}
+                unmergedPipelineCount={unmergedPipelineCount}
               />
             ) : (
               <ClusterCardV2 // 使用重命名后的名称
@@ -56,6 +73,7 @@ const InfoMenu = React.forwardRef((props: InfoMenuProps, ref) => {
                 env2DisplayName={env2DisplayName}
                 region2DisplayName={region2DisplayName}
                 podsInfo={podsInfo}
+                unmergedPipelineCount={unmergedPipelineCount}
               />
             )
           }

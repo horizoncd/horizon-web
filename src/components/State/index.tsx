@@ -5,6 +5,8 @@ import {
   DisconnectOutlined,
   HourglassOutlined,
   LoadingOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined,
   QuestionOutlined,
   RetweetOutlined,
   StopOutlined,
@@ -79,6 +81,50 @@ const Cancelled = (props: Omit<StatusProps, 'message'>) => {
     <div>
       {
       link ? <Link to={link} className="ci-status ci-cancelled">{txt}</Link> : txt
+    }
+    </div>
+  );
+};
+
+const Ready = (props: Omit<StatusProps, 'message'>) => {
+  const { text, link } = props;
+
+  const intl = useIntl();
+
+  const txt = (
+    <span>
+      <PlayCircleOutlined />
+      {' '}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.ready' })}
+    </span>
+  );
+
+  return (
+    <div>
+      {
+      link ? <Link to={link}>{txt}</Link> : txt
+    }
+    </div>
+  );
+};
+
+const Pending = (props: Omit<StatusProps, 'message'>) => {
+  const { text, link } = props;
+
+  const intl = useIntl();
+
+  const txt = (
+    <span style={{ color: 'orange' }}>
+      <PauseCircleOutlined />
+      {' '}
+      {text || intl.formatMessage({ id: 'pages.cluster.status.pending' })}
+    </span>
+  );
+
+  return (
+    <div>
+      {
+      link ? <Link to={link}>{txt}</Link> : txt
     }
     </div>
   );
@@ -398,6 +444,8 @@ export {
   Offline,
   PodPending,
   Cancelled,
+  Ready,
+  Pending,
   Freeing,
   Freed,
   Deleting,

@@ -8,6 +8,7 @@ export default {
   'menu.Settings.DefaultRegions': '默认部署区域',
   'menu.Settings.Advance': '高级配置',
   'menu.Settings.Developer': '开发者设置',
+  'menu.Settings.Webhooks': 'Webhooks',
   'menu.Application configs': '详情',
   'menu.Pipelines': '流水线',
   'menu.Cluster configs': '详情',
