@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components';
 const theme: Theme = {
   color: {
     emphasis: '#1890ff',
+    warning: '#faad14',
     danger: '#ff4d4f',
   },
   fontFamily: 'sans-serif',

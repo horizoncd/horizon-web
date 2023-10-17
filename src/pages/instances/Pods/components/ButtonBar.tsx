@@ -10,6 +10,7 @@ import RBAC from '@/rbac';
 import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';
 import { deleteCluster, freeCluster, restart } from '@/services/clusters/clusters';
+import { DangerText, WarningText } from '@/components/Widget';
 
 interface ButtonBarProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
@@ -105,12 +106,6 @@ function ButtonBar(props: ButtonBarProps) {
   const operateDropdown = (
     <Menu onClick={onClickOperationWithResumePrompt}>
       <Menu.Item
-        disabled={!RBAC.Permissions.rollbackCluster.allowed || isRestrictedStatus(clusterStatus.status)}
-        key="rollback"
-      >
-        {intl.formatMessage({ id: 'pages.cluster.action.rollback' })}
-      </Menu.Item>
-      <Menu.Item
         disabled={!RBAC.Permissions.updateCluster.allowed}
         key="editCluster"
       >
@@ -121,7 +116,9 @@ function ButtonBar(props: ButtonBarProps) {
           || isRestrictedStatus(clusterStatus.status) || clusterStatus.status === ClusterStatus.FREED}
         key="freeCluster"
       >
-        {intl.formatMessage({ id: 'pages.cluster.action.free' })}
+        <WarningText>
+          {intl.formatMessage({ id: 'pages.cluster.action.free' })}
+        </WarningText>
       </Menu.Item>
       <Tooltip
         title={clusterStatus.status !== ClusterStatus.FREED && intl.formatMessage({ id: 'pages.message.cluster.delete.freeFirst' })}
@@ -132,7 +129,9 @@ function ButtonBar(props: ButtonBarProps) {
             disabled={!RBAC.Permissions.deleteCluster.allowed || clusterStatus.status !== ClusterStatus.FREED}
             key="deleteCluster"
           >
-            {intl.formatMessage({ id: 'pages.cluster.action.delete' })}
+            <DangerText>
+              {intl.formatMessage({ id: 'pages.cluster.action.delete' })}
+            </DangerText>
           </Menu.Item>
         </div>
       </Tooltip>
@@ -141,15 +140,6 @@ function ButtonBar(props: ButtonBarProps) {
 
   return (
     <div style={{ marginBottom: '5px', textAlign: 'right' }}>
-      {/* <Button
-        type="primary"
-        onClick={() => {
-          history.push(`/instances${fullPath}/-/configs`);
-        }}
-        style={{ marginRight: '10px' }}
-      >
-        {intl.formatMessage({ id: 'pages.cluster.action.gotoDetail' })}
-      </Button> */}
       <Button
         disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(status)}
         type="primary"
@@ -177,6 +167,15 @@ function ButtonBar(props: ButtonBarProps) {
         style={{ marginRight: '10px' }}
       >
         {intl.formatMessage({ id: 'pages.cluster.action.restart' })}
+      </Button>
+      <Button
+        disabled={!RBAC.Permissions.rollbackCluster.allowed || isRestrictedStatus(clusterStatus.status)}
+        onClick={() => {
+          onClickOperationWithResumePrompt({ key: 'rollback' });
+        }}
+        style={{ marginRight: '10px' }}
+      >
+        {intl.formatMessage({ id: 'pages.cluster.action.rollback' })}
       </Button>
       <Dropdown overlay={operateDropdown} trigger={['click']} overlayStyle={{}}>
         <Button>
