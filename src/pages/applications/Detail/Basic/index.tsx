@@ -1,25 +1,33 @@
 import {
-  Button, Divider, Dropdown, Menu, Modal, Tooltip,
+  Button, Divider, Modal, Tooltip,
 } from 'antd';
 import copy from 'copy-to-clipboard';
-import { DownOutlined, ExclamationCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useModel } from '@@/plugin-model/useModel';
 import { useIntl } from '@@/plugin-locale/localeExports';
 import styles from '@/pages/applications/Detail/index.less';
 import RBAC from '@/rbac';
 import DetailCard from '@/components/DetailCard';
 import ResourceAvatar from '@/components/Widget/ResourceAvatar';
+import { DangerText } from '@/components/Widget';
 
 export default (props: any) => {
   const {
-    id, name: applicationName, refreshApplication,
-    delApplication, onEditClick, serviceDetail,
+    id,
+    name: applicationName,
+    refreshApplication,
+    delApplication,
+    onEditClick,
+    serviceDetail,
   } = props;
   const intl = useIntl();
   const { successAlert } = useModel('alert');
 
   const refreshButton = (
-    <Button className={styles.button} onClick={refreshApplication}><ReloadOutlined /></Button>);
+    <Button className={styles.button} onClick={refreshApplication}>
+      <ReloadOutlined />
+    </Button>
+  );
 
   const editButton = (
     <Button
@@ -32,52 +40,38 @@ export default (props: any) => {
     </Button>
   );
 
-  const operateDropdown = (
-    <Menu>
-      <Menu.Item
-        disabled={!RBAC.Permissions.deleteApplication.allowed}
-        onClick={() => {
-          Modal.confirm({
-            title: intl.formatMessage({ id: 'pages.applicationDelete.confirm.title' }, {
+  const deleteButton = (
+    <Button
+      className={styles.button}
+      disabled={!RBAC.Permissions.deleteApplication.allowed}
+      onClick={() => {
+        Modal.confirm({
+          title: intl.formatMessage(
+            { id: 'pages.applicationDelete.confirm.title' },
+            {
               application: (
                 <span className={styles.bold}>
-                  {' '}
                   {applicationName}
                 </span>
               ),
-            }),
-            icon: <ExclamationCircleOutlined />,
-            content: (
-              <div
-                className={styles.bold}
-              >
-                {intl.formatMessage({ id: 'pages.applicationDelete.confirm.content' })}
-              </div>
-            ),
-            okText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.ok' }),
-            cancelText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.cancel' }),
-            onOk: () => {
-              delApplication();
             },
-          });
-        }}
-      >
-        {intl.formatMessage({ id: 'pages.applicationDetail.basic.delete' })}
-      </Menu.Item>
-    </Menu>
-  );
-
-  const dropDownButton = (
-    <Dropdown
-      className={styles.button}
-      overlay={operateDropdown}
-      trigger={['click']}
+          ),
+          icon: <ExclamationCircleOutlined />,
+          content: (
+            <div className={styles.bold}>
+              {intl.formatMessage({ id: 'pages.applicationDelete.confirm.content' })}
+            </div>
+          ),
+          okText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.ok' }),
+          cancelText: intl.formatMessage({ id: 'pages.applicationDelete.confirm.cancel' }),
+          onOk: () => {
+            delApplication();
+          },
+        });
+      }}
     >
-      <Button>
-        {intl.formatMessage({ id: 'pages.common.more' })}
-        <DownOutlined />
-      </Button>
-    </Dropdown>
+      <DangerText>{intl.formatMessage({ id: 'pages.applicationDetail.basic.delete' })}</DangerText>
+    </Button>
   );
 
   return (
@@ -106,13 +100,16 @@ export default (props: any) => {
           <div className={styles.flex} />
           {refreshButton}
           {editButton}
-          {dropDownButton}
+          {deleteButton}
         </div>
       </div>
       <Divider className={styles.groupDivider} />
       <DetailCard
         title={(
-          <span className={styles.cardTitle}>{intl.formatMessage({ id: 'pages.applicationDetail.basic.detail' })}</span>)}
+          <span className={styles.cardTitle}>
+            {intl.formatMessage({ id: 'pages.applicationDetail.basic.detail' })}
+          </span>
+        )}
         data={serviceDetail}
       />
     </div>

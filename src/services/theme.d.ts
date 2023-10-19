@@ -1,5 +1,6 @@
 interface Color {
   emphasis: string,
+  warning: string,
   danger: string,
 }
 
