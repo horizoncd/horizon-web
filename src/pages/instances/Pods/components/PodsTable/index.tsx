@@ -428,7 +428,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
     text: item,
     value: item,
   }));
-  const defaultFilteredStatus = statusList.map((item) => item.value).filter((item) => item !== 'Failed');
 
   const onlineStatusList = Array.from(new Set(filteredData.map((item) => item.onlineStatus))).map((item) => ({
     text: item.slice(0, 1).toUpperCase() + item.slice(1),
@@ -581,7 +580,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
       dataIndex: ['state', 'reason'],
       key: 'status',
       filters: statusList,
-      defaultFilteredValue: defaultFilteredStatus,
       onFilter: (value: string, record: CLUSTER.PodInTable) => record.state.reason === value,
       onHeaderCell: noWrap,
       onCell: noWrap,
@@ -603,9 +601,6 @@ export default (props: { data: CLUSTER.PodInTable[], cluster?: CLUSTER.Cluster |
             break;
           case 'Terminated':
             status = <PodPending text="Terminated" message={message} />;
-            break;
-          case 'Failed':
-            status = <PodError text="Failed" message={message} />;
             break;
           default:
             status = <PodPending text={text} message={message} />;
