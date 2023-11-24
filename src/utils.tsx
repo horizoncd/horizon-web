@@ -32,6 +32,30 @@ const getResourcePath = () => {
   return path;
 };
 
+const getAppNameIfSimpleRoute = () => {
+  // simple route is defined as a route without group full path, such as /applications/-/app1/-/detail
+  const { pathname } = history.location;
+  if (pathname.startsWith('/applications/-/') || pathname.startsWith('/instances/-/')) {
+    const filteredPath = pathname.split('/').filter((item) => item !== '');
+    if (filteredPath.length < 3) {
+      return '';
+    }
+    return filteredPath[2];
+  }
+  return '';
+};
+
+const fillSimpleRoute = (groupFullPath: string) => {
+  const { pathname } = history.location;
+  let res = pathname;
+  if (pathname.startsWith('/applications/-/') || pathname.startsWith('/instances/-/')) {
+    // groupFullPath: /group1/subgroup2
+    // replace /applications/-/ with /applications/group1/subgroup2/
+    res = res.replace(/\/-\//, `${groupFullPath}/`);
+  }
+  return res;
+};
+
 const getBreadcrumbs = (fullName: string) => {
   const result = [];
   const { pathname } = history.location;
@@ -350,6 +374,8 @@ export const difference = (object: any, other: any) => {
 
 export default {
   getResourcePath,
+  getAppNameIfSimpleRoute,
+  fillSimpleRoute,
   getBreadcrumbs,
   getAvatarColorIndex,
   timeFromNow,
