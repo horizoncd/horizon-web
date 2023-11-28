@@ -2,14 +2,16 @@ import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   Button, Dropdown, Menu, Modal, Tooltip,
 } from 'antd';
-import { history, useIntl, useModel } from 'umi';
+import {
+  history, useIntl, useModel, useRequest,
+} from 'umi';
 import { stringify } from 'query-string';
 import { useState } from 'react';
 import { RebuilddeployModal } from '@/components/rollout';
 import RBAC from '@/rbac';
 import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';
-import { deleteCluster, freeCluster, restart } from '@/services/clusters/clusters';
+import { createPipelineRun, deleteCluster, freeCluster } from '@/services/clusters/clusters';
 import { CatalogType } from '@/services/core';
 import { DangerText, WarningText } from '@/components/Widget';
 
@@ -30,6 +32,13 @@ function ButtonBarV2(props: ButtonBarProps) {
   const { successAlert } = useModel('alert');
   const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
 
+  const { run: runRestart } = useRequest(() => createPipelineRun(id!, { action: 'restart' }), {
+    onSuccess: (pr: PIPELINES.Pipeline) => {
+      history.push(`/instances${fullPath}/-/pipelines/${pr.id}`);
+    },
+    manual: true,
+  });
+
   const onClickOperation = ({ key }: { key: string }) => {
     switch (key) {
       case 'builddeploy':
@@ -47,9 +56,7 @@ function ButtonBarV2(props: ButtonBarProps) {
         Modal.confirm({
           title: intl.formatMessage({ id: 'pages.message.cluster.restart.confirm' }),
           onOk() {
-            restart(id).then(() => {
-              successAlert(intl.formatMessage({ id: 'pages.message.cluster.restart.success' }));
-            });
+            runRestart();
           },
         });
         break;
