@@ -179,8 +179,8 @@ declare namespace CLUSTER {
   };
 
   type PipelineRunCreate = {
-    action: 'builddeploy' | 'deploy' | 'rollback'
-    title: string,
+    action: 'builddeploy' | 'deploy' | 'rollback' | 'restart'
+    title?: string,
     description?: string;
     git?: {
       branch: string;

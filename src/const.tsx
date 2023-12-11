@@ -15,6 +15,8 @@ export enum ResourceType {
 export enum PublishType {
   BUILD_DEPLOY = 'builddeploy',
   DEPLOY = 'deploy',
+  RESTART = 'restart',
+  ROLLBACK = 'rollback',
 }
 
 export enum MemberType {

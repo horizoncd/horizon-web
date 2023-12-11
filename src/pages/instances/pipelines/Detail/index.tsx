@@ -6,9 +6,7 @@ import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import copy from 'copy-to-clipboard';
 import { useMemo, useState } from 'react';
-import {
-  Button, Card, Modal,
-} from 'antd';
+import { Button, Card, Modal } from 'antd';
 import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import type { Param } from '@/components/DetailCard';
@@ -29,7 +27,7 @@ import {
 import Utils from '@/utils';
 import { PublishType } from '@/const';
 import FullscreenModal from '@/components/FullscreenModal';
-import { rollback } from '@/services/clusters/clusters';
+import { createPipelineRun } from '@/services/clusters/clusters';
 import { GitRefType } from '@/services/code/code';
 import ButtonWithoutPadding from '@/components/Widget/ButtonWithoutPadding';
 import MergeBox from './MergeBox';
@@ -49,15 +47,21 @@ export default (props: any) => {
   const { initialState } = useModel('@@initialState');
   const { id, fullPath } = initialState!.resource;
 
-  const pollingInterval = 6000;
+  const pollingInterval = 3000;
 
-  const { data: pipeline } = useRequest(() => getPipeline(pipelineID), {
+  const { data: checkruns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
   });
-  const { data: checkruns } = useRequest(() => listCheckRuns(pipelineID), {
+  const { data: pipeline, cancel: cancelGetPipeline } = useRequest(() => getPipeline(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
+    onSuccess: (data) => {
+      if (data?.status && data?.status !== 'pending') {
+        cancelListCheckRuns();
+        cancelGetPipeline();
+      }
+    },
   });
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
   const { data: buildLog } = useRequest(() => queryPipelineLog(pipelineID), {
@@ -160,11 +164,13 @@ export default (props: any) => {
     setFullscreen(true);
   };
 
-  const { run: runRollback, loading } = useRequest((prID: number) => rollback(id, { pipelinerunID: prID }), {
-    onSuccess: () => {
-      // jump to pods' url
-      successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
-      history.push(`${fullPath}`);
+  const { run: runRollback, loading } = useRequest((prID: number) => createPipelineRun(id, {
+    action: 'rollback',
+    pipelinerunID: prID,
+  }), {
+    onSuccess: (pr: PIPELINES.Pipeline) => {
+      history.push(`/instances${fullPath}/-/pipelines/${pr.id}`);
+      window.location.reload();
     },
     manual: true,
   });

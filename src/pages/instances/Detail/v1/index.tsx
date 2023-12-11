@@ -65,16 +65,18 @@ export default () => {
             templateSchema={templateSchema}
             cluster={cluster}
           />
-          <AdminTag
-            clusterID={clusterID}
-            clusterFullPath={clusterFullPath}
-          />
         </TabPane>
         <TabPane tab={intl.formatMessage({ id: 'pages.clusterDetail.output' })} key="2">
           <Output clusterID={clusterID} />
         </TabPane>
         <TabPane tab={intl.formatMessage({ id: 'pages.tags.normal' })} key="3">
           <Tag
+            clusterID={clusterID}
+            clusterFullPath={clusterFullPath}
+          />
+        </TabPane>
+        <TabPane tab={intl.formatMessage({ id: 'pages.tags.admin' })} key="4">
+          <AdminTag
             clusterID={clusterID}
             clusterFullPath={clusterFullPath}
           />

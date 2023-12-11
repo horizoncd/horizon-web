@@ -86,13 +86,17 @@ const Status = (props: StatusProps) => {
 
 interface ConfirmButtonProps extends Omit<ButtonProps, 'type'> {
   pipelinerunID: number;
+  pipelinerunAction: string;
   forceRun: boolean;
 }
 
 const ConfirmButton = (props: ConfirmButtonProps) => {
-  const { pipelinerunID, forceRun: forceRunFlag, disabled } = props;
+  const {
+    pipelinerunID, pipelinerunAction, forceRun: forceRunFlag, disabled,
+  } = props;
   const intl = useIntl();
   const history = useHistory();
+  const { successAlert } = useModel('alert');
   const { initialState } = useModel('@@initialState');
   const { fullPath } = initialState?.resource || {};
 
@@ -109,32 +113,35 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
     };
   }, [forceRunFlag, intl, disabled]);
 
-  const { run } = useRequest(() => runPipelineRun(pipelinerunID), {
-    onSuccess: () => {
-      history.push(`${fullPath}`);
-    },
-    manual: true,
-  });
-
-  const { run: forceRun } = useRequest(() => forceRunPipelineRun(pipelinerunID), {
-    onSuccess: () => {
-      history.push(`${fullPath}`);
-    },
-    manual: true,
-  });
-
-  const onClick = useCallback(() => {
+  const doRun = useCallback(() => {
     if (forceRunFlag) {
-      forceRun();
-    } else {
-      run();
+      return forceRunPipelineRun(pipelinerunID);
     }
-  }, [forceRunFlag, forceRun, run]);
+    return runPipelineRun(pipelinerunID);
+  }, [forceRunFlag, pipelinerunID]);
+
+  const { run, loading } = useRequest(() => doRun(), {
+    onSuccess: () => {
+      switch (pipelinerunAction) {
+        case 'restart':
+          successAlert(intl.formatMessage({ id: 'pages.message.cluster.restart.success' }));
+          break;
+        case 'rollback':
+          successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
+          break;
+        default:
+          break;
+      }
+      history.push(`${fullPath}`);
+    },
+    manual: true,
+  });
 
   return (
     <Button
       type="primary"
-      onClick={onClick}
+      loading={loading}
+      onClick={run}
       style={{ backgroundColor: params.color, borderColor: params.color }}
       {...props}
     >
@@ -233,7 +240,7 @@ const CheckRunItem = (props: { checkrun: PIPELINES.CheckRun }) => {
 };
 
 const MergeBox = (props: { pipelinerun: PIPELINES.Pipeline, checkruns?: PIPELINES.CheckRun[] }) => {
-  const { pipelinerun: { status, id }, checkruns = [] } = props;
+  const { pipelinerun: { status, id, action }, checkruns = [] } = props;
   const needButton = useMemo(() => status === 'ready' || status === 'pending', [status]);
   return (
     <Row>
@@ -249,6 +256,7 @@ const MergeBox = (props: { pipelinerun: PIPELINES.Pipeline, checkruns?: PIPELINE
                   <ConfirmButton
                     forceRun={status === 'pending' && rbac.Permissions.forceRunPipelineRun.allowed}
                     pipelinerunID={id}
+                    pipelinerunAction={action}
                     disabled={status === 'pending' && !rbac.Permissions.forceRunPipelineRun.allowed}
                   />
                   <CancelButton pipelinerunID={id} />
