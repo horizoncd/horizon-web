@@ -13,6 +13,7 @@ import { isRestrictedStatus } from '@/components/State';
 import { ClusterStatus, PublishType } from '@/const';
 import { createPipelineRun, deleteCluster, freeCluster } from '@/services/clusters/clusters';
 import { DangerText, WarningText } from '@/components/Widget';
+import { MicroApp } from '@/components/Widget';
 
 interface ButtonBarProps {
   clusterStatus: CLUSTER.ClusterStatusV2,
@@ -22,10 +23,12 @@ interface ButtonBarProps {
 
 function ButtonBar(props: ButtonBarProps) {
   const { clusterStatus, cluster, manualPaused } = props;
-  const { id, fullPath } = cluster;
+  const {
+    id, fullPath, name, template,
+  } = cluster;
   const { status } = clusterStatus;
   const intl = useIntl();
-  const { successAlert } = useModel('alert');
+  const { successAlert, errorAlert } = useModel('alert');
   const [enableRebuilddeployModal, setEnableRebuilddeployModal] = useState(false);
 
   const { run: runRestart } = useRequest(() => createPipelineRun(id!, { action: 'restart' }), {
@@ -147,6 +150,14 @@ function ButtonBar(props: ButtonBarProps) {
 
   return (
     <div style={{ marginBottom: '5px', textAlign: 'right' }}>
+      <MicroApp
+        name="finops"
+        clusterID={id}
+        clusterName={name}
+        templateName={template.name}
+        fullPath={fullPath}
+        errorAlert={errorAlert}
+      />
       <Button
         disabled={!RBAC.Permissions.buildAndDeployCluster.allowed || isRestrictedStatus(status)}
         type="primary"
