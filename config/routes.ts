@@ -215,6 +215,11 @@ const applicationRoutes = [
 
 const instanceRoutes = [
   {
+    path: '/instances/*/-/finops',
+    menuRender: false,
+    component: 'instances/FinOps',
+  },
+  {
     path: '/instances/*/-/edit',
     menuRender: false,
     component: 'instances/NewOrEdit/v1',

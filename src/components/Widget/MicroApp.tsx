@@ -17,7 +17,8 @@ function WithCheck<Props extends MicroAppProps & { defaultNode?: React.ReactElem
       });
     });
     return ifRender ? (
-      <div style={{ display: 'inline-block' }}>
+      // eslint-disable-next-line react/destructuring-assignment
+      <div style={{ display: 'inline-block', ...props.style }}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <WrappedComponent {...props} />
         {' '}

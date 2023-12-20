@@ -557,6 +557,10 @@ function formatClusterMenu(fullPath: string) {
       menuRender: false,
     },
     {
+      path: `/instances${fullPath}/-/finops`,
+      menuRender: false,
+    },
+    {
       path: `/instances${fullPath}/-/editv2`,
       menuRender: false,
     },
