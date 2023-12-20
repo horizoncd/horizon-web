@@ -122,6 +122,14 @@ export default (props: any) => {
   const data: Param[][] = [
     [
       {
+        key: formatMessage('title'),
+        value: pipeline?.title,
+      },
+      {
+        key: formatMessage('description'),
+        value: pipeline?.description,
+      },
+      {
         key: formatMessage('status'),
         value: pipeline?.status || 'Unknown',
       },

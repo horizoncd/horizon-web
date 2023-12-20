@@ -7,7 +7,7 @@ import { useModel } from '@@/plugin-model/useModel';
 import { history } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import type { FieldData, Rule } from 'rc-field-form/lib/interface';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CodeDiff from '@/components/CodeDiff';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
 import NotFound from '@/pages/404';
@@ -37,6 +37,14 @@ export default (props: any) => {
   if (!type) {
     return <NotFound />;
   }
+  useEffect(() => {
+    const { title } = query;
+    if (title) {
+      form.setFieldsValue({
+        title,
+      });
+    }
+  }, [form, query]);
 
   const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
 

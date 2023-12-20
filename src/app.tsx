@@ -34,6 +34,7 @@ import { queryResource } from '@/services/core';
 import { routes } from '../config/routes';
 import { ResourceType } from '@/const';
 import { queryRoles, querySelfMember } from '@/services/members/members';
+import { getApplicationV2 } from './services/applications/applications';
 
 const loginPath = '/user/login';
 const callbackPath = '/user/login/callback';
@@ -116,6 +117,13 @@ export async function getInitialState(): Promise<API.InitialState> {
   }
 
   if (!pathnameInStaticRoutes()) {
+    const appName = Utils.getAppNameIfSimpleRoute();
+    if (appName) {
+      const { data: app } = await getApplicationV2(appName);
+      const appFullPath = app.fullPath;
+      const groupFullPath = appFullPath.substring(0, appFullPath.lastIndexOf('/'));
+      history.push(Utils.fillSimpleRoute(groupFullPath));
+    }
     const path = Utils.getResourcePath();
     try {
       const isReleasePath = /\/templates(.*)\/-\/releases\/.*?(?:\/edit)?\/?/;
