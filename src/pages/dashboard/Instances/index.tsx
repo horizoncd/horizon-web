@@ -328,6 +328,8 @@ function Instances(props: ClustersProps) {
       items.forEach((item) => {
         t.push({ label: item.name, value: item.name, isLeaf: false });
       });
+      // sort t by label's alphabet order
+      t.sort((a, b) => a.label.localeCompare(b.label));
       setTemplateOptions(t);
     },
   });
