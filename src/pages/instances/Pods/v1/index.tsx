@@ -22,6 +22,7 @@ import BuildCard from '../components/BuildCard';
 import NoData from '@/components/NoData';
 import InfoMenu from '../components/InfoMenu';
 import useRefCallback from '../components/useRefCallback';
+import { ClusterBadgeBar } from '../components/Badge';
 
 const { TabPane } = Tabs;
 
@@ -153,6 +154,7 @@ function PodsPage(props: PodsPageProps) {
             region2DisplayName={region2DisplayName}
             podsInfo={podsInfo}
           />
+          <ClusterBadgeBar clusterID={id} />
           {
             showBuildView && (
               <BuildCard

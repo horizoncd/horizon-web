@@ -400,4 +400,13 @@ declare namespace API {
     commit: string
   };
 
+  export type Badge = {
+    id: number
+    name: string
+    svgLink: string
+    redirectLink: string
+    createdAt: string
+    updatedAt: string
+  };
+
 }
