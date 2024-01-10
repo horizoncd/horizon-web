@@ -52,6 +52,11 @@ interface BadgeBarProps {
 
 export const BadgeBar = (props: BadgeBarProps) => {
   const { badges } = props;
+
+  if (!badges || badges.length === 0) {
+    return null;
+  }
+
   return (
     <Space>
       {badges.map((badge) => <Badge {...badge} />)}
@@ -73,6 +78,9 @@ export const ClusterBadgeBar = (props: ClusterBadgeBarProps) => {
     },
   });
 
+  if (!badges || badges.length === 0) {
+    return null;
+  }
   return (
     <div style={{ marginTop: '8px', marginBottom: '8px' }}>
       <BadgeBar badges={badges} />
