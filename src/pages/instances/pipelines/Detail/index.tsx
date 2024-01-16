@@ -5,7 +5,7 @@ import { useModel } from '@@/plugin-model/useModel';
 import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import copy from 'copy-to-clipboard';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button, Card, Modal } from 'antd';
 import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -22,7 +22,7 @@ import 'codemirror/addon/display/fullscreen';
 import styles from './index.less';
 import CodeDiff from '@/components/CodeDiff';
 import {
-  getPipeline, getPipelineDiffs, listCheckRuns, queryPipelineLog,
+  getPipeline, getPipelineDiffs, listCheckRuns, queryPipelineLog, listPRMessage,
 } from '@/services/pipelineruns/pipelineruns';
 import Utils from '@/utils';
 import { PublishType } from '@/const';
@@ -48,12 +48,15 @@ export default (props: any) => {
   const { id, fullPath } = initialState!.resource;
 
   const pollingInterval = 3000;
-
-  const { data: checkruns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
+  const { data: messages, run: runListMessages } = useRequest(() => listPRMessage(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
   });
-  const { data: pipeline, cancel: cancelGetPipeline } = useRequest(() => getPipeline(pipelineID), {
+  const { data: checkruns, run: runListCheckRuns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
+    pollingInterval,
+    pollingWhenHidden: false,
+  });
+  const { data: pipeline, run: runGetPipeline, cancel: cancelGetPipeline } = useRequest(() => getPipeline(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
     onSuccess: (data) => {
@@ -63,6 +66,12 @@ export default (props: any) => {
       }
     },
   });
+  const refresh = useCallback(() => {
+    runListMessages();
+    runListCheckRuns();
+    runGetPipeline();
+  }, [runListMessages, runListCheckRuns, runGetPipeline]);
+
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
   const { data: buildLog } = useRequest(() => queryPipelineLog(pipelineID), {
     formatResult: (res) => res,
@@ -279,10 +288,10 @@ export default (props: any) => {
           ) : null}
         />
         {
-          pipeline && <MessageBox pipelinerunID={pipelineID} />
+          pipeline && <MessageBox messages={messages?.items} count={messages?.total} />
         }
         {
-          pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} />
+          pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} refresh={refresh} />
         }
         <Card
           tabList={cardTab}

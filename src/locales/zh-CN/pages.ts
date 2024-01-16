@@ -410,10 +410,11 @@ export default {
   'pages.pipeline.mergeStatus.merged.description': '该流水线已发布',
   'pages.pipeline.mergeStatus.cancelled': '已取消',
   'pages.pipeline.mergeStatus.cancelled.description': '本次发布已取消',
-  'pages.pipeline.merge.confirm': '发布',
-  'pages.pipeline.merge.confirm.force': '强制发布',
+  'pages.pipeline.merge.continue': '发布',
+  'pages.pipeline.merge.forceReady': '跳过检查',
   'pages.pipeline.merge.cancel': '取消',
   'pages.pipeline.check.detail': '查看详情',
+  'pages.pipeline.messages': '消息',
 
   'pages.application.members.title': '应用成员',
   'pages.groups.members.title': '分组成员',
@@ -687,6 +688,7 @@ export default {
   'pages.message.cluster.deployAll.content5': '1. 如果实例数较多，全部发布可能会对环境带来一定压力，请关注',
   'pages.message.cluster.deployAll.content6': '2. 除预发和线上环境外，其他环境为了快速发布，在发布过程中，最大副本数为200%',
   'pages.message.cluster.pipeline.unmerged.description': '未发布的流水线数量',
+  'pages.message.cluster.pipeline.forceReady.success': '已强制跳过所有检查项，可进行发布',
 
   'pages.message.pods.step.deploy': '第{index}批次开始发布',
   'pages.message.pods.tip1': '温馨提示1',

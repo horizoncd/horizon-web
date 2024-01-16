@@ -39,8 +39,8 @@ export async function runPipelineRun(pipelinerunID: number) {
   });
 }
 
-export async function forceRunPipelineRun(pipelinerunID: number) {
-  return request(`/apis/core/v2/pipelineruns/${pipelinerunID}/forcerun`, {
+export async function forceReadyPipelineRun(pipelinerunID: number) {
+  return request(`/apis/core/v2/pipelineruns/${pipelinerunID}/forceready`, {
     method: 'POST',
   });
 }
@@ -53,7 +53,7 @@ export async function listCheckRuns(pipelinerunID: number) {
   });
 }
 
-export async function listPrMessage(pipelinerunID: number, pageParam?: API.PageParam) {
+export async function listPRMessage(pipelinerunID: number, pageParam?: API.PageParam) {
   return request<{
     data: API.PageResult<PIPELINES.PrMessage>
   }>(`/apis/core/v2/pipelineruns/${pipelinerunID}/messages`, {

@@ -11,7 +11,7 @@ import {
 } from 'umi';
 import styled from 'styled-components';
 import {
-  cancelPipelineRun, runPipelineRun, forceRunPipelineRun,
+  cancelPipelineRun, runPipelineRun, forceReadyPipelineRun,
 } from '@/services/pipelineruns/pipelineruns';
 import rbac from '@/rbac';
 import { RandomAvatar } from '@/components/Widget';
@@ -87,12 +87,13 @@ const Status = (props: StatusProps) => {
 interface ConfirmButtonProps extends Omit<ButtonProps, 'type'> {
   pipelinerunID: number;
   pipelinerunAction: string;
-  forceRun: boolean;
+  forceReady: boolean;
+  refresh: () => void;
 }
 
 const ConfirmButton = (props: ConfirmButtonProps) => {
   const {
-    pipelinerunID, pipelinerunAction, forceRun: forceRunFlag, disabled,
+    pipelinerunID, pipelinerunAction, forceReady: forceReadyFlag, disabled, refresh,
   } = props;
   const intl = useIntl();
   const history = useHistory();
@@ -101,38 +102,43 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   const { fullPath } = initialState?.resource || {};
 
   const params = useMemo(() => {
-    if (forceRunFlag) {
+    if (forceReadyFlag) {
       return {
         color: 'orange',
-        buttonContent: intl.formatMessage({ id: 'pages.pipeline.merge.confirm.force' }),
+        buttonContent: intl.formatMessage({ id: 'pages.pipeline.merge.forceReady' }),
       };
     }
     return {
       color: disabled ? 'lightgrey' : 'green',
-      buttonContent: intl.formatMessage({ id: 'pages.pipeline.merge.confirm' }),
+      buttonContent: intl.formatMessage({ id: 'pages.pipeline.merge.continue' }),
     };
-  }, [forceRunFlag, intl, disabled]);
+  }, [forceReadyFlag, intl, disabled]);
 
-  const doRun = useCallback(() => {
-    if (forceRunFlag) {
-      return forceRunPipelineRun(pipelinerunID);
+  const onClick = useCallback(() => {
+    if (forceReadyFlag) {
+      return forceReadyPipelineRun(pipelinerunID);
     }
     return runPipelineRun(pipelinerunID);
-  }, [forceRunFlag, pipelinerunID]);
+  }, [forceReadyFlag, pipelinerunID]);
 
-  const { run, loading } = useRequest(() => doRun(), {
+  const { run, loading } = useRequest(() => onClick(), {
     onSuccess: () => {
-      switch (pipelinerunAction) {
-        case 'restart':
-          successAlert(intl.formatMessage({ id: 'pages.message.cluster.restart.success' }));
-          break;
-        case 'rollback':
-          successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
-          break;
-        default:
-          break;
+      if (forceReadyFlag) {
+        successAlert(intl.formatMessage({ id: 'pages.message.cluster.pipeline.forceReady.success' }));
+        refresh();
+      } else {
+        switch (pipelinerunAction) {
+          case 'restart':
+            successAlert(intl.formatMessage({ id: 'pages.message.cluster.restart.success' }));
+            break;
+          case 'rollback':
+            successAlert(intl.formatMessage({ id: 'pages.message.cluster.rollback.submitted' }));
+            break;
+          default:
+            break;
+        }
+        history.push(`${fullPath}`);
       }
-      history.push(`${fullPath}`);
     },
     manual: true,
   });
@@ -239,8 +245,14 @@ const CheckRunItem = (props: { checkrun: PIPELINES.CheckRun }) => {
   );
 };
 
-const MergeBox = (props: { pipelinerun: PIPELINES.Pipeline, checkruns?: PIPELINES.CheckRun[] }) => {
-  const { pipelinerun: { status, id, action }, checkruns = [] } = props;
+interface MergeBoxProps {
+  pipelinerun: PIPELINES.Pipeline;
+  checkruns?: PIPELINES.CheckRun[];
+  refresh: () => void;
+}
+
+const MergeBox = (props: MergeBoxProps) => {
+  const { pipelinerun: { status, id, action }, checkruns = [], refresh } = props;
   const needButton = useMemo(() => status === 'ready' || status === 'pending', [status]);
   return (
     <Row>
@@ -254,10 +266,11 @@ const MergeBox = (props: { pipelinerun: PIPELINES.Pipeline, checkruns?: PIPELINE
               needButton && (
                 <>
                   <ConfirmButton
-                    forceRun={status === 'pending' && rbac.Permissions.forceRunPipelineRun.allowed}
+                    forceReady={status === 'pending' && rbac.Permissions.forceReadyPipelineRun.allowed}
                     pipelinerunID={id}
                     pipelinerunAction={action}
-                    disabled={status === 'pending' && !rbac.Permissions.forceRunPipelineRun.allowed}
+                    disabled={status === 'pending' && !rbac.Permissions.forceReadyPipelineRun.allowed}
+                    refresh={refresh}
                   />
                   <CancelButton pipelinerunID={id} />
                 </>

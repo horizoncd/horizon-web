@@ -410,10 +410,11 @@ export default {
   'pages.pipeline.mergeStatus.merged.description': 'This release has been released',
   'pages.pipeline.mergeStatus.cancelled': 'Cancelled',
   'pages.pipeline.mergeStatus.cancelled.description': 'This release has been cancelled',
-  'pages.pipeline.merge.confirm': 'Confirm Release',
-  'pages.pipeline.merge.confirm.force': 'Force Release',
+  'pages.pipeline.merge.continue': 'Confirm Release',
+  'pages.pipeline.merge.forceReady': 'Skip Checks',
   'pages.pipeline.merge.cancel': 'Cancel',
   'pages.pipeline.check.detail': 'Detail',
+  'pages.pipeline.messages': 'Messages',
 
   'pages.application.members.title': 'Application Members',
   'pages.groups.members.title': 'Group Members',
@@ -687,6 +688,7 @@ export default {
   'pages.message.cluster.deployAll.content5': '1. If the number of instances is too large, please pay attention to the pressure on the environment',
   'pages.message.cluster.deployAll.content6': '2. In addition to the pre and online environments, the maximum number of replicas in the deploy process is 200% for efficiency.',
   'pages.message.cluster.pipeline.unmerged.description': 'count of unreleased pipelines',
+  'pages.message.cluster.pipeline.forceReady.success': 'The pipelinerun is marked as ready to release',
 
   'pages.message.pods.step.deploy': 'The step {index} starts to deploy',
   'pages.message.pods.tip1': 'Tip 1',

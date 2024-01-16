@@ -352,8 +352,8 @@ const Permissions = {
     action: Action.create,
     allowed: false,
   },
-  forceRunPipelineRun: {
-    resource: `${Resource.pipelines}/forcerun`,
+  forceReadyPipelineRun: {
+    resource: `${Resource.pipelines}/forceready`,
     action: Action.create,
     allowed: false,
   },

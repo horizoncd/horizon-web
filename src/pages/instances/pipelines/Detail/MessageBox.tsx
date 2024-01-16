@@ -1,9 +1,8 @@
-import { useRequest } from 'umi';
-import { CSSProperties, ReactNode, useState } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Space } from 'antd';
-import { listPrMessage } from '@/services/pipelineruns/pipelineruns';
+import { Space, Card } from 'antd';
+import { useIntl } from 'umi';
 import {
   BoldText, CircleTag, PopupTime, RandomAvatar,
 } from '@/components/Widget';
@@ -111,7 +110,7 @@ const Message = (props: MessageProps) => {
 
   return (
     <div style={{ display: 'flex', gap: '16px' }}>
-      { !right && <RandomAvatar size={50} name={userName} />}
+      { !right && <RandomAvatar size={40} name={userName} />}
       <Dialog
         right={right}
         style={{ flexGrow: '1' }}
@@ -120,26 +119,19 @@ const Message = (props: MessageProps) => {
         time={time}
         tag={isBot ? 'bot' : undefined}
       />
-      { right && <RandomAvatar size={50} name={userName} />}
+      { right && <RandomAvatar size={40} name={userName} />}
     </div>
   );
 };
 
 interface MessageBoxProps {
-  pipelinerunID: number;
+  messages: PIPELINES.PrMessage[] | undefined;
+  count: number | undefined;
 }
 
 const MessageBox = (props: MessageBoxProps) => {
-  const { pipelinerunID } = props;
-  const [items, setItems] = useState<PIPELINES.PrMessage[]>([]);
-  const [count, setCount] = useState(0);
-
-  useRequest(() => listPrMessage(pipelinerunID), {
-    onSuccess: (data) => {
-      setCount(data.total);
-      setItems(data.items);
-    },
-  });
+  const { messages = [], count = 0 } = props;
+  const intl = useIntl();
 
   if (count === 0) {
     return (
@@ -148,10 +140,15 @@ const MessageBox = (props: MessageBoxProps) => {
   }
 
   return (
-    <div>
+    <Card
+      title={intl.formatMessage({ id: 'pages.pipeline.messages' })}
+      type="inner"
+      bodyStyle={{ paddingInline: 10 }}
+    >
       {
-        items.map((item) => (
+        messages.map((item) => (
           <Message
+            key={item.id}
             isBot={item.createdBy.userType === 'bot'}
             content={item.content}
             userName={item.createdBy.name}
@@ -159,7 +156,7 @@ const MessageBox = (props: MessageBoxProps) => {
           />
         ))
     }
-    </div>
+    </Card>
   );
 };
 
