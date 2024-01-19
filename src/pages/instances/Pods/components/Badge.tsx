@@ -38,7 +38,7 @@ export const Badge = (props: BadgeProps) => {
 
   if (redirectLink) {
     return (
-      <a href={redirectLink}>
+      <a href={redirectLink} target="_blank" rel="noreferrer">
         {img}
       </a>
     );
