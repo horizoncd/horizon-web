@@ -157,7 +157,7 @@ function PodsPage(props: PodsPageProps) {
     <PageWithBreadcrumb>
       <div>
         <ButtonBarV2 cluster={cluster} template={template} clusterStatus={clusterStatus} manualPaused={step?.manualPaused ?? false} />
-        <MaxSpace direction="vertical" size="large">
+        <MaxSpace direction="vertical">
           <InfoMenu
             showOutputTags={!isWorkload}
             ref={infoMenuRef}
