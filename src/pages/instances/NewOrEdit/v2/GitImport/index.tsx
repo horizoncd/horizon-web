@@ -67,6 +67,7 @@ export default (props: any) => {
   const [baseInfoValid, setBaseInfoValid] = useState<boolean>(false);
   const [buildConfigValid, setBuildConfigValid] = useState<boolean>(true);
   const [deployConfigValid, setDeployConfigValid] = useState<boolean>(false);
+  const [useHistoryConfig, setUseHistoryConfig] = useState<boolean>(false);
 
   const pageOrders = useMemo(() => (editing ? [0, 1, 3, 4] : [0, 1, 2, 3, 4]), [editing]);
 
@@ -85,6 +86,7 @@ export default (props: any) => {
   useEffect(() => {
     const data = window.history.state?.defaultAppData;
     if (data) {
+      setUseHistoryConfig(true);
       fillDefaultConfig(data);
     }
   }, []);
@@ -160,7 +162,7 @@ export default (props: any) => {
         setTemplateConfig(data!.application);
       }
     },
-    ready: creating,
+    ready: creating && !useHistoryConfig,
     manual: true,
   });
 
@@ -182,16 +184,9 @@ export default (props: any) => {
           { name: ResourceKey.GIT_REF_VALUE, value: gitRef },
         ]);
 
-        // basicTemplateInfo
-        const basicTemplateInfo = {
-          name: data!.templateInfo!.name,
-          release: data!.templateInfo!.release,
-        };
-        setBuildConfig(data!.buildConfig);
-        // todo(zx): remove
-        setTemplateBasic(basicTemplateInfo);
-        setReleaseName(data!.templateInfo!.release);
-        setTemplateConfig(data!.templateConfig);
+        if (!useHistoryConfig) {
+          fillDefaultConfig(data);
+        }
         refreshAppEnvTemplate(envFromQuery);
       } else {
         // query source cluster if copying
