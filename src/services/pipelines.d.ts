@@ -63,6 +63,7 @@ declare namespace PIPELINES {
     id: number
     pipilineRunId: number
     content: string
+    system: boolean
     createdAt: string
     updatedAt: string
     createdBy: {

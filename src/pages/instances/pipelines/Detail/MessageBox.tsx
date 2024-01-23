@@ -95,8 +95,33 @@ const Dialog = (props: DialogProps) => {
   );
 };
 
+interface NoteProps {
+  content: ReactNode
+  name: string,
+  time: string,
+  style?: CSSProperties
+}
+
+const Note = (props: NoteProps) => {
+  const {
+    content, name = 'noname', time, style = {},
+  } = props;
+  return (
+    <div style={style}>
+      <DialogHeader>
+        <Space>
+          <BoldText>{name}</BoldText>
+          <span>{content}</span>
+          <PopupTime time={time} />
+        </Space>
+      </DialogHeader>
+    </div>
+  );
+};
+
 interface MessageProps {
-  content: string;
+  content: string
+  system: boolean
   userName: string
   time: string
   isBot?: boolean
@@ -105,12 +130,24 @@ interface MessageProps {
 
 const Message = (props: MessageProps) => {
   const {
-    content, userName, time, isBot, right = false,
+    content, userName, time, isBot, right = false, system = false,
   } = props;
-
+  if (system) {
+    return (
+      <div style={{ display: 'flex', gap: '16px', marginLeft: '10px' }}>
+        <RandomAvatar size={35} name={userName} />
+        <Note
+          style={{ flexGrow: '1' }}
+          content={content}
+          name={userName}
+          time={time}
+        />
+      </div>
+    );
+  }
   return (
-    <div style={{ display: 'flex', gap: '16px' }}>
-      { !right && <RandomAvatar size={40} name={userName} />}
+    <div style={{ display: 'flex', gap: '16px', marginLeft: '10px' }}>
+      { !right && <RandomAvatar size={35} name={userName} />}
       <Dialog
         right={right}
         style={{ flexGrow: '1' }}
@@ -119,7 +156,7 @@ const Message = (props: MessageProps) => {
         time={time}
         tag={isBot ? 'bot' : undefined}
       />
-      { right && <RandomAvatar size={40} name={userName} />}
+      { right && <RandomAvatar size={35} name={userName} />}
     </div>
   );
 };
@@ -145,17 +182,20 @@ const MessageBox = (props: MessageBoxProps) => {
       type="inner"
       bodyStyle={{ paddingInline: 10 }}
     >
-      {
-        messages.map((item) => (
-          <Message
-            key={item.id}
-            isBot={item.createdBy.userType === 'bot'}
-            content={item.content}
-            userName={item.createdBy.name}
-            time={item.createdAt}
-          />
-        ))
-    }
+      <Space direction="vertical" style={{ display: 'flex', width: '100%' }}>
+        {
+          messages.map((item) => (
+            <Message
+              key={item.id}
+              isBot={item.createdBy.userType === 'bot'}
+              content={item.content}
+              system={item.system}
+              userName={item.createdBy.name}
+              time={item.createdAt}
+            />
+          ))
+        }
+      </Space>
     </Card>
   );
 };
