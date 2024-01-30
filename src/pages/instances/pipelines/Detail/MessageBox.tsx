@@ -1,8 +1,7 @@
 import { CSSProperties, ReactNode } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Space, Card } from 'antd';
-import { useIntl } from 'umi';
+import { Space } from 'antd';
 import {
   BoldText, CircleTag, PopupTime, RandomAvatar,
 } from '@/components/Widget';
@@ -59,8 +58,6 @@ const DialogContent = styled.div`
     padding-bottom: 20px;
     padding-left: 22px;
     padding-right: 22px;
-
-    font-size: 0.9rem;
 `;
 
 interface DialogProps {
@@ -111,8 +108,8 @@ const Note = (props: NoteProps) => {
       <DialogHeader>
         <Space>
           <BoldText>{name}</BoldText>
-          <span>{content}</span>
-          <PopupTime time={time} />
+          <span style={{ color: '#787878' }}>{content}</span>
+          <PopupTime time={time} style={{ color: '#787878' }} />
         </Space>
       </DialogHeader>
     </div>
@@ -168,7 +165,6 @@ interface MessageBoxProps {
 
 const MessageBox = (props: MessageBoxProps) => {
   const { messages = [], count = 0 } = props;
-  const intl = useIntl();
 
   if (count === 0) {
     return (
@@ -177,11 +173,7 @@ const MessageBox = (props: MessageBoxProps) => {
   }
 
   return (
-    <Card
-      title={intl.formatMessage({ id: 'pages.pipeline.messages' })}
-      type="inner"
-      bodyStyle={{ paddingInline: 10 }}
-    >
+    <div>
       <Space direction="vertical" style={{ display: 'flex', width: '100%' }}>
         {
           messages.map((item) => (
@@ -196,7 +188,7 @@ const MessageBox = (props: MessageBoxProps) => {
           ))
         }
       </Space>
-    </Card>
+    </div>
   );
 };
 

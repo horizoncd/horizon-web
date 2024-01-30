@@ -48,10 +48,7 @@ export default (props: any) => {
   const { id, fullPath } = initialState!.resource;
 
   const pollingInterval = 3000;
-  const { data: messages, run: runListMessages } = useRequest(() => listPRMessage(pipelineID), {
-    pollingInterval,
-    pollingWhenHidden: false,
-  });
+  const { data: messages, run: runListMessages } = useRequest(() => listPRMessage(pipelineID));
   const { data: checkruns, run: runListCheckRuns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
@@ -77,7 +74,9 @@ export default (props: any) => {
     formatResult: (res) => res,
   });
 
-  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage(
+    { id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg },
+  ), [intl]);
 
   let refType = 'branch';
   let refValue = '';
@@ -157,23 +156,28 @@ export default (props: any) => {
     ],
   ];
 
-  const cardTab = (pipeline
-    && (pipeline.action === PublishType.BUILD_DEPLOY
-      || pipeline.action === PublishType.DEPLOY)) ? [
-      {
-        key: 'Changes',
-        tab: formatMessage('changes'),
-      },
-      {
-        key: 'BuildLog',
-        tab: formatMessage('buildLog'),
-      },
-    ] : [
+  const cardTab = useMemo(() => {
+    const tabs = [
       {
         key: 'Changes',
         tab: formatMessage('changes'),
       },
     ];
+    if (messages?.total && messages.total > 0) {
+      tabs.push({
+        key: 'Messages',
+        tab: formatMessage('messages'),
+      });
+    }
+    if ((pipeline?.action === PublishType.BUILD_DEPLOY || pipeline?.action === PublishType.DEPLOY)
+    && pipeline?.status !== 'pending' && pipeline?.status !== 'ready') {
+      tabs.push({
+        key: 'BuildLog',
+        tab: formatMessage('buildLog'),
+      });
+    }
+    return tabs;
+  }, [formatMessage, messages, pipeline]);
 
   const [fullscreen, setFullscreen] = useState(false);
   const { successAlert, errorAlert } = useModel('alert');
@@ -255,6 +259,7 @@ export default (props: any) => {
         </Card>
       </div>
     ),
+    Messages: <MessageBox messages={messages?.items} count={messages?.total} />,
   };
 
   const cardContentHeight = {
@@ -287,9 +292,6 @@ export default (props: any) => {
             </Button>
           ) : null}
         />
-        {
-          pipeline && <MessageBox messages={messages?.items} count={messages?.total} />
-        }
         {
           pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} refresh={refresh} />
         }

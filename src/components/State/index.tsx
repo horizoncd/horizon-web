@@ -92,7 +92,7 @@ const Ready = (props: Omit<StatusProps, 'message'>) => {
   const intl = useIntl();
 
   const txt = (
-    <span>
+    <span className="ci-status ci-ready">
       <PlayCircleOutlined />
       {' '}
       {text || intl.formatMessage({ id: 'pages.cluster.status.ready' })}
@@ -102,7 +102,7 @@ const Ready = (props: Omit<StatusProps, 'message'>) => {
   return (
     <div>
       {
-      link ? <Link to={link}>{txt}</Link> : txt
+      link ? <Link to={link} className="ci-status ci-ready">{txt}</Link> : txt
     }
     </div>
   );
@@ -114,7 +114,7 @@ const Pending = (props: Omit<StatusProps, 'message'>) => {
   const intl = useIntl();
 
   const txt = (
-    <span style={{ color: 'orange' }}>
+    <span className="ci-status ci-pending">
       <PauseCircleOutlined />
       {' '}
       {text || intl.formatMessage({ id: 'pages.cluster.status.pending' })}
@@ -124,7 +124,7 @@ const Pending = (props: Omit<StatusProps, 'message'>) => {
   return (
     <div>
       {
-      link ? <Link to={link}>{txt}</Link> : txt
+      link ? <Link to={link} className="ci-status ci-pending">{txt}</Link> : txt
     }
     </div>
   );
