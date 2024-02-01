@@ -9,7 +9,7 @@ const IdentAvatar = (props: RandomAvatarProps) => {
   return (
     <div
       style={{
-        borderRadius: '30%',
+        borderRadius: '40%',
         border: '1px solid #ccc',
         display: 'inline-block',
         height: `${size}px`,

@@ -5,7 +5,7 @@ import { useModel } from '@@/plugin-model/useModel';
 import { useParams } from 'umi';
 import { useRequest } from '@@/plugin-request/request';
 import copy from 'copy-to-clipboard';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button, Card, Modal } from 'antd';
 import { CopyOutlined, FullscreenOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import PageWithBreadcrumb from '@/components/PageWithBreadcrumb';
@@ -22,7 +22,7 @@ import 'codemirror/addon/display/fullscreen';
 import styles from './index.less';
 import CodeDiff from '@/components/CodeDiff';
 import {
-  getPipeline, getPipelineDiffs, listCheckRuns, queryPipelineLog,
+  getPipeline, getPipelineDiffs, listCheckRuns, queryPipelineLog, listPRMessage,
 } from '@/services/pipelineruns/pipelineruns';
 import Utils from '@/utils';
 import { PublishType } from '@/const';
@@ -48,12 +48,12 @@ export default (props: any) => {
   const { id, fullPath } = initialState!.resource;
 
   const pollingInterval = 3000;
-
-  const { data: checkruns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
+  const { data: messages, run: runListMessages } = useRequest(() => listPRMessage(pipelineID));
+  const { data: checkruns, run: runListCheckRuns, cancel: cancelListCheckRuns } = useRequest(() => listCheckRuns(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
   });
-  const { data: pipeline, cancel: cancelGetPipeline } = useRequest(() => getPipeline(pipelineID), {
+  const { data: pipeline, run: runGetPipeline, cancel: cancelGetPipeline } = useRequest(() => getPipeline(pipelineID), {
     pollingInterval,
     pollingWhenHidden: false,
     onSuccess: (data) => {
@@ -63,12 +63,20 @@ export default (props: any) => {
       }
     },
   });
+  const refresh = useCallback(() => {
+    runListMessages();
+    runListCheckRuns();
+    runGetPipeline();
+  }, [runListMessages, runListCheckRuns, runGetPipeline]);
+
   const { data: diff } = useRequest(() => getPipelineDiffs(pipelineID));
   const { data: buildLog } = useRequest(() => queryPipelineLog(pipelineID), {
     formatResult: (res) => res,
   });
 
-  const formatMessage = (suffix: string, defaultMsg?: string) => intl.formatMessage({ id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg });
+  const formatMessage = useCallback((suffix: string, defaultMsg?: string) => intl.formatMessage(
+    { id: `pages.pipeline.${suffix}`, defaultMessage: defaultMsg },
+  ), [intl]);
 
   let refType = 'branch';
   let refValue = '';
@@ -148,23 +156,28 @@ export default (props: any) => {
     ],
   ];
 
-  const cardTab = (pipeline
-    && (pipeline.action === PublishType.BUILD_DEPLOY
-      || pipeline.action === PublishType.DEPLOY)) ? [
-      {
-        key: 'Changes',
-        tab: formatMessage('changes'),
-      },
-      {
-        key: 'BuildLog',
-        tab: formatMessage('buildLog'),
-      },
-    ] : [
+  const cardTab = useMemo(() => {
+    const tabs = [
       {
         key: 'Changes',
         tab: formatMessage('changes'),
       },
     ];
+    if (messages?.total && messages.total > 0) {
+      tabs.push({
+        key: 'Messages',
+        tab: formatMessage('messages'),
+      });
+    }
+    if ((pipeline?.action === PublishType.BUILD_DEPLOY || pipeline?.action === PublishType.DEPLOY)
+    && pipeline?.status !== 'pending' && pipeline?.status !== 'ready') {
+      tabs.push({
+        key: 'BuildLog',
+        tab: formatMessage('buildLog'),
+      });
+    }
+    return tabs;
+  }, [formatMessage, messages, pipeline]);
 
   const [fullscreen, setFullscreen] = useState(false);
   const { successAlert, errorAlert } = useModel('alert');
@@ -246,6 +259,7 @@ export default (props: any) => {
         </Card>
       </div>
     ),
+    Messages: <MessageBox messages={messages?.items} count={messages?.total} />,
   };
 
   const cardContentHeight = {
@@ -279,10 +293,7 @@ export default (props: any) => {
           ) : null}
         />
         {
-          pipeline && <MessageBox pipelinerunID={pipelineID} />
-        }
-        {
-          pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} />
+          pipeline && <MergeBox pipelinerun={pipeline} checkruns={checkruns} refresh={refresh} />
         }
         <Card
           tabList={cardTab}
