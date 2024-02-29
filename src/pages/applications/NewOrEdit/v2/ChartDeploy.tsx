@@ -80,7 +80,7 @@ export default (props: any) => {
     const createReq: API.CreateOrUpdateRequestV2 = {
       name: form.getFieldValue(ResourceKey.NAME),
       description: form.getFieldValue(ResourceKey.DESCRIPTION),
-      priority: form.getFieldValue(ResourceKey.PRIORITY),
+      tags: form.getFieldValue(ResourceKey.TAGS) || [],
       templateInfo: { name: templateBasic.name, release: releaseName! },
       templateConfig,
     };

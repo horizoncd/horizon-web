@@ -220,7 +220,7 @@ declare namespace API {
   type CreateOrUpdateRequestV2 = {
     name: string
     description: string
-    priority: string;
+    priority?: string;
     tags?: Tag[];
     git?: GitInfo;
     image?: string;
